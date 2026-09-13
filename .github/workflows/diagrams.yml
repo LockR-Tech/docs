@@ -1,0 +1,50 @@
+name: Diagrams A4
+
+on:
+  pull_request:
+    paths:
+      - 'diagrams/**'
+      - 'scripts/**'
+      - 'package.json'
+      - 'package-lock.json'
+      - '.github/workflows/diagrams.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'diagrams/**'
+      - 'scripts/**'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  render:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+
+      - name: Font tiếng Việt cho bản render
+        run: sudo apt-get update -qq && sudo apt-get install -y -qq fonts-noto-core >/dev/null
+
+      - run: npm ci
+
+      - name: Render mọi sơ đồ, fail nếu lỗi cú pháp hoặc vượt 1 trang A4
+        env:
+          CHROME_PATH: /usr/bin/google-chrome
+        run: npm run diagrams:check
+
+      - name: Mọi file .mmd đều có PDF đi kèm
+        run: |
+          missing=0
+          for f in diagrams/src/*.mmd; do
+            pdf="diagrams/pdf/$(basename "${f%.mmd}").pdf"
+            [ -f "$pdf" ] || { echo "::error file=$f::Thiếu $pdf — chạy npm run diagrams và commit PDF"; missing=1; }
+          done
+          exit $missing

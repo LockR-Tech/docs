@@ -1,0 +1,47 @@
+%% @title Trạng thái Ô tủ — locker_boxes.status
+%% @subtitle Nguồn: <code>locker-service/…/model/LockerBox.java:50-55</code> · <code>LockerService.java:121-301</code> · <code>iot-service/…/IotService.java</code> — Luồng 2 &amp; 3 — rà soát code 2026-09-13
+%% @orientation portrait
+%% @legend <span class="sw ok"></span>Vòng đời thuê/gửi
+%% @legend <span class="sw bad"></span>Lỗi / bảo trì
+%% @legend <b>━</b> đã code &nbsp;<b style="color:#8c959f">┅</b> CHƯA code &nbsp;<b style="color:#cf222e">━</b> lỗ hổng
+%% @row C1 | AVAILABLE → RESERVED | <code>reserveBox</code> khi tạo đơn (nội bộ order→locker) | hệ thống | ô DRONE chỉ giữ được với channel=DRONE; <code>reservedUntil</code> = +24h; đồng bộ xuống tủ qua MQTT
+%% @row C2 | RESERVED → AVAILABLE | quét TTL mỗi giờ · huỷ đơn | hệ thống | quét TTL không báo tủ; <b>có thể nhả ô của đơn drone còn chờ điều phối &gt; 24h</b>
+%% @row C3 | AVAILABLE · RESERVED → OCCUPIED | <code>occupyBox</code> khi <code>PUT /api/orders/{id}/confirm</code> | chủ đơn (qua app) | lỗi bị nuốt (best-effort); drone gửi hàng <b>không</b> set OCCUPIED
+%% @row ~C4 | RESERVED → OCCUPIED · OCCUPIED → AVAILABLE | cảm biến cửa / kết quả mở tủ từ phần cứng | iot-service | CHƯA CÓ: trạng thái phần cứng được lưu nhưng không điều khiển vòng đời ô/đơn
+%% @row C5 | OCCUPIED → AVAILABLE | <code>releaseBox</code> khi đơn COMPLETED · EXPIRED · CANCELED | hệ thống | không nhả nếu ô đang FAULT / OUT_OF_SERVICE / CLEANING
+%% @row xC6 | mọi → FAULT | <code>POST /api/boxes/{id}/fault</code> | <b>mọi JWT, mọi ô</b> | không guard (kể cả ô đang có hàng); mỗi lần gọi mở 1 ticket mới
+%% @row ~C7 | mọi → FAULT | mở tủ FAILED/JAMMED · heartbeat mất | iot-service | CHƯA CÓ tự động báo hỏng — hiện chỉ ghi access log
+%% @row C8 | FAULT → AVAILABLE | xử lý xong ticket (<code>resolve</code>) | TECHNICIAN · MAINTENANCE · ADMIN | ô phải đang FAULT; không kiểm tra người được giao
+%% @row xC9 | mọi → AVAILABLE | <code>POST /api/maintenance/boxes/{id}/clear-fault</code> | TECHNICIAN · MAINTENANCE · ADMIN | <b>không guard</b>: giải phóng được ô đang có hàng; ticket vẫn OPEN
+%% @row C10 | AVAILABLE · FAULT → OUT_OF_SERVICE · CLEANING | <code>…/out-of-service</code> · <code>…/cleaning</code> | TECHNICIAN · MAINTENANCE · ADMIN | cấm khi RESERVED/OCCUPIED; FAULT → CLEANING → AVAILABLE lách qua bước xoá lỗi
+%% @row C11 | OUT_OF_SERVICE · CLEANING → AVAILABLE | <code>…/return-to-service</code> | TECHNICIAN · MAINTENANCE · ADMIN | không đồng bộ trạng thái xuống tủ
+%% @row xC12 | mọi → chuỗi bất kỳ | <code>updateBoxStatus</code> (admin) | ADMIN | web ghi giá trị <code>MAINTENANCE</code> không tồn tại ⇒ return-to-service từ chối
+%% @note Force-open (<code>POST /api/maintenance/boxes/{id}/force-open</code>) mở cửa vật lý nhưng không đổi trạng thái ô. Locker ở trạng thái MAINTENANCE vẫn cho đặt ô (<code>findAvailableBox</code> không kiểm tra).
+%%{init: {"flowchart": {"nodeSpacing": 46, "rankSpacing": 50, "padding": 8, "curve": "basis"}}}%%
+flowchart TB
+    S(("●")) --> AV(["AVAILABLE<br/><small>trống</small>"])
+    AV -->|C1| RES(["RESERVED<br/><small>đã giữ chỗ</small>"])
+    RES -->|C2| AV
+    RES -->|C3| OCC(["OCCUPIED<br/><small>có hàng</small>"])
+    AV -->|C3| OCC
+    RES -.->|C4| OCC
+    OCC -->|C5| AV
+    AV -->|C6| FAULT(["FAULT<br/><small>hỏng</small>"])
+    OCC -->|C6| FAULT
+    OCC -.->|C7| FAULT
+    FAULT -->|C8| AV
+    FAULT -->|C9| AV
+    AV -->|C10| OOS(["OUT_OF_SERVICE<br/><small>ngưng dùng</small>"])
+    FAULT -->|C10| CLEAN(["CLEANING<br/><small>vệ sinh</small>"])
+    OOS -->|C11| AV
+    CLEAN -->|C11| AV
+
+    classDef ok fill:#d8f5dd,stroke:#2da44e,stroke-width:1.5px,color:#1f2328
+    classDef bad fill:#ffd8d3,stroke:#cf222e,stroke-width:1.5px,color:#1f2328
+    classDef term fill:#1f2328,stroke:#1f2328,color:#ffffff
+    class AV,RES,OCC ok
+    class FAULT,OOS,CLEAN bad
+    class S term
+
+    linkStyle 5,9 stroke:#8c959f,stroke-width:1.5px
+    linkStyle 7,8,11 stroke:#cf222e,stroke-width:2px,color:#cf222e

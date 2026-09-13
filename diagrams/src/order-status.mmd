@@ -1,0 +1,50 @@
+%% @title Trạng thái Đơn hàng — orders.status
+%% @subtitle Nguồn: <code>order-service/…/model/LockerOrder.java:66</code> · <code>OrderService.java</code> · <code>OrderScheduler.java</code> · <code>OrderPaymentEventListener.java</code> — áp dụng cho SEND · RENTAL · STORAGE · DRONE_DELIVERY — rà soát code 2026-09-13
+%% @orientation portrait
+%% @legend <span class="sw ok"></span>Trạng thái đang dùng
+%% @legend <span class="sw end"></span>Trạng thái kết thúc
+%% @legend <span class="sw gap"></span>Legacy giặt ủi — không nên còn
+%% @legend <b>━</b> đã code &nbsp;<b style="color:#bf8700">━</b> chỉ DEMO &nbsp;<b style="color:#8c959f">┅</b> CHƯA code &nbsp;<b style="color:#cf222e">━</b> lỗ hổng
+%% @row O1 | ∅ → INITIALIZED | <code>POST /api/orders/send</code> · <code>/rental</code> | CUSTOMER | ô AVAILABLE → giữ ô RESERVED 24h; phát PIN gửi hàng. (<code>POST /api/orders</code> cũ lấy userId từ body)
+%% @row O2 | ∅ → AWAITING_DISPATCH | <code>POST /api/orders/drone-deliveries</code> | CUSTOMER | Idempotency-Key; giữ ô DRONE; báo nhóm MAINTENANCE — xem trang “Vòng đời giao hàng drone”
+%% @row O3 | INITIALIZED → STORING | <code>PUT /api/orders/{id}/confirm</code> | chủ đơn | SEND cần PAID, <b>RENTAL không kiểm tra thanh toán</b>; ô → OCCUPIED; đổi sang PIN nhận hàng, hạn 48h
+%% @row O4 | INITIALIZED → CANCELED | <code>PUT …/cancel</code> · <code>report-box-fault</code> · cron 15’ quá 24h | chủ đơn · hệ thống | nhả ô; <b>đơn đã PAID bị huỷ không hoàn tiền</b>
+%% @row O5 | AWAITING_DISPATCH → CANCELED | <code>PUT …/cancel</code> · <code>POST …/drone-orders/{id}/cancel</code> | CUSTOMER · MAINTENANCE | stage AWAITING_DISPATCH (khách) / ACCEPTED (bảo trì); khách huỷ <b>không cập nhật deliveryStage</b>
+%% @row !O6 | AWAITING_DISPATCH → STORING | <code>DroneDeliverySimulator</code> (mission DEPOSITED) | hệ thống | chỉ DEMO; ghi thẳng, <b>bỏ qua transition()</b>: không lịch sử, không event
+%% @row ~O7 | AWAITING_DISPATCH → STORING | sự kiện hạ cánh + gửi hàng thật | drone · iot-service | CHƯA CÓ ⇒ STANDARD kẹt ở AWAITING_DISPATCH
+%% @row O8 | STORING → COMPLETED | <code>PUT …/complete</code> · <code>POST /api/iot/pickup</code> · <code>pickup-storage</code> | chủ đơn · người nhận có tài khoản | nhả ô, xoá PIN. Phí quá hạn cộng <b>sau</b> khi kiểm tra PAID ⇒ không bao giờ thu
+%% @row ~O9 | STORING → COMPLETED | nhập mã ở kiosk / cửa đóng sau khi lấy | người nhận không tài khoản | CHƯA CÓ: kiosk chỉ mở cửa, đơn vẫn STORING, PIN vẫn mở được ô
+%% @row O10 | STORING → EXPIRED | cron mỗi giờ phút :05 | hệ thống | quá hạn + 24h; nhả ô, thu hồi PIN
+%% @row xO11 | EXPIRED · STORING → COMPLETED | <code>POST /api/orders/{id}/checkout</code> | <b>mọi JWT</b> | không kiểm tra vai trò hay chủ đơn
+%% @row xO12 | mọi → mọi | <code>PATCH /api/orders/{id}/status</code> · <code>PUT /api/admin/orders/{id}/status</code> | <b>mọi JWT</b> · ADMIN | <b>không guard</b>, nhận chuỗi bất kỳ (kể cả trạng thái legacy), nhả ô khi CANCELED/COMPLETED
+%% @note <b>paymentStatus</b> (cột riêng): UNPAID → PAID qua sự kiện <code>payment.completed</code>; PAID → UNPAID khi gia hạn thuê. <b>REFUNDED không bao giờ được ghi.</b> Khách tự đánh dấu đã trả được: CASH hoàn tất ngay, <code>PATCH /api/payments/{id}/status</code> mở cho mọi JWT.
+%% @note Tự chuyển (STORING → STORING, chỉ ghi lịch sử): <code>extend-rental</code>, <code>delegate</code>, <code>reset-pin</code> (không guard trạng thái). Web admin thiếu STORING · EXPIRED · AWAITING_DISPATCH nên đẩy đơn vào được trạng thái legacy.
+%%{init: {"flowchart": {"nodeSpacing": 40, "rankSpacing": 44, "padding": 8, "curve": "basis"}}}%%
+flowchart TB
+    S(("●")) -->|O1| INIT(["INITIALIZED<br/><small>chờ bỏ hàng</small>"])
+    S -->|O2| AWAIT(["AWAITING_DISPATCH<br/><small>chờ drone</small>"])
+    INIT -->|O3| STORING(["STORING<br/><small>hàng đang trong ô</small>"])
+    INIT -->|O4| CANCELED(["CANCELED<br/><small>đã huỷ</small>"])
+    AWAIT -->|O5| CANCELED
+    AWAIT -->|O6| STORING
+    AWAIT -.->|O7| STORING
+    STORING -->|O8| DONE(["COMPLETED<br/><small>đã nhận</small>"])
+    STORING -.->|O9| DONE
+    STORING -->|O10| EXPIRED(["EXPIRED<br/><small>quá hạn</small>"])
+    EXPIRED -->|O11| DONE
+    LEGACY(["RETURNED · READY · WAITING<br/>RESERVED · COLLECTED · PROCESSING<br/><small>legacy giặt ủi</small>"]) -.-|O12| STORING
+    DONE --> E((("◉")))
+    CANCELED --> E
+
+    classDef ok fill:#d8f5dd,stroke:#2da44e,stroke-width:1.5px,color:#1f2328
+    classDef fin fill:#dbe7ff,stroke:#3b6fd4,stroke-width:1.5px,color:#1f2328
+    classDef legacy fill:#f6f8fa,stroke:#8c959f,stroke-width:1.5px,stroke-dasharray:5 4,color:#57606a
+    classDef term fill:#1f2328,stroke:#1f2328,color:#ffffff
+    class INIT,AWAIT,STORING,EXPIRED ok
+    class DONE,CANCELED fin
+    class LEGACY legacy
+    class S,E term
+
+    linkStyle 5 stroke:#bf8700,stroke-width:2.5px,color:#bf8700
+    linkStyle 6,8 stroke:#8c959f,stroke-width:1.5px
+    linkStyle 10,11 stroke:#cf222e,stroke-width:2px,color:#cf222e
