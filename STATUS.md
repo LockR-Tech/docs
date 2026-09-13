@@ -42,6 +42,7 @@ Mọi con số bên dưới đúng với các commit này. Trước khi tin STAT
 | **SEC-05** | Lộ PIN qua IDOR | `GET /api/notifications/user/{userId}` (`NotificationController.java:105`), `GET /api/orders/{id}` trả `pinCode`, `GET /api/orders/pin/{pin}` dò PIN | Lấy PIN mở tủ của người khác. |
 | **SEC-06** | Báo hỏng/giả trạng thái IoT tuỳ ý | `POST /api/boxes/{id}/fault` mọi ô, `POST /api/iot/device-status` · `/box-status` mọi JWT | Khoá ô hàng loạt, giả thiết bị online/offline. |
 | **SEC-07** | OTP email ghi log dạng rõ | `auth-service/…/EmailOtpService.java:99` | Ai đọc log là đăng nhập được. |
+| **SEC-09** | Image production chứa CVE đã có bản vá | Trivy trong `backend-security.yml` (PR backend #1, 2026-09-13): `io.netty:netty-handler` 4.1.136 **CRITICAL** CVE-2026-75595 (vá ở 4.1.137); `libcrypto3` HIGH CVE-2026-14456 (base alpine); `httpcore5` 5.3.6 HIGH CVE-2026-54399 — cả 11 image đều fail | Lỗ hổng thư viện mạng trong gateway và mọi service đang chạy. Nâng Spring Boot / ghim netty, build lại image trên base mới. |
 | **SEC-08** | Token Cloudflare (quyền Edit Workers) từng bị dán vào lịch sử chat khi nạp secret | GitHub secrets `CLOUDFLARE_API_TOKEN` của `frontend`, `mobile` | Ai có lịch sử chat deploy đè được admin web, landing, mobile web. Tạo token mới → nạp lại → xoá token cũ. |
 
 ## 3. Đang làm
@@ -55,6 +56,7 @@ Mọi con số bên dưới đúng với các commit này. Trước khi tin STAT
 1. **SEC-01** Đưa JWT secret ra biến môi trường, sinh secret mới trên VM, xoay khoá. _(nhỏ, rất gấp)_
 2. **SEC-02 · SEC-03 · SEC-05 · SEC-06** Khoá API theo chủ sở hữu + vai trò ở service, không chỉ ở gateway — [F3-G01](02-flows/flow-3-roles-maintenance.md).
 3. **SEC-04** Broker MQTT riêng có xác thực + TLS trong `docker-compose.yml`.
+3b. **SEC-09** Vá CVE dependency trong image (netty CRITICAL) — đồng thời làm `backend-security` xanh trở lại.
 4. **F2-G11** Sửa 3 bug mobile chặn demo luồng 2 (id payment/order, nút mở tủ, locker id truyền như store id). _(nhỏ)_
 5. **F2-G01 = F1-G05** Hoàn tất đơn phía server khi người nhận mở ô bằng mã ở kiosk. _(dùng chung cho L1 và L2)_
 6. **F2-G03** Kênh gửi mã cho người nhận chưa có tài khoản (SMS/email).
@@ -68,6 +70,7 @@ Mọi con số bên dưới đúng với các commit này. Trước khi tin STAT
 |---|---|---|
 | 2026-09-13 | Chuyển 5 repo sang org `LockR-Tech` (snapshot sạch), nguồn deploy chính thức là org; tắt workflow deploy ở repo cá nhân cũ | [ADR-0003](adr/0003-snapshot-sach-khi-chuyen-org.md) |
 | 2026-09-13 | Tạo repo `docs`, chuẩn GitHub Flow + Conventional Commits, rà soát 4 luồng, 5 sơ đồ A4 | [ADR-0001](adr/0001-github-flow-main-la-production.md) · [ADR-0002](adr/0002-docs-as-code-repo-trung-tam.md) |
+| 2026-09-13 | `AGENTS.md` + `CLAUDE.md` + PR template vào frontend, mobile, iot, legal; mobile bỏ trigger `develop` (merge `[skip ci]`, không redeploy) | [frontend#1](https://github.com/LockR-Tech/frontend/pull/1) · [mobile#1](https://github.com/LockR-Tech/mobile/pull/1) · [iot#1](https://github.com/LockR-Tech/iot/pull/1) · [legal#1](https://github.com/LockR-Tech/legal/pull/1) |
 
 ## 6. Blocker & câu hỏi mở
 
@@ -76,3 +79,4 @@ Mọi con số bên dưới đúng với các commit này. Trước khi tin STAT
 | Q1 | Org gói **Free** + repo private ⇒ **không bật được branch protection / rulesets**. Luật GitHub Flow hiện chỉ thực thi bằng quy ước + PR template. Nâng GitHub Team để bắt buộc review trước khi merge? | Chủ dự án |
 | Q2 | Nhà cung cấp SMS cho F2-G03, và LLM + embedding cho L4 (cần hỗ trợ tiếng Việt) | Chủ dự án |
 | Q3 | Drone thật giao tiếp qua MAVLink hay MQTT? Quyết định kiến trúc cho F1-G01 | Nhóm drone |
+| Q4 | `dependency-review` và `CodeQL` trong `backend-security.yml` không chạy được trên repo private gói Free (cần GitHub Advanced Security). Cần quyết định cách có lại phân tích bảo mật mã nguồn cho repo private | Chủ dự án |
