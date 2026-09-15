@@ -4,6 +4,8 @@ Mỗi thay đổi ở repo docs thêm **một dòng** vào ngày tương ứng (
 
 ## 2026-09-15
 
+- Thêm ADR-0005 (Proposed) và hợp đồng [`01-overview/business-settings.md`](01-overview/business-settings.md): quy tắc nghiệp vụ cấu hình trên admin, mỗi service sở hữu bảng `system_settings`; STATUS § 3 nhận 2 việc (cấu hình nghiệp vụ, trang đơn hàng/thanh toán/doanh thu dữ liệu thật).
+
 - Bàn giao lưu ảnh Cloudinary: ghi nhận đã merge + deploy backend #3, frontend #4, mobile #4; smoke test backend đỏ do race Eureka (không rollback); việc còn lại là cấu hình `CLOUDINARY_URL` trên VM.
 
 - Thêm `handoff/2026-09-15-luu-anh-cloudinary.md`: trạng thái PR, việc còn lại theo thứ tự, ghi chú môi trường để người/AI khác tiếp tục việc lưu ảnh Cloudinary; STATUS § 3 trỏ tới file này.

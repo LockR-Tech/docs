@@ -48,7 +48,9 @@ Mọi con số bên dưới đúng với các commit này. Trước khi tin STAT
 
 | Việc | ID | Người / agent | Nhánh | PR | Bắt đầu |
 |---|---|---|---|---|---|
-| Lưu ảnh thật trên Cloudinary: ảnh phiếu sự cố (báo → xác nhận hiện trường → quá trình → nghiệm thu), avatar, ảnh cửa hàng, khuyến mãi | ADR-0004 · F3.08 | Claude Code (theo yêu cầu chủ dự án) | `feat/media-cloudinary-photos` (backend, frontend, mobile, docs) docs #2 #3 ✅ · backend #4 #3 ✅ · frontend #4 ✅ · mobile #4 ✅ — đã deploy; **còn: `CLOUDINARY_URL` trên VM, build app, thử end-to-end** — xem [bàn giao](handoff/2026-09-15-luu-anh-cloudinary.md) | 2026-09-15 |
+| Lưu ảnh thật trên Cloudinary: ảnh phiếu sự cố (báo → xác nhận hiện trường → quá trình → nghiệm thu), avatar, ảnh cửa hàng, khuyến mãi | ADR-0004 · F3.08 | Claude Code (theo yêu cầu chủ dự án) | `feat/media-cloudinary-photos` (backend, frontend, mobile, docs) | docs #2 #3 ✅ · backend #4 #3 ✅ · frontend #4 ✅ · mobile #4 ✅ — đã deploy; **còn: `CLOUDINARY_URL` trên VM, build app, thử end-to-end** — xem [bàn giao](handoff/2026-09-15-luu-anh-cloudinary.md) | 2026-09-15 |
+| Toàn bộ quy tắc nghiệp vụ (giá, phí, thời hạn, SLA, ngưỡng, giới hạn) cấu hình trên admin; mobile đọc giá từ server | ADR-0005 | Claude Code (theo yêu cầu chủ dự án) | `feat/admin-business-settings` (backend, frontend, mobile) · `docs/adr-0005-business-settings` | chưa mở PR — đang commit theo từng bước | 2026-09-15 |
+| `/admin/orders`, `/admin/payments`, `/admin/revenue` dùng dữ liệu thật đồng bộ với mobile, đủ trường, thời gian `HH:mm:ss` | F2-G08 | Claude Code (theo yêu cầu chủ dự án) | `feat/admin-orders-payments-revenue` (backend, frontend) | chưa mở PR | 2026-09-15 |
 
 ## 4. Việc tiếp theo — theo thứ tự ưu tiên
 
