@@ -95,7 +95,7 @@ Sau đó thử tay luồng bị ảnh hưởng (đăng nhập, tạo đơn, mở
 |---|---|
 | GitHub `backend` | `AZURE_VM_HOST`, `AZURE_VM_USER`, `AZURE_VM_PORT`, `AZURE_VM_SSH_KEY` |
 | GitHub `frontend`, `mobile` | `CLOUDFLARE_ACCOUNT_ID`, `CLOUDFLARE_API_TOKEN` |
-| VM `/opt/laundry-locker-microservices/.env` | Cấu hình runtime backend: SMTP, VNPay, MoMo, bootstrap admin, Firebase… (được giữ lại qua mỗi lần deploy) |
+| VM `/opt/laundry-locker-microservices/.env` | Cấu hình runtime backend: SMTP, VNPay, MoMo, bootstrap admin, Firebase, `CLOUDINARY_URL`… (được giữ lại qua mỗi lần deploy) |
 
 Luật: secret không bao giờ nằm trong repo, issue, PR, chat hay tài liệu. Lộ ⇒ **xoay ngay**, ghi vào STATUS § 2. Giá trị secret GitHub không đọc lại được — nhập mới thì lấy từ nguồn gốc (Cloudflare dashboard, `~/.ssh`, nhà cung cấp).
 
