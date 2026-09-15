@@ -48,7 +48,7 @@ Mọi con số bên dưới đúng với các commit này. Trước khi tin STAT
 
 | Việc | ID | Người / agent | Nhánh | PR | Bắt đầu |
 |---|---|---|---|---|---|
-| _(chưa có — nhận việc bằng cách thêm 1 dòng ở đây trong PR đầu tiên của bạn)_ | | | | | |
+| Lưu ảnh thật trên Cloudinary: ảnh phiếu sự cố (báo → xác nhận hiện trường → quá trình → nghiệm thu), avatar, ảnh cửa hàng, khuyến mãi | ADR-0004 · F3.08 | Claude Code (theo yêu cầu chủ dự án) | `feat/media-cloudinary-photos` (backend, frontend, mobile, docs) | — | 2026-09-15 |
 
 ## 4. Việc tiếp theo — theo thứ tự ưu tiên
 
