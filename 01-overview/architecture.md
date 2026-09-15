@@ -24,7 +24,7 @@ Mỗi service có database Postgres riêng, Flyway, `ddl-auto: validate`.
 | auth-service | 8081 | Đăng nhập, đăng ký, OTP, Firebase, 2FA admin, phát token | auth_accounts, email_otps, refresh_tokens, social_identities | Feign → user; SMTP; Firebase Admin |
 | user-service | 8082 | Hồ sơ, cột vai trò, quản lý người dùng | user_profiles | Feign → auth, notification |
 | order-service | 8083 | Đơn SEND/RENTAL/DRONE, khuyến mãi, đánh giá, scheduler, dashboard, **drone simulator** | orders, order_status_history, promotions, drone_missions… | Feign → locker, user, notification · publish `order.*` · consume `order.payment.events` |
-| locker-service | 8084 | Tủ, ô, ticket, bảo trì, drone, bãi đáp | lockers, locker_boxes, locker_reports, drone_units, repair_logs… | Feign → iot, user · publish `locker.box.*`, `locker.report.*` |
+| locker-service | 8084 | Tủ, ô, ticket, bảo trì, drone, bãi đáp, ảnh ticket | lockers, locker_boxes, locker_reports, report_attachments, drone_units, repair_logs… | Feign → iot, user · publish `locker.box.*`, `locker.report.*` |
 | payment-service | 8086 | Thanh toán CASH/WALLET/VNPAY/MOMO, hoàn tiền, ví | payments, refunds, wallets, wallet_transactions | Feign → order · publish `payment.*` |
 | notification-service | 8087 | Thông báo in-app, STOMP `/ws`, FCM | notifications, fcm_tokens | consume `notification.events` |
 | iot-service | 8088 | Cầu MQTT tới tủ, xác thực PIN/QR, mở khoá, sức khoẻ thiết bị | device_statuses, box_hardware_status, box_access_logs, access_attempts | MQTT · Feign → locker, order |
@@ -36,7 +36,7 @@ Mỗi service có database Postgres riêng, Flyway, `ddl-auto: validate`.
 
 **MQTT (iot-service)** — phát `cabinet/{lockerId}/command/open` (chờ `/result` 20 s), `cabinet/{lockerId}/command/sync`; nghe `cabinet/+/command/+/result`, `cabinet/+/heartbeat`, `cabinet/+/locker/+/status`. ⚠ Broker mặc định là `broker.hivemq.com:1883` công khai (SEC-04). Pi thật dùng **tên** tủ trong topic và cần `slotIndex` ⇒ lệch hợp đồng với backend.
 
-**Gateway** (`api-gateway/src/main/resources/application.yml`): `/api/auth/**`→auth · `/api/users/**`, `/api/user/**`→user · `/api/orders/**`, `/api/maintenance/drone-orders/**`, `/api/promotions/**`, `/api/admin/dashboard/**`→order · `/api/lockers/**`, `/api/boxes/**`, `/api/maintenance/**`, `/api/admin/drones/**`→locker · `/api/payments/**`, `/api/wallet/**`→payment · `/api/notifications/**`, `/ws/**`→notification · `/api/iot/**`, `/api/technician/**`→iot · `/api/stores/**`→store · `/api/loyalty/**`→loyalty. `/internal/**` luôn 403 từ ngoài.
+**Gateway** (`api-gateway/src/main/resources/application.yml`): `/api/auth/**`→auth · `/api/users/**`, `/api/user/**`, `/api/media/**`→user · `/api/orders/**`, `/api/maintenance/drone-orders/**`, `/api/promotions/**`, `/api/admin/dashboard/**`→order · `/api/lockers/**`, `/api/boxes/**`, `/api/maintenance/**`, `/api/admin/drones/**`→locker · `/api/payments/**`, `/api/wallet/**`→payment · `/api/notifications/**`, `/ws/**`→notification · `/api/iot/**`, `/api/technician/**`→iot · `/api/stores/**`→store · `/api/loyalty/**`→loyalty. `/internal/**` luôn 403 từ ngoài.
 
 ## 3. Hạ tầng
 
@@ -68,6 +68,7 @@ Mỗi service có database Postgres riêng, Flyway, `ddl-auto: validate`.
 | SMS | **Không có** |
 | FCM push | App đăng ký token, nhưng **server không gửi** (notification-service không khởi tạo Firebase) |
 | Firebase Auth | Thật (phone/Google/Facebook) |
+| Cloudinary (ảnh) | Client upload trực tiếp bằng chữ ký do user-service cấp; user/order/locker/store-service xác minh chữ ký phản hồi. Biến `CLOUDINARY_URL` (secret), `MEDIA_FOLDER_ROOT`. Trống ⇒ API ảnh trả 503. Hợp đồng: [media-storage](media-storage.md) · [ADR-0004](../adr/0004-anh-luu-cloudinary-upload-truc-tiep.md) |
 | Bản đồ | OpenStreetMap + OSRM công khai |
 
 ## 6. Realtime
