@@ -26,9 +26,9 @@ Kèm theo: ảnh đại diện, ảnh cửa hàng, ảnh khuyến mãi, với đ
 |---|---|---|
 | docs | [#2](https://github.com/LockR-Tech/docs/pull/2) — ADR-0004 + hợp đồng API | ✅ Đã merge |
 | backend | [#4](https://github.com/LockR-Tech/backend/pull/4) — `ci(ci)`: bước attest không chặn deploy | ✅ Đã merge, deploy **thành công** (run `34991389534`), smoke test production đạt |
-| backend | [#3](https://github.com/LockR-Tech/backend/pull/3) — tính năng lưu ảnh (7 commit) | ✅ Đã merge vào `main` (`5180d00`). Deploy lên VM **đang chạy** lúc viết file này — **phải kiểm tra lại** (mục 3, bước 1) |
-| frontend | [#4](https://github.com/LockR-Tech/frontend/pull/4) — admin web (5 commit) | ⏳ **Chưa merge** — chờ backend lên production |
-| mobile | [#4](https://github.com/LockR-Tech/mobile/pull/4) — app (6 commit) | ⏳ **Chưa merge** — chờ backend lên production **và** VM có `CLOUDINARY_URL` |
+| backend | [#3](https://github.com/LockR-Tech/backend/pull/3) — tính năng lưu ảnh (7 commit) | ✅ Đã merge (`5180d00`) và **đã lên VM** (run `34992991471`). Workflow báo đỏ chỉ vì smoke test `/api/lockers` trả 503 ngay sau khi service vừa đăng ký Eureka (gateway chưa làm mới danh sách instance); **không rollback** — kiểm lại sau đó `/api/lockers` 200, `POST /api/media/upload-signatures` 401 (route mới đã chạy). Dòng "đã rollback" trong `DEPLOY-LOG.md` của run này là mẫu chữ cố định, không đúng thực tế. |
+| frontend | [#4](https://github.com/LockR-Tech/frontend/pull/4) — admin web (5 commit) | ✅ Đã merge (`3920bd5`), deploy Cloudflare thành công (run `34993835093`) |
+| mobile | [#4](https://github.com/LockR-Tech/mobile/pull/4) — app (6 commit) | ✅ Đã merge (`eed1724`), deploy mobile web thành công (run `34993842917`). App Android/iOS **chưa build lại**. |
 
 Nhánh tính năng ở cả 4 repo: `feat/media-cloudinary-photos`.
 
@@ -48,9 +48,11 @@ Nhánh tính năng ở cả 4 repo: `feat/media-cloudinary-photos`.
 
 ## 3. Việc cần làm tiếp — theo thứ tự
 
-1. **Kiểm tra deploy backend `5180d00`** tại GitHub → `LockR-Tech/backend` → Actions → *Deploy to Azure VM*.
-   - Thành công ⇒ `curl -s -o /dev/null -w '%{http_code}' -X POST https://api.locker-drone.tech/api/media/upload-signatures` phải trả **401** (route đã tồn tại, cần JWT). Trả 404 ⇒ bản mới chưa lên.
-   - Thất bại ⇒ xem bước lỗi trong log; `deploy-from-artifact.sh` tự rollback. Không merge frontend/mobile.
+> Cập nhật 2026-09-15 tối: bước 1, 3, 4 (phần merge + deploy web) **đã xong**. Chủ dự án chọn merge frontend/mobile không chờ cấu hình VM. **Việc gấp nhất còn lại là bước 2** — thiếu `CLOUDINARY_URL` trên VM thì API ảnh trả 503 và KTV trên mobile web không hoàn tất được phiếu.
+> Nên sửa thêm: bước "Nghiệm thu qua domain công khai" trong `deploy-azure.yml` cần thử lại vài lần (race Eureka ⇒ 503 giả) và mẫu tóm tắt/DEPLOY-LOG chỉ ghi "đã rollback" khi bước *Deploy on Azure VM* thật sự thất bại.
+
+1. ~~**Kiểm tra deploy backend `5180d00`**~~ — đã lên production (xem mục 2).
+   - Kiểm lại bất cứ lúc nào: `curl -s -o /dev/null -w '%{http_code}' -X POST https://api.locker-drone.tech/api/media/upload-signatures` phải trả **401**.
 2. **Cấu hình Cloudinary trên VM** (chủ dự án tự làm, không dán secret vào chat/issue):
    - Tạo API key riêng `LockR-prod` trên Cloudinary Console (cloud `bdst6d8u`), role có quyền upload + xoá ảnh.
    - Thêm vào `/opt/laundry-locker-microservices/.env`:
