@@ -41,14 +41,15 @@ curl -s -o /dev/null -w '%{http_code}' https://api.locker-drone.tech/api/admin/s
 
 | Repo | Nhánh | Trạng thái |
 |---|---|---|
-| backend | `feat/admin-orders-payments-revenue` — 11 commit | Code xong theo hợp đồng; `mvn test` 8 module pass; CI `test` success. **Đã rebase lên `main` có settings, đang chạy lại test** lúc viết — xem mục 3 bước 1. |
+| backend | [#7](https://github.com/LockR-Tech/backend/pull/7) — 11 commit | ✅ Merge `main` (`c66a510`) và **đã lên production**: `/api/admin/revenue/summary`, `/api/admin/orders/search` trả 401 (route tồn tại, cần token ADMIN). Test 8 module pass sau khi rebase lên `main` có settings. |
+| backend | [#8](https://github.com/LockR-Tech/backend/pull/8) — `ci(ci)` nghiệm thu thử lại | ✅ Merge (`980f4fd`), deploy **thành công, báo xanh** (run `35033925039`) — lần đầu pipeline chạy trọn vẹn. |
 | frontend | — | ❌ **Chưa làm**: 3 trang vẫn như cũ (revenue 100% dữ liệu giả; payments thời gian giả, đổi trạng thái lỗi 400; orders crash với STORING/EXPIRED/AWAITING_DISPATCH). |
 
 Các commit backend báo cáo: internal lookup theo lô (user, locker, store), `PaymentResponse` thêm thời gian + API nội bộ số liệu thu tiền, tìm kiếm phân trang + chi tiết đơn đầy đủ, tra cứu giao dịch/hoàn tiền/biến động ví cho admin, thống kê giao dịch có so sánh kỳ trước, báo cáo doanh thu theo tiền thực thu, route gateway, tiện ích mốc thời gian giờ Việt Nam.
 
 ## 3. Việc cần làm tiếp — theo thứ tự
 
-1. **Backend báo cáo:** nếu test sau rebase pass và đã push (`git -C <backend> log origin/feat/admin-orders-payments-revenue`) ⇒ mở PR, merge rebase **sau khi deploy của backend #6 xong** (deploy có `cancel-in-progress`, merge dồn sẽ huỷ lượt đang chạy). Nếu chưa push: `git fetch && git switch feat/admin-orders-payments-revenue && git rebase origin/main`, chạy test, `git push --force-with-lease`.
+1. ~~Backend báo cáo~~ — đã merge và deploy (mục 2.2). **Việc tiếp theo bắt đầu từ bước 2.**
 2. **Frontend 3 trang** theo [admin-reporting-api.md](../01-overview/admin-reporting-api.md), dùng `formatDateTime` ở `fe/src/lib/datetime.ts` (đã có, định dạng `HH:mm:ss dd/MM/yyyy`, chuỗi không múi giờ = UTC):
    - `/admin/orders`: dùng API tìm kiếm phân trang + chi tiết mới; enum trạng thái INITIALIZED/STORING/EXPIRED/AWAITING_DISPATCH/COMPLETED/CANCELED, loại SEND/RENTAL/DRONE_DELIVERY; hiển thị khách, người nhận, tủ/ô, phí chi tiết, thanh toán, drone, timeline; sửa đổi trạng thái gửi JSON body; bỏ nút tạo đơn giả.
    - `/admin/payments`: API phân trang + lọc, thời gian thật, thống kê so sánh kỳ trước (bỏ delta cứng), chi tiết kèm hoàn tiền/biến động ví, sửa đổi trạng thái gửi JSON body.
@@ -83,7 +84,8 @@ Thêm quy tắc mới: thêm hằng + `SettingDefinition` vào catalog của ser
 - Máy cũ không có JDK 21/Maven/Node/Flutter/Docker/`gh`; đã dùng bản portable trong thư mục tạm. Máy mới nên cài JDK 21, Maven 3.9, Node 22, Flutter 3.44.x, Docker Desktop, GitHub CLI.
 - Nhánh báo cáo backend được làm trong git worktree `D:\BaoHuy\LockRR-work\backend-reports` (máy cũ). Trên máy mới chỉ cần `git switch feat/admin-orders-payments-revenue` trong repo backend; xoá worktree cũ bằng `git worktree prune` nếu cần.
 - PowerShell: đặt tham số Maven trong nháy: `mvn -B test '-Dcyclonedx.skip=true' -pl 'common-lib,order-service' -am`.
-- Không merge 2 PR backend cách nhau dưới ~20 phút (deploy `cancel-in-progress`). Smoke test deploy có thể đỏ giả do race Eureka (503 ngay sau khởi động) — kiểm lại bằng tay trước khi rollback.
+- Không merge 2 PR backend cách nhau dưới ~20 phút (deploy `cancel-in-progress`).
+- Race Eureka từng làm smoke test đỏ giả 3 lần (503 ngay sau khởi động) — PR backend #8 đã cho thử lại 10 lần × 10 giây và ghi đúng "không rollback" khi bước deploy thành công. Nếu sau này vẫn đỏ: kiểm `curl https://api.locker-drone.tech/api/lockers` trước khi nghĩ tới rollback.
 - Không có `gh`: tạo/merge PR qua REST API (`POST /repos/LockR-Tech/<repo>/pulls`, `PUT …/pulls/<n>/merge` với `merge_method: rebase`), token từ `git credential fill`, không in token.
 
 ## 6. Lời nhắn mẫu cho AI ở phiên mới
