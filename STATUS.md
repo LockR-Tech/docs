@@ -48,7 +48,7 @@ Mọi con số bên dưới đúng với các commit này. Trước khi tin STAT
 
 | Việc | ID | Người / agent | Nhánh | PR | Bắt đầu |
 |---|---|---|---|---|---|
-| Lưu ảnh thật trên Cloudinary: ảnh phiếu sự cố (báo → xác nhận hiện trường → quá trình → nghiệm thu), avatar, ảnh cửa hàng, khuyến mãi | ADR-0004 · F3.08 | Claude Code (theo yêu cầu chủ dự án) | `feat/media-cloudinary-photos` (backend, frontend, mobile, docs) | — | 2026-09-15 |
+| Lưu ảnh thật trên Cloudinary: ảnh phiếu sự cố (báo → xác nhận hiện trường → quá trình → nghiệm thu), avatar, ảnh cửa hàng, khuyến mãi | ADR-0004 · F3.08 | Claude Code (theo yêu cầu chủ dự án) | `feat/media-cloudinary-photos` (backend, frontend, mobile, docs) | docs #2 ✅ · backend #4 ✅ #3 ✅ · frontend #4 ⏳ · mobile #4 ⏳ — **tiếp tục theo [bàn giao](handoff/2026-09-15-luu-anh-cloudinary.md)** | 2026-09-15 |
 
 ## 4. Việc tiếp theo — theo thứ tự ưu tiên
 
