@@ -68,6 +68,7 @@ Mỗi service có database Postgres riêng, Flyway, `ddl-auto: validate`.
 | SMS | **Không có** |
 | FCM push | App đăng ký token, nhưng **server không gửi** (notification-service không khởi tạo Firebase) |
 | Firebase Auth | Thật (phone/Google/Facebook) |
+| Cấu hình nghiệp vụ (nội bộ) | Mỗi service bật `app.settings.scope` sở hữu bảng `system_settings` + `system_setting_audits`; admin sửa qua `/api/admin/settings/{scope}`, app đọc `/api/settings/{scope}/public` — [business-settings](business-settings.md) · [ADR-0005](../adr/0005-quy-tac-nghiep-vu-cau-hinh-tren-admin.md) |
 | Cloudinary (ảnh) | Client upload trực tiếp bằng chữ ký do user-service cấp; user/order/locker/store-service xác minh chữ ký phản hồi. Biến `CLOUDINARY_URL` (secret), `MEDIA_FOLDER_ROOT`. Trống ⇒ API ảnh trả 503. Hợp đồng: [media-storage](media-storage.md) · [ADR-0004](../adr/0004-anh-luu-cloudinary-upload-truc-tiep.md) |
 | Bản đồ | OpenStreetMap + OSRM công khai |
 
