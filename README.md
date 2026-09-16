@@ -10,6 +10,7 @@ Tủ khoá thông minh + giao hàng bằng drone. Repo này là **nguồn sự t
 | Muốn biết dự án tới đâu | [STATUS.md](STATUS.md) |
 | Sắp viết code | [git-workflow](04-engineering/git-workflow.md) · [commit-convention](04-engineering/commit-convention.md) · file luồng liên quan |
 | Sắp merge / deploy | [release-deploy](04-engineering/release-deploy.md) |
+| Nạp khoá dịch vụ ngoài | [cau-hinh-dich-vu-ngoai](04-engineering/cau-hinh-dich-vu-ngoai.md) |
 | Cần in sơ đồ | [diagrams/](diagrams/README.md) |
 
 ## Cấu trúc
@@ -28,6 +29,7 @@ docs/
 │   ├── git-workflow.md       GitHub Flow, nhánh, PR, merge, hotfix
 │   ├── commit-convention.md  Conventional Commits, scope từng repo
 │   ├── release-deploy.md     Môi trường, deploy, migration, rollback, secret
+│   ├── cau-hinh-dich-vu-ngoai.md  Nạp khoá từng dịch vụ ngoài + cách kiểm tra
 │   └── documentation-rules.md Khi nào sửa tài liệu nào, luật sơ đồ A4
 ├── adr/                      Quyết định kiến trúc
 ├── diagrams/
