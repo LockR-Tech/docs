@@ -4,6 +4,8 @@ Mỗi thay đổi ở repo docs thêm **một dòng** vào ngày tương ứng (
 
 ## 2026-09-16
 
+- Trang `/admin/services` dựng lại theo mô hình thật (ba loại đơn, quy tắc ở `system_settings`) thay cho trang cũ gọi endpoint không tồn tại; `business-settings.md` thêm mục 7 mô tả trang này và cảnh báo `GET /api/admin/services` trả 404. Giao diện admin và app bỏ mã số nội bộ, hiện tên tủ, tên cửa hàng và số ô in trên tủ.
+
 - Thêm [bàn giao trạng thái đầy đủ](handoff/2026-09-16-trang-thai-day-du-va-viec-con-lai.md): mốc commit từng repo, nút thắt quota Actions, thứ tự việc còn lại, kết quả kiểm tra, nợ kỹ thuật, ghi chú môi trường. STATUS § 3 gọn lại còn hai nút thắt vận hành; § 4 đặt deploy backend lên đầu; § 5 nhận hai mốc mới; SEC-01 và SEC-07 ghi rõ đã merge, chờ deploy.
 
 - SEC-01, SEC-07 và FCM: ghi nhận backend #10 đã vá bằng code — STATUS § 2 và § 4, `architecture.md` (JWT secret, hàng FCM push). Thêm [`04-engineering/cau-hinh-dich-vu-ngoai.md`](04-engineering/cau-hinh-dich-vu-ngoai.md): runbook nạp khoá cho từng dịch vụ ngoài (JWT, Cloudinary, Twilio, SMTP, Azure, Cloudflare, MQTT, VNPay/MoMo, Firebase) — nơi đặt, cách kiểm tra đã ăn chưa, thứ tự ưu tiên theo rủi ro, và việc phải làm khi khoá bị lộ. AGENTS và README thêm con trỏ.
