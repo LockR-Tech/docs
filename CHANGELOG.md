@@ -4,6 +4,8 @@ Mỗi thay đổi ở repo docs thêm **một dòng** vào ngày tương ứng (
 
 ## 2026-09-16
 
+- STATUS: mốc cập nhật 2026-09-16; F2-G08 (phần web) chuyển từ § 3 sang § 5 sau khi merge `43e5d00` và deploy Cloudflare xanh; § 5 ghi thêm API báo cáo backend và ADR-0005 đã lên production.
+
 - F2-G08 (phần web): 3 trang `/admin/orders`, `/admin/payments`, `/admin/revenue` chuyển sang dữ liệu thật theo [`01-overview/admin-reporting-api.md`](01-overview/admin-reporting-api.md); F2.09 bỏ "web thiếu EXPIRED" khỏi cột còn thiếu; F2-G08 ghi rõ phần enum web đã xong và phần legacy còn lại. Thêm [bàn giao 2026-09-16](handoff/2026-09-16-bao-cao-admin-web-va-mobile-con-lai.md).
 
 ## 2026-09-15
