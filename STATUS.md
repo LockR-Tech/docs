@@ -47,6 +47,7 @@ Mọi con số bên dưới đúng với các commit này. Trước khi tin STAT
 ## 3. Đang làm
 
 > 📌 **Bàn giao đầy đủ: [handoff/2026-09-16-trang-thai-day-du-va-viec-con-lai.md](handoff/2026-09-16-trang-thai-day-du-va-viec-con-lai.md)** — đọc file đó trước nếu bạn vừa vào dự án hoặc đổi máy.
+> Cần bản **ngắn** (vướng mắc + việc còn lại, 1 trang): [handoff/2026-09-16-tom-tat-viec-con-lai.md](handoff/2026-09-16-tom-tat-viec-con-lai.md).
 
 **Không còn việc nào đang code dở.** Mọi nhánh đã merge vào `main`. Hai nút thắt là thao tác vận hành, không phải lập trình:
 
