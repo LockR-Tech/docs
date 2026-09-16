@@ -35,13 +35,13 @@ Mọi con số bên dưới đúng với các commit này. Trước khi tin STAT
 
 | ID | Rủi ro | Vị trí | Hậu quả |
 |---|---|---|---|
-| **SEC-01** | JWT secret production là **giá trị mặc định hardcode** | `backend/docker-compose.yml:66,120` (compose không đọc `.env` cho biến này) | Ai biết chuỗi mặc định giả được token ADMIN. Sửa xong phải xoay secret ⇒ mọi người dùng bị đăng xuất. |
+| **SEC-01** | JWT secret production là **giá trị mặc định hardcode** | `backend/docker-compose.yml:66,120` (compose không đọc `.env` cho biến này) | Ai biết chuỗi mặc định giả được token ADMIN. **Code đã vá** ([backend #10](https://github.com/LockR-Tech/backend/pull/10)): compose đọc `.env` và dừng khi thiếu. **Chưa đóng** cho tới khi đặt `APP_SECURITY_JWT_SECRET` trên VM rồi merge — xoay secret làm mọi người dùng bị đăng xuất. |
 | **SEC-02** | Tự nâng quyền ADMIN | `PUT /api/users/{id}` nhận `roles` từ mọi JWT — `user-service/…/UserController.java:36`, `UserProfileService.java:150-151` | Khách hàng bất kỳ tự thành ADMIN, vào được web quản trị. |
 | **SEC-03** | Đổi trạng thái đơn / thanh toán không kiểm soát | `PATCH /api/orders/{id}/status` (`OrderController.java:75`), `POST …/checkout` (`:115`), `PATCH /api/payments/{id}/status` + CASH tự hoàn tất (`PaymentService.java:152`) | Hoàn tất/huỷ đơn người khác, giải phóng ô đang có hàng, tự đánh dấu đã thanh toán. |
 | **SEC-04** | MQTT dùng broker **công khai**, không xác thực, không TLS | `iot-service/…/application.yml:77` → `tcp://broker.hivemq.com:1883` | Ai cũng publish được lệnh mở tủ vào topic `cabinet/{id}/command/open`. |
 | **SEC-05** | Lộ PIN qua IDOR | `GET /api/notifications/user/{userId}` (`NotificationController.java:105`), `GET /api/orders/{id}` trả `pinCode`, `GET /api/orders/pin/{pin}` dò PIN | Lấy PIN mở tủ của người khác. |
 | **SEC-06** | Báo hỏng/giả trạng thái IoT tuỳ ý | `POST /api/boxes/{id}/fault` mọi ô, `POST /api/iot/device-status` · `/box-status` mọi JWT | Khoá ô hàng loạt, giả thiết bị online/offline. |
-| **SEC-07** | OTP email ghi log dạng rõ | `auth-service/…/EmailOtpService.java:99` | Ai đọc log là đăng nhập được. |
+| **SEC-07** | OTP email ghi log dạng rõ | `auth-service/…/EmailOtpService.java:99` | Ai đọc log là đăng nhập được. **Code đã vá** ([backend #10](https://github.com/LockR-Tech/backend/pull/10)): bỏ mã khỏi log, email ghi dạng che bớt. Đóng khi merge — không cần thao tác trên VM. |
 | **SEC-08** | Token Cloudflare (quyền Edit Workers) từng bị dán vào lịch sử chat khi nạp secret | GitHub secrets `CLOUDFLARE_API_TOKEN` của `frontend`, `mobile` | Ai có lịch sử chat deploy đè được admin web, landing, mobile web. Tạo token mới → nạp lại → xoá token cũ. |
 
 ## 3. Đang làm
@@ -54,7 +54,7 @@ Mọi con số bên dưới đúng với các commit này. Trước khi tin STAT
 
 ## 4. Việc tiếp theo — theo thứ tự ưu tiên
 
-1. **SEC-01** Đưa JWT secret ra biến môi trường, sinh secret mới trên VM, xoay khoá. _(nhỏ, rất gấp)_
+1. **SEC-01 · SEC-07** Code đã vá ở [backend #10](https://github.com/LockR-Tech/backend/pull/10). Việc còn lại: **đặt `APP_SECURITY_JWT_SECRET` trên VM trước**, rồi merge. _(rất gấp)_
 2. **SEC-02 · SEC-03 · SEC-05 · SEC-06** Khoá API theo chủ sở hữu + vai trò ở service, không chỉ ở gateway — [F3-G01](02-flows/flow-3-roles-maintenance.md).
 3. **SEC-04** Broker MQTT riêng có xác thực + TLS trong `docker-compose.yml`.
 4. **F2-G11** Sửa 3 bug mobile chặn demo luồng 2 (id payment/order, nút mở tủ, locker id truyền như store id). _(nhỏ)_

@@ -1,4 +1,4 @@
-# Cấu hình dịch vụ ngoài — runbook
+| 8 | Firebase FCM | Push notification hiện không gửi (code đã sẵn sàng, chỉ thiếu khoá). |# Cấu hình dịch vụ ngoài — runbook
 
 Nơi nạp khoá cho từng dịch vụ ngoài, thứ tự nên làm, và cách kiểm tra đã ăn chưa.
 Liên quan: [release-deploy](release-deploy.md), [architecture § 5](../01-overview/architecture.md), [STATUS § 2](../STATUS.md).
@@ -255,8 +255,12 @@ App đã đăng ký device token nhưng **server không gửi** — `notificatio
 FIREBASE_CREDENTIALS_JSON={"type":"service_account","project_id":"...",...}
 ```
 
-Biến này hiện mới nối vào `auth-service`. Muốn push chạy thì `notification-service` cũng phải
-đọc và khởi tạo Firebase — **cần sửa code**, không chỉ nạp biến.
+notification-service đã khởi tạo Firebase (backend #10), nên **chỉ cần nạp biến này là push chạy**.
+Trước đó `FcmPushNotificationService` viết đủ nhưng không ai gọi `initializeApp`, nên server bỏ
+qua mọi lệnh push trong im lặng.
+
+**Kiểm tra:** `sudo docker compose logs notification-service | grep Firebase` —
+`Firebase initialised — FCM push enabled` là đã ăn.
 
 ---
 

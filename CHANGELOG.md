@@ -4,7 +4,7 @@ Mỗi thay đổi ở repo docs thêm **một dòng** vào ngày tương ứng (
 
 ## 2026-09-16
 
-- Thêm [`04-engineering/cau-hinh-dich-vu-ngoai.md`](04-engineering/cau-hinh-dich-vu-ngoai.md): runbook nạp khoá cho từng dịch vụ ngoài (JWT, Cloudinary, Twilio, SMTP, Azure, Cloudflare, MQTT, VNPay/MoMo, Firebase) — nơi đặt, cách kiểm tra đã ăn chưa, thứ tự ưu tiên theo rủi ro, và việc phải làm khi khoá bị lộ. AGENTS và README thêm con trỏ.
+- SEC-01, SEC-07 và FCM: ghi nhận backend #10 đã vá bằng code — STATUS § 2 và § 4, `architecture.md` (JWT secret, hàng FCM push). Thêm [`04-engineering/cau-hinh-dich-vu-ngoai.md`](04-engineering/cau-hinh-dich-vu-ngoai.md): runbook nạp khoá cho từng dịch vụ ngoài (JWT, Cloudinary, Twilio, SMTP, Azure, Cloudflare, MQTT, VNPay/MoMo, Firebase) — nơi đặt, cách kiểm tra đã ăn chưa, thứ tự ưu tiên theo rủi ro, và việc phải làm khi khoá bị lộ. AGENTS và README thêm con trỏ.
 
 - F2-G03: thêm hợp đồng [`01-overview/receiver-pickup-code.md`](01-overview/receiver-pickup-code.md) — kênh gửi mã mở tủ cho người nhận chưa có tài khoản (SMS Twilio + email dùng chung SMTP auth-service), quy tắc bật/tắt trên admin, biến môi trường; `architecture.md` cập nhật hàng Email và SMS. Flow 2 cập nhật F2.06 và F2-G03; STATUS Q2 chốt nhà cung cấp SMS là Twilio và nhận việc mới.
 
