@@ -10,15 +10,16 @@
 
 ### 1.1 `main` đang ĐI TRƯỚC production
 
-Mọi thứ đã merge vào `main`, **nhưng backend chưa deploy**. Production vẫn chạy commit `980f4fd` từ hôm qua.
+Mọi thứ đã merge vào `main`, **nhưng không repo nào deploy được** — quota Actions đã hết.
 
-| | Commit | Ghi chú |
-|---|---|---|
-| backend `main` | `569d323` | 4 commit chưa deploy |
-| backend production | `980f4fd` | đang chạy, khoẻ (`/api/lockers` → 200) |
-| frontend `main` = production | `a1ca345` | đã deploy, admin web → 200 |
-| mobile `main` | `b0152a4` | mobile web **chưa** deploy lại |
-| docs `main` | xem git | — |
+| | `main` | Đang chạy thật | Chênh |
+|---|---|---|---|
+| backend | `569d323` | `980f4fd` | 4 commit: SEC-01, SEC-07, Firebase, F2-G03 |
+| frontend | `b1686f5` | `a1ca345` | 1 commit: quản lý dịch vụ + bỏ mã số nội bộ |
+| mobile | xem git | bản cũ | hiện tên tủ/số ô thật; mobile web chưa build lại |
+| docs | xem git | — | — |
+
+Backend production vẫn khoẻ (`/api/lockers` → 200, 4 tủ thật); admin web đã deploy → 200.
 
 **Không có gì hỏng.** Chỉ là code mới nằm chờ.
 
@@ -133,6 +134,13 @@ Bỏ toàn bộ dữ liệu giả ở `/admin/revenue`, mốc thời gian giả 
 | Giảm tiêu thụ Actions | [backend #11](https://github.com/LockR-Tech/backend/pull/11) | `999d48f` |
 | Gửi mã mở tủ cho người nhận chưa có tài khoản (F2-G03) | [backend #9](https://github.com/LockR-Tech/backend/pull/9) | `569d323` |
 | Cấu hình admin còn lại + theo dõi trạng thái/địa điểm + email người nhận | [mobile #6](https://github.com/LockR-Tech/mobile/pull/6) | `b0152a4` |
+| Quản lý dịch vụ trên admin + bỏ mã số nội bộ khỏi giao diện | [frontend #8](https://github.com/LockR-Tech/frontend/pull/8) | `b1686f5` |
+| Hiện tên tủ và số ô thật trong app | [mobile #7](https://github.com/LockR-Tech/mobile/pull/7) | xem git |
+
+⚠️ **`mobile #7` chưa được biên dịch hay chạy test lần nào** — máy làm không cài được
+Flutter, quota Actions thì đã hết nên CI cũng không chạy. Đây là thay đổi duy nhất trong
+đợt này chưa qua kiểm tra máy móc. Việc đầu tiên khi Actions sống lại: chạy
+`flutter analyze` + `flutter test` trên `main` của mobile.
 
 Ba phát hiện đáng lưu ý khi làm:
 

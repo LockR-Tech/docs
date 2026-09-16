@@ -4,6 +4,8 @@ Mỗi thay đổi ở repo docs thêm **một dòng** vào ngày tương ứng (
 
 ## 2026-09-16
 
+- STATUS và bàn giao: ghi rõ cả ba repo đều đang đi trước production (kèm commit từng bên), và đánh dấu `mobile #7` là thay đổi duy nhất chưa qua kiểm tra máy móc.
+
 - Trang `/admin/services` dựng lại theo mô hình thật (ba loại đơn, quy tắc ở `system_settings`) thay cho trang cũ gọi endpoint không tồn tại; `business-settings.md` thêm mục 7 mô tả trang này và cảnh báo `GET /api/admin/services` trả 404. Giao diện admin và app bỏ mã số nội bộ, hiện tên tủ, tên cửa hàng và số ô in trên tủ.
 
 - Thêm [bàn giao trạng thái đầy đủ](handoff/2026-09-16-trang-thai-day-du-va-viec-con-lai.md): mốc commit từng repo, nút thắt quota Actions, thứ tự việc còn lại, kết quả kiểm tra, nợ kỹ thuật, ghi chú môi trường. STATUS § 3 gọn lại còn hai nút thắt vận hành; § 4 đặt deploy backend lên đầu; § 5 nhận hai mốc mới; SEC-01 và SEC-07 ghi rõ đã merge, chờ deploy.
