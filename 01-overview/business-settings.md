@@ -1,6 +1,6 @@
 # Quy tắc nghiệp vụ cấu hình trên admin
 
-> Quyết định: [ADR-0005](../adr/0005-quy-tac-nghiep-vu-cau-hinh-tren-admin.md). Đây là **hợp đồng API** cho backend, admin web (trang `/admin/settings`) và mobile. Danh sách key đầy đủ của từng scope luôn lấy từ API (`GET /api/admin/settings/{scope}`) — bảng ở mục 4 là bản tóm tắt tại thời điểm viết.
+> Quyết định: [ADR-0005](../adr/0005-quy-tac-nghiep-vu-cau-hinh-tren-admin.md). Đây là **hợp đồng API** cho backend, admin web (trang `/admin/settings` và `/admin/services`) và mobile. Danh sách key đầy đủ của từng scope luôn lấy từ API (`GET /api/admin/settings/{scope}`) — bảng ở mục 4 là bản tóm tắt tại thời điểm viết.
 
 ## 1. Cách hoạt động
 
@@ -70,3 +70,29 @@ Mọi phản hồi bọc `ApiResponse { success, code, message, data, errors }`.
 | store | Tìm cửa hàng | Bán kính tìm mặc định |
 
 Không cấu hình trên admin: tập trạng thái cho phép hành động, bí mật/TTL JWT, cron và timeout kỹ thuật, giới hạn nhà cung cấp — xem ADR-0005.
+
+## 7. Trang `/admin/services` — quản lý dịch vụ
+
+Lock.R bán **ba dịch vụ**, và chúng **không phải bản ghi trong cơ sở dữ liệu**: mỗi dịch
+vụ là một loại đơn (`OrderType`) mà giá và quy tắc nằm ở scope `order` của bảng này.
+
+| Dịch vụ | `OrderType` | Key giá chính |
+|---|---|---|
+| Gửi hàng qua tủ | `SEND` | `app.order.send-base-fee` |
+| Thuê ô theo giờ | `RENTAL` | `app.order.rental-rate-standard` |
+| Giao hàng bằng drone | `DRONE_DELIVERY` | `app.order.drone-delivery-fee` |
+
+Vì vậy trang `/admin/services` **sửa quy tắc và xem hiệu quả**, không thêm/xoá dịch vụ.
+Nó chỉ dùng hai API đã có, không có endpoint riêng:
+
+- `GET`/`PUT /api/admin/settings/order` — giá và quy tắc (chính hợp đồng này);
+- `GET /api/admin/revenue/by-service` — doanh thu, số đơn, tỉ trọng theo kỳ
+  ([hợp đồng báo cáo](admin-reporting-api.md) § 3.4).
+
+> ⚠️ `GET /api/admin/services` **không tồn tại** (404, gateway không có route). Trang cũ
+> gọi endpoint đó nên chưa bao giờ hiển thị được gì — tàn dư từ thời sản phẩm còn là
+> dịch vụ giặt ủi. Đừng dựng lại theo hướng đó.
+
+Web chọn và xếp nhóm key theo dịch vụ ở `frontend/fe/src/pages/Admin/services/service-catalog.ts`;
+tên key chép từ `OrderSettingsCatalog.java`. Backend đổi tên key thì trang chỉ mất dòng
+tương ứng, không vỡ — vì metadata vẫn lấy từ API.
