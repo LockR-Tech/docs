@@ -137,10 +137,9 @@ Bỏ toàn bộ dữ liệu giả ở `/admin/revenue`, mốc thời gian giả 
 | Quản lý dịch vụ trên admin + bỏ mã số nội bộ khỏi giao diện | [frontend #8](https://github.com/LockR-Tech/frontend/pull/8) | `b1686f5` |
 | Hiện tên tủ và số ô thật trong app | [mobile #7](https://github.com/LockR-Tech/mobile/pull/7) | xem git |
 
-⚠️ **`mobile #7` chưa được biên dịch hay chạy test lần nào** — máy làm không cài được
-Flutter, quota Actions thì đã hết nên CI cũng không chạy. Đây là thay đổi duy nhất trong
-đợt này chưa qua kiểm tra máy móc. Việc đầu tiên khi Actions sống lại: chạy
-`flutter analyze` + `flutter test` trên `main` của mobile.
+Toàn bộ đã kiểm tra trên `main` của mobile sau khi cài được Flutter 3.44.9:
+`flutter analyze` **259 issue — đúng bằng baseline**, `flutter test` **154 pass**,
+`gradlew :app:assembleDebug` **BUILD SUCCESSFUL**.
 
 Ba phát hiện đáng lưu ý khi làm:
 
@@ -187,7 +186,8 @@ Máy làm phiên này (Windows 11) **không có sẵn** Node, JDK, Maven, Flutte
 |---|---|
 | Node | 24.21.0 portable. `npm ci` lần đầu đỏ vì `EBUSY` khi esbuild ghi `esbuild.exe` (antivirus giữ file) — xoá `node_modules` rồi chạy lại là xong |
 | JDK / Maven | Temurin 21.0.12.1 + Maven 3.9.9 portable. `dlcdn.apache.org` 404 với 3.9.9, phải lấy từ `archive.apache.org` |
-| Flutter | **Không cài được**. Tải 1,8 GB xong thì script tự xoá file zip ngay cả khi bước giải nén lỗi ⇒ mất cả bản tải. Đường vòng: thêm workflow kiểm tra PR cho repo mobile, để runner GitHub chạy `analyze` + `test` |
+| Flutter | 3.44.9 ở `C:\src\flutter`. Đã thêm workflow kiểm tra PR cho repo mobile để runner GitHub chạy `analyze` + `test` — giữ lại vì hữu ích kể cả khi máy dev có Flutter |
+| **Java cho build Android** | ⚠️ Máy có **Java 25**, mà Android Gradle Plugin chưa hỗ trợ ⇒ `flutter run` chết với thông báo cụt lủn `* What went wrong: 25.0.2` (chính là số hiệu Java, không phải NDK hay build-tools như ta tưởng lúc đầu). Cài JDK 21 ở `C:\src\jdk-21` và trỏ Flutter vào đó bằng `flutter config --jdk-dir=C:\src\jdk-21` là hết. `flutter doctor` **không** phát hiện được lỗi này |
 | `gh` | Cài bằng `winget install GitHub.cli`, đăng nhập bằng luồng trình duyệt (`gh auth login`). **Phải chạy ở terminal của người dùng** vì cần tương tác |
 | SSH vào VM | Máy này **không có** private key; pipeline giữ khoá duy nhất trong GitHub secret (không đọc lại được). Đường vòng: **Azure Portal → VM → Run command → RunShellScript**, chạy được lệnh shell với quyền root mà không cần SSH |
 
