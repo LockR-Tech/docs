@@ -54,7 +54,7 @@ Mọi con số bên dưới đúng với các commit này. Trước khi tin STAT
 | Nút thắt | Trạng thái | Ai làm |
 |---|---|---|
 | **GitHub Actions hết quota** (2.000/2.000 phút, gói Free, reset ~2026-10-01) | Mọi CI và deploy đỏ sau 2–5 giây. Nguyên nhân gốc đã sửa ở `999d48f`, nhưng phải chờ reset hoặc nâng spending limit | Chủ dự án |
-| **Cả ba repo đều đi trước production** | backend `main` `569d323` vs production `980f4fd` · frontend `main` `b1686f5` vs đã deploy `a1ca345` · mobile `main` chưa build lại. Lần deploy backend **làm mọi người dùng bị đăng xuất** (đổi JWT secret) | Chủ dự án |
+| **Backend đã khớp production** ✅ | backend `569d323` deploy thành công 16/09 09:58 (không ai bị đăng xuất — giữ secret cũ). frontend `main` `b1686f5` vs đã deploy `a1ca345` — sau 1 commit · mobile `main` chưa build lại | Chủ dự án |
 
 | Khoá còn thiếu trên VM | Thiếu thì sao |
 |---|---|
@@ -84,6 +84,7 @@ Cách lấy và nạp: [cau-hinh-dich-vu-ngoai.md](04-engineering/cau-hinh-dich-
 
 | Ngày | Việc | Liên kết |
 |---|---|---|
+| 2026-09-16 | **Deploy backend `569d323` lên production** (09:58, nghiệm thu health/public/admin đạt): đóng SEC-07 (bỏ OTP khỏi log), khởi tạo Firebase, truyền JWT secret cho `notification-service`, gửi mã mở tủ cho người nhận. Giữ secret cũ trong `.env` nên **không ai bị đăng xuất**. Mở được nhờ chuyển 6 repo sang public → Actions miễn phí. **SEC-01 vẫn mở**: secret là chuỗi mặc định, giờ công khai theo repo. | [DEPLOY-LOG](https://github.com/LockR-Tech/backend/blob/main/infra/azure/DEPLOY-LOG.md) |
 | 2026-09-16 | **Lưu ảnh chạy trên production**: nạp `CLOUDINARY_URL` + `MEDIA_FOLDER_ROOT` vào `.env` VM, khởi động lại `user`/`order`/`locker`/`store-service`; cả bốn xác nhận `Cloudinary media storage enabled`. Avatar, ảnh phiếu sự cố, ảnh cửa hàng, ảnh khuyến mãi hết trả 503. Không cần deploy lại web/mobile. | [runbook §4](04-engineering/cau-hinh-dich-vu-ngoai.md) · [ADR-0004](adr/0004-anh-luu-cloudinary-upload-truc-tiep.md) |
 | 2026-09-16 | **Quản lý dịch vụ trên admin**: trang `/admin/services` dựng lại — mỗi dịch vụ (gửi hàng, thuê ô, drone) một thẻ với giá, quy tắc sửa được tại chỗ và hiệu quả trong kỳ. Trang cũ gọi `/api/admin/services` vốn trả 404 nên chưa bao giờ chạy. Kèm bỏ mã số nội bộ khỏi admin và app: hiện tên tủ, tên cửa hàng, số ô in trên tủ. **Đã merge, chờ deploy.** | [frontend #8](https://github.com/LockR-Tech/frontend/pull/8) · [mobile #7](https://github.com/LockR-Tech/mobile/pull/7) |
 | 2026-09-16 | **Vá SEC-01 và SEC-07 bằng code**: JWT secret ra `.env` (cả 3 service xác thực JWT — notification-service trước đó chưa hề được truyền biến), bỏ mã OTP khỏi log. Khởi tạo Firebase để push thật sự gửi. Giảm tiêu thụ Actions của repo backend. **Đã merge, chờ deploy.** | [backend #10](https://github.com/LockR-Tech/backend/pull/10) · [#11](https://github.com/LockR-Tech/backend/pull/11) |
