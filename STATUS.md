@@ -5,7 +5,7 @@
 | | |
 |---|---|
 | **Cập nhật lần cuối** | 2026-09-16 |
-| **Người cập nhật** | Claude Code — merge toàn bộ nhánh vào `main`; backend chờ deploy vì hết quota Actions |
+| **Người cập nhật** | Claude Code — quản lý dịch vụ trên admin, bỏ mã số nội bộ khỏi giao diện; cả ba repo chờ deploy vì hết quota Actions |
 | **Tổng tiến độ 4 luồng** | **42,5 %** |
 
 ## 0. Mốc code đã rà soát
@@ -53,7 +53,7 @@ Mọi con số bên dưới đúng với các commit này. Trước khi tin STAT
 | Nút thắt | Trạng thái | Ai làm |
 |---|---|---|
 | **GitHub Actions hết quota** (2.000/2.000 phút, gói Free, reset ~2026-10-01) | Mọi CI và deploy đỏ sau 2–5 giây. Nguyên nhân gốc đã sửa ở `999d48f`, nhưng phải chờ reset hoặc nâng spending limit | Chủ dự án |
-| **backend `main` đi trước production 4 commit** | `main` `569d323` · production `980f4fd`. Deploy được ngay khi Actions sống lại; lần deploy đó **làm mọi người dùng bị đăng xuất** (đổi JWT secret) | Chủ dự án |
+| **Cả ba repo đều đi trước production** | backend `main` `569d323` vs production `980f4fd` · frontend `main` `b1686f5` vs đã deploy `a1ca345` · mobile `main` chưa build lại. Lần deploy backend **làm mọi người dùng bị đăng xuất** (đổi JWT secret) | Chủ dự án |
 
 | Khoá còn thiếu trên VM | Thiếu thì sao |
 |---|---|
