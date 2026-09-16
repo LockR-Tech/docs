@@ -4,6 +4,8 @@ Mỗi thay đổi ở repo docs thêm **một dòng** vào ngày tương ứng (
 
 ## 2026-09-16
 
+- Bàn giao: phần mobile đã kiểm tra đầy đủ (analyze 259 = baseline, 154 test pass, build Android thành công) nên bỏ cảnh báo "chưa qua kiểm tra máy móc". Ghi chú môi trường thêm bẫy Java 25 làm `flutter run` chết với thông báo `25.0.2` mà `flutter doctor` không phát hiện được.
+
 - STATUS và bàn giao: ghi rõ cả ba repo đều đang đi trước production (kèm commit từng bên), và đánh dấu `mobile #7` là thay đổi duy nhất chưa qua kiểm tra máy móc.
 
 - Trang `/admin/services` dựng lại theo mô hình thật (ba loại đơn, quy tắc ở `system_settings`) thay cho trang cũ gọi endpoint không tồn tại; `business-settings.md` thêm mục 7 mô tả trang này và cảnh báo `GET /api/admin/services` trả 404. Giao diện admin và app bỏ mã số nội bộ, hiện tên tủ, tên cửa hàng và số ô in trên tủ.
