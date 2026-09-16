@@ -44,7 +44,7 @@ Xếp theo **rủi ro** trước, tiện nghi sau. Hai việc đầu là lỗ h�
 |---|---|---|
 | 1 | **Xoay JWT secret** (SEC-01) | Secret production đang là chuỗi mặc định **nằm trong repo**. Ai đọc repo cũng giả được token ADMIN. |
 | 2 | **Xoay token Cloudflare** (SEC-08) | Token quyền Edit Workers từng bị dán vào lịch sử chat. Ai có lịch sử đó deploy đè được cả 3 trang web. |
-| 3 | **Cloudinary** | Ảnh phiếu sự cố, avatar, ảnh cửa hàng đang không upload được. |
+| ~~3~~ | ~~**Cloudinary**~~ | ✅ **Xong 16/09/2026** — xem §4. |
 | 4 | **Twilio** | Mã mở tủ chưa gửi được qua SMS. |
 | 5 | **SMTP thật** | OTP đăng nhập và mã mở tủ qua email. |
 | 6 | **Broker MQTT riêng** (SEC-04) | Đang dùng broker công khai không xác thực — ai cũng gửi lệnh mở tủ được. |
@@ -78,9 +78,13 @@ APP_SECURITY_JWT_SECRET: ${APP_SECURITY_JWT_SECRET:?JWT secret chưa được đ
 
 ---
 
-## 4. Cloudinary (ảnh)
+## 4. Cloudinary (ảnh) ✅ đã cấu hình 16/09/2026
 
 Hợp đồng: [media-storage](../01-overview/media-storage.md) · [ADR-0004](../adr/0004-anh-luu-cloudinary-upload-truc-tiep.md)
+
+> **Đã xong.** `CLOUDINARY_URL` và `MEDIA_FOLDER_ROOT` đã nằm trong `.env` trên VM;
+> `user`, `order`, `locker`, `store-service` đều ghi `Cloudinary media storage enabled`
+> lúc khởi động. Phần dưới giữ lại để tra cứu khi đổi tài khoản hoặc dựng môi trường mới.
 
 1. Đăng ký tài khoản miễn phí ở <https://cloudinary.com> (gói free đủ cho demo).
 2. Dashboard → **API Environment variable**, copy chuỗi dạng
@@ -92,10 +96,30 @@ CLOUDINARY_URL=cloudinary://<api_key>:<api_secret>@<cloud_name>
 MEDIA_FOLDER_ROOT=lockr
 ```
 
-4. `sudo docker compose up -d`
+4. `sudo docker compose up -d user-service order-service locker-service store-service`
 
 **Kiểm tra:** gọi `POST /api/media/upload-signatures` bằng token bất kỳ.
 Chưa cấu hình ⇒ **503 `MEDIA_STORAGE_DISABLED`**. Cấu hình rồi ⇒ 200 kèm chữ ký.
+
+Không có token thì đọc log — cách này không cần đăng nhập:
+
+```bash
+cd /opt/laundry-locker-microservices
+for s in user-service order-service locker-service store-service; do
+  line=$(sudo docker compose logs --tail=800 "$s" | grep -i "Cloudinary media storage" | tail -1)
+  echo "$s => ${line:-KHONG THAY}"
+done
+```
+
+Ba điều dễ hiểu nhầm, đã kiểm chứng ngày 16/09:
+
+- **Không phải deploy lại web hay mobile.** Client nhận `cloudName` và `uploadUrl` trong
+  chữ ký backend trả về ([`UploadSignatureResponse`](../../backend/common-lib/src/main/java/com/huynqb/laundrylocker/common/media/UploadSignatureResponse.java)),
+  không nhúng cloud name lúc build. Đổi tài khoản Cloudinary chỉ cần sửa `.env` rồi restart.
+- **Ảnh cũ không tự đổi.** Các bản ghi seed vẫn trỏ `picsum.photos` cho tới khi có người
+  upload đè.
+- **`/api/lockers` và `/api/stores` trả 503 khoảng 1 phút sau restart** là bình thường —
+  service chưa đăng ký lại vào Eureka, không phải lỗi cấu hình.
 
 ---
 
@@ -269,7 +293,7 @@ qua mọi lệnh push trong im lặng.
 | Dịch vụ | Biến | Đặt ở | Thiếu thì sao |
 |---|---|---|---|
 | JWT | `APP_SECURITY_JWT_SECRET` | `.env` VM | Dùng secret mặc định trong repo — **lỗ hổng** |
-| Cloudinary | `CLOUDINARY_URL`, `MEDIA_FOLDER_ROOT` | `.env` VM | API ảnh trả 503 |
+| Cloudinary ✅ | `CLOUDINARY_URL`, `MEDIA_FOLDER_ROOT` | `.env` VM | API ảnh trả 503 |
 | Twilio | `APP_SMS_TWILIO_ACCOUNT_SID` · `AUTH_TOKEN` · `FROM_NUMBER` | `.env` VM | SMS chỉ ghi log, không gửi |
 | SMTP | `SPRING_MAIL_*`, `APP_MAIL_FROM` | `.env` VM | Không gửi được OTP và mã mở tủ |
 | Azure | `AZURE_VM_HOST` · `USER` · `SSH_KEY` · `PORT` | GitHub secrets (`backend`) | Không deploy được backend |

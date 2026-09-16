@@ -57,16 +57,20 @@ Mọi con số bên dưới đúng với các commit này. Trước khi tin STAT
 
 | Khoá còn thiếu trên VM | Thiếu thì sao |
 |---|---|
-| `CLOUDINARY_URL` | API ảnh trả 503 — ảnh phiếu sự cố, avatar, ảnh cửa hàng không upload được |
 | `APP_SMS_TWILIO_FROM_NUMBER` | Có SID + Auth Token rồi, thiếu số gửi ⇒ SMS chỉ ghi log |
 | `SPRING_MAIL_*` · `FIREBASE_CREDENTIALS_JSON` | Chưa kiểm chứng; thiếu thì mất kênh email và push |
+
+✅ **`CLOUDINARY_URL` đã nạp 16/09/2026** — cả bốn service (`user`, `order`, `locker`,
+`store`) ghi `Cloudinary media storage enabled` lúc khởi động. Upload ảnh dùng được trên
+production; không cần deploy lại web hay mobile vì client lấy `cloudName`/`uploadUrl` từ
+chữ ký backend trả về.
 
 Cách lấy và nạp: [cau-hinh-dich-vu-ngoai.md](04-engineering/cau-hinh-dich-vu-ngoai.md).
 
 ## 4. Việc tiếp theo — theo thứ tự ưu tiên
 
 1. **Gỡ nút thắt Actions** rồi **deploy backend** — SEC-01 và SEC-07 đã vá trong code trên `main` nhưng chỉ đóng khi deploy xong. _(rất gấp)_
-2. **Nạp khoá còn thiếu trên VM** (Cloudinary, số Twilio, SMTP, Firebase) — [runbook](04-engineering/cau-hinh-dich-vu-ngoai.md).
+2. **Nạp khoá còn thiếu trên VM** (số Twilio, SMTP, Firebase) — [runbook](04-engineering/cau-hinh-dich-vu-ngoai.md). Cloudinary đã xong 16/09.
 3. **SEC-02 · SEC-03 · SEC-05 · SEC-06** Khoá API theo chủ sở hữu + vai trò ở service, không chỉ ở gateway — [F3-G01](02-flows/flow-3-roles-maintenance.md).
 4. **SEC-04** Broker MQTT riêng có xác thực + TLS trong `docker-compose.yml`.
 5. **F2-G11** Sửa 3 bug mobile chặn demo luồng 2 (id payment/order, nút mở tủ, locker id truyền như store id). _(nhỏ)_
@@ -79,6 +83,7 @@ Cách lấy và nạp: [cau-hinh-dich-vu-ngoai.md](04-engineering/cau-hinh-dich-
 
 | Ngày | Việc | Liên kết |
 |---|---|---|
+| 2026-09-16 | **Lưu ảnh chạy trên production**: nạp `CLOUDINARY_URL` + `MEDIA_FOLDER_ROOT` vào `.env` VM, khởi động lại `user`/`order`/`locker`/`store-service`; cả bốn xác nhận `Cloudinary media storage enabled`. Avatar, ảnh phiếu sự cố, ảnh cửa hàng, ảnh khuyến mãi hết trả 503. Không cần deploy lại web/mobile. | [runbook §4](04-engineering/cau-hinh-dich-vu-ngoai.md) · [ADR-0004](adr/0004-anh-luu-cloudinary-upload-truc-tiep.md) |
 | 2026-09-16 | **Quản lý dịch vụ trên admin**: trang `/admin/services` dựng lại — mỗi dịch vụ (gửi hàng, thuê ô, drone) một thẻ với giá, quy tắc sửa được tại chỗ và hiệu quả trong kỳ. Trang cũ gọi `/api/admin/services` vốn trả 404 nên chưa bao giờ chạy. Kèm bỏ mã số nội bộ khỏi admin và app: hiện tên tủ, tên cửa hàng, số ô in trên tủ. **Đã merge, chờ deploy.** | [frontend #8](https://github.com/LockR-Tech/frontend/pull/8) · [mobile #7](https://github.com/LockR-Tech/mobile/pull/7) |
 | 2026-09-16 | **Vá SEC-01 và SEC-07 bằng code**: JWT secret ra `.env` (cả 3 service xác thực JWT — notification-service trước đó chưa hề được truyền biến), bỏ mã OTP khỏi log. Khởi tạo Firebase để push thật sự gửi. Giảm tiêu thụ Actions của repo backend. **Đã merge, chờ deploy.** | [backend #10](https://github.com/LockR-Tech/backend/pull/10) · [#11](https://github.com/LockR-Tech/backend/pull/11) |
 | 2026-09-16 | **F2-G03**: gửi mã mở tủ cho người nhận chưa có tài khoản qua SMS (Twilio) và email (SMTP dùng chung auth-service); app nhập email người nhận, hiện lịch sử trạng thái và địa điểm tủ trong chi tiết đơn. **Đã merge, chờ deploy.** | [backend #9](https://github.com/LockR-Tech/backend/pull/9) · [mobile #6](https://github.com/LockR-Tech/mobile/pull/6) · [hợp đồng](01-overview/receiver-pickup-code.md) |

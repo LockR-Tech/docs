@@ -84,7 +84,7 @@ Trạng thái đã biết tính tới 16/09:
 | Khoá | Trạng thái | Thiếu thì sao |
 |---|---|---|
 | `APP_SECURITY_JWT_SECRET` | ✅ đã đặt | — |
-| `CLOUDINARY_URL` | ❓ chưa kiểm được từ ngoài | API ảnh trả 503 `MEDIA_STORAGE_DISABLED` |
+| `CLOUDINARY_URL` | ✅ đã nạp 16/09, 4 service xác nhận qua log | API ảnh trả 503 `MEDIA_STORAGE_DISABLED` |
 | `APP_SMS_TWILIO_*` | ⏳ có SID + Auth Token, **thiếu số gửi** | SMS chỉ ghi log, không gửi |
 | `SPRING_MAIL_*` | ❓ | Không gửi được OTP và mã mở tủ qua email |
 | `FIREBASE_CREDENTIALS_JSON` | ❓ | Push tắt |
