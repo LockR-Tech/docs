@@ -1,23 +1,25 @@
-# Tóm tắt việc còn lại và vướng mắc — 16/09/2026
+# Tóm tắt việc còn lại và vướng mắc — 16/09/2026 (cập nhật chiều)
 
 Bản ngắn để tiếp tục nhanh trên máy khác. Chi tiết đầy đủ:
 [trạng thái đầy đủ](2026-09-16-trang-thai-day-du-va-viec-con-lai.md).
 
-## 1. Vướng mắc đang chặn
+## 1. Vướng mắc
 
-| # | Vướng mắc | Hệ quả | Gỡ thế nào |
+| # | Vướng mắc | Trạng thái | Gỡ thế nào |
 |---|---|---|---|
-| 1 | **GitHub Actions hết quota** — 2.000/2.000 phút, gói Free, reset ~01/10/2026 | Mọi CI và deploy đỏ sau 2–5 giây, không kèm log | Chờ reset, hoặc nâng spending limit ở Settings → Billing |
-| 2 | **Ba repo đều đi trước production** | Code đã merge nhưng chưa chạy thật | Deploy sau khi gỡ (1) |
-| 3 | **Thiếu khoá dịch vụ ngoài trên VM** | SMS, email, push chưa gửi được | Chủ dự án lấy khoá — xem §3 |
+| 1 | **Quota GitHub Actions** | ✅ **ĐÃ GỠ** — chuyển cả 6 repo sang **public**, Actions miễn phí không giới hạn | — |
+| 2 | **Deploy backend** | 🔄 **ĐANG CHẠY** — workflow "Deploy to Azure VM" kích hoạt trên `main` (giữ nguyên JWT secret cũ trong `.env` nên **không ai bị đăng xuất**) | Chờ ~20 phút, xem nghiệm thu |
+| 3 | 🔴 **JWT + QR secret production đang công khai** | **MỞ** — hệ quả của việc backend public. Secret vẫn là chuỗi mặc định, ai đọc `docker-compose.yml` cũng ký được token ADMIN và mã QR mở tủ cho hệ thống thật | Chạy lệnh xoay secret trên VM (runbook §3/§5) — độc lập với deploy, sẽ đăng xuất mọi người |
+| 4 | **Thiếu khoá dịch vụ ngoài trên VM** | MỞ — SMS, email, push chưa gửi được | Chủ dự án lấy khoá — xem §3 |
 
-> ⚠️ Deploy backend **làm mọi người dùng bị đăng xuất** vì đổi JWT secret. Báo nhóm trước.
+> ⚠️ Đánh đổi đã chọn: public để có Actions miễn phí, **chấp nhận secret công khai**. SEC-01
+> chưa đóng. Phải xoay secret trước khi có người dùng thật.
 
 ## 2. Việc còn lại, theo thứ tự ưu tiên
 
-1. **Deploy backend** — đóng SEC-01 (JWT secret mặc định nằm trong repo) và SEC-07 (OTP ghi ra log). Code đã ở `main`, chỉ chờ quota. _(rất gấp)_
-2. **Nạp khoá còn thiếu trên VM** — Twilio, SMTP, Firebase. Không cần Actions, làm được ngay. [runbook](../04-engineering/cau-hinh-dich-vu-ngoai.md)
-3. **Kiểm chứng nghi vấn realtime** — compose đang chạy không truyền `APP_SECURITY_JWT_SECRET` cho `notification-service`, trong khi gateway và auth-service dùng giá trị trong `.env`. Nếu đúng thì STOMP **đang hỏng sẵn**, không phải chờ deploy mới hỏng. Chưa ai kiểm.
+1. **Xoay JWT + QR secret trên VM** (SEC-01) — giờ là rủi ro sống vì repo đã public. Lệnh sẵn trong runbook, chạy bằng Azure Run Command, không cần Actions. Sẽ đăng xuất mọi người. _(rất gấp)_
+2. **Chờ deploy backend xong** rồi nghiệm thu — đóng SEC-07 (OTP ghi ra log), khởi tạo Firebase, truyền JWT secret cho `notification-service` (sửa nghi vấn realtime STOMP).
+3. **Nạp khoá còn thiếu trên VM** — Twilio, SMTP, Firebase. Không cần Actions. [runbook](../04-engineering/cau-hinh-dich-vu-ngoai.md)
 4. **SEC-08** Xoay token Cloudflare (từng bị dán vào lịch sử chat): tạo mới → nạp lại cả `frontend` và `mobile` → xoá token cũ.
 5. **SEC-02 · SEC-03 · SEC-05 · SEC-06** Khoá API theo chủ sở hữu + vai trò ở từng service, không chỉ ở gateway.
 6. **SEC-04** Broker MQTT riêng có xác thực + TLS (hiện dùng broker công khai — ai cũng gửi lệnh mở tủ được).
@@ -36,21 +38,24 @@ Bản ngắn để tiếp tục nhanh trên máy khác. Chi tiết đầy đủ:
 Cách nạp: [cau-hinh-dich-vu-ngoai.md](../04-engineering/cau-hinh-dich-vu-ngoai.md). Nạp bằng
 Azure Run Command, **không cần SSH** — khoá SSH cá nhân hiện không vào được VM.
 
-## 4. Repo so với production
+## 4. Trạng thái repo
+
+Cả 6 repo (`backend`, `frontend`, `mobile`, `docs`, `iot`, `legal`) đã **public**.
 
 | Repo | `main` | Đang chạy thật |
 |---|---|---|
-| backend | `569d323` | `980f4fd` — sau **4 commit** |
-| frontend | `b1686f5` | `a1ca345` — sau **1 commit** |
+| backend | `569d323` | đang deploy lên (trước đó `980f4fd`) |
+| frontend | `b1686f5` | `a1ca345` — sau **1 commit**, deploy được (Actions đã free) |
 | mobile | `b39d198` | chưa build lại |
-| docs | `c0691ad` | — |
+| docs | cập nhật liên tục | — |
 
 ## 5. Đã xong — đừng làm lại
 
+- **Chuyển 6 repo sang public** ✅ 16/09 — gỡ nút thắt quota Actions.
 - **Lưu ảnh Cloudinary** ✅ 16/09 — 4 service xác nhận `Cloudinary media storage enabled`.
   Không cần deploy lại web hay mobile.
 - Báo cáo admin, trang quản lý dịch vụ, bỏ `#id` khỏi admin + app, gửi mã mở tủ cho người
-  nhận qua SMS/email: **đã merge**, chờ deploy.
+  nhận qua SMS/email: **đã merge**, đang deploy.
 - Mobile chạy được trên máy ảo. Bẫy đã gỡ: máy có Java 25 mà Android Gradle Plugin không
   hỗ trợ, báo lỗi khó hiểu `* What went wrong: 25.0.2`. Sửa bằng
   `flutter config --jdk-dir=C:\src\jdk-21`.
