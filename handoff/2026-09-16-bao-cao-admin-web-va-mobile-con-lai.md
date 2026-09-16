@@ -8,7 +8,7 @@
 
 ### 1.1 Frontend — 3 trang báo cáo admin (mục 3 bước 2 của bàn giao trước)
 
-Nhánh `feat/f2-g08-admin-reporting-web` (repo `frontend`), **đã đẩy lên origin, chưa mở PR**. 5 commit:
+[frontend #7](https://github.com/LockR-Tech/frontend/pull/7) — ✅ **merge rebase vào `main` (`43e5d00`), deploy Cloudflare xanh** (admin web + landing, 2026-09-16 02:56 UTC). 6 commit:
 
 | Commit | Nội dung |
 |---|---|
@@ -17,6 +17,7 @@ Nhánh `feat/f2-g08-admin-reporting-web` (repo `frontend`), **đã đẩy lên o
 | `2d4b6b2` | `feat(fe-orders)` — dựng lại `/admin/orders` + trang chi tiết |
 | `28bae57` | `feat(fe-payments)` — dựng lại `/admin/payments`, thêm tab hoàn tiền và biến động ví |
 | `dcb6c4e` | `feat(fe-revenue)` — dựng lại `/admin/revenue` + trang chi tiết khách hàng |
+| `43e5d00` | `refactor(fe-report-ui)` — thu nhỏ chữ thẻ KPI bằng prop thay vì selector CSS |
 
 Điểm cần biết khi đọc code:
 
@@ -41,18 +42,17 @@ npm run build       # xanh
 
 ### 1.2 Docs
 
-Nhánh `docs/f2-g08-admin-reporting-web`: STATUS § 3, flow-2 (F2.09 và F2-G08), CHANGELOG, file này.
+[docs #7](https://github.com/LockR-Tech/docs/pull/7) — ✅ merge rebase (`ebd2662`): STATUS, flow-2 (F2.09 và F2-G08), CHANGELOG, file này. Sau khi frontend deploy xanh: thêm một đợt cập nhật đưa F2-G08 (phần web) từ STATUS § 3 sang § 5.
 
 ## 2. Việc cần làm tiếp — theo thứ tự
 
-1. **Mở PR frontend** cho `feat/f2-g08-admin-reporting-web` → `main`, review, merge **rebase**. Máy làm phiên này không có `gh` và không đọc được token nên chỉ đẩy được nhánh.
-   Đường dẫn tạo PR: `https://github.com/LockR-Tech/frontend/pull/new/feat/f2-g08-admin-reporting-web`
-2. **Thử với token ADMIN thật** sau khi Cloudflare deploy: mở `/admin/orders`, `/admin/payments`, `/admin/revenue`, đối chiếu vài đơn với app khách. Cần soát kỹ:
+1. ~~Mở PR frontend và merge~~ — xong, đã deploy (mục 1.1).
+2. **Thử với token ADMIN thật trên bản đã deploy**: mở `/admin/orders`, `/admin/payments`, `/admin/revenue`, đối chiếu vài đơn với app khách. Cần soát kỹ:
    - đơn `EXPIRED` (số ô trống — backend đã nhả ô) và đơn `DRONE_DELIVERY` (khối chuyến bay);
    - giao dịch `VNPAY_TOPUP` (không gắn đơn, không tính vào doanh thu);
    - khoảng ngày không có dữ liệu (phải ra 0 chứ không phải lỗi) so với khi payment-service chết (phải ra lỗi).
 3. **Mobile phần dở dang** — xem mục 3.
-4. Sau khi merge hết: STATUS § 3 → § 5; ADR-0005 `Proposed` → `Accepted` khi chủ dự án xác nhận.
+4. ADR-0005 `Proposed` → `Accepted` khi chủ dự án xác nhận (sau khi phần mobile xong).
 5. Nên làm (giữ từ bàn giao trước): ràng buộc chéo `app.locker.reserved-ttl-hours` ≥ `app.order.auto-cancel-hours`; tăng `APP_RESILIENCE4J_TL_TIMEOUT` của locker-service nếu `app.iot.unlock-wait-seconds` > 20.
 
 ## 3. Mobile — phần dở dang
@@ -77,10 +77,10 @@ Ba test mới trong commit đó cần đúng: phí drone/hạn lấy hàng/khố
 
 ## 4. Ghi chú môi trường (máy phiên này)
 
-- Máy **không có** Node, JDK, Maven, Flutter, `gh`; Docker Desktop có cài nhưng daemon không chạy. Đã dùng bản portable trong thư mục tạm của phiên: Node 24.21.0 và Flutter 3.44.9. Máy mới nên cài sẵn Node 22, Flutter 3.44.x, JDK 21, Maven 3.9, GitHub CLI.
+- Máy **không có sẵn** Node, JDK, Maven, Flutter; Docker Desktop có cài nhưng daemon không chạy. `gh` đã được cài trong phiên này (`winget install GitHub.cli`) và đăng nhập bằng luồng trình duyệt. Đã dùng bản portable trong thư mục tạm của phiên: Node 24.21.0 và Flutter 3.44.9. Máy mới nên cài sẵn Node 22, Flutter 3.44.x, JDK 21, Maven 3.9, GitHub CLI.
 - `npm ci` lần đầu **đỏ** vì `EBUSY` khi hậu cài đặt `esbuild` ghi `esbuild.exe` (phần mềm diệt virus giữ file). Xoá `node_modules` rồi chạy lại là xong.
 - Git trên máy này chưa cấu hình `user.name`/`user.email`; đã đặt trùng lịch sử commit sẵn có.
-- `git push` chạy được nhờ Git Credential Manager, nhưng **không đọc được token** để gọi REST API tạo PR.
+- `git push` chạy được nhờ Git Credential Manager, nhưng **không đọc được token** để gọi REST API — dùng `gh` thay thế; `gh auth login` phải chạy ở terminal của người dùng vì cần trình duyệt.
 
 ## 5. Lời nhắn mẫu cho AI ở phiên mới
 

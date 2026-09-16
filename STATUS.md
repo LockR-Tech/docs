@@ -4,8 +4,8 @@
 
 | | |
 |---|---|
-| **Cập nhật lần cuối** | 2026-09-13 |
-| **Người cập nhật** | BaoHuy-Dev — rà soát toàn bộ code 4 luồng (5 agent song song, đối chiếu `file:line`) |
+| **Cập nhật lần cuối** | 2026-09-16 |
+| **Người cập nhật** | Claude Code — merge 3 trang báo cáo admin (frontend #7), deploy Cloudflare xanh |
 | **Tổng tiến độ 4 luồng** | **42,5 %** |
 
 ## 0. Mốc code đã rà soát
@@ -50,7 +50,6 @@ Mọi con số bên dưới đúng với các commit này. Trước khi tin STAT
 |---|---|---|---|---|---|
 | Lưu ảnh thật trên Cloudinary: ảnh phiếu sự cố (báo → xác nhận hiện trường → quá trình → nghiệm thu), avatar, ảnh cửa hàng, khuyến mãi | ADR-0004 · F3.08 | Claude Code (theo yêu cầu chủ dự án) | `feat/media-cloudinary-photos` (backend, frontend, mobile, docs) | docs #2 #3 ✅ · backend #4 #3 ✅ · frontend #4 ✅ · mobile #4 ✅ — đã deploy; **còn: `CLOUDINARY_URL` trên VM, build app, thử end-to-end** — xem [bàn giao](handoff/2026-09-15-luu-anh-cloudinary.md) | 2026-09-15 |
 | Toàn bộ quy tắc nghiệp vụ (giá, phí, thời hạn, SLA, ngưỡng, giới hạn) cấu hình trên admin; mobile đọc giá từ server | ADR-0005 | Claude Code (theo yêu cầu chủ dự án) | mobile `feat/adr-0005-mobile-remaining` | backend #6 ✅ · frontend #6 ✅ · mobile #5 ✅ — **còn lại**: phần mobile dở dang (giới hạn ảnh, phí + khối lượng drone, bán kính cửa hàng, văn bản phí quá hạn) chờ `flutter analyze`/`test` | 2026-09-15 |
-| `/admin/orders`, `/admin/payments`, `/admin/revenue` dùng dữ liệu thật đồng bộ với mobile, đủ trường, thời gian `HH:mm:ss dd/MM/yyyy` | F2-G08 | Claude Code (theo yêu cầu chủ dự án) | frontend `feat/f2-g08-admin-reporting-web` | backend #7 #8 ✅ merge + deploy · frontend: 5 commit đã đẩy, **chờ mở PR** | 2026-09-15 |
 
 ## 4. Việc tiếp theo — theo thứ tự ưu tiên
 
@@ -68,6 +67,9 @@ Mọi con số bên dưới đúng với các commit này. Trước khi tin STAT
 
 | Ngày | Việc | Liên kết |
 |---|---|---|
+| 2026-09-16 | **F2-G08 (phần web)**: `/admin/orders`, `/admin/payments`, `/admin/revenue` dùng dữ liệu thật đồng bộ với app khách — đủ trường, enum đúng bộ backend sinh ra, thời gian `HH:mm:ss dd/MM/yyyy` giờ Việt Nam. Bỏ toàn bộ dữ liệu giả và delta ghi cứng. Merge `43e5d00`, deploy Cloudflare **xanh**. Chưa thử với token ADMIN thật ⇒ xem mục 2 của bàn giao. | [frontend #7](https://github.com/LockR-Tech/frontend/pull/7) · [hợp đồng API](01-overview/admin-reporting-api.md) · [bàn giao](handoff/2026-09-16-bao-cao-admin-web-va-mobile-con-lai.md) |
+| 2026-09-16 | API báo cáo admin phía backend: tìm kiếm/chi tiết đơn, tìm kiếm/chi tiết/hoàn tiền/ví/thống kê thanh toán, 8 endpoint doanh thu theo tiền thực thu. Merge `c66a510`, `980f4fd`, đã lên production. | [backend #7](https://github.com/LockR-Tech/backend/pull/7) · [#8](https://github.com/LockR-Tech/backend/pull/8) |
+| 2026-09-16 | Quy tắc nghiệp vụ cấu hình trên admin (ADR-0005): `system_settings` cho 7 service, trang `/admin/settings`, mobile đọc giá/giờ/mốc nạp từ server. | [ADR-0005](adr/0005-quy-tac-nghiep-vu-cau-hinh-tren-admin.md) · [hợp đồng](01-overview/business-settings.md) |
 | 2026-09-13 | Chuyển 5 repo sang org `LockR-Tech` (snapshot sạch), nguồn deploy chính thức là org; tắt workflow deploy ở repo cá nhân cũ | [ADR-0003](adr/0003-snapshot-sach-khi-chuyen-org.md) |
 | 2026-09-13 | Tạo repo `docs`, chuẩn GitHub Flow + Conventional Commits, rà soát 4 luồng, 5 sơ đồ A4 | [ADR-0001](adr/0001-github-flow-main-la-production.md) · [ADR-0002](adr/0002-docs-as-code-repo-trung-tam.md) |
 
