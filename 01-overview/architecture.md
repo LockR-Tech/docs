@@ -1,3 +1,5 @@
+| Email | SMTP dùng cho OTP đăng nhập (auth-service) và gửi mã mở tủ cho người nhận chưa có tài khoản (notification-service). Biến `SPRING_MAIL_*` (secret), `APP_MAIL_FROM` |
+| SMS | **Twilio** Messages API trong notification-service, gửi mã mở tủ cho người nhận chưa có tài khoản. Biến `APP_SMS_TWILIO_ACCOUNT_SID` / `AUTH_TOKEN` / `FROM_NUMBER` (secret). Thiếu bất kỳ biến nào ⇒ rơi về bản chỉ ghi log, **không gửi thật**. Hợp đồng: [receiver-pickup-code](receiver-pickup-code.md) |
 # Kiến trúc hệ thống
 
 > Sơ đồ in A4: [diagrams/pdf/architecture.pdf](../diagrams/pdf/architecture.pdf) · nguồn [`architecture.mmd`](../diagrams/src/architecture.mmd). Rà soát code 2026-09-13.
@@ -64,8 +66,8 @@ Mỗi service có database Postgres riêng, Flyway, `ddl-auto: validate`.
 | MoMo | Endpoint test, cần khoá thật |
 | Ví nội bộ | Thật (sổ cái `wallet_transactions`) |
 | Tiền mặt | Hoàn tất ngay khi khách chọn — chưa có xác nhận của nhân viên |
-| Email | SMTP chỉ cho OTP |
-| SMS | **Không có** |
+| Email | SMTP dùng cho OTP đăng nhập (auth-service) và gửi mã mở tủ cho người nhận chưa có tài khoản (notification-service). Biến `SPRING_MAIL_*` (secret), `APP_MAIL_FROM` |
+| SMS | **Twilio** Messages API trong notification-service, gửi mã mở tủ cho người nhận chưa có tài khoản. Biến `APP_SMS_TWILIO_ACCOUNT_SID` / `AUTH_TOKEN` / `FROM_NUMBER` (secret). Thiếu bất kỳ biến nào ⇒ rơi về bản chỉ ghi log, **không gửi thật**. Hợp đồng: [receiver-pickup-code](receiver-pickup-code.md) |
 | FCM push | App đăng ký token, nhưng **server không gửi** (notification-service không khởi tạo Firebase) |
 | Firebase Auth | Thật (phone/Google/Facebook) |
 | Cấu hình nghiệp vụ (nội bộ) | Mỗi service bật `app.settings.scope` sở hữu bảng `system_settings` + `system_setting_audits`; admin sửa qua `/api/admin/settings/{scope}`, app đọc `/api/settings/{scope}/public` — [business-settings](business-settings.md) · [ADR-0005](../adr/0005-quy-tac-nghiep-vu-cau-hinh-tren-admin.md) |
