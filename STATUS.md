@@ -49,7 +49,8 @@ Mọi con số bên dưới đúng với các commit này. Trước khi tin STAT
 | Việc | ID | Người / agent | Nhánh | PR | Bắt đầu |
 |---|---|---|---|---|---|
 | Lưu ảnh thật trên Cloudinary: ảnh phiếu sự cố (báo → xác nhận hiện trường → quá trình → nghiệm thu), avatar, ảnh cửa hàng, khuyến mãi | ADR-0004 · F3.08 | Claude Code (theo yêu cầu chủ dự án) | `feat/media-cloudinary-photos` (backend, frontend, mobile, docs) | docs #2 #3 ✅ · backend #4 #3 ✅ · frontend #4 ✅ · mobile #4 ✅ — đã deploy; **còn: `CLOUDINARY_URL` trên VM, build app, thử end-to-end** — xem [bàn giao](handoff/2026-09-15-luu-anh-cloudinary.md) | 2026-09-15 |
-| Toàn bộ quy tắc nghiệp vụ (giá, phí, thời hạn, SLA, ngưỡng, giới hạn) cấu hình trên admin; mobile đọc giá từ server | ADR-0005 | Claude Code (theo yêu cầu chủ dự án) | mobile `feat/adr-0005-mobile-remaining` | backend #6 ✅ · frontend #6 ✅ · mobile #5 ✅ — **còn lại**: phần mobile dở dang (giới hạn ảnh, phí + khối lượng drone, bán kính cửa hàng, văn bản phí quá hạn) chờ `flutter analyze`/`test` | 2026-09-15 |
+| Toàn bộ quy tắc nghiệp vụ (giá, phí, thời hạn, SLA, ngưỡng, giới hạn) cấu hình trên admin; mobile đọc giá từ server | ADR-0005 | Claude Code (theo yêu cầu chủ dự án) | mobile `feat/adr-0005-mobile-remaining` | backend #6 ✅ · frontend #6 ✅ · mobile #5 ✅ · [mobile #6](https://github.com/LockR-Tech/mobile/pull/6) phần còn lại — **chờ review**, CI xanh (analyze 259 = baseline, 151 test pass) | 2026-09-15 |
+| Gửi mã mở tủ cho người nhận chưa có tài khoản (SMS Twilio + email), theo dõi trạng thái và địa điểm tủ trong app | F2-G03 | Claude Code (theo yêu cầu chủ dự án) | backend `feat/f2-g03-receiver-pickup-code`, mobile `feat/adr-0005-mobile-remaining` | [backend #9](https://github.com/LockR-Tech/backend/pull/9) · [mobile #6](https://github.com/LockR-Tech/mobile/pull/6) — **chờ review**; merge backend trước. **Chưa gửi được SMS cho tới khi nạp `APP_SMS_TWILIO_*` lên VM** | 2026-09-16 |
 
 ## 4. Việc tiếp theo — theo thứ tự ưu tiên
 
@@ -78,5 +79,5 @@ Mọi con số bên dưới đúng với các commit này. Trước khi tin STAT
 | # | Nội dung | Cần ai quyết |
 |---|---|---|
 | Q1 | Org gói **Free** + repo private ⇒ **không bật được branch protection / rulesets**. Luật GitHub Flow hiện chỉ thực thi bằng quy ước + PR template. Nâng GitHub Team để bắt buộc review trước khi merge? | Chủ dự án |
-| Q2 | Nhà cung cấp SMS cho F2-G03, và LLM + embedding cho L4 (cần hỗ trợ tiếng Việt) | Chủ dự án |
+| Q2 | ~~Nhà cung cấp SMS cho F2-G03~~ — chốt **Twilio** (bản dùng thử, đủ để demo; chỉ gửi được tới số đã xác minh trong console). **Còn chờ**: nạp `APP_SMS_TWILIO_*` lên VM, và quyết có nâng lên tài khoản trả phí trước khi chạy thật không. LLM + embedding cho L4 (cần hỗ trợ tiếng Việt) vẫn chưa chọn. | Chủ dự án |
 | Q3 | Drone thật giao tiếp qua MAVLink hay MQTT? Quyết định kiến trúc cho F1-G01 | Nhóm drone |
