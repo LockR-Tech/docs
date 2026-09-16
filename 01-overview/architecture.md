@@ -56,7 +56,7 @@ Mỗi service có database Postgres riêng, Flyway, `ddl-auto: validate`.
 - JWT ký HS (jjwt), claim `sub`=userId, `accountId`, `roles`, `tokenUse`. Access 24h, refresh 30 ngày (lưu hash, thu hồi được). Không có `iss`.
 - Đăng nhập: email/mật khẩu, OTP email, số điện thoại, **Firebase** (phone/Google/Facebook) đổi ID token lấy JWT, kiosk quick-register. Admin: 2FA qua OTP email.
 - Gateway kiểm chữ ký, gắn `X-User-Id`, `X-Account-Id`, `X-User-Roles`, RBAC theo tiền tố path. **Service không tự kiểm tra lại** ⇒ nguồn gốc các lỗ hổng SEC-02/03/05/06.
-- ⚠ **SEC-01**: secret JWT production hardcode trong `docker-compose.yml:66,120`.
+- ⚠ **SEC-01**: secret JWT production từng hardcode trong `docker-compose.yml`. [backend #10](https://github.com/LockR-Tech/backend/pull/10) chuyển sang đọc `.env` và dừng khởi động khi thiếu, cho cả ba service xác thực JWT (gateway, auth, **notification** — service này trước đó không được truyền biến). Đóng khi đã đặt biến trên VM và merge.
 
 ## 5. Tích hợp ngoài
 
@@ -68,7 +68,7 @@ Mỗi service có database Postgres riêng, Flyway, `ddl-auto: validate`.
 | Tiền mặt | Hoàn tất ngay khi khách chọn — chưa có xác nhận của nhân viên |
 | Email | SMTP dùng cho OTP đăng nhập (auth-service) và gửi mã mở tủ cho người nhận chưa có tài khoản (notification-service). Biến `SPRING_MAIL_*` (secret), `APP_MAIL_FROM` |
 | SMS | **Twilio** Messages API trong notification-service, gửi mã mở tủ cho người nhận chưa có tài khoản. Biến `APP_SMS_TWILIO_ACCOUNT_SID` / `AUTH_TOKEN` / `FROM_NUMBER` (secret). Thiếu bất kỳ biến nào ⇒ rơi về bản chỉ ghi log, **không gửi thật**. Hợp đồng: [receiver-pickup-code](receiver-pickup-code.md) |
-| FCM push | App đăng ký token, nhưng **server không gửi** (notification-service không khởi tạo Firebase) |
+| FCM push | notification-service đã khởi tạo Firebase ([backend #10](https://github.com/LockR-Tech/backend/pull/10) — trước đó `FcmPushNotificationService` viết đủ nhưng không ai gọi `initializeApp` nên mọi lệnh push bị bỏ qua trong im lặng). Bật thật khi nạp `FIREBASE_CREDENTIALS_JSON`; trống ⇒ push tắt, các kênh khác vẫn chạy |
 | Firebase Auth | Thật (phone/Google/Facebook) |
 | Cấu hình nghiệp vụ (nội bộ) | Mỗi service bật `app.settings.scope` sở hữu bảng `system_settings` + `system_setting_audits`; admin sửa qua `/api/admin/settings/{scope}`, app đọc `/api/settings/{scope}/public` — [business-settings](business-settings.md) · [ADR-0005](../adr/0005-quy-tac-nghiep-vu-cau-hinh-tren-admin.md) |
 | Cloudinary (ảnh) | Client upload trực tiếp bằng chữ ký do user-service cấp; user/order/locker/store-service xác minh chữ ký phản hồi. Biến `CLOUDINARY_URL` (secret), `MEDIA_FOLDER_ROOT`. Trống ⇒ API ảnh trả 503. Hợp đồng: [media-storage](media-storage.md) · [ADR-0004](../adr/0004-anh-luu-cloudinary-upload-truc-tiep.md) |
