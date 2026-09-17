@@ -55,7 +55,12 @@ Xếp theo **rủi ro** trước, tiện nghi sau. Hai việc đầu là lỗ h�
 
 ## 3. JWT secret (SEC-01) — làm trước tiên
 
-Hiện `docker-compose.yml:66,120` ghi thẳng chuỗi mặc định. Cần đưa ra biến môi trường.
+> ✅ **Phần code đã vá** — `docker-compose.yml` giờ đọc `${APP_SECURITY_JWT_SECRET:?chua dat}`
+> (bắt buộc, không còn default) ở cả 3 service dùng tới. Đoạn dưới mô tả cách sinh và **đặt
+> giá trị thật** vào `.env` trên VM — bước còn lại là vận hành, không phải code, nhưng vẫn
+> phải làm vì thiếu biến thì `docker compose up` từ chối chạy. Chưa xác nhận được VM production
+> đã có giá trị thật hay chưa (không có quyền SSH lúc soát lại 17/09/2026) — kiểm tra trước
+> khi coi đây là xong.
 
 ```bash
 # Sinh secret mới, tối thiểu 32 ký tự
@@ -66,12 +71,6 @@ Thêm vào `.env`:
 
 ```
 APP_SECURITY_JWT_SECRET=<chuỗi vừa sinh>
-```
-
-Rồi sửa `docker-compose.yml` để đọc biến thay vì ghi cứng (đây là **thay đổi code**, phải qua PR):
-
-```yaml
-APP_SECURITY_JWT_SECRET: ${APP_SECURITY_JWT_SECRET:?JWT secret chưa được đặt}
 ```
 
 > ⚠️ Xoay secret làm **mọi người dùng bị đăng xuất** vì token cũ hết hiệu lực. Chọn giờ vắng.
@@ -181,8 +180,10 @@ APP_MAIL_FROM=no-reply@<domain đã verify>
 
 **Kiểm tra:** đăng nhập bằng email OTP — hộp thư phải nhận được mã.
 
-> ⚠️ **SEC-07**: `auth-service` hiện **ghi OTP ra log dạng rõ**. Ai đọc được log là đăng nhập
-> được. Cần vá trước khi mở log cho người ngoài nhóm.
+> ✅ **SEC-07 đã vá** — `EmailOtpService` giờ chỉ log email đã che (`OTP generated for
+> {maskedEmail}...`), OTP được hash (`passwordEncoder.encode`) trước khi lưu DB, không còn
+> log ra dạng rõ. Xem `CHANGELOG.md`: "SEC-01 và SEC-07 ghi rõ đã merge". Cảnh báo cũ ở đây
+> mô tả tình trạng trước khi vá — sửa lại 17/09/2026 sau khi đọc lại code xác nhận.
 
 ---
 
