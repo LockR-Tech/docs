@@ -1,17 +1,17 @@
 %% @title Vòng đời giao hàng Drone — deliveryStage & DroneMission
-%% @subtitle Nguồn: <code>order-service/…/DroneOrderMaintenanceService.java:47-184</code> · <code>DroneDeliverySimulator.java:37-124</code> · <code>OrderService.java:215-253</code> — Luồng 1 — rà soát code 2026-09-13
+%% @subtitle Nguồn: <code>order-service/…/DroneOrderMaintenanceService.java</code> · <code>DroneDeliverySimulator.java</code> · <code>OrderService.java:215-253</code> — Luồng 1 — rà soát code 2026-09-20
 %% @orientation portrait
 %% @legend <span class="sw ok"></span>Chạy thật (STANDARD)
 %% @legend <span class="sw demo"></span>Chỉ đạt được ở DEMO
 %% @legend <span class="sw gap"></span>Cần có — CHƯA code
 %% @legend <span class="sw end"></span>Kết thúc
 %% @row D1 | ∅ → AWAITING_DISPATCH | <code>POST /api/orders/drone-deliveries</code> | CUSTOMER | giữ ô DRONE 24h, payment UNPAID, báo nhóm MAINTENANCE; người nhận luôn là người đặt
-%% @row xD2 | AWAITING_DISPATCH → ACCEPTED | <code>POST /api/maintenance/drone-orders/{id}/accept</code> | MAINTENANCE | PAID · drone IDLE · pin &gt; 20% · locker ACTIVE · pad OK → mission READY_TO_LAUNCH. <b>Guard xét order.status nên accept lại được khi đang bay</b>; không giữ chỗ drone
+%% @row D2 | AWAITING_DISPATCH → ACCEPTED | <code>POST /api/maintenance/drone-orders/{id}/accept</code> | MAINTENANCE | PAID · drone IDLE · pin đủ ngưỡng · locker ACTIVE · pad OK → khóa DB và giữ drone RESERVED → mission READY_TO_LAUNCH; chặn mission trùng
 %% @row ~D3 | ACCEPTED → LOADED | xác nhận nạp hàng tại điểm đi (ô nguồn, người nạp) | MAINTENANCE | CHƯA CÓ bước nạp hàng
-%% @row D4 | ACCEPTED → LAUNCHING | <code>POST …/{id}/launch</code> | MAINTENANCE | mission READY_TO_LAUNCH, Idempotency-Key → drone IN_FLIGHT
-%% @row D5 | ACCEPTED → CANCELED | <code>POST …/{id}/cancel</code> | MAINTENANCE | xoá mission, nhả ô, báo khách; không hoàn tiền
+%% @row D4 | ACCEPTED → LAUNCHING | <code>POST …/{id}/launch</code> | MAINTENANCE | mission READY_TO_LAUNCH; kiểm tra lại RESERVED · active · pin · pad OK; compare-and-set drone IN_FLIGHT
+%% @row D5 | ACCEPTED → CANCELED | <code>POST …/{id}/cancel</code> | MAINTENANCE | RESERVED → IDLE, xoá mission, nhả ô, báo khách; không hoàn tiền
 %% @row D6 | AWAITING_DISPATCH → CANCELED | <code>PUT /api/orders/{id}/cancel</code> | CUSTOMER | order → CANCELED nhưng <b>deliveryStage giữ nguyên</b>; app không có nút huỷ cho đơn drone
-%% @row !D7 | LAUNCHING → DEPARTED → … → ARRIVED | <code>DroneDeliverySimulator</code> mỗi 7 giây | hệ thống | chỉ fulfillmentMode = DEMO (mặc định cho mọi người). Push ở DEPARTED, APPROACHING, ARRIVED
+%% @row !D7 | LAUNCHING → DEPARTED → … → ARRIVED | <code>DroneDeliverySimulator</code> mỗi 3 giây | hệ thống | chỉ fulfillmentMode = DEMO (mặc định cho mọi người). Push ở DEPARTED, APPROACHING, ARRIVED
 %% @row ~D8 | LAUNCHING → … → ARRIVED | telemetry thật (MAVLink/MQTT) → iot-service | drone | CHƯA CÓ ⇒ ở STANDARD đơn đứng yên tại LAUNCHING
 %% @row !D9 | ARRIVED → READY_FOR_PICKUP | simulator: mission DEPOSITED, order STORING, cấp PIN 6 số hạn 24h | hệ thống | chỉ DEMO; ô vẫn RESERVED (không OCCUPIED); push không kèm PIN
 %% @row ~D10 | EN_ROUTE · APPROACHING → FAILED · DELAYED | abort / lỗi drone / thời tiết | hệ thống · MAINTENANCE | CHƯA CÓ (app mobile đã có nhãn delayed/failed nhưng backend không gửi)
@@ -53,6 +53,5 @@ flowchart TB
 
     style FLIGHT fill:#fffbeb,stroke:#bf8700,stroke-dasharray:4 3,color:#7d5a00
 
-    linkStyle 1 stroke:#cf222e,stroke-width:2px,color:#cf222e
     linkStyle 2,3,12,13 stroke:#8c959f,stroke-width:1.5px
     linkStyle 7,8,9,10,11 stroke:#bf8700,stroke-width:2.5px,color:#bf8700

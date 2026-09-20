@@ -2,6 +2,10 @@
 
 Mỗi thay đổi ở repo docs thêm **một dòng** vào ngày tương ứng (mới nhất ở trên). Ghi mã gap/SEC/ADR nếu có.
 
+## 2026-09-20
+
+- F1-G02: bổ sung trạng thái drone `RESERVED`, giữ drone bằng compare-and-set có khóa DB khi nhận đơn; kiểm tra lại pin/bãi đáp/reservation trước cất cánh; hủy nhả reservation; simulator không ghi đè FAULT. Cập nhật flow 1 và hai sơ đồ drone; ghi nhận chu kỳ DEMO 3 giây.
+
 ## 2026-09-16
 
 - Bàn giao: phần mobile đã kiểm tra đầy đủ (analyze 259 = baseline, 154 test pass, build Android thành công) nên bỏ cảnh báo "chưa qua kiểm tra máy móc". Ghi chú môi trường thêm bẫy Java 25 làm `flutter run` chết với thông báo `25.0.2` mà `flutter doctor` không phát hiện được.

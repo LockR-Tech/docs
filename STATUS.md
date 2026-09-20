@@ -4,8 +4,8 @@
 
 | | |
 |---|---|
-| **Cập nhật lần cuối** | 2026-09-16 |
-| **Người cập nhật** | Claude Code — quản lý dịch vụ trên admin, bỏ mã số nội bộ khỏi giao diện; cả ba repo chờ deploy vì hết quota Actions |
+| **Cập nhật lần cuối** | 2026-09-20 |
+| **Người cập nhật** | Codex — F1-G02 an toàn điều phối drone đang code/test trên nhánh, chưa merge/deploy |
 | **Tổng tiến độ 4 luồng** | **42,5 %** |
 
 ## 0. Mốc code đã rà soát
@@ -49,7 +49,11 @@ Mọi con số bên dưới đúng với các commit này. Trước khi tin STAT
 > 📌 **Bàn giao đầy đủ: [handoff/2026-09-16-trang-thai-day-du-va-viec-con-lai.md](handoff/2026-09-16-trang-thai-day-du-va-viec-con-lai.md)** — đọc file đó trước nếu bạn vừa vào dự án hoặc đổi máy.
 > Cần bản **ngắn** (vướng mắc + việc còn lại, 1 trang): [handoff/2026-09-16-tom-tat-viec-con-lai.md](handoff/2026-09-16-tom-tat-viec-con-lai.md).
 
-**Không còn việc nào đang code dở.** Mọi nhánh đã merge vào `main`. Hai nút thắt là thao tác vận hành, không phải lập trình:
+| Việc | Gap | Người/nhánh | Trạng thái |
+|---|---|---|---|
+| Khóa vòng đời điều phối drone: `IDLE → RESERVED → IN_FLIGHT`, guard cất cánh/hủy và không ghi đè FAULT | **F1-G02** | Codex · backend `codex/drone-demo-3s`, mobile `codex/drone-maintenance-dialog-fix` | Đã code và qua test cục bộ; **chưa merge/deploy** |
+
+Các nút thắt vận hành hiện có:
 
 | Nút thắt | Trạng thái | Ai làm |
 |---|---|---|
@@ -76,7 +80,7 @@ Cách lấy và nạp: [cau-hinh-dich-vu-ngoai.md](04-engineering/cau-hinh-dich-
 4. **SEC-04** Broker MQTT riêng có xác thực + TLS trong `docker-compose.yml`.
 5. **F2-G11** Sửa 3 bug mobile chặn demo luồng 2 (id payment/order, nút mở tủ, locker id truyền như store id). _(nhỏ)_
 6. **F2-G01 = F1-G05** Hoàn tất đơn phía server khi người nhận mở ô bằng mã ở kiosk. _(dùng chung cho L1 và L2)_
-7. **F1-G01 · F1-G02** Tiến trình bay thật cho STANDARD + sửa guard mission (accept lại khi đang bay, 1 drone 2 đơn).
+7. **F1-G01** Tiến trình bay thật cho STANDARD. F1-G02 đã code/test cục bộ, chờ review + merge + deploy.
 8. **F3-G02 · F3-G03** Nhất quán ticket ↔ tài sản; IoT tự báo offline/hỏng.
 9. **F4-G01 → F4-G04** Khởi động RAG: pgvector, `assistant-service`, ingest, ask API.
 

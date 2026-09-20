@@ -1,52 +1,57 @@
 %% @title Trạng thái Drone — DroneUnit.status
-%% @subtitle Nguồn: <code>locker-service/…/model/DroneStatus.java</code> · <code>LockerService.java:612-749</code> · <code>order-service/…/DroneOrderMaintenanceService.java</code> · <code>DroneDeliverySimulator.java</code> — rà soát code 2026-09-13
+%% @subtitle Nguồn: <code>locker-service/…/model/DroneStatus.java</code> · <code>LockerService.java</code> · <code>order-service/…/DroneOrderMaintenanceService.java</code> · <code>DroneDeliverySimulator.java</code> — rà soát code 2026-09-20
 %% @orientation portrait
 %% @legend <span class="sw ok"></span>Trạng thái đang có
 %% @legend <span class="sw bad"></span>Lỗi / ngưng hoạt động
 %% @legend <span class="sw gap"></span>Trạng thái cần có — CHƯA code
 %% @legend <b>━</b> đã code &nbsp;<b style="color:#bf8700">━</b> chỉ chế độ DEMO &nbsp;<b style="color:#8c959f">┅</b> CHƯA code
 %% @row T1 | ∅ → IDLE | <code>POST /api/admin/lockers/drones</code> | ADMIN | locker tồn tại, mã drone không trùng
-%% @row T2 | IDLE → IN_FLIGHT | launch đơn <code>POST /api/maintenance/drone-orders/{id}/launch</code> | MAINTENANCE | mission READY_TO_LAUNCH, pin &gt; 20%. <b>Không kiểm tra lại drone còn IDLE</b>
-%% @row !T3 | IN_FLIGHT → IDLE | <code>DroneDeliverySimulator</code> khi mission DEPOSITED | hệ thống | chỉ DEMO; <b>không guard — ghi đè cả FAULT/MAINTENANCE</b>
-%% @row ~T4 | IN_FLIGHT → LANDED | telemetry / MQTT báo hạ cánh tại locker đích | drone / iot-service | CHƯA CÓ ⇒ ở STANDARD drone kẹt IN_FLIGHT vĩnh viễn
-%% @row ~T5 | LANDED → IDLE | xác nhận đã gửi hàng vào ô DRONE | hệ thống | CHƯA CÓ
-%% @row ~T6 | IN_FLIGHT → RETURNING | abort / return-to-base | MAINTENANCE / tự động | CHƯA CÓ
-%% @row ~T7 | RETURNING → IDLE · FAULT | drone về trạm / hỏng dọc đường | hệ thống | CHƯA CÓ
-%% @row T8 | IDLE ⇄ CHARGING | <code>POST /api/maintenance/drones/{id}/status</code> | MAINTENANCE (đã claim) | rời CHARGING ghi <code>lastChargedAt</code>; không tự động
-%% @row T9 | IDLE · CHARGING · IN_FLIGHT → FAULT | cùng endpoint trên | MAINTENANCE (đã claim) | bắt buộc lý do → mở ticket. Đặt giữa chuyến <b>không huỷ mission</b>
-%% @row T10 | FAULT → MAINTENANCE · IDLE | cùng endpoint trên | MAINTENANCE (đã claim) | rời FAULT → tự đóng ticket
-%% @row T11 | MAINTENANCE → IDLE | cùng endpoint trên | MAINTENANCE (đã claim) | —
-%% @row xT12 | mọi → MAINTENANCE, active=false | <code>DELETE /api/admin/drones/{id}</code> | ADMIN | <b>không guard</b>: xoá được cả drone đang IN_FLIGHT
-%% @note Endpoint thủ công (T8–T11) thực chất cho phép <b>mọi → mọi</b>, chỉ kiểm tra giá trị hợp lệ; lưu dạng String, không enum Java, không CHECK trong DB. ADMIN web gọi endpoint này luôn lỗi <code>DRONE_OWNERSHIP_REQUIRED</code> vì web không claim drone.
-%% @note Accept không giữ chỗ drone ⇒ 1 drone nhận được 2 đơn. Luồng cũ <code>DroneDeliveryRequest</code> (dispatch/complete) còn song song, bỏ qua kiểm tra pin, không client nào gọi ⇒ nên xoá.
+%% @row T2 | IDLE → RESERVED | accept đơn <code>POST /api/maintenance/drone-orders/{id}/accept</code> | MAINTENANCE | compare-and-set có khóa DB; một drone chỉ giữ cho một mission
+%% @row T3 | RESERVED → IN_FLIGHT | launch đơn <code>POST /api/maintenance/drone-orders/{id}/launch</code> | MAINTENANCE | kiểm tra lại active, pin và pad; compare-and-set chống trạng thái thay đổi giữa chừng
+%% @row !T4 | IN_FLIGHT → IDLE | <code>DroneDeliverySimulator</code> khi mission DEPOSITED | hệ thống | chỉ DEMO; compare-and-set nên không ghi đè FAULT/MAINTENANCE
+%% @row T5 | RESERVED → IDLE | đội bay huỷ trước cất cánh | MAINTENANCE | chỉ nhả khi drone vẫn RESERVED; không ghi đè trạng thái mới hơn
+%% @row ~T6 | IN_FLIGHT → LANDED | telemetry / MQTT báo hạ cánh tại locker đích | drone / iot-service | CHƯA CÓ ⇒ ở STANDARD drone kẹt IN_FLIGHT vĩnh viễn
+%% @row ~T7 | LANDED → IDLE | xác nhận đã gửi hàng vào ô DRONE | hệ thống | CHƯA CÓ
+%% @row ~T8 | IN_FLIGHT → RETURNING | abort / return-to-base | MAINTENANCE / tự động | CHƯA CÓ
+%% @row ~T9 | RETURNING → IDLE · FAULT | drone về trạm / hỏng dọc đường | hệ thống | CHƯA CÓ
+%% @row T10 | IDLE ⇄ CHARGING | <code>POST /api/maintenance/drones/{id}/status</code> | MAINTENANCE (đã claim) | rời CHARGING ghi <code>lastChargedAt</code>; không tự động
+%% @row T11 | IDLE · CHARGING · RESERVED · IN_FLIGHT → FAULT | cùng endpoint trên | MAINTENANCE (đã claim) | bắt buộc lý do → mở ticket; trạng thái mission chưa tự chuyển FAILED
+%% @row T12 | FAULT → MAINTENANCE · IDLE | cùng endpoint trên | MAINTENANCE (đã claim) | rời FAULT → tự đóng ticket
+%% @row T13 | MAINTENANCE → IDLE | cùng endpoint trên | MAINTENANCE (đã claim) | —
+%% @row xT14 | mọi → MAINTENANCE, active=false | <code>DELETE /api/admin/drones/{id}</code> | ADMIN | <b>không guard</b>: xoá được cả drone đang IN_FLIGHT
+%% @note RESERVED và IN_FLIGHT do workflow điều phối quản lý; endpoint thủ công không được đặt hoặc thoát hai trạng thái này, ngoại trừ báo FAULT khẩn cấp.
+%% @note Luồng cũ <code>DroneDeliveryRequest</code> còn song song nhưng dispatch đã khóa bản ghi và chỉ nhận drone IDLE; không client nào gọi ⇒ nên xoá ở F1-G11.
 %%{init: {"flowchart": {"nodeSpacing": 34, "rankSpacing": 46, "padding": 8, "curve": "basis"}}}%%
 flowchart TB
     S(("●")) -->|T1| IDLE
-    IDLE(["IDLE<br/><small>sẵn sàng</small>"]) -->|T2| FLY(["IN_FLIGHT<br/><small>đang bay</small>"])
-    FLY -->|T3| IDLE
-    FLY -.->|T4| LANDED(["LANDED<br/><small>đã hạ cánh</small>"])
-    LANDED -.->|T5| IDLE
-    FLY -.->|T6| RTB(["RETURNING<br/><small>quay về trạm</small>"])
-    RTB -.->|T7| IDLE
-    IDLE <-->|T8| CHG(["CHARGING<br/><small>đang sạc</small>"])
-    IDLE -->|T9| FAULT(["FAULT<br/><small>hỏng</small>"])
-    CHG -->|T9| FAULT
-    FLY -->|T9| FAULT
-    RTB -.->|T7| FAULT
-    FAULT -->|T10| MAINT(["MAINTENANCE<br/><small>đang bảo trì</small>"])
-    FAULT -->|T10| IDLE
-    MAINT -->|T11| IDLE
-    MAINT -->|T12| DECOM(["MAINTENANCE<br/>active = false<br/><small>ngừng sử dụng</small>"])
+    IDLE(["IDLE<br/><small>sẵn sàng</small>"]) -->|T2| RES(["RESERVED<br/><small>đã giữ cho nhiệm vụ</small>"])
+    RES -->|T3| FLY(["IN_FLIGHT<br/><small>đang bay</small>"])
+    FLY -->|T4| IDLE
+    RES -->|T5| IDLE
+    FLY -.->|T6| LANDED(["LANDED<br/><small>đã hạ cánh</small>"])
+    LANDED -.->|T7| IDLE
+    FLY -.->|T8| RTB(["RETURNING<br/><small>quay về trạm</small>"])
+    RTB -.->|T9| IDLE
+    IDLE <-->|T10| CHG(["CHARGING<br/><small>đang sạc</small>"])
+    IDLE -->|T11| FAULT(["FAULT<br/><small>hỏng</small>"])
+    CHG -->|T11| FAULT
+    RES -->|T11| FAULT
+    FLY -->|T11| FAULT
+    RTB -.->|T9| FAULT
+    FAULT -->|T12| MAINT(["MAINTENANCE<br/><small>đang bảo trì</small>"])
+    FAULT -->|T12| IDLE
+    MAINT -->|T13| IDLE
+    MAINT -->|T14| DECOM(["MAINTENANCE<br/>active = false<br/><small>ngừng sử dụng</small>"])
     DECOM --> E((("◉")))
 
     classDef ok fill:#d8f5dd,stroke:#2da44e,stroke-width:1.5px,color:#1f2328
     classDef bad fill:#ffd8d3,stroke:#cf222e,stroke-width:1.5px,color:#1f2328
     classDef gap fill:#f6f8fa,stroke:#8c959f,stroke-width:1.5px,stroke-dasharray:5 4,color:#57606a
     classDef term fill:#1f2328,stroke:#1f2328,color:#ffffff
-    class IDLE,FLY,CHG ok
+    class IDLE,RES,FLY,CHG ok
     class FAULT,MAINT,DECOM bad
     class LANDED,RTB gap
     class S,E term
 
-    linkStyle 2 stroke:#bf8700,stroke-width:2.5px,color:#bf8700
-    linkStyle 3,4,5,6,11 stroke:#8c959f,stroke-width:1.5px
+    linkStyle 3 stroke:#bf8700,stroke-width:2.5px,color:#bf8700
+    linkStyle 4,5,6,7,12 stroke:#8c959f,stroke-width:1.5px
