@@ -38,7 +38,7 @@ Mỗi service có database Postgres riêng, Flyway, `ddl-auto: validate`.
 
 **MQTT (iot-service)** — phát `cabinet/{lockerId}/command/open` (chờ `/result` 20 s), `cabinet/{lockerId}/command/sync`; nghe `cabinet/+/command/+/result`, `cabinet/+/heartbeat`, `cabinet/+/locker/+/status`. ⚠ Broker mặc định là `broker.hivemq.com:1883` công khai (SEC-04). Pi thật dùng **tên** tủ trong topic và cần `slotIndex` ⇒ lệch hợp đồng với backend.
 
-**Gateway** (`api-gateway/src/main/resources/application.yml`): `/api/auth/**`→auth · `/api/users/**`, `/api/user/**`, `/api/media/**`→user · `/api/orders/**`, `/api/maintenance/drone-orders/**`, `/api/promotions/**`, `/api/admin/dashboard/**`→order · `/api/lockers/**`, `/api/boxes/**`, `/api/maintenance/**`, `/api/admin/drones/**`→locker · `/api/payments/**`, `/api/wallet/**`→payment · `/api/notifications/**`, `/ws/**`→notification · `/api/iot/**`, `/api/technician/**`→iot · `/api/stores/**`→store · `/api/loyalty/**`→loyalty. `/internal/**` luôn 403 từ ngoài.
+**Gateway** (`api-gateway/src/main/resources/application.yml`): `/api/auth/**`→auth · `/api/users/**`, `/api/user/**`, `/api/media/**`→user · `/api/orders/**`, `/api/drone-technician/drone-orders/**`, `/api/promotions/**`, `/api/admin/dashboard/**`→order · `/api/lockers/**`, `/api/boxes/**`, `/api/maintenance/**`, `/api/locker-technician/**`, `/api/drone-technician/**`, `/api/admin/drones/**`→locker · `/api/payments/**`, `/api/wallet/**`→payment · `/api/notifications/**`, `/ws/**`→notification · `/api/iot/**`, `/api/locker-technician/devices/**`→iot (khai báo trước locker-service để không bị nuốt) · `/api/stores/**`→store · `/api/loyalty/**`→loyalty. `/internal/**` luôn 403 từ ngoài.
 
 ## 3. Hạ tầng
 

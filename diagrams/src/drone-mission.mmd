@@ -5,16 +5,16 @@
 %% @legend <span class="sw demo"></span>Chỉ đạt được ở DEMO
 %% @legend <span class="sw gap"></span>Cần có — CHƯA code
 %% @legend <span class="sw end"></span>Kết thúc
-%% @row D1 | ∅ → AWAITING_DISPATCH | <code>POST /api/orders/drone-deliveries</code> | CUSTOMER | giữ ô DRONE 24h, payment UNPAID, báo nhóm MAINTENANCE; người nhận luôn là người đặt
-%% @row D2 | AWAITING_DISPATCH → ACCEPTED | <code>POST /api/maintenance/drone-orders/{id}/accept</code> | MAINTENANCE | PAID · drone IDLE · pin đủ ngưỡng · locker ACTIVE · pad OK → khóa DB và giữ drone RESERVED → mission READY_TO_LAUNCH; chặn mission trùng
-%% @row ~D3 | ACCEPTED → LOADED | xác nhận nạp hàng tại điểm đi (ô nguồn, người nạp) | MAINTENANCE | CHƯA CÓ bước nạp hàng
-%% @row D4 | ACCEPTED → LAUNCHING | <code>POST …/{id}/launch</code> | MAINTENANCE | mission READY_TO_LAUNCH; kiểm tra lại RESERVED · active · pin · pad OK; compare-and-set drone IN_FLIGHT
-%% @row D5 | ACCEPTED → CANCELED | <code>POST …/{id}/cancel</code> | MAINTENANCE | RESERVED → IDLE, xoá mission, nhả ô, báo khách; không hoàn tiền
+%% @row D1 | ∅ → AWAITING_DISPATCH | <code>POST /api/orders/drone-deliveries</code> | CUSTOMER | giữ ô DRONE 24h, payment UNPAID, báo nhóm DRONE_TECHNICIAN; người nhận luôn là người đặt
+%% @row D2 | AWAITING_DISPATCH → ACCEPTED | <code>POST /api/drone-technician/drone-orders/{id}/accept</code> | DRONE_TECHNICIAN | PAID · drone IDLE · pin đủ ngưỡng · locker ACTIVE · pad OK → khóa DB và giữ drone RESERVED → mission READY_TO_LAUNCH; chặn mission trùng
+%% @row ~D3 | ACCEPTED → LOADED | xác nhận nạp hàng tại điểm đi (ô nguồn, người nạp) | DRONE_TECHNICIAN | CHƯA CÓ bước nạp hàng
+%% @row D4 | ACCEPTED → LAUNCHING | <code>POST …/{id}/launch</code> | DRONE_TECHNICIAN | mission READY_TO_LAUNCH; kiểm tra lại RESERVED · active · pin · pad OK; compare-and-set drone IN_FLIGHT
+%% @row D5 | ACCEPTED → CANCELED | <code>POST …/{id}/cancel</code> | DRONE_TECHNICIAN | RESERVED → IDLE, xoá mission, nhả ô, báo khách; không hoàn tiền
 %% @row D6 | AWAITING_DISPATCH → CANCELED | <code>PUT /api/orders/{id}/cancel</code> | CUSTOMER | order → CANCELED nhưng <b>deliveryStage giữ nguyên</b>; app không có nút huỷ cho đơn drone
 %% @row !D7 | LAUNCHING → DEPARTED → … → ARRIVED | <code>DroneDeliverySimulator</code> mỗi 3 giây | hệ thống | chỉ fulfillmentMode = DEMO (mặc định cho mọi người). Push ở DEPARTED, APPROACHING, ARRIVED
 %% @row ~D8 | LAUNCHING → … → ARRIVED | telemetry thật (MAVLink/MQTT) → iot-service | drone | CHƯA CÓ ⇒ ở STANDARD đơn đứng yên tại LAUNCHING
 %% @row !D9 | ARRIVED → READY_FOR_PICKUP | simulator: mission DEPOSITED, order STORING, cấp PIN 6 số hạn 24h | hệ thống | chỉ DEMO; ô vẫn RESERVED (không OCCUPIED); push không kèm PIN
-%% @row ~D10 | EN_ROUTE · APPROACHING → FAILED · DELAYED | abort / lỗi drone / thời tiết | hệ thống · MAINTENANCE | CHƯA CÓ (app mobile đã có nhãn delayed/failed nhưng backend không gửi)
+%% @row ~D10 | EN_ROUTE · APPROACHING → FAILED · DELAYED | abort / lỗi drone / thời tiết | hệ thống · DRONE_TECHNICIAN | CHƯA CÓ (app mobile đã có nhãn delayed/failed nhưng backend không gửi)
 %% @row D11 | READY_FOR_PICKUP → (order COMPLETED) | <code>PUT /api/orders/{id}/complete</code> | người đặt | cần PAID. Mở ô bằng PIN ở kiosk <b>không</b> hoàn tất đơn
 %% @note Theo dõi hành trình: app hỏi <code>GET /api/orders/{id}/drone-delivery</code> mỗi 3 giây, API trả missionId/droneCode/eta = null; bản đồ live (STOMP) đã tắt bằng feature flag, không service nào phát vị trí.
 %% @note DroneMission.status dùng cùng tên chặng + READY_TO_LAUNCH/DEPOSITED; khi huỷ, dòng mission bị <b>xoá</b> thay vì đánh dấu CANCELED.

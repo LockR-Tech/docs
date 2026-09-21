@@ -99,14 +99,14 @@ Client gửi `multipart/form-data` tới `uploadUrl`: **toàn bộ** `fields` (g
 | `GET /api/lockers/my-reports` | Người báo | — | Mỗi phiếu có `attachments[]` |
 | `GET /api/lockers/reports/{id}/attachments` | Người báo | — | Chỉ chủ phiếu |
 | `POST /api/lockers/reports/{id}/attachments` | Người báo | `{attachments: [1..5]}` | Chỉ chủ phiếu, phiếu chưa `RESOLVED`, tối đa 10 ảnh `REPORT`/phiếu |
-| `GET /api/maintenance/reports` | TECH/MAINT/ADMIN | — | Mỗi phiếu có `attachments[]` |
-| `GET /api/maintenance/reports/{id}` | TECH/MAINT/ADMIN | — | 1 phiếu, có `attachments[]` |
-| `GET /api/maintenance/reports/{id}/attachments?stage=` | TECH/MAINT/ADMIN | — | Lọc theo stage (tuỳ chọn) |
-| `POST /api/maintenance/reports/{id}/attachments` | Người được giao hoặc ADMIN | `{stage: INSPECTION\|PROGRESS\|RESOLUTION, note?, attachments: [1..10]}` | Phiếu phải `IN_PROGRESS`. Có `note` ⇒ tạo 1 dòng nhật ký và gắn ảnh vào đó. Tối đa 30 ảnh/phiếu. |
-| `DELETE /api/maintenance/reports/{id}/attachments/{attachmentId}` | Người upload (phiếu chưa RESOLVED) hoặc ADMIN | — | Xoá DB + xoá trên Cloudinary (best-effort) |
-| `GET /api/maintenance/reports/{id}/logs` | TECH/MAINT/ADMIN | — | Mỗi dòng có `attachments[]` |
-| `POST /api/maintenance/reports/{id}/logs` | TECH/MAINT/ADMIN | `{note, attachments?[≤10]}` | Ảnh stage `PROGRESS`, cần là người được giao hoặc ADMIN khi có ảnh |
-| `PUT /api/maintenance/reports/{id}/resolve` | TECH/MAINT/ADMIN | tuỳ chọn `{note?, attachments?[≤10]}` | Ảnh stage `RESOLUTION` lưu trước khi đóng phiếu. Bật `APP_MAINTENANCE_REQUIRE_RESOLUTION_PHOTO` ⇒ `400 RESOLUTION_PHOTO_REQUIRED` nếu phiếu chưa có ảnh nghiệm thu |
+| `GET /api/locker-technician/reports` | TECH/MAINT/ADMIN | — | Mỗi phiếu có `attachments[]` |
+| `GET /api/locker-technician/reports/{id}` | TECH/MAINT/ADMIN | — | 1 phiếu, có `attachments[]` |
+| `GET /api/locker-technician/reports/{id}/attachments?stage=` | TECH/MAINT/ADMIN | — | Lọc theo stage (tuỳ chọn) |
+| `POST /api/locker-technician/reports/{id}/attachments` | Người được giao hoặc ADMIN | `{stage: INSPECTION\|PROGRESS\|RESOLUTION, note?, attachments: [1..10]}` | Phiếu phải `IN_PROGRESS`. Có `note` ⇒ tạo 1 dòng nhật ký và gắn ảnh vào đó. Tối đa 30 ảnh/phiếu. |
+| `DELETE /api/locker-technician/reports/{id}/attachments/{attachmentId}` | Người upload (phiếu chưa RESOLVED) hoặc ADMIN | — | Xoá DB + xoá trên Cloudinary (best-effort) |
+| `GET /api/locker-technician/reports/{id}/logs` | TECH/MAINT/ADMIN | — | Mỗi dòng có `attachments[]` |
+| `POST /api/locker-technician/reports/{id}/logs` | TECH/MAINT/ADMIN | `{note, attachments?[≤10]}` | Ảnh stage `PROGRESS`, cần là người được giao hoặc ADMIN khi có ảnh |
+| `PUT /api/locker-technician/reports/{id}/resolve` | TECH/MAINT/ADMIN | tuỳ chọn `{note?, attachments?[≤10]}` | Ảnh stage `RESOLUTION` lưu trước khi đóng phiếu. Bật `APP_MAINTENANCE_REQUIRE_RESOLUTION_PHOTO` ⇒ `400 RESOLUTION_PHOTO_REQUIRED` nếu phiếu chưa có ảnh nghiệm thu |
 | `GET /api/admin/lockers/reports/{id}/attachments` | ADMIN | — | |
 | `POST /api/admin/lockers/reports/{id}/attachments` | ADMIN | `{stage, note?, attachments}` | Mọi stage, mọi trạng thái |
 | `DELETE /api/admin/lockers/reports/{id}/attachments/{attachmentId}` | ADMIN | — | |

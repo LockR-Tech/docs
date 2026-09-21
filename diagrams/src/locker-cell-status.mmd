@@ -11,12 +11,12 @@
 %% @row C5 | OCCUPIED → AVAILABLE | <code>releaseBox</code> khi đơn COMPLETED · EXPIRED · CANCELED | hệ thống | không nhả nếu ô đang FAULT / OUT_OF_SERVICE / CLEANING
 %% @row xC6 | mọi → FAULT | <code>POST /api/boxes/{id}/fault</code> | <b>mọi JWT, mọi ô</b> | không guard (kể cả ô đang có hàng); mỗi lần gọi mở 1 ticket mới
 %% @row ~C7 | mọi → FAULT | mở tủ FAILED/JAMMED · heartbeat mất | iot-service | CHƯA CÓ tự động báo hỏng — hiện chỉ ghi access log
-%% @row C8 | FAULT → AVAILABLE | xử lý xong ticket (<code>resolve</code>) | TECHNICIAN · MAINTENANCE · ADMIN | ô phải đang FAULT; không kiểm tra người được giao
-%% @row xC9 | mọi → AVAILABLE | <code>POST /api/maintenance/boxes/{id}/clear-fault</code> | TECHNICIAN · MAINTENANCE · ADMIN | <b>không guard</b>: giải phóng được ô đang có hàng; ticket vẫn OPEN
-%% @row C10 | AVAILABLE · FAULT → OUT_OF_SERVICE · CLEANING | <code>…/out-of-service</code> · <code>…/cleaning</code> | TECHNICIAN · MAINTENANCE · ADMIN | cấm khi RESERVED/OCCUPIED; FAULT → CLEANING → AVAILABLE lách qua bước xoá lỗi
-%% @row C11 | OUT_OF_SERVICE · CLEANING → AVAILABLE | <code>…/return-to-service</code> | TECHNICIAN · MAINTENANCE · ADMIN | không đồng bộ trạng thái xuống tủ
+%% @row C8 | FAULT → AVAILABLE | xử lý xong ticket (<code>resolve</code>) | LOCKER_TECHNICIAN · DRONE_TECHNICIAN · ADMIN | ô phải đang FAULT; không kiểm tra người được giao
+%% @row xC9 | mọi → AVAILABLE | <code>POST /api/locker-technician/boxes/{id}/clear-fault</code> | LOCKER_TECHNICIAN · DRONE_TECHNICIAN · ADMIN | <b>không guard</b>: giải phóng được ô đang có hàng; ticket vẫn OPEN
+%% @row C10 | AVAILABLE · FAULT → OUT_OF_SERVICE · CLEANING | <code>…/out-of-service</code> · <code>…/cleaning</code> | LOCKER_TECHNICIAN · DRONE_TECHNICIAN · ADMIN | cấm khi RESERVED/OCCUPIED; FAULT → CLEANING → AVAILABLE lách qua bước xoá lỗi
+%% @row C11 | OUT_OF_SERVICE · CLEANING → AVAILABLE | <code>…/return-to-service</code> | LOCKER_TECHNICIAN · DRONE_TECHNICIAN · ADMIN | không đồng bộ trạng thái xuống tủ
 %% @row xC12 | mọi → chuỗi bất kỳ | <code>updateBoxStatus</code> (admin) | ADMIN | web ghi giá trị <code>MAINTENANCE</code> không tồn tại ⇒ return-to-service từ chối
-%% @note Force-open (<code>POST /api/maintenance/boxes/{id}/force-open</code>) mở cửa vật lý nhưng không đổi trạng thái ô. Locker ở trạng thái MAINTENANCE vẫn cho đặt ô (<code>findAvailableBox</code> không kiểm tra).
+%% @note Force-open (<code>POST /api/locker-technician/boxes/{id}/force-open</code>) mở cửa vật lý nhưng không đổi trạng thái ô. Locker ở trạng thái MAINTENANCE vẫn cho đặt ô (<code>findAvailableBox</code> không kiểm tra).
 %%{init: {"flowchart": {"nodeSpacing": 46, "rankSpacing": 50, "padding": 8, "curve": "basis"}}}%%
 flowchart TB
     S(("●")) --> AV(["AVAILABLE<br/><small>trống</small>"])

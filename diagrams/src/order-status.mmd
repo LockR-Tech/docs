@@ -6,10 +6,10 @@
 %% @legend <span class="sw gap"></span>Legacy giặt ủi — không nên còn
 %% @legend <b>━</b> đã code &nbsp;<b style="color:#bf8700">━</b> chỉ DEMO &nbsp;<b style="color:#8c959f">┅</b> CHƯA code &nbsp;<b style="color:#cf222e">━</b> lỗ hổng
 %% @row O1 | ∅ → INITIALIZED | <code>POST /api/orders/send</code> · <code>/rental</code> | CUSTOMER | ô AVAILABLE → giữ ô RESERVED 24h; phát PIN gửi hàng. (<code>POST /api/orders</code> cũ lấy userId từ body)
-%% @row O2 | ∅ → AWAITING_DISPATCH | <code>POST /api/orders/drone-deliveries</code> | CUSTOMER | Idempotency-Key; giữ ô DRONE; báo nhóm MAINTENANCE — xem trang “Vòng đời giao hàng drone”
+%% @row O2 | ∅ → AWAITING_DISPATCH | <code>POST /api/orders/drone-deliveries</code> | CUSTOMER | Idempotency-Key; giữ ô DRONE; báo nhóm DRONE_TECHNICIAN — xem trang “Vòng đời giao hàng drone”
 %% @row O3 | INITIALIZED → STORING | <code>PUT /api/orders/{id}/confirm</code> | chủ đơn | SEND cần PAID, <b>RENTAL không kiểm tra thanh toán</b>; ô → OCCUPIED; đổi sang PIN nhận hàng, hạn 48h
 %% @row O4 | INITIALIZED → CANCELED | <code>PUT …/cancel</code> · <code>report-box-fault</code> · cron 15’ quá 24h | chủ đơn · hệ thống | nhả ô; <b>đơn đã PAID bị huỷ không hoàn tiền</b>
-%% @row O5 | AWAITING_DISPATCH → CANCELED | <code>PUT …/cancel</code> · <code>POST …/drone-orders/{id}/cancel</code> | CUSTOMER · MAINTENANCE | stage AWAITING_DISPATCH (khách) / ACCEPTED (bảo trì); khách huỷ <b>không cập nhật deliveryStage</b>
+%% @row O5 | AWAITING_DISPATCH → CANCELED | <code>PUT …/cancel</code> · <code>POST …/drone-orders/{id}/cancel</code> | CUSTOMER · DRONE_TECHNICIAN | stage AWAITING_DISPATCH (khách) / ACCEPTED (bảo trì); khách huỷ <b>không cập nhật deliveryStage</b>
 %% @row !O6 | AWAITING_DISPATCH → STORING | <code>DroneDeliverySimulator</code> (mission DEPOSITED) | hệ thống | chỉ DEMO; ghi thẳng, <b>bỏ qua transition()</b>: không lịch sử, không event
 %% @row ~O7 | AWAITING_DISPATCH → STORING | sự kiện hạ cánh + gửi hàng thật | drone · iot-service | CHƯA CÓ ⇒ STANDARD kẹt ở AWAITING_DISPATCH
 %% @row O8 | STORING → COMPLETED | <code>PUT …/complete</code> · <code>POST /api/iot/pickup</code> · <code>pickup-storage</code> | chủ đơn · người nhận có tài khoản | nhả ô, xoá PIN. Phí quá hạn cộng <b>sau</b> khi kiểm tra PAID ⇒ không bao giờ thu
