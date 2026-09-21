@@ -4,9 +4,9 @@
 
 | | |
 |---|---|
-| **Cập nhật lần cuối** | 2026-09-20 |
-| **Người cập nhật** | Codex — F1-G02 an toàn điều phối drone đang code/test trên nhánh, chưa merge/deploy |
-| **Tổng tiến độ 4 luồng** | **42,5 %** |
+| **Cập nhật lần cuối** | 2026-09-21 |
+| **Người cập nhật** | Claude Code — hoàn thiện L2 (gửi hàng + thuê ô), phần KTV tủ của L3, L4 trợ lý RAG; code đã mở PR, **chưa merge/deploy** (§ 3) |
+| **Tổng tiến độ 4 luồng** | **67,2 %** (tính theo trạng thái sau khi các PR ở § 3 được merge) |
 
 ## 0. Mốc code đã rà soát
 
@@ -25,11 +25,13 @@ Mọi con số bên dưới đúng với các commit này. Trước khi tin STAT
 | Luồng | Tiến độ | Một dòng tình trạng | Chi tiết |
 |---|---:|---|---|
 | **L1** Giao hàng drone → PIN → nhận hàng | **60 %** | Chạy trọn vẹn **chỉ ở chế độ DEMO** (bộ giả lập đẩy chặng bay). Ở STANDARD đơn kẹt tại LAUNCHING, drone kẹt IN_FLIGHT. | [flow-1](02-flows/flow-1-drone-delivery.md) |
-| **L2** Thuê tủ gửi hàng → chuyển mã → người nhận lấy | **65 %** | Tạo đơn, giữ ô, mở tủ bằng mã chạy được. Nhận bằng mã ở kiosk **không hoàn tất đơn**; không gửi mã cho người nhận chưa có tài khoản; app có bug xác nhận sai id. | [flow-2](02-flows/flow-2-locker-send.md) |
-| **L3** Vai trò · quản lý drone · bảo trì | **45 %** | Có 4 vai trò và màn hình riêng, nhưng **lỗ hổng phân quyền nghiêm trọng**; ticket và tài sản lệch trạng thái; không tự phát hiện hỏng từ IoT. | [flow-3](02-flows/flow-3-roles-maintenance.md) |
-| **L4** RAG hỏi đáp tài liệu nội bộ | **0 %** | Chưa có dòng code nào. Đã có kiến trúc đề xuất và danh sách tài liệu nguồn. | [flow-4](02-flows/flow-4-rag-assistant.md) |
+| **L2** Thuê tủ gửi hàng → chuyển mã → người nhận lấy (gồm thuê ô theo giờ) | **70 %** | Gửi hàng và thuê ô chạy trọn: trả tiền thật → mở ô → xác nhận bỏ hàng (app hoặc kiosk) → người nhận lấy bằng mã hoàn tất đơn; thuê ô mở lại nhiều lần, kết thúc tại kiosk. Còn: phí quá hạn chưa thu, người nhận có tài khoản chưa thấy đơn gửi tới mình, payload MQTT với Pi. | [flow-2](02-flows/flow-2-locker-send.md) |
+| **L3** Vai trò · quản lý drone · bảo trì | **45 %** | Phần **KTV tủ** đã đủ: KTV phụ trách tủ, định tuyến + thông báo phiếu, đóng phiếu trả tài sản, tủ bảo trì chặn đặt ô, kiểm tra định kỳ ĐẠT/KHÔNG ĐẠT. Còn **lỗ hổng phân quyền** (SEC-02/03/05/06), IoT chưa tự báo hỏng, phần drone. | [flow-3](02-flows/flow-3-roles-maintenance.md) |
+| **L4** RAG hỏi đáp tài liệu nội bộ | **94 %** | `assistant-service` (Claude + Voyage, pgvector riêng): nạp tài liệu, hỏi đáp có trích nguồn, lọc theo vai trò, từ chối ngoài phạm vi, trang Kho tri thức, màn hình trợ lý. Còn: nạp khoá API, chạy bộ đánh giá và hiệu chỉnh ngưỡng. | [flow-4](02-flows/flow-4-rag-assistant.md) |
 
-**Cách tính:** mỗi luồng có checklist 8–10 hạng mục; DONE = 1 · PARTIAL = 0,5 · MISSING = 0. % luồng = tổng điểm / số hạng mục. Tổng dự án = trung bình cộng 4 luồng (trọng số bằng nhau): (60 + 65 + 45 + 0) / 4 = **42,5 %**. Chỉ được đổi % khi đổi checklist trong file luồng, kèm bằng chứng `file:line`.
+**Cách tính:** mỗi luồng có checklist 8–10 hạng mục; DONE = 1 · PARTIAL = 0,5 · MISSING = 0. % luồng = tổng điểm / số hạng mục. Tổng dự án = trung bình cộng 4 luồng (trọng số bằng nhau): (60 + 70 + 45 + 93,75) / 4 = **67,2 %**. Chỉ được đổi % khi đổi checklist trong file luồng, kèm bằng chứng `file:line`.
+
+> Chủ dự án đánh số theo nghiệp vụ: *luồng 2* = gửi hàng, *luồng 3* = thuê ô (cả hai nằm trong L2), *luồng 4* = vận hành–bảo trì (L3), *luồng 5* = trợ lý RAG (L4).
 
 ## 2. 🔴 Rủi ro chặn production — xử lý trước mọi tính năng
 
@@ -52,6 +54,12 @@ Mọi con số bên dưới đúng với các commit này. Trước khi tin STAT
 | Việc | Gap | Người/nhánh | Trạng thái |
 |---|---|---|---|
 | Khóa vòng đời điều phối drone: `IDLE → RESERVED → IN_FLIGHT`, guard cất cánh/hủy và không ghi đè FAULT | **F1-G02** | Codex · backend `codex/drone-demo-3s`, mobile `codex/drone-maintenance-dialog-fix` | Đã code và qua test cục bộ; **chưa merge/deploy** |
+| **Hotfix production**: mở lại ô thuê không còn kết thúc lượt thuê | F2-G01 | Claude Code · [backend #20](https://github.com/LockR-Tech/backend/pull/20) | Chờ merge — **gấp** (lỗi đang chạy trên production) |
+| Gỡ test mobile làm đỏ deploy mobile web | — | [mobile #18](https://github.com/LockR-Tech/mobile/pull/18) | Chờ merge — merge sớm để bản đổi tên role lên mobile web |
+| L2 phía server: chặn mã đơn chưa trả/thuê quá hạn, xác nhận bỏ hàng cần đã mở ô, kiosk xác nhận/kết thúc thuê bằng mã, `isPaid` đúng | F2-G01, F2-G04, F2-G07 | [backend #21](https://github.com/LockR-Tech/backend/pull/21) (xếp sau #20) | Chờ merge sau #20; migration `order_service` V13 |
+| L2 kiosk + app: bước "đã bỏ hàng", kết thúc thuê; app trả tiền thật, chờ PAID | F2-G04, F2-G11 | [iot #5](https://github.com/LockR-Tech/iot/pull/5) · [mobile #19](https://github.com/LockR-Tech/mobile/pull/19) (xếp sau #18) | Merge **sau khi** backend #21 deploy |
+| L3 KTV tủ: KTV phụ trách, định tuyến phiếu, trả tài sản, kiểm tra định kỳ, nhắc hạn | F3-G02, F3-G04, F3-G07, F3-G08 | [backend #22](https://github.com/LockR-Tech/backend/pull/22) · [frontend #15](https://github.com/LockR-Tech/frontend/pull/15) · [mobile #20](https://github.com/LockR-Tech/mobile/pull/20) | Backend trước (migration `locker_service` V18), client sau khi deploy |
+| L4 trợ lý RAG | F4-G01 → F4-G09 | [backend #23](https://github.com/LockR-Tech/backend/pull/23) · [frontend #16](https://github.com/LockR-Tech/frontend/pull/16) · [mobile #21](https://github.com/LockR-Tech/mobile/pull/21) | Backend trước; **nạp khoá lên VM** ([runbook § 11b](04-engineering/cau-hinh-dich-vu-ngoai.md)) rồi chạy `scripts/seed-knowledge.sh` |
 
 Các nút thắt vận hành hiện có:
 
@@ -74,15 +82,15 @@ Cách lấy và nạp: [cau-hinh-dich-vu-ngoai.md](04-engineering/cau-hinh-dich-
 
 ## 4. Việc tiếp theo — theo thứ tự ưu tiên
 
-1. **Gỡ nút thắt Actions** rồi **deploy backend** — SEC-01 và SEC-07 đã vá trong code trên `main` nhưng chỉ đóng khi deploy xong. _(rất gấp)_
-2. **Nạp khoá còn thiếu trên VM** (số Twilio, SMTP, Firebase) — [runbook](04-engineering/cau-hinh-dich-vu-ngoai.md). Cloudinary đã xong 16/09.
-3. **SEC-02 · SEC-03 · SEC-05 · SEC-06** Khoá API theo chủ sở hữu + vai trò ở service, không chỉ ở gateway — [F3-G01](02-flows/flow-3-roles-maintenance.md).
-4. **SEC-04** Broker MQTT riêng có xác thực + TLS trong `docker-compose.yml`.
-5. **F2-G11** Sửa 3 bug mobile chặn demo luồng 2 (id payment/order, nút mở tủ, locker id truyền như store id). _(nhỏ)_
-6. **F2-G01 = F1-G05** Hoàn tất đơn phía server khi người nhận mở ô bằng mã ở kiosk. _(dùng chung cho L1 và L2)_
-7. **F1-G01** Tiến trình bay thật cho STANDARD. F1-G02 đã code/test cục bộ, chờ review + merge + deploy.
-8. **F3-G02 · F3-G03** Nhất quán ticket ↔ tài sản; IoT tự báo offline/hỏng.
-9. **F4-G01 → F4-G04** Khởi động RAG: pgvector, `assistant-service`, ingest, ask API.
+1. **Merge backend #20** (hotfix thuê ô) rồi kiểm dữ liệu production: đơn RENTAL bị COMPLETED sớm từ 2026-09-17, đơn INITIALIZED chưa trả tiền, đơn thuê STORING đã quá hạn. Sau đó merge theo thứ tự ở § 3: backend #21 → #22 → #23, rồi client của từng phần. _(rất gấp)_
+2. **Gỡ nút thắt Actions** rồi **deploy backend** — SEC-01 và SEC-07 đã vá trong code trên `main` nhưng chỉ đóng khi deploy xong. _(rất gấp)_
+3. **Nạp khoá còn thiếu trên VM** (số Twilio, SMTP, Firebase) — [runbook](04-engineering/cau-hinh-dich-vu-ngoai.md). Cloudinary đã xong 16/09.
+4. **SEC-02 · SEC-03 · SEC-05 · SEC-06** Khoá API theo chủ sở hữu + vai trò ở service, không chỉ ở gateway — [F3-G01](02-flows/flow-3-roles-maintenance.md).
+5. **SEC-04** Broker MQTT riêng có xác thực + TLS trong `docker-compose.yml`.
+6. **L4 lên production**: nạp `ANTHROPIC_API_KEY`, `EMBEDDING_API_KEY`, `ASSISTANT_DB_PASSWORD` trước lần deploy đầu có `assistant-service`; seed tài liệu; chạy bộ đánh giá (`POST /api/admin/knowledge/eval`) và chỉnh ngưỡng liên quan.
+7. **F2-G05 · F2-G06** Thu phí quá hạn; người nhận có tài khoản thấy đơn gửi tới mình.
+8. **F1-G01** Tiến trình bay thật cho STANDARD. F1-G02 đã code/test cục bộ, chờ review + merge + deploy.
+9. **F3-G03** IoT tự báo offline/hỏng; phần drone còn lại của F3-G02/G07.
 
 ## 5. Đã xong gần đây
 
@@ -104,5 +112,5 @@ Cách lấy và nạp: [cau-hinh-dich-vu-ngoai.md](04-engineering/cau-hinh-dich-
 | # | Nội dung | Cần ai quyết |
 |---|---|---|
 | Q1 | Org gói **Free** + repo private ⇒ **không bật được branch protection / rulesets**. Luật GitHub Flow hiện chỉ thực thi bằng quy ước + PR template. Nâng GitHub Team để bắt buộc review trước khi merge? | Chủ dự án |
-| Q2 | ~~Nhà cung cấp SMS cho F2-G03~~ — chốt **Twilio** (bản dùng thử, đủ để demo; chỉ gửi được tới số đã xác minh trong console). **Còn chờ**: nạp `APP_SMS_TWILIO_*` lên VM, và quyết có nâng lên tài khoản trả phí trước khi chạy thật không. LLM + embedding cho L4 (cần hỗ trợ tiếng Việt) vẫn chưa chọn. | Chủ dự án |
+| Q2 | ~~Nhà cung cấp SMS cho F2-G03~~ — chốt **Twilio** (bản dùng thử, đủ để demo; chỉ gửi được tới số đã xác minh trong console). **Còn chờ**: nạp `APP_SMS_TWILIO_*` lên VM, và quyết có nâng lên tài khoản trả phí trước khi chạy thật không. ~~LLM + embedding cho L4~~ — chốt **Claude + Voyage AI**, kho vector container pgvector riêng ([ADR-0006](adr/0006-tro-ly-rag-claude-voyage-pgvector-rieng.md)). | Chủ dự án |
 | Q3 | Drone thật giao tiếp qua MAVLink hay MQTT? Quyết định kiến trúc cho F1-G01 | Nhóm drone |

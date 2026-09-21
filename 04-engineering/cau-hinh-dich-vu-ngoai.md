@@ -289,6 +289,40 @@ qua mọi lệnh push trong im lặng.
 
 ---
 
+## 11b. Trợ lý hỏi đáp: Anthropic (Claude) + Voyage AI (embedding)
+
+`assistant-service` ([ADR-0006](../adr/0006-tro-ly-rag-claude-voyage-pgvector-rieng.md)) cần hai khoá.
+Thiếu khoá thì service **vẫn chạy**; API hỏi đáp trả 503 "chưa cấu hình", tài liệu nạp vào nằm
+PENDING cho tới khi có `EMBEDDING_API_KEY` (có khoá là tự đánh chỉ mục tiếp, không phải nạp lại).
+
+1. **Anthropic**: console.anthropic.com → API keys → tạo khoá cho workspace production. Đặt giới hạn
+   chi tiêu (spend limit) ở console.
+2. **Voyage AI**: dashboard.voyageai.com → API keys → tạo khoá.
+3. Thêm vào `.env` VM:
+
+```
+ANTHROPIC_API_KEY=...
+ASSISTANT_CHAT_MODEL=claude-opus-5
+EMBEDDING_API_KEY=...
+EMBEDDING_MODEL=voyage-4
+ASSISTANT_DB_PASSWORD=<chuỗi ngẫu nhiên>
+```
+
+`ASSISTANT_DB_PASSWORD` chỉ có tác dụng **lần đầu** container `assistant-db` tạo volume — đặt trước lần
+deploy đầu tiên có `assistant-service`. `EMBEDDING_MODEL` chỉ đổi sang model **1024 chiều**; khác số
+chiều phải có migration đổi cột `kb_chunks.embedding` rồi đánh chỉ mục lại mọi tài liệu.
+
+4. `sudo docker compose up -d assistant-service`.
+5. Nạp bộ tài liệu mặc định từ máy có đủ các repo cạnh nhau:
+   `API_BASE_URL=https://<api> ADMIN_TOKEN=<access token ADMIN> backend/scripts/seed-knowledge.sh`.
+6. Chạy đánh giá truy xuất (chỉ tốn phí nhúng): `POST /api/admin/knowledge/eval`. `?generate=true` gọi
+   Claude cho từng câu — tốn phí, chỉ chạy khi cần.
+
+**Kiểm tra:** `GET /api/assistant/status` trả `{"enabled":true,"configured":true}`; danh sách
+`GET /api/admin/knowledge/documents` chuyển sang READY sau vài phút.
+
+---
+
 ## 12. Bảng tra nhanh
 
 | Dịch vụ | Biến | Đặt ở | Thiếu thì sao |
@@ -303,6 +337,9 @@ qua mọi lệnh push trong im lặng.
 | VNPay | `VNPAY_*` | `.env` VM | Chỉ chạy sandbox |
 | MoMo | `MOMO_*` | `.env` VM | Chỉ chạy endpoint test |
 | Firebase | `FIREBASE_CREDENTIALS_JSON` | `.env` VM | Không push notification |
+| Anthropic | `ANTHROPIC_API_KEY`, `ASSISTANT_CHAT_MODEL` | `.env` VM | Trợ lý hỏi đáp trả 503 |
+| Voyage AI | `EMBEDDING_API_KEY`, `EMBEDDING_MODEL` | `.env` VM | Tài liệu không được đánh chỉ mục, trợ lý trả 503 |
+| DB trợ lý | `ASSISTANT_DB_PASSWORD` | `.env` VM (trước lần deploy đầu) | Dùng mật khẩu mặc định trong compose |
 
 ## 13. Khi khoá bị lộ
 
