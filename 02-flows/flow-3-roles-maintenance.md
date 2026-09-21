@@ -2,7 +2,7 @@
 
 | Tiến độ | Rà soát | Sơ đồ |
 |---|---|---|
-| **45 %** (4,5 / 10) | 2026-09-21 · phần KTV tủ theo backend [#22](https://github.com/LockR-Tech/backend/pull/22) · frontend [#15](https://github.com/LockR-Tech/frontend/pull/15) · mobile [#20](https://github.com/LockR-Tech/mobile/pull/20) (chờ merge); phần còn lại như rà soát 2026-09-13 | [Trạng thái drone](../diagrams/pdf/drone-status.pdf) · [Trạng thái ô tủ](../diagrams/pdf/locker-cell-status.pdf) · [Kiến trúc](../diagrams/pdf/architecture.pdf) |
+| **45 %** (4,5 / 10) | 2026-09-21 · phần KTV tủ theo backend [#22](https://github.com/LockR-Tech/backend/pull/22) · frontend [#15](https://github.com/LockR-Tech/frontend/pull/15) · mobile [#20](https://github.com/LockR-Tech/mobile/pull/20) (đã merge 2026-09-21); phần còn lại như rà soát 2026-09-13 | [Trạng thái drone](../diagrams/pdf/drone-status.pdf) · [Trạng thái ô tủ](../diagrams/pdf/locker-cell-status.pdf) · [Kiến trúc](../diagrams/pdf/architecture.pdf) |
 
 Viết tắt: `…` = `src/main/java/com/huynqb/laundrylocker/<service>`, `LS` = `backend/locker-service/…/locker/service/LockerService.java` (nhánh backend #22).
 

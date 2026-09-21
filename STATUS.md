@@ -5,8 +5,8 @@
 | | |
 |---|---|
 | **Cập nhật lần cuối** | 2026-09-21 |
-| **Người cập nhật** | Claude Code — hoàn thiện L2 (gửi hàng + thuê ô), phần KTV tủ của L3, L4 trợ lý RAG; code đã mở PR, **chưa merge/deploy** (§ 3) |
-| **Tổng tiến độ 4 luồng** | **67,2 %** (tính theo trạng thái sau khi các PR ở § 3 được merge) |
+| **Người cập nhật** | Claude Code — hoàn thiện L2 (gửi hàng + thuê ô), phần KTV tủ của L3, L4 trợ lý RAG; **đã merge 2026-09-21** (§ 5), trợ lý chờ nạp khoá API |
+| **Tổng tiến độ 4 luồng** | **67,2 %** |
 
 ## 0. Mốc code đã rà soát
 
@@ -54,12 +54,8 @@ Mọi con số bên dưới đúng với các commit này. Trước khi tin STAT
 | Việc | Gap | Người/nhánh | Trạng thái |
 |---|---|---|---|
 | Khóa vòng đời điều phối drone: `IDLE → RESERVED → IN_FLIGHT`, guard cất cánh/hủy và không ghi đè FAULT | **F1-G02** | Codex · backend `codex/drone-demo-3s`, mobile `codex/drone-maintenance-dialog-fix` | Đã code và qua test cục bộ; **chưa merge/deploy** |
-| **Hotfix production**: mở lại ô thuê không còn kết thúc lượt thuê | F2-G01 | Claude Code · [backend #20](https://github.com/LockR-Tech/backend/pull/20) | Chờ merge — **gấp** (lỗi đang chạy trên production) |
-| Gỡ test mobile làm đỏ deploy mobile web | — | [mobile #18](https://github.com/LockR-Tech/mobile/pull/18) | Chờ merge — merge sớm để bản đổi tên role lên mobile web |
-| L2 phía server: chặn mã đơn chưa trả/thuê quá hạn, xác nhận bỏ hàng cần đã mở ô, kiosk xác nhận/kết thúc thuê bằng mã, `isPaid` đúng | F2-G01, F2-G04, F2-G07 | [backend #21](https://github.com/LockR-Tech/backend/pull/21) (xếp sau #20) | Chờ merge sau #20; migration `order_service` V13 |
-| L2 kiosk + app: bước "đã bỏ hàng", kết thúc thuê; app trả tiền thật, chờ PAID | F2-G04, F2-G11 | [iot #5](https://github.com/LockR-Tech/iot/pull/5) · [mobile #19](https://github.com/LockR-Tech/mobile/pull/19) (xếp sau #18) | Merge **sau khi** backend #21 deploy |
-| L3 KTV tủ: KTV phụ trách, định tuyến phiếu, trả tài sản, kiểm tra định kỳ, nhắc hạn | F3-G02, F3-G04, F3-G07, F3-G08 | [backend #22](https://github.com/LockR-Tech/backend/pull/22) · [frontend #15](https://github.com/LockR-Tech/frontend/pull/15) · [mobile #20](https://github.com/LockR-Tech/mobile/pull/20) | Backend trước (migration `locker_service` V18), client sau khi deploy |
-| L4 trợ lý RAG | F4-G01 → F4-G09 | [backend #23](https://github.com/LockR-Tech/backend/pull/23) · [frontend #16](https://github.com/LockR-Tech/frontend/pull/16) · [mobile #21](https://github.com/LockR-Tech/mobile/pull/21) | Backend trước; **nạp khoá lên VM** ([runbook § 11b](04-engineering/cau-hinh-dich-vu-ngoai.md)) rồi chạy `scripts/seed-knowledge.sh` |
+| L4 trợ lý RAG lên chạy thật: nạp khoá, seed tài liệu, chạy bộ đánh giá, chỉnh ngưỡng | F4-G09 | Chủ dự án | Code đã deploy; chờ `ANTHROPIC_API_KEY`, `EMBEDDING_API_KEY` trên VM ([runbook § 11b](04-engineering/cau-hinh-dich-vu-ngoai.md)) rồi chạy `backend/scripts/seed-knowledge.sh` |
+| Kiểm dữ liệu production bị lỗi thuê ô trước backend #20: đơn RENTAL bị COMPLETED sớm từ 2026-09-17, đơn INITIALIZED chưa trả tiền (giờ bị chặn mở ô), đơn thuê STORING quá hạn | F2-G01 | Chủ dự án | Chưa chạy truy vấn |
 
 Các nút thắt vận hành hiện có:
 
@@ -82,7 +78,7 @@ Cách lấy và nạp: [cau-hinh-dich-vu-ngoai.md](04-engineering/cau-hinh-dich-
 
 ## 4. Việc tiếp theo — theo thứ tự ưu tiên
 
-1. **Merge backend #20** (hotfix thuê ô) rồi kiểm dữ liệu production: đơn RENTAL bị COMPLETED sớm từ 2026-09-17, đơn INITIALIZED chưa trả tiền, đơn thuê STORING đã quá hạn. Sau đó merge theo thứ tự ở § 3: backend #21 → #22 → #23, rồi client của từng phần. _(rất gấp)_
+1. **Nghiệm thu trên production** luồng 2/3/4 vừa deploy (kịch bản ở kế hoạch: gửi hàng, thuê ô mở lại nhiều lần, KTV nhận–sửa–hoàn tất phiếu, kiểm tra định kỳ không đạt) và **kiểm dữ liệu** bị lỗi thuê ô trước backend #20 (§ 3). _(rất gấp)_
 2. **Gỡ nút thắt Actions** rồi **deploy backend** — SEC-01 và SEC-07 đã vá trong code trên `main` nhưng chỉ đóng khi deploy xong. _(rất gấp)_
 3. **Nạp khoá còn thiếu trên VM** (số Twilio, SMTP, Firebase) — [runbook](04-engineering/cau-hinh-dich-vu-ngoai.md). Cloudinary đã xong 16/09.
 4. **SEC-02 · SEC-03 · SEC-05 · SEC-06** Khoá API theo chủ sở hữu + vai trò ở service, không chỉ ở gateway — [F3-G01](02-flows/flow-3-roles-maintenance.md).
@@ -96,6 +92,7 @@ Cách lấy và nạp: [cau-hinh-dich-vu-ngoai.md](04-engineering/cau-hinh-dich-
 
 | Ngày | Việc | Liên kết |
 |---|---|---|
+| 2026-09-21 | **Hoàn thiện L2 + phần KTV tủ của L3 + L4, đã merge.** Hotfix đơn thuê bị kết thúc khi mở lại ô (backend #20, deploy xanh). Gửi hàng/thuê ô: chặn mã đơn chưa trả và thuê quá hạn, xác nhận bỏ hàng cần đã mở ô, kiosk xác nhận bỏ hàng và kết thúc thuê bằng mã, app trả tiền thật (bỏ CASH) và chờ PAID. KTV tủ: KTV phụ trách tủ, định tuyến + thông báo phiếu, đóng phiếu trả tài sản, tủ bảo trì chặn đặt ô, kiểm tra định kỳ ĐẠT/KHÔNG ĐẠT, nhắc hạn 07:00. Trợ lý RAG: `assistant-service` + `assistant-db` (pgvector), trang Kho tri thức, màn hình trợ lý. Migration mới: `order_service` V13, `locker_service` V18, `assistant_db` V1. Backend #21–#23 deploy chung một lần (hai lần deploy trung gian bị huỷ ở bước build, chưa chạm VM). | backend [#20](https://github.com/LockR-Tech/backend/pull/20) [#21](https://github.com/LockR-Tech/backend/pull/21) [#22](https://github.com/LockR-Tech/backend/pull/22) [#23](https://github.com/LockR-Tech/backend/pull/23) · frontend [#15](https://github.com/LockR-Tech/frontend/pull/15) [#16](https://github.com/LockR-Tech/frontend/pull/16) · mobile [#18](https://github.com/LockR-Tech/mobile/pull/18)–[#21](https://github.com/LockR-Tech/mobile/pull/21) · iot [#5](https://github.com/LockR-Tech/iot/pull/5) · [ADR-0006](adr/0006-tro-ly-rag-claude-voyage-pgvector-rieng.md) |
 | 2026-09-16 | **Deploy backend `569d323` lên production** (09:58, nghiệm thu health/public/admin đạt): đóng SEC-07 (bỏ OTP khỏi log), khởi tạo Firebase, truyền JWT secret cho `notification-service`, gửi mã mở tủ cho người nhận. Giữ secret cũ trong `.env` nên **không ai bị đăng xuất**. Mở được nhờ chuyển 6 repo sang public → Actions miễn phí. **SEC-01 vẫn mở**: secret là chuỗi mặc định, giờ công khai theo repo. | [DEPLOY-LOG](https://github.com/LockR-Tech/backend/blob/main/infra/azure/DEPLOY-LOG.md) |
 | 2026-09-16 | **Lưu ảnh chạy trên production**: nạp `CLOUDINARY_URL` + `MEDIA_FOLDER_ROOT` vào `.env` VM, khởi động lại `user`/`order`/`locker`/`store-service`; cả bốn xác nhận `Cloudinary media storage enabled`. Avatar, ảnh phiếu sự cố, ảnh cửa hàng, ảnh khuyến mãi hết trả 503. Không cần deploy lại web/mobile. | [runbook §4](04-engineering/cau-hinh-dich-vu-ngoai.md) · [ADR-0004](adr/0004-anh-luu-cloudinary-upload-truc-tiep.md) |
 | 2026-09-16 | **Quản lý dịch vụ trên admin**: trang `/admin/services` dựng lại — mỗi dịch vụ (gửi hàng, thuê ô, drone) một thẻ với giá, quy tắc sửa được tại chỗ và hiệu quả trong kỳ. Trang cũ gọi `/api/admin/services` vốn trả 404 nên chưa bao giờ chạy. Kèm bỏ mã số nội bộ khỏi admin và app: hiện tên tủ, tên cửa hàng, số ô in trên tủ. **Đã merge, chờ deploy.** | [frontend #8](https://github.com/LockR-Tech/frontend/pull/8) · [mobile #7](https://github.com/LockR-Tech/mobile/pull/7) |

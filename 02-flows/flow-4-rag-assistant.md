@@ -2,7 +2,7 @@
 
 | Tiến độ | Rà soát | Sơ đồ |
 |---|---|---|
-| **94 %** (7,5 / 8) | 2026-09-21 · backend [#23](https://github.com/LockR-Tech/backend/pull/23) · frontend [#16](https://github.com/LockR-Tech/frontend/pull/16) · mobile [#21](https://github.com/LockR-Tech/mobile/pull/21) (bằng chứng theo các nhánh này, chờ merge) | [Kiến trúc](../diagrams/pdf/architecture.pdf) (khối `assistant`) |
+| **94 %** (7,5 / 8) | 2026-09-21 · backend [#23](https://github.com/LockR-Tech/backend/pull/23) · frontend [#16](https://github.com/LockR-Tech/frontend/pull/16) · mobile [#21](https://github.com/LockR-Tech/mobile/pull/21) (đã merge 2026-09-21) | [Kiến trúc](../diagrams/pdf/architecture.pdf) (khối `assistant`) |
 
 Viết tắt: `AS` = `backend/assistant-service/src/main/java/com/huynqb/laundrylocker/assistant`. Quyết định công nghệ: [ADR-0006](../adr/0006-tro-ly-rag-claude-voyage-pgvector-rieng.md).
 

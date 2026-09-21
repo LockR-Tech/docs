@@ -2,7 +2,7 @@
 
 | Tiến độ | Rà soát | Sơ đồ |
 |---|---|---|
-| **70 %** (7 / 10) | 2026-09-21 · backend [#20](https://github.com/LockR-Tech/backend/pull/20) + [#21](https://github.com/LockR-Tech/backend/pull/21) · mobile [#19](https://github.com/LockR-Tech/mobile/pull/19) · iot [#5](https://github.com/LockR-Tech/iot/pull/5) (bằng chứng theo các nhánh này, chờ merge) | [Trạng thái đơn](../diagrams/pdf/order-status.pdf) · [Trạng thái ô tủ](../diagrams/pdf/locker-cell-status.pdf) |
+| **70 %** (7 / 10) | 2026-09-21 · backend [#20](https://github.com/LockR-Tech/backend/pull/20) + [#21](https://github.com/LockR-Tech/backend/pull/21) · mobile [#19](https://github.com/LockR-Tech/mobile/pull/19) · iot [#5](https://github.com/LockR-Tech/iot/pull/5) (đã merge 2026-09-21) | [Trạng thái đơn](../diagrams/pdf/order-status.pdf) · [Trạng thái ô tủ](../diagrams/pdf/locker-cell-status.pdf) |
 
 Viết tắt: `OS` = `backend/order-service/src/main/java/com/huynqb/laundrylocker/order`, `IS` = `backend/iot-service/…/iot`, `LS` = `backend/locker-service/…/locker`, `M` = `mobile/lib`, `K` = `iot/ui/src/screens/KioskScreen.jsx`.
 
