@@ -2,6 +2,13 @@
 
 Mỗi thay đổi ở repo docs thêm **một dòng** vào ngày tương ứng (mới nhất ở trên). Ghi mã gap/SEC/ADR nếu có.
 
+## 2026-09-21
+
+- L2 (gửi hàng + thuê ô, 65 → 70 %): F2.04 DONE; cập nhật F2.03, F2.08, F2.09 và mục "luồng chạy" theo backend #20/#21, mobile #19, iot #5 — đơn thuê không bị kết thúc khi mở lại, xác nhận bỏ hàng cần đã mở ô, chặn mã của đơn chưa trả/thuê quá hạn, kiosk xác nhận bỏ hàng và kết thúc thuê bằng mã, app bỏ CASH chờ PAID. F2-G01 xong; F2-G04, F2-G07, F2-G11 xong một phần.
+- L3 (phần KTV tủ, % giữ 45): F3.07, F3.08, F3.10 thêm bằng chứng backend #22, frontend #15, mobile #20 — KTV phụ trách tủ, định tuyến + thông báo phiếu, đóng phiếu trả tài sản, kiểm tra định kỳ ĐẠT/KHÔNG ĐẠT, nhắc hạn; F3-G08 xong; F3-G02, F3-G04, F3-G07 xong một phần. Ma trận vai trò và vòng đời phiếu viết lại.
+- L4 (trợ lý RAG, 0 → 94 %): file luồng viết lại theo backend #23, frontend #16, mobile #21. [ADR-0006](adr/0006-tro-ly-rag-claude-voyage-pgvector-rieng.md): Claude + Voyage AI, kho vector là container pgvector riêng (đóng STATUS Q2 phần LLM).
+- `architecture.md`: thêm `assistant-service`, `assistant-db`, sự kiện `locker.report.routed/assigned`, `locker.schedule.due`, đường kiosk công khai mới, RBAC mới; bỏ hai dòng bảng lạc lên đầu file. Runbook dịch vụ ngoài thêm mục Anthropic/Voyage. Sơ đồ `order-status`, `locker-cell-status`, `architecture` cập nhật và render lại.
+
 ## 2026-09-20
 
 - F1-G02: bổ sung trạng thái drone `RESERVED`, giữ drone bằng compare-and-set có khóa DB khi nhận đơn; kiểm tra lại pin/bãi đáp/reservation trước cất cánh; hủy nhả reservation; simulator không ghi đè FAULT. Cập nhật flow 1 và hai sơ đồ drone; ghi nhận chu kỳ DEMO 3 giây.

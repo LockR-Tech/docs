@@ -1,10 +1,9 @@
 %% @title Kiến trúc hệ thống Lock.R
-%% @subtitle Nguồn: <code>backend/pom.xml</code> · <code>api-gateway/…/application.yml</code> · <code>docker-compose.yml</code> · <code>.github/workflows/*</code> · <code>iot/main.py</code> — rà soát code 2026-09-13
+%% @subtitle Nguồn: <code>backend/pom.xml</code> · <code>api-gateway/…/application.yml</code> · <code>docker-compose.yml</code> · <code>.github/workflows/*</code> · <code>iot/main.py</code> — rà soát code 2026-09-13, thêm assistant-service 2026-09-21 (backend #23)
 %% @orientation landscape
 %% @legend <span class="sw ok"></span>Đang chạy production
 %% @legend <span class="sw demo"></span>Sandbox / test / chưa kích hoạt
 %% @legend <span class="sw bad"></span>Rủi ro bảo mật
-%% @legend <span class="sw gap"></span>Cần có — CHƯA code (Luồng 4 RAG)
 %% @legend <b>━</b> HTTP/Feign &nbsp;<b>┅</b> bất đồng bộ (RabbitMQ / MQTT / push)
 %% @note <b>RỦI RO NGHIÊM TRỌNG:</b> (1) <code>APP_SECURITY_JWT_SECRET</code> production là giá trị mặc định hardcode trong <code>docker-compose.yml:66,120</code> ⇒ ai biết chuỗi này giả được token ADMIN. (2) <code>PUT /api/users/{id}</code> nhận <code>roles</code> từ mọi người dùng ⇒ tự nâng quyền ADMIN. (3) iot-service nối broker MQTT công khai <code>broker.hivemq.com:1883</code>, không xác thực/TLS ⇒ ai cũng gửi được lệnh mở tủ.
 %% @note RabbitMQ exchange <code>laundry.events</code>: chỉ 2 hàng đợi có consumer (<code>order.payment.events</code>, <code>notification.events</code>). FCM push không bao giờ gửi (notification-service không khởi tạo Firebase). Pi thật không hiểu payload lệnh mở tủ của backend — hiện chỉ <code>simulate_demo_cabinet.py</code> chạy được end-to-end.
@@ -35,9 +34,10 @@ flowchart LR
             IOTS["iot :8088"]
             STORE["store :8089"]
             LOYAL["loyalty :8092"]
-            RAG["assistant-service<br/><small>RAG · CHƯA CÓ</small>"]
+            RAG["assistant :8093<br/><small>RAG · cần khoá API</small>"]
         end
         PG[("PostgreSQL 16<br/><small>9 DB, mỗi service 1 DB</small>")]
+        VDB[("pgvector<br/><small>assistant-db</small>")]
         MQ[["RabbitMQ<br/><small>laundry.events</small>"]]
     end
 
@@ -55,12 +55,15 @@ flowchart LR
         VNP["VNPay · MoMo<br/><small>sandbox / test</small>"]
         FCM["FCM push"]
         SMTP["SMTP email OTP"]
+        LLM["Claude · Voyage AI<br/><small>trả lời · embedding</small>"]
     end
 
     MOB & MWEB & ADMIN & KIOSK --> NGINX
     NGINX --> GW
     GW -.-> EUREKA
-    GW --> AUTH & USER & ORDER & LOCKER & PAY & NOTI & IOTS & STORE & LOYAL
+    GW --> AUTH & USER & ORDER & LOCKER & PAY & NOTI & IOTS & STORE & LOYAL & RAG
+    RAG --> VDB
+    RAG --> LLM
     ORDER --> LOCKER
     LOCKER --> IOTS
     PAY --> ORDER
@@ -81,7 +84,6 @@ flowchart LR
     classDef bad fill:#ffd8d3,stroke:#cf222e,stroke-width:2px,color:#1f2328
     classDef gap fill:#f6f8fa,stroke:#8c959f,stroke-dasharray:5 4,color:#57606a
     class MOB,MWEB,ADMIN,LAND,KIOSK,NGINX,EUREKA,USER,ORDER,LOCKER,PAY,NOTI,STORE,LOYAL,PG,MQ,PI,ARD,FB,SMTP ok
-    class VNP,FCM demo
+    class VNP,FCM,RAG,VDB,LLM demo
     class BROKER,GW,AUTH,IOTS bad
-    class RAG gap
     style LAND stroke-dasharray:3 3

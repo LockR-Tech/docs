@@ -1,14 +1,12 @@
-| Email | SMTP dùng cho OTP đăng nhập (auth-service) và gửi mã mở tủ cho người nhận chưa có tài khoản (notification-service). Biến `SPRING_MAIL_*` (secret), `APP_MAIL_FROM` |
-| SMS | **Twilio** Messages API trong notification-service, gửi mã mở tủ cho người nhận chưa có tài khoản. Biến `APP_SMS_TWILIO_ACCOUNT_SID` / `AUTH_TOKEN` / `FROM_NUMBER` (secret). Thiếu bất kỳ biến nào ⇒ rơi về bản chỉ ghi log, **không gửi thật**. Hợp đồng: [receiver-pickup-code](receiver-pickup-code.md) |
 # Kiến trúc hệ thống
 
-> Sơ đồ in A4: [diagrams/pdf/architecture.pdf](../diagrams/pdf/architecture.pdf) · nguồn [`architecture.mmd`](../diagrams/src/architecture.mmd). Rà soát code 2026-09-13.
+> Sơ đồ in A4: [diagrams/pdf/architecture.pdf](../diagrams/pdf/architecture.pdf) · nguồn [`architecture.mmd`](../diagrams/src/architecture.mmd). Rà soát code 2026-09-13; bổ sung 2026-09-21 theo backend #21 (kiosk), #22 (KTV tủ), #23 (`assistant-service`).
 
 ## 1. Repo
 
 | Repo | Nội dung | Stack | Deploy khi merge `main` |
 |---|---|---|---|
-| [backend](https://github.com/LockR-Tech/backend) | 11 service + `common-lib` | Java 21 · Spring Boot 3.5.14 · Spring Cloud 2025.0.2 · Maven | Azure VM (SSH + docker compose) |
+| [backend](https://github.com/LockR-Tech/backend) | 12 service + `common-lib` | Java 21 · Spring Boot 3.5.14 · Spring Cloud 2025.0.2 · Maven | Azure VM (SSH + docker compose) |
 | [frontend](https://github.com/LockR-Tech/frontend) | `fe/` admin web · `landingPage/` | React 19 · Vite 7 · TypeScript · Tailwind 4 · RTK Query | Cloudflare Workers (chỉ khi đổi `fe/**`, `landingPage/**`) |
 | [mobile](https://github.com/LockR-Tech/mobile) | App Android/iOS + Flutter web | Flutter 3.44 · Riverpod + provider + bloc · go_router · dio | Mobile web lên Cloudflare Worker |
 | [iot](https://github.com/LockR-Tech/iot) | Pi controller · sketch Arduino · kiosk UI · giả lập | Python 3.13 (uv) · paho-mqtt · pyserial · FastAPI · React 19 | Không có CI/CD — cập nhật tay trên Pi |
@@ -26,19 +24,21 @@ Mỗi service có database Postgres riêng, Flyway, `ddl-auto: validate`.
 | auth-service | 8081 | Đăng nhập, đăng ký, OTP, Firebase, 2FA admin, phát token | auth_accounts, email_otps, refresh_tokens, social_identities | Feign → user; SMTP; Firebase Admin |
 | user-service | 8082 | Hồ sơ, cột vai trò, quản lý người dùng | user_profiles | Feign → auth, notification |
 | order-service | 8083 | Đơn SEND/RENTAL/DRONE, khuyến mãi, đánh giá, scheduler, dashboard, **drone simulator** | orders, order_status_history, promotions, drone_missions… | Feign → locker, user, notification · publish `order.*` · consume `order.payment.events` |
-| locker-service | 8084 | Tủ, ô, ticket, bảo trì, drone, bãi đáp, ảnh ticket | lockers, locker_boxes, locker_reports, report_attachments, drone_units, repair_logs… | Feign → iot, user · publish `locker.box.*`, `locker.report.*` |
+| locker-service | 8084 | Tủ, ô, ticket (định tuyến cho KTV phụ trách tủ), bảo trì + kiểm tra định kỳ, drone, bãi đáp, ảnh ticket | lockers, locker_boxes, locker_reports, report_attachments, maintenance_schedules, drone_units, repair_logs… | Feign → iot, user · publish `locker.box.*`, `locker.report.*` (claimed/resolved/routed/assigned), `locker.schedule.due` |
 | payment-service | 8086 | Thanh toán CASH/WALLET/VNPAY/MOMO, hoàn tiền, ví | payments, refunds, wallets, wallet_transactions | Feign → order · publish `payment.*` |
 | notification-service | 8087 | Thông báo in-app, STOMP `/ws`, FCM | notifications, fcm_tokens | consume `notification.events` |
 | iot-service | 8088 | Cầu MQTT tới tủ, xác thực PIN/QR, mở khoá, sức khoẻ thiết bị | device_statuses, box_hardware_status, box_access_logs, access_attempts | MQTT · Feign → locker, order |
 | store-service | 8089 | Cửa hàng, tìm gần | stores | Feign → order |
 | loyalty-service | 8092 | Điểm, tem, phần thưởng | loyalty_accounts, point_transactions | — |
-| _assistant-service_ | — | **RAG — CHƯA CÓ** ([L4](../02-flows/flow-4-rag-assistant.md)) | — | — |
+| assistant-service | 8093 | Trợ lý hỏi đáp RAG: kho tri thức, đánh chỉ mục, hỏi đáp có trích nguồn, bộ đánh giá ([L4](../02-flows/flow-4-rag-assistant.md)) | **DB riêng `assistant-db` (pgvector)**: kb_documents, kb_chunks (`vector(1024)`, HNSW cosine), assistant_conversations, assistant_messages, eval_cases | HTTPS → Anthropic (Claude), Voyage AI (embedding) · không dùng RabbitMQ/Feign |
 
-**RabbitMQ** — một topic exchange `laundry.events`, hai hàng đợi có consumer: `order.payment.events` (→ order), `notification.events` (→ notification). Không ai tiêu thụ `order.created`, `locker.box.*`, `iot.device.status.changed`, `notification.requested`; không ai phát `delivery.status.changed`.
+**RabbitMQ** — một topic exchange `laundry.events`, hai hàng đợi có consumer: `order.payment.events` (→ order), `notification.events` (→ notification; bind `order.status.changed`, `payment.*`, `locker.report.claimed/resolved/routed/assigned`, `locker.schedule.due`, `delivery.status.changed`). Không ai tiêu thụ `order.created`, `locker.box.*`, `iot.device.status.changed`, `notification.requested`.
 
 **MQTT (iot-service)** — phát `cabinet/{lockerId}/command/open` (chờ `/result` 20 s), `cabinet/{lockerId}/command/sync`; nghe `cabinet/+/command/+/result`, `cabinet/+/heartbeat`, `cabinet/+/locker/+/status`. ⚠ Broker mặc định là `broker.hivemq.com:1883` công khai (SEC-04). Pi thật dùng **tên** tủ trong topic và cần `slotIndex` ⇒ lệch hợp đồng với backend.
 
-**Gateway** (`api-gateway/src/main/resources/application.yml`): `/api/auth/**`→auth · `/api/users/**`, `/api/user/**`, `/api/media/**`→user · `/api/orders/**`, `/api/drone-technician/drone-orders/**`, `/api/promotions/**`, `/api/admin/dashboard/**`→order · `/api/lockers/**`, `/api/boxes/**`, `/api/maintenance/**`, `/api/locker-technician/**`, `/api/drone-technician/**`, `/api/admin/drones/**`→locker · `/api/payments/**`, `/api/wallet/**`→payment · `/api/notifications/**`, `/ws/**`→notification · `/api/iot/**`, `/api/locker-technician/devices/**`→iot (khai báo trước locker-service để không bị nuốt) · `/api/stores/**`→store · `/api/loyalty/**`→loyalty. `/internal/**` luôn 403 từ ngoài.
+**Gateway** (`api-gateway/src/main/resources/application.yml`): `/api/auth/**`→auth · `/api/users/**`, `/api/user/**`, `/api/media/**`→user · `/api/orders/**`, `/api/drone-technician/drone-orders/**`, `/api/promotions/**`, `/api/admin/dashboard/**`→order · `/api/lockers/**`, `/api/boxes/**`, `/api/maintenance/**`, `/api/locker-technician/**`, `/api/drone-technician/**`, `/api/admin/drones/**`→locker · `/api/payments/**`, `/api/wallet/**`→payment · `/api/notifications/**`, `/ws/**`→notification · `/api/iot/**`, `/api/locker-technician/devices/**`→iot (khai báo trước locker-service để không bị nuốt) · `/api/stores/**`→store · `/api/loyalty/**`→loyalty · `/api/assistant/**` (mọi JWT), `/api/admin/knowledge/**` (ADMIN)→assistant. `/internal/**` luôn 403 từ ngoài.
+
+Đường công khai của kiosk (mã là credential, không JWT): `/api/iot/verify-pin`, `/verify-access`, `/unlock`, `/unlock-with-code`, `/confirm-drop-with-code`, `/end-rental-with-code`. RBAC đáng chú ý: LOCKER_TECHNICIAN chỉ được `GET /api/admin/lockers/reports` (không giao/đóng/gia hạn bản admin); `PUT /api/maintenance/schedules/**` chỉ ADMIN.
 
 ## 3. Hạ tầng
 
@@ -47,6 +47,7 @@ Mỗi service có database Postgres riêng, Flyway, `ddl-auto: validate`.
 | Máy | Docker Desktop | Azure VM `20.24.196.177`, Ubuntu 22.04, `Standard_B2as_v2` 8 GB, swap 4 GB |
 | Lối vào | Gateway `http://localhost:18080` | Nginx :443 (Let's Encrypt) → `127.0.0.1:8080`; NSG chỉ mở 22/80/443 |
 | Postgres | `postgres:16-alpine` `127.0.0.1:15432` | cùng image, không mở ra ngoài |
+| Postgres vector (trợ lý) | `pgvector/pgvector:pg16` (`assistant-db`) `127.0.0.1:15433`, volume `assistant_db_data` | cùng image, `shared_buffers=64MB`; mật khẩu `ASSISTANT_DB_PASSWORD` (chỉ có tác dụng lần đầu tạo volume) |
 | RabbitMQ | `rabbitmq:3-management-alpine` :5672 / :15672 | cùng image |
 | MQTT broker | **không có container** | **không có** — dùng broker công khai |
 | Cấu hình | mặc định trong compose | `/opt/laundry-locker-microservices/.env` (giữ qua các lần deploy) |
@@ -65,7 +66,7 @@ Mỗi service có database Postgres riêng, Flyway, `ddl-auto: validate`.
 | VNPay | Sandbox mặc định (`DEMO`); IPN không kiểm số tiền |
 | MoMo | Endpoint test, cần khoá thật |
 | Ví nội bộ | Thật (sổ cái `wallet_transactions`) |
-| Tiền mặt | Hoàn tất ngay khi khách chọn — chưa có xác nhận của nhân viên |
+| Tiền mặt | Hoàn tất ngay khi chọn — chưa có xác nhận của nhân viên. App khách đã bỏ CASH (mobile #19); kiosk giữ CASH demo |
 | Email | SMTP dùng cho OTP đăng nhập (auth-service) và gửi mã mở tủ cho người nhận chưa có tài khoản (notification-service). Biến `SPRING_MAIL_*` (secret), `APP_MAIL_FROM` |
 | SMS | **Twilio** Messages API trong notification-service, gửi mã mở tủ cho người nhận chưa có tài khoản. Biến `APP_SMS_TWILIO_ACCOUNT_SID` / `AUTH_TOKEN` / `FROM_NUMBER` (secret). Thiếu bất kỳ biến nào ⇒ rơi về bản chỉ ghi log, **không gửi thật**. Hợp đồng: [receiver-pickup-code](receiver-pickup-code.md) |
 | FCM push | notification-service đã khởi tạo Firebase ([backend #10](https://github.com/LockR-Tech/backend/pull/10) — trước đó `FcmPushNotificationService` viết đủ nhưng không ai gọi `initializeApp` nên mọi lệnh push bị bỏ qua trong im lặng). Bật thật khi nạp `FIREBASE_CREDENTIALS_JSON`; trống ⇒ push tắt, các kênh khác vẫn chạy |
@@ -73,6 +74,8 @@ Mỗi service có database Postgres riêng, Flyway, `ddl-auto: validate`.
 | Cấu hình nghiệp vụ (nội bộ) | Mỗi service bật `app.settings.scope` sở hữu bảng `system_settings` + `system_setting_audits`; admin sửa qua `/api/admin/settings/{scope}`, app đọc `/api/settings/{scope}/public` — [business-settings](business-settings.md) · [ADR-0005](../adr/0005-quy-tac-nghiep-vu-cau-hinh-tren-admin.md) |
 | Cloudinary (ảnh) | Client upload trực tiếp bằng chữ ký do user-service cấp; user/order/locker/store-service xác minh chữ ký phản hồi. Biến `CLOUDINARY_URL` (secret), `MEDIA_FOLDER_ROOT`. Trống ⇒ API ảnh trả 503. Hợp đồng: [media-storage](media-storage.md) · [ADR-0004](../adr/0004-anh-luu-cloudinary-upload-truc-tiep.md) |
 | Bản đồ | OpenStreetMap + OSRM công khai |
+| Claude (Anthropic) | assistant-service sinh câu trả lời có Citations qua Anthropic Java SDK. Biến `ANTHROPIC_API_KEY` (secret), `ASSISTANT_CHAT_MODEL` (mặc định `claude-opus-5`). Trống ⇒ API hỏi đáp trả 503 — [ADR-0006](../adr/0006-tro-ly-rag-claude-voyage-pgvector-rieng.md) |
+| Voyage AI (embedding) | assistant-service nhúng tài liệu/câu hỏi, `voyage-4`, 1024 chiều. Biến `EMBEDDING_API_KEY` (secret), `EMBEDDING_MODEL`. Trống ⇒ tài liệu nằm PENDING, hỏi đáp trả 503 |
 
 ## 6. Realtime
 
