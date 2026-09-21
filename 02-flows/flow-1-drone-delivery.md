@@ -8,7 +8,7 @@ Viết tắt đường dẫn: `OS` = `backend/order-service/src/main/java/com/hu
 
 ## 1. Mục tiêu nghiệp vụ
 
-Khách đặt giao hàng tới một tủ có bãi đáp → thanh toán → nhân viên MAINTENANCE điều phối drone, nạp hàng, phóng → khách theo dõi hành trình → drone hạ cánh, gửi hàng vào ô DRONE → hệ thống cấp PIN/QR và báo người nhận → người nhận nhập PIN ở tủ, ô mở, đơn hoàn tất. Có nhánh ngoại lệ: huỷ trước khi bay, drone lỗi/quay về, quá hạn không lấy.
+Khách đặt giao hàng tới một tủ có bãi đáp → thanh toán → nhân viên DRONE_TECHNICIAN điều phối drone, nạp hàng, phóng → khách theo dõi hành trình → drone hạ cánh, gửi hàng vào ô DRONE → hệ thống cấp PIN/QR và báo người nhận → người nhận nhập PIN ở tủ, ô mở, đơn hoàn tất. Có nhánh ngoại lệ: huỷ trước khi bay, drone lỗi/quay về, quá hạn không lấy.
 
 ## 2. Checklist
 
@@ -29,10 +29,10 @@ Khách đặt giao hàng tới một tủ có bãi đáp → thanh toán → nh�
 
 ## 3. Luồng đang chạy hôm nay
 
-1. **Khách** (app → bản đồ cửa hàng → ô DRONE) `POST /api/orders/drone-deliveries` ⇒ order & stage `AWAITING_DISPATCH`, `UNPAID`, ô `RESERVED` 24h, `fulfillmentMode = DEMO` mặc định; push tới nhóm MAINTENANCE.
+1. **Khách** (app → bản đồ cửa hàng → ô DRONE) `POST /api/orders/drone-deliveries` ⇒ order & stage `AWAITING_DISPATCH`, `UNPAID`, ô `RESERVED` 24h, `fulfillmentMode = DEMO` mặc định; push tới nhóm DRONE_TECHNICIAN.
 2. **Khách** thanh toán `POST /api/payments/checkout` ⇒ sự kiện `payment.completed` ⇒ `PAID`.
-3. **MAINTENANCE** `GET /api/maintenance/drone-orders` → `POST …/{id}/accept {droneUnitId}` ⇒ khóa bản ghi drone và đổi nguyên tử `IDLE → RESERVED`, mission `READY_TO_LAUNCH`, stage `ACCEPTED`.
-4. **MAINTENANCE** `POST …/{id}/launch` ⇒ kiểm tra lại drone còn `RESERVED`, active, đủ pin và bãi đáp còn OK; đổi nguyên tử `RESERVED → IN_FLIGHT`, stage `LAUNCHING`.
+3. **DRONE_TECHNICIAN** `GET /api/drone-technician/drone-orders` → `POST …/{id}/accept {droneUnitId}` ⇒ khóa bản ghi drone và đổi nguyên tử `IDLE → RESERVED`, mission `READY_TO_LAUNCH`, stage `ACCEPTED`.
+4. **DRONE_TECHNICIAN** `POST …/{id}/launch` ⇒ kiểm tra lại drone còn `RESERVED`, active, đủ pin và bãi đáp còn OK; đổi nguyên tử `RESERVED → IN_FLIGHT`, stage `LAUNCHING`.
 5. **Bộ giả lập** (chỉ DEMO) mỗi 3 giây: `DEPARTED → EN_ROUTE → APPROACHING → ARRIVED` ⇒ mission `DEPOSITED`, order `STORING`, stage `READY_FOR_PICKUP`, cấp PIN, drone `IN_FLIGHT → IDLE` nếu trạng thái chưa bị đổi sang FAULT. **Ở STANDARD không có gì xảy ra sau bước 4.**
 6. **Khách** xem timeline (poll 3 s), thấy PIN/QR khi đã PAID.
 7. **Khách** nhập PIN ở kiosk ⇒ ô mở **nhưng đơn vẫn STORING**; hoặc bấm "hoàn tất" trong app ⇒ `COMPLETED`, nhả ô.

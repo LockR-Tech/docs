@@ -58,7 +58,7 @@ Nhà cung cấp LLM + embedding chọn qua cấu hình (embedding **phải hỗ 
 |---|---|---|
 | Chính sách | Tất cả | `mobile/assets/markdown/terms_of_service.md`, `privacy_policy.md`; `legal/privacy-policy.html`, `data-deletion.html` |
 | Hướng dẫn khách hàng | Tất cả | Hướng dẫn sử dụng + kịch bản theo vai trò (bản cũ trong repo mobile cá nhân `docs/manual-test/huong-dan/`, `kich-ban/00…05`) — cần chuyển vào repo này trước |
-| Quy trình vận hành | TECHNICIAN · MAINTENANCE · ADMIN | Các file luồng trong `02-flows/`, sơ đồ trạng thái, [release-deploy](../04-engineering/release-deploy.md) |
+| Quy trình vận hành | LOCKER_TECHNICIAN · DRONE_TECHNICIAN · ADMIN | Các file luồng trong `02-flows/`, sơ đồ trạng thái, [release-deploy](../04-engineering/release-deploy.md) |
 | FAQ | Tất cả | Mảng FAQ tĩnh trong `frontend/landingPage/src/components/sections/FAQSection.tsx`, `lockr/LockrFAQSection.tsx` |
 
 ## 6. Gap để đạt 100 % — theo thứ tự làm
@@ -72,5 +72,5 @@ Nhà cung cấp LLM + embedding chọn qua cấu hình (embedding **phải hỗ 
 | **F4-G05** | Route gateway (`/api/assistant/**`, `/api/admin/knowledge/**`), service trong compose, secret trên VM | `api-gateway/…/application.yml`, `docker-compose.yml`, `infra/azure` | F4.04 |
 | **F4-G06** | Script seed: nạp hàng loạt tài liệu ở mục 5 kèm `allowed_roles` | `backend/scripts/` | F4.01 |
 | **F4-G07** | Web admin trang Knowledge Base: upload, danh sách + trạng thái, xoá, reindex, chọn vai trò, xem hội thoại | `frontend/fe/src/pages/Admin/knowledge/` | F4.06 |
-| **F4-G08** | Mobile màn hình trợ lý + xem nguồn; lối vào từ "Trợ giúp" và trang chủ TECHNICIAN/MAINTENANCE | `mobile/lib/features/assistant/`, `profile_page.dart` | F4.05 |
+| **F4-G08** | Mobile màn hình trợ lý + xem nguồn; lối vào từ "Trợ giúp" và trang chủ LOCKER_TECHNICIAN/DRONE_TECHNICIAN | `mobile/lib/features/assistant/`, `profile_page.dart` | F4.05 |
 | **F4-G09** | Bộ đánh giá 20–40 câu hỏi tiếng Việt (có câu ngoài phạm vi) + endpoint eval + test (Testcontainers pgvector) | `assistant-service` | F4.08 |

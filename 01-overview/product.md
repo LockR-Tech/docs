@@ -12,8 +12,8 @@ Tên miền production: `locker-drone.tech` (landing) · `admin.locker-drone.tec
 |---|---|---|---|
 | `CUSTOMER` | Người gửi, người thuê, người nhận có tài khoản | App mobile, mobile web, kiosk | Tìm tủ, thuê/gửi hàng, thanh toán, theo dõi drone, nhận hàng, báo hỏng |
 | Người nhận không tài khoản | Người được gửi mã | Kiosk tại tủ | Nhập PIN / quét QR để lấy hàng |
-| `TECHNICIAN` | Kỹ thuật viên tủ | App mobile | Xử lý ô hỏng, ticket, vệ sinh, mở cưỡng bức, lịch bảo trì, thiết bị IoT |
-| `MAINTENANCE` | Đội drone | App mobile | Quản lý đội drone, nhận – nạp – phóng – huỷ đơn drone |
+| `LOCKER_TECHNICIAN` | Kỹ thuật viên tủ | App mobile | Xử lý ô hỏng, ticket, vệ sinh, mở cưỡng bức, lịch bảo trì, thiết bị IoT |
+| `DRONE_TECHNICIAN` | Kỹ thuật viên drone (đội bay) | App mobile | Quản lý đội drone, nhận – nạp – phóng – huỷ đơn drone |
 | `ADMIN` | Quản trị | Web (2FA) | Người dùng & vai trò, cửa hàng, tủ, drone, đơn, thanh toán, ví, khuyến mãi, thông báo |
 
 ## Bốn luồng nghiệp vụ chính
