@@ -2,6 +2,10 @@
 
 Mỗi thay đổi ở repo docs thêm **một dòng** vào ngày tương ứng (mới nhất ở trên). Ghi mã gap/SEC/ADR nếu có.
 
+## 2026-09-22
+
+- F3-G06: cập nhật STATUS và flow 3 theo phần ADMIN quản lý drone đã merge trước 2026-09-21 22:51 (backend #24, frontend #17): route admin đổi trạng thái/pin không cần claim, giữ phân công KTV, chặn sửa/ngừng drone đang `RESERVED`/`IN_FLIGHT`; chưa tính các chỉnh sửa sau mốc này.
+
 ## 2026-09-21
 
 - L2 (gửi hàng + thuê ô, 65 → 70 %): F2.04 DONE; cập nhật F2.03, F2.08, F2.09 và mục "luồng chạy" theo backend #20/#21, mobile #19, iot #5 — đơn thuê không bị kết thúc khi mở lại, xác nhận bỏ hàng cần đã mở ô, chặn mã của đơn chưa trả/thuê quá hạn, kiosk xác nhận bỏ hàng và kết thúc thuê bằng mã, app bỏ CASH chờ PAID. F2-G01 xong; F2-G04, F2-G07, F2-G11 xong một phần.
