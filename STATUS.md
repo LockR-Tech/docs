@@ -4,8 +4,8 @@
 
 | | |
 |---|---|
-| **Cập nhật lần cuối** | 2026-09-21 |
-| **Người cập nhật** | Claude Code — hoàn thiện L2 (gửi hàng + thuê ô), phần KTV tủ của L3, L4 trợ lý RAG; **đã merge 2026-09-21** (§ 5), trợ lý chờ nạp khoá API |
+| **Cập nhật lần cuối** | 2026-09-22 |
+| **Người cập nhật** | Codex — cập nhật phần ADMIN quản lý drone theo backend #24 + frontend #17; không tính các chỉnh sửa sau 2026-09-21 22:51 mà chủ dự án chưa lấy |
 | **Tổng tiến độ 4 luồng** | **67,2 %** |
 
 ## 0. Mốc code đã rà soát
@@ -14,8 +14,8 @@ Mọi con số bên dưới đúng với các commit này. Trước khi tin STAT
 
 | Repo | Commit đã rà soát | Nhánh |
 |---|---|---|
-| [backend](https://github.com/LockR-Tech/backend) | `705c556` | `main` |
-| [frontend](https://github.com/LockR-Tech/frontend) | `e1b9a73` | `main` |
+| [backend](https://github.com/LockR-Tech/backend) | `684dcf5` | `main` |
+| [frontend](https://github.com/LockR-Tech/frontend) | `612912d` | `main` |
 | [mobile](https://github.com/LockR-Tech/mobile) | `5890184` | `main` |
 | [iot](https://github.com/LockR-Tech/iot) | `927b057` | `main` |
 | [legal](https://github.com/LockR-Tech/legal) | `87ad342` | `main` |
@@ -26,7 +26,7 @@ Mọi con số bên dưới đúng với các commit này. Trước khi tin STAT
 |---|---:|---|---|
 | **L1** Giao hàng drone → PIN → nhận hàng | **60 %** | Chạy trọn vẹn **chỉ ở chế độ DEMO** (bộ giả lập đẩy chặng bay). Ở STANDARD đơn kẹt tại LAUNCHING, drone kẹt IN_FLIGHT. | [flow-1](02-flows/flow-1-drone-delivery.md) |
 | **L2** Thuê tủ gửi hàng → chuyển mã → người nhận lấy (gồm thuê ô theo giờ) | **70 %** | Gửi hàng và thuê ô chạy trọn: trả tiền thật → mở ô → xác nhận bỏ hàng (app hoặc kiosk) → người nhận lấy bằng mã hoàn tất đơn; thuê ô mở lại nhiều lần, kết thúc tại kiosk. Còn: phí quá hạn chưa thu, người nhận có tài khoản chưa thấy đơn gửi tới mình, payload MQTT với Pi. | [flow-2](02-flows/flow-2-locker-send.md) |
-| **L3** Vai trò · quản lý drone · bảo trì | **45 %** | Phần **KTV tủ** đã đủ: KTV phụ trách tủ, định tuyến + thông báo phiếu, đóng phiếu trả tài sản, tủ bảo trì chặn đặt ô, kiểm tra định kỳ ĐẠT/KHÔNG ĐẠT. Còn **lỗ hổng phân quyền** (SEC-02/03/05/06), IoT chưa tự báo hỏng, phần drone. | [flow-3](02-flows/flow-3-roles-maintenance.md) |
+| **L3** Vai trò · quản lý drone · bảo trì | **45 %** | Phần **KTV tủ** đã đủ; **ADMIN quản lý drone** đã sửa route đổi trạng thái/pin và guard drone đang có nhiệm vụ. Còn **lỗ hổng phân quyền** (SEC-02/03/05/06), IoT chưa tự báo hỏng, telemetry/ticket drone. | [flow-3](02-flows/flow-3-roles-maintenance.md) |
 | **L4** RAG hỏi đáp tài liệu nội bộ | **94 %** | `assistant-service` (Claude + Voyage, pgvector riêng): nạp tài liệu, hỏi đáp có trích nguồn, lọc theo vai trò, từ chối ngoài phạm vi, trang Kho tri thức, màn hình trợ lý. Còn: nạp khoá API, chạy bộ đánh giá và hiệu chỉnh ngưỡng. | [flow-4](02-flows/flow-4-rag-assistant.md) |
 
 **Cách tính:** mỗi luồng có checklist 8–10 hạng mục; DONE = 1 · PARTIAL = 0,5 · MISSING = 0. % luồng = tổng điểm / số hạng mục. Tổng dự án = trung bình cộng 4 luồng (trọng số bằng nhau): (60 + 70 + 45 + 93,75) / 4 = **67,2 %**. Chỉ được đổi % khi đổi checklist trong file luồng, kèm bằng chứng `file:line`.
@@ -92,6 +92,7 @@ Cách lấy và nạp: [cau-hinh-dich-vu-ngoai.md](04-engineering/cau-hinh-dich-
 
 | Ngày | Việc | Liên kết |
 |---|---|---|
+| 2026-09-21 | **ADMIN quản lý drone: sửa điều khiển trạng thái/pin qua route admin.** Backend thêm đường admin riêng cho đổi trạng thái và cập nhật pin, giữ phân công KTV hiện tại, ghi audit log, chặn sửa/ngừng drone khi đang `RESERVED`/`IN_FLIGHT`, và không cho ADMIN/DRONE_TECHNICIAN tự ép các trạng thái workflow-managed (`RESERVED`, `IN_FLIGHT`) từ màn vận hành. Frontend `/admin/drones` gọi đúng route admin cho trạng thái/pin và disable sửa/ngừng khi drone đang có nhiệm vụ. Test backend targeted pass 13/13 ở PR này; docs chưa tính các chỉnh sửa sau 2026-09-21 22:51. | backend [#24](https://github.com/LockR-Tech/backend/pull/24) · frontend [#17](https://github.com/LockR-Tech/frontend/pull/17) |
 | 2026-09-21 | **Hoàn thiện L2 + phần KTV tủ của L3 + L4, đã merge.** Hotfix đơn thuê bị kết thúc khi mở lại ô (backend #20, deploy xanh). Gửi hàng/thuê ô: chặn mã đơn chưa trả và thuê quá hạn, xác nhận bỏ hàng cần đã mở ô, kiosk xác nhận bỏ hàng và kết thúc thuê bằng mã, app trả tiền thật (bỏ CASH) và chờ PAID. KTV tủ: KTV phụ trách tủ, định tuyến + thông báo phiếu, đóng phiếu trả tài sản, tủ bảo trì chặn đặt ô, kiểm tra định kỳ ĐẠT/KHÔNG ĐẠT, nhắc hạn 07:00. Trợ lý RAG: `assistant-service` + `assistant-db` (pgvector), trang Kho tri thức, màn hình trợ lý. Migration mới: `order_service` V13, `locker_service` V18, `assistant_db` V1. Backend #21–#23 deploy chung một lần (hai lần deploy trung gian bị huỷ ở bước build, chưa chạm VM). | backend [#20](https://github.com/LockR-Tech/backend/pull/20) [#21](https://github.com/LockR-Tech/backend/pull/21) [#22](https://github.com/LockR-Tech/backend/pull/22) [#23](https://github.com/LockR-Tech/backend/pull/23) · frontend [#15](https://github.com/LockR-Tech/frontend/pull/15) [#16](https://github.com/LockR-Tech/frontend/pull/16) · mobile [#18](https://github.com/LockR-Tech/mobile/pull/18)–[#21](https://github.com/LockR-Tech/mobile/pull/21) · iot [#5](https://github.com/LockR-Tech/iot/pull/5) · [ADR-0006](adr/0006-tro-ly-rag-claude-voyage-pgvector-rieng.md) |
 | 2026-09-16 | **Deploy backend `569d323` lên production** (09:58, nghiệm thu health/public/admin đạt): đóng SEC-07 (bỏ OTP khỏi log), khởi tạo Firebase, truyền JWT secret cho `notification-service`, gửi mã mở tủ cho người nhận. Giữ secret cũ trong `.env` nên **không ai bị đăng xuất**. Mở được nhờ chuyển 6 repo sang public → Actions miễn phí. **SEC-01 vẫn mở**: secret là chuỗi mặc định, giờ công khai theo repo. | [DEPLOY-LOG](https://github.com/LockR-Tech/backend/blob/main/infra/azure/DEPLOY-LOG.md) |
 | 2026-09-16 | **Lưu ảnh chạy trên production**: nạp `CLOUDINARY_URL` + `MEDIA_FOLDER_ROOT` vào `.env` VM, khởi động lại `user`/`order`/`locker`/`store-service`; cả bốn xác nhận `Cloudinary media storage enabled`. Avatar, ảnh phiếu sự cố, ảnh cửa hàng, ảnh khuyến mãi hết trả 503. Không cần deploy lại web/mobile. | [runbook §4](04-engineering/cau-hinh-dich-vu-ngoai.md) · [ADR-0004](adr/0004-anh-luu-cloudinary-upload-truc-tiep.md) |
