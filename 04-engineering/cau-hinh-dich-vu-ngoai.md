@@ -302,7 +302,7 @@ PENDING cho tới khi có `EMBEDDING_API_KEY` (có khoá là tự đánh chỉ m
 
 ```
 ANTHROPIC_API_KEY=...
-ASSISTANT_CHAT_MODEL=claude-opus-5
+ASSISTANT_CHAT_MODEL=claude-haiku-4-5
 EMBEDDING_API_KEY=...
 EMBEDDING_MODEL=voyage-4
 ASSISTANT_DB_PASSWORD=<chuỗi ngẫu nhiên>
@@ -311,6 +311,10 @@ ASSISTANT_DB_PASSWORD=<chuỗi ngẫu nhiên>
 `ASSISTANT_DB_PASSWORD` chỉ có tác dụng **lần đầu** container `assistant-db` tạo volume — đặt trước lần
 deploy đầu tiên có `assistant-service`. `EMBEDDING_MODEL` chỉ đổi sang model **1024 chiều**; khác số
 chiều phải có migration đổi cột `kb_chunks.embedding` rồi đánh chỉ mục lại mọi tài liệu.
+`ASSISTANT_CHAT_MODEL` mặc định là `claude-haiku-4-5` — rẻ nhất và đủ cho hỏi đáp bám tài liệu.
+Đổi sang model khác thì kiểm tra model đó có nhận `output_config.effort` không: Opus 4.5+, Sonnet 4.6+
+và Fable thì có, Haiku và Sonnet 4.5 trở xuống trả 400. Danh sách nằm ở `ClaudeAnswerGenerator.supportsEffort`;
+model lạ không có trong danh sách thì service tự bỏ `effort` đi nên vẫn chạy, chỉ là ở mức mặc định.
 
 4. `sudo docker compose up -d assistant-service`.
 5. Nạp bộ tài liệu mặc định từ máy có đủ các repo cạnh nhau:
