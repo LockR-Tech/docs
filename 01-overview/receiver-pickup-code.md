@@ -75,7 +75,13 @@ và `+84901234567` đều ra `+84901234567`. Số đã có dấu `+` giữ nguy�
 | `APP_SMS_TWILIO_ACCOUNT_SID` | Account SID trong Twilio console |
 | `APP_SMS_TWILIO_AUTH_TOKEN` | Auth Token |
 | `APP_SMS_TWILIO_FROM_NUMBER` | Số gửi Twilio cấp, dạng E.164 |
-| `SPRING_MAIL_*`, `APP_MAIL_FROM` | Giống khối `auth-service` đã có |
+| `SPRING_MAIL_HOST` | Bắt buộc — trống là kênh email tắt, `emailChannelAvailable=false` |
+| `SPRING_MAIL_*` còn lại, `APP_MAIL_FROM` | Giống khối `auth-service` đã có |
+
+Khác với SMS, khối `notification-service` trong compose để **trống** cả `SPRING_MAIL_HOST` và
+`SPRING_MAIL_USERNAME`. Trước đây hai biến này mặc định `localhost` / `noreply@laundry.test`,
+mà compose không chạy mail catcher nào, nên `emailChannelAvailable` luôn báo `true` kể cả khi
+máy chủ chưa hề cấu hình SMTP — đúng thứ trường này sinh ra để phân biệt.
 
 Thiếu **bất kỳ** giá trị nào trong ba biến Twilio ⇒ rơi về bản ghi log.
 

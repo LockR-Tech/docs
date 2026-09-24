@@ -178,7 +178,14 @@ SPRING_MAIL_SMTP_STARTTLS=true
 APP_MAIL_FROM=no-reply@<domain đã verify>
 ```
 
-**Kiểm tra:** đăng nhập bằng email OTP — hộp thư phải nhận được mã.
+Cả hai service đọc cùng bộ biến này. `notification-service` mặc định **trống**: chưa đặt thì
+kênh email tắt hẳn và `emailChannelAvailable` trả `false` — đúng tình trạng thật. `auth-service`
+giữ mặc định `localhost:1025` vì `SmtpEmailService` nhận thẳng `JavaMailSender`, không có bean
+thì service không khởi động được.
+
+**Kiểm tra:** đăng nhập bằng email OTP — hộp thư phải nhận được mã. Với kênh mã mở tủ, gửi thử
+một đơn SEND có nhập email người nhận rồi soi log `notification-service`: chưa cấu hình thì thấy
+`Email channel not configured`.
 
 > ✅ **SEC-07 đã vá** — `EmailOtpService` giờ chỉ log email đã che (`OTP generated for
 > {maskedEmail}...`), OTP được hash (`passwordEncoder.encode`) trước khi lưu DB, không còn
