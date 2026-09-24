@@ -30,7 +30,7 @@ Ràng buộc:
 
 ## Quyết định
 
-- Sinh câu trả lời bằng **Claude** qua Anthropic Java SDK; model đổi bằng `ASSISTANT_CHAT_MODEL` (mặc định `claude-opus-5`). Mỗi đoạn truy xuất gửi thành một document block bật Citations.
+- Sinh câu trả lời bằng **Claude** qua Anthropic Java SDK; model đổi bằng `ASSISTANT_CHAT_MODEL` (mặc định `claude-haiku-4-5`). Mỗi đoạn truy xuất gửi thành một document block bật Citations.
 - Nhúng bằng **Voyage AI** `voyage-4`, **1024 chiều** (cột `vector(1024)`). Đổi model phải giữ 1024 chiều, hoặc viết migration đổi cột rồi đánh chỉ mục lại toàn bộ.
 - Kho vector là **container `assistant-db` = `pgvector/pgvector:pg16`** riêng, chỉ `assistant-service` dùng; Postgres chính giữ nguyên.
 - Truy xuất dưới ngưỡng liên quan ⇒ trả lời "tài liệu chưa đề cập" **không gọi LLM**. Tài liệu gắn vai trò được đọc, lọc theo `X-User-Roles` của gateway.

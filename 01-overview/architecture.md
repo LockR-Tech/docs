@@ -74,7 +74,7 @@ Mỗi service có database Postgres riêng, Flyway, `ddl-auto: validate`.
 | Cấu hình nghiệp vụ (nội bộ) | Mỗi service bật `app.settings.scope` sở hữu bảng `system_settings` + `system_setting_audits`; admin sửa qua `/api/admin/settings/{scope}`, app đọc `/api/settings/{scope}/public` — [business-settings](business-settings.md) · [ADR-0005](../adr/0005-quy-tac-nghiep-vu-cau-hinh-tren-admin.md) |
 | Cloudinary (ảnh) | Client upload trực tiếp bằng chữ ký do user-service cấp; user/order/locker/store-service xác minh chữ ký phản hồi. Biến `CLOUDINARY_URL` (secret), `MEDIA_FOLDER_ROOT`. Trống ⇒ API ảnh trả 503. Hợp đồng: [media-storage](media-storage.md) · [ADR-0004](../adr/0004-anh-luu-cloudinary-upload-truc-tiep.md) |
 | Bản đồ | OpenStreetMap + OSRM công khai |
-| Claude (Anthropic) | assistant-service sinh câu trả lời có Citations qua Anthropic Java SDK. Biến `ANTHROPIC_API_KEY` (secret), `ASSISTANT_CHAT_MODEL` (mặc định `claude-opus-5`). Trống ⇒ API hỏi đáp trả 503 — [ADR-0006](../adr/0006-tro-ly-rag-claude-voyage-pgvector-rieng.md) |
+| Claude (Anthropic) | assistant-service sinh câu trả lời có Citations qua Anthropic Java SDK. Biến `ANTHROPIC_API_KEY` (secret), `ASSISTANT_CHAT_MODEL` (mặc định `claude-haiku-4-5`). Trống ⇒ API hỏi đáp trả 503 — [ADR-0006](../adr/0006-tro-ly-rag-claude-voyage-pgvector-rieng.md) |
 | Voyage AI (embedding) | assistant-service nhúng tài liệu/câu hỏi, `voyage-4`, 1024 chiều. Biến `EMBEDDING_API_KEY` (secret), `EMBEDDING_MODEL`. Trống ⇒ tài liệu nằm PENDING, hỏi đáp trả 503 |
 
 ## 6. Realtime
