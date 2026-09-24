@@ -24,6 +24,7 @@ G:\Lock.R\            (hoặc thư mục cha bất kỳ — giữ các repo cạ
 | Nhánh, PR, merge | [04-engineering/git-workflow.md](04-engineering/git-workflow.md) |
 | Commit message | [04-engineering/commit-convention.md](04-engineering/commit-convention.md) |
 | Deploy, rollback, migration | [04-engineering/release-deploy.md](04-engineering/release-deploy.md) |
+| Chạy từng thành phần trên máy mình | [04-engineering/chay-he-thong-cuc-bo.md](04-engineering/chay-he-thong-cuc-bo.md) |
 | Nạp khoá dịch vụ ngoài (Cloudinary, Twilio, Azure, Cloudflare…) | [04-engineering/cau-hinh-dich-vu-ngoai.md](04-engineering/cau-hinh-dich-vu-ngoai.md) |
 | Khi nào phải sửa tài liệu | [04-engineering/documentation-rules.md](04-engineering/documentation-rules.md) |
 | Vì sao làm thế | [adr/](adr/README.md) |
