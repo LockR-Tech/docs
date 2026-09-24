@@ -2,6 +2,11 @@
 
 Mỗi thay đổi ở repo docs thêm **một dòng** vào ngày tương ứng (mới nhất ở trên). Ghi mã gap/SEC/ADR nếu có.
 
+## 2026-09-24
+
+- Thêm [04-engineering/chay-he-thong-cuc-bo.md](04-engineering/chay-he-thong-cuc-bo.md): lệnh dựng admin web / landing / kiosk / mobile / giả lập tủ trên máy cá nhân, cổng mặc định theo `vite.config` từng repo, và 5 cái bẫy đã gặp (giả lập ghi thật vào production qua broker công khai — SEC-04; `flutter run` mất kết nối khi app bị kill; `adb` ngoài PATH; cổng không được nhả sau Ctrl+C; bẫy toolchain máy SA-KT32). Ghi rõ `flutter run -d chrome` nổ ở màn đăng nhập vì `main.dart` bỏ qua `Firebase.initializeApp` khi `kIsWeb` còn `login_screen` vẫn dựng `FirebaseAuth.instance`. Thêm dòng tra cứu vào AGENTS.md.
+- STATUS § 5: ghi đợt sửa lỗi 2026-09-23 đã merge (mobile #24–#26, frontend #19, backend #26). **Chưa tính lại %** vì chưa rà lại checklist từng luồng.
+
 ## 2026-09-22
 
 - F3-G06: cập nhật STATUS và flow 3 theo phần ADMIN quản lý drone đã merge trước 2026-09-21 22:51 (backend #24, frontend #17): route admin đổi trạng thái/pin không cần claim, giữ phân công KTV, chặn sửa/ngừng drone đang `RESERVED`/`IN_FLIGHT`; chưa tính các chỉnh sửa sau mốc này.
