@@ -11,6 +11,7 @@ Tủ khoá thông minh + giao hàng bằng drone. Repo này là **nguồn sự t
 | Sắp viết code | [git-workflow](04-engineering/git-workflow.md) · [commit-convention](04-engineering/commit-convention.md) · file luồng liên quan |
 | Sắp merge / deploy | [release-deploy](04-engineering/release-deploy.md) |
 | Nạp khoá dịch vụ ngoài | [cau-hinh-dich-vu-ngoai](04-engineering/cau-hinh-dich-vu-ngoai.md) |
+| Lắp tủ vật lý: Pi/Jetson, Arduino, relay, màn cảm ứng | [03-hardware/controller-wiring-guide](03-hardware/controller-wiring-guide.md) |
 | Cần in sơ đồ | [diagrams/](diagrams/README.md) |
 
 ## Cấu trúc
@@ -25,6 +26,9 @@ docs/
 │   ├── product.md            Sản phẩm, vai trò, 4 luồng, thuật ngữ
 │   └── architecture.md       Repo, service, hạ tầng, auth, tích hợp, CI/CD, lệnh dev
 ├── 02-flows/                 Mỗi luồng: mục tiêu · checklist có bằng chứng · % · luồng hiện tại · gap
+├── 03-hardware/
+│   ├── cabinet-wiring-spec.md     Sơ đồ đấu nối của nhà cung cấp + đối chiếu chân Arduino trong firmware
+│   └── controller-wiring-guide.md Chuẩn bị Pi/Jetson + màn cảm ứng, thứ tự nối dây, bring-up, kiosk trên Pi
 ├── 04-engineering/
 │   ├── git-workflow.md       GitHub Flow, nhánh, PR, merge, hotfix
 │   ├── commit-convention.md  Conventional Commits, scope từng repo
