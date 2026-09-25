@@ -1,15 +1,15 @@
 %% @title Vòng đời giao hàng Drone — deliveryStage & DroneMission
-%% @subtitle Nguồn: <code>order-service/…/DroneOrderMaintenanceService.java</code> · <code>DroneDeliverySimulator.java</code> · <code>OrderService.java:215-253</code> — Luồng 1 — rà soát code 2026-09-20
+%% @subtitle Nguồn: <code>order-service/…/DroneOrderMaintenanceService.java</code> · <code>DroneDeliverySimulator.java</code> · <code>OrderService.java:215-253</code> — Luồng 1 — rà soát code 2026-09-25
 %% @orientation portrait
 %% @legend <span class="sw ok"></span>Chạy thật (STANDARD)
 %% @legend <span class="sw demo"></span>Chỉ đạt được ở DEMO
 %% @legend <span class="sw gap"></span>Cần có — CHƯA code
 %% @legend <span class="sw end"></span>Kết thúc
 %% @row D1 | ∅ → AWAITING_DISPATCH | <code>POST /api/orders/drone-deliveries</code> | CUSTOMER | giữ ô DRONE 24h, payment UNPAID, báo nhóm DRONE_TECHNICIAN; người nhận luôn là người đặt
-%% @row D2 | AWAITING_DISPATCH → ACCEPTED | <code>POST /api/drone-technician/drone-orders/{id}/accept</code> | DRONE_TECHNICIAN | PAID · drone IDLE · pin đủ ngưỡng · locker ACTIVE · pad OK → khóa DB và giữ drone RESERVED → mission READY_TO_LAUNCH; chặn mission trùng
-%% @row ~D3 | ACCEPTED → LOADED | xác nhận nạp hàng tại điểm đi (ô nguồn, người nạp) | DRONE_TECHNICIAN | CHƯA CÓ bước nạp hàng
-%% @row D4 | ACCEPTED → LAUNCHING | <code>POST …/{id}/launch</code> | DRONE_TECHNICIAN | mission READY_TO_LAUNCH; kiểm tra lại RESERVED · active · pin · pad OK; compare-and-set drone IN_FLIGHT
-%% @row D5 | ACCEPTED → CANCELED | <code>POST …/{id}/cancel</code> | DRONE_TECHNICIAN | RESERVED → IDLE, xoá mission, nhả ô, báo khách; không hoàn tiền
+%% @row D2 | AWAITING_DISPATCH → ACCEPTED | <code>POST /api/drone-technician/drone-orders/{id}/accept</code> | DRONE_TECHNICIAN | PAID · drone IDLE · pin đủ ngưỡng · locker ACTIVE · pad OK → khóa DB và giữ drone RESERVED → mission AWAITING_LOADING; chặn mission trùng
+%% @row D3 | ACCEPTED / AWAITING_LOADING → READY_TO_LAUNCH | <code>POST …/{id}/loading-confirmation</code> | đội viên đã nhận | ghi trạm nguồn, người nạp, cân nặng, niêm phong; bắt buộc đúng kiện · cố định · khóa khoang; chặn quá tải
+%% @row D4 | ACCEPTED / READY_TO_LAUNCH → LAUNCHING | <code>POST …/{id}/launch</code> | đội viên đã nhận | bắt buộc hồ sơ nạp; kiểm tra lại RESERVED · active · pin · pad OK; compare-and-set drone IN_FLIGHT
+%% @row D5 | ACCEPTED → CANCELED | <code>POST …/{id}/cancel</code> | đội viên đã nhận | cho phép khi AWAITING_LOADING hoặc READY_TO_LAUNCH; RESERVED → IDLE, xoá mission, nhả ô, báo khách; không hoàn tiền
 %% @row D6 | AWAITING_DISPATCH → CANCELED | <code>PUT /api/orders/{id}/cancel</code> | CUSTOMER | order → CANCELED nhưng <b>deliveryStage giữ nguyên</b>; app không có nút huỷ cho đơn drone
 %% @row !D7 | LAUNCHING → DEPARTED → … → ARRIVED | <code>DroneDeliverySimulator</code> mỗi 3 giây | hệ thống | chỉ fulfillmentMode = DEMO (mặc định cho mọi người). Push ở DEPARTED, APPROACHING, ARRIVED
 %% @row ~D8 | LAUNCHING → … → ARRIVED | telemetry thật (MAVLink/MQTT) → iot-service | drone | CHƯA CÓ ⇒ ở STANDARD đơn đứng yên tại LAUNCHING
@@ -17,15 +17,15 @@
 %% @row ~D10 | EN_ROUTE · APPROACHING → FAILED · DELAYED | abort / lỗi drone / thời tiết | hệ thống · DRONE_TECHNICIAN | CHƯA CÓ (app mobile đã có nhãn delayed/failed nhưng backend không gửi)
 %% @row D11 | READY_FOR_PICKUP → (order COMPLETED) | <code>PUT /api/orders/{id}/complete</code> | người đặt | cần PAID. Mở ô bằng PIN ở kiosk <b>không</b> hoàn tất đơn
 %% @note Theo dõi hành trình: app hỏi <code>GET /api/orders/{id}/drone-delivery</code> mỗi 3 giây, API trả missionId/droneCode/eta = null; bản đồ live (STOMP) đã tắt bằng feature flag, không service nào phát vị trí.
-%% @note DroneMission.status dùng cùng tên chặng + READY_TO_LAUNCH/DEPOSITED; khi huỷ, dòng mission bị <b>xoá</b> thay vì đánh dấu CANCELED.
+%% @note DroneMission.status dùng AWAITING_LOADING/READY_TO_LAUNCH rồi cùng tên chặng bay + DEPOSITED; khi huỷ, dòng mission bị <b>xoá</b> thay vì đánh dấu CANCELED.
 %%{init: {"flowchart": {"nodeSpacing": 26, "rankSpacing": 40, "padding": 8, "curve": "basis"}}}%%
 flowchart TB
     S(("●")) -->|D1| AW(["AWAITING_DISPATCH<br/><small>chờ điều phối</small>"])
-    AW -->|D2| ACC(["ACCEPTED<br/><small>mission READY_TO_LAUNCH</small>"])
-    ACC -.->|D3| LOAD(["LOADED<br/><small>đã nạp hàng</small>"])
-    LOAD -.->|D4| LAU
-    ACC -->|D4| LAU(["LAUNCHING<br/><small>drone IN_FLIGHT</small>"])
+    AW -->|D2| ACC(["ACCEPTED<br/><small>mission AWAITING_LOADING</small>"])
+    ACC -->|D3| LOAD(["ACCEPTED<br/><small>mission READY_TO_LAUNCH</small>"])
+    LOAD -->|D4| LAU(["LAUNCHING<br/><small>drone IN_FLIGHT</small>"])
     ACC -->|D5| CAN(["CANCELED"])
+    LOAD -->|D5| CAN
     AW -->|D6| CAN
     subgraph FLIGHT["Chặng bay · DEMO"]
         direction LR
@@ -45,13 +45,13 @@ flowchart TB
     classDef gap fill:#f6f8fa,stroke:#8c959f,stroke-width:1.5px,stroke-dasharray:5 4,color:#57606a
     classDef fin fill:#dbe7ff,stroke:#3b6fd4,stroke-width:1.5px,color:#1f2328
     classDef term fill:#1f2328,stroke:#1f2328,color:#ffffff
-    class AW,ACC,LAU ok
+    class AW,ACC,LOAD,LAU ok
     class DEP,ENR,APP,ARR,RFP demo
-    class LOAD,FAIL gap
+    class FAIL gap
     class CAN fin
     class S,E term
 
     style FLIGHT fill:#fffbeb,stroke:#bf8700,stroke-dasharray:4 3,color:#7d5a00
 
-    linkStyle 2,3,12,13 stroke:#8c959f,stroke-width:1.5px
+    linkStyle 12,13 stroke:#8c959f,stroke-width:1.5px
     linkStyle 7,8,9,10,11 stroke:#bf8700,stroke-width:2.5px,color:#bf8700

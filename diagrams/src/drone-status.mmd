@@ -1,5 +1,5 @@
 %% @title Trạng thái Drone — DroneUnit.status
-%% @subtitle Nguồn: <code>locker-service/…/model/DroneStatus.java</code> · <code>LockerService.java</code> · <code>order-service/…/DroneOrderMaintenanceService.java</code> · <code>DroneDeliverySimulator.java</code> — rà soát code 2026-09-20
+%% @subtitle Nguồn: <code>locker-service/…/model/DroneStatus.java</code> · <code>LockerService.java</code> · <code>order-service/…/DroneOrderMaintenanceService.java</code> · <code>DroneDeliverySimulator.java</code> — rà soát code 2026-09-25
 %% @orientation portrait
 %% @legend <span class="sw ok"></span>Trạng thái đang có
 %% @legend <span class="sw bad"></span>Lỗi / ngưng hoạt động
@@ -7,7 +7,7 @@
 %% @legend <b>━</b> đã code &nbsp;<b style="color:#bf8700">━</b> chỉ chế độ DEMO &nbsp;<b style="color:#8c959f">┅</b> CHƯA code
 %% @row T1 | ∅ → IDLE | <code>POST /api/admin/lockers/drones</code> | ADMIN | locker tồn tại, mã drone không trùng
 %% @row T2 | IDLE → RESERVED | accept đơn <code>POST /api/drone-technician/drone-orders/{id}/accept</code> | DRONE_TECHNICIAN | compare-and-set có khóa DB; một drone chỉ giữ cho một mission
-%% @row T3 | RESERVED → IN_FLIGHT | launch đơn <code>POST /api/drone-technician/drone-orders/{id}/launch</code> | DRONE_TECHNICIAN | kiểm tra lại active, pin và pad; compare-and-set chống trạng thái thay đổi giữa chừng
+%% @row T3 | RESERVED → IN_FLIGHT | launch đơn <code>POST /api/drone-technician/drone-orders/{id}/launch</code> | đội viên đã nhận mission | bắt buộc hồ sơ nạp hàng; kiểm tra lại active, pin và pad; compare-and-set chống trạng thái thay đổi giữa chừng
 %% @row !T4 | IN_FLIGHT → IDLE | <code>DroneDeliverySimulator</code> khi mission DEPOSITED | hệ thống | chỉ DEMO; compare-and-set nên không ghi đè FAULT/MAINTENANCE
 %% @row T5 | RESERVED → IDLE | đội bay huỷ trước cất cánh | DRONE_TECHNICIAN | chỉ nhả khi drone vẫn RESERVED; không ghi đè trạng thái mới hơn
 %% @row ~T6 | IN_FLIGHT → LANDED | telemetry / MQTT báo hạ cánh tại locker đích | drone / iot-service | CHƯA CÓ ⇒ ở STANDARD drone kẹt IN_FLIGHT vĩnh viễn

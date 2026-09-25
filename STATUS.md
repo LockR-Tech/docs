@@ -5,8 +5,8 @@
 | | |
 |---|---|
 | **Cập nhật lần cuối** | 2026-09-25 |
-| **Người cập nhật** | BaoHuy-Dev — thêm tài liệu phần cứng `03-hardware/`, rà repo iot tới `454c49a`; số % các luồng chưa tính lại |
-| **Tổng tiến độ 4 luồng** | **67,2 %** |
+| **Người cập nhật** | Codex — hoàn thiện cục bộ F1-G08 (nạp hàng drone bắt buộc trước launch), giữ cập nhật phần cứng/iot ngày 25/09; **F1-G08 chưa merge/deploy** |
+| **Tổng tiến độ 4 luồng** | **69,7 %** |
 
 ## 0. Mốc code đã rà soát
 
@@ -14,9 +14,9 @@ Mọi con số bên dưới đúng với các commit này. Trước khi tin STAT
 
 | Repo | Commit đã rà soát | Nhánh |
 |---|---|---|
-| [backend](https://github.com/LockR-Tech/backend) | `684dcf5` | `main` |
+| [backend](https://github.com/LockR-Tech/backend) | `0bd047d` + F1-G08 local | `main` |
 | [frontend](https://github.com/LockR-Tech/frontend) | `612912d` | `main` |
-| [mobile](https://github.com/LockR-Tech/mobile) | `5890184` | `main` |
+| [mobile](https://github.com/LockR-Tech/mobile) | `d717b76` + F1-G08 local | `main` |
 | [iot](https://github.com/LockR-Tech/iot) | `454c49a` | `main` |
 | [legal](https://github.com/LockR-Tech/legal) | `87ad342` | `main` |
 
@@ -24,12 +24,12 @@ Mọi con số bên dưới đúng với các commit này. Trước khi tin STAT
 
 | Luồng | Tiến độ | Một dòng tình trạng | Chi tiết |
 |---|---:|---|---|
-| **L1** Giao hàng drone → PIN → nhận hàng | **60 %** | Chạy trọn vẹn **chỉ ở chế độ DEMO** (bộ giả lập đẩy chặng bay). Ở STANDARD đơn kẹt tại LAUNCHING, drone kẹt IN_FLIGHT. | [flow-1](02-flows/flow-1-drone-delivery.md) |
+| **L1** Giao hàng drone → PIN → nhận hàng | **70 %** | Đã có bước nạp hàng/checklist bắt buộc trước launch (F1-G08 local). Chạy trọn vẹn **chỉ ở DEMO**; STANDARD vẫn kẹt tại LAUNCHING vì chưa có telemetry thật. | [flow-1](02-flows/flow-1-drone-delivery.md) |
 | **L2** Thuê tủ gửi hàng → chuyển mã → người nhận lấy (gồm thuê ô theo giờ) | **70 %** | Gửi hàng và thuê ô chạy trọn: trả tiền thật → mở ô → xác nhận bỏ hàng (app hoặc kiosk) → người nhận lấy bằng mã hoàn tất đơn; thuê ô mở lại nhiều lần, kết thúc tại kiosk. Còn: phí quá hạn chưa thu, người nhận có tài khoản chưa thấy đơn gửi tới mình, payload MQTT với Pi. | [flow-2](02-flows/flow-2-locker-send.md) |
 | **L3** Vai trò · quản lý drone · bảo trì | **45 %** | Phần **KTV tủ** đã đủ; **ADMIN quản lý drone** đã sửa route đổi trạng thái/pin và guard drone đang có nhiệm vụ. Còn **lỗ hổng phân quyền** (SEC-02/03/05/06), IoT chưa tự báo hỏng, telemetry/ticket drone. | [flow-3](02-flows/flow-3-roles-maintenance.md) |
 | **L4** RAG hỏi đáp tài liệu nội bộ | **94 %** | `assistant-service` (Claude + Voyage, pgvector riêng): nạp tài liệu, hỏi đáp có trích nguồn, lọc theo vai trò, từ chối ngoài phạm vi, trang Kho tri thức, màn hình trợ lý. Còn: nạp khoá API, chạy bộ đánh giá và hiệu chỉnh ngưỡng. | [flow-4](02-flows/flow-4-rag-assistant.md) |
 
-**Cách tính:** mỗi luồng có checklist 8–10 hạng mục; DONE = 1 · PARTIAL = 0,5 · MISSING = 0. % luồng = tổng điểm / số hạng mục. Tổng dự án = trung bình cộng 4 luồng (trọng số bằng nhau): (60 + 70 + 45 + 93,75) / 4 = **67,2 %**. Chỉ được đổi % khi đổi checklist trong file luồng, kèm bằng chứng `file:line`.
+**Cách tính:** mỗi luồng có checklist 8–10 hạng mục; DONE = 1 · PARTIAL = 0,5 · MISSING = 0. % luồng = tổng điểm / số hạng mục. Tổng dự án = trung bình cộng 4 luồng (trọng số bằng nhau): (70 + 70 + 45 + 93,75) / 4 = **69,7 %**. Chỉ được đổi % khi đổi checklist trong file luồng, kèm bằng chứng `file:line`.
 
 > Chủ dự án đánh số theo nghiệp vụ: *luồng 2* = gửi hàng, *luồng 3* = thuê ô (cả hai nằm trong L2), *luồng 4* = vận hành–bảo trì (L3), *luồng 5* = trợ lý RAG (L4).
 
@@ -53,7 +53,7 @@ Mọi con số bên dưới đúng với các commit này. Trước khi tin STAT
 
 | Việc | Gap | Người/nhánh | Trạng thái |
 |---|---|---|---|
-| Khóa vòng đời điều phối drone: `IDLE → RESERVED → IN_FLIGHT`, guard cất cánh/hủy và không ghi đè FAULT | **F1-G02** | Codex · backend `codex/drone-demo-3s`, mobile `codex/drone-maintenance-dialog-fix` | Đã code và qua test cục bộ; **chưa merge/deploy** |
+| Bước nạp hàng drone bắt buộc trước launch | F1-G08 | Codex · local `main` backend/mobile | Code + migration + test đã xong; backend 104 test xanh, mobile 50 test xanh, analyzer sạch; **chưa commit/merge/deploy** |
 | L4 trợ lý RAG lên chạy thật: nạp khoá, seed tài liệu, chạy bộ đánh giá, chỉnh ngưỡng | F4-G09 | Chủ dự án | Code đã deploy; chờ `ANTHROPIC_API_KEY`, `EMBEDDING_API_KEY` trên VM ([runbook § 11b](04-engineering/cau-hinh-dich-vu-ngoai.md)) rồi chạy `backend/scripts/seed-knowledge.sh` |
 | Kiểm dữ liệu production bị lỗi thuê ô trước backend #20: đơn RENTAL bị COMPLETED sớm từ 2026-09-17, đơn INITIALIZED chưa trả tiền (giờ bị chặn mở ô), đơn thuê STORING quá hạn | F2-G01 | Chủ dự án | Chưa chạy truy vấn |
 | Lắp tủ vật lý theo sơ đồ nhà cung cấp: Pi ↔ USB-RS485 ↔ Arduino ↔ relay/khoá, kiosk chạy trên Pi | F2-G09 | Chủ dự án | Đang chuẩn bị phần cứng theo [03-hardware/controller-wiring-guide.md](03-hardware/controller-wiring-guide.md); firmware đã khớp sơ đồ (7 ngăn, iot#7); code còn nợ: `base: '/ui/'` cho kiosk, thống nhất payload lệnh mở (mục 7 của hướng dẫn) |
@@ -63,7 +63,7 @@ Các nút thắt vận hành hiện có:
 | Nút thắt | Trạng thái | Ai làm |
 |---|---|---|
 | **GitHub Actions hết quota** (2.000/2.000 phút, gói Free, reset ~2026-10-01) | Mọi CI và deploy đỏ sau 2–5 giây. Nguyên nhân gốc đã sửa ở `999d48f`, nhưng phải chờ reset hoặc nâng spending limit | Chủ dự án |
-| **Backend đã khớp production** ✅ | backend `569d323` deploy thành công 16/09 09:58 (không ai bị đăng xuất — giữ secret cũ). frontend `main` `b1686f5` vs đã deploy `a1ca345` — sau 1 commit · mobile `main` chưa build lại | Chủ dự án |
+| **Backend và mobile web đã khớp production** ✅ | backend `d8f455c` deploy thành công 21/09 14:19 UTC; mobile web `7439e6f` deploy thành công 21/09 14:12 UTC. Các commit `chore(deploy) [skip ci]` sau đó chỉ cập nhật nhật ký | Chủ dự án |
 
 | Khoá còn thiếu trên VM | Thiếu thì sao |
 |---|---|
@@ -86,7 +86,7 @@ Cách lấy và nạp: [cau-hinh-dich-vu-ngoai.md](04-engineering/cau-hinh-dich-
 5. **SEC-04** Broker MQTT riêng có xác thực + TLS trong `docker-compose.yml`.
 6. **L4 lên production**: nạp `ANTHROPIC_API_KEY`, `EMBEDDING_API_KEY`, `ASSISTANT_DB_PASSWORD` trước lần deploy đầu có `assistant-service`; seed tài liệu; chạy bộ đánh giá (`POST /api/admin/knowledge/eval`) và chỉnh ngưỡng liên quan.
 7. **F2-G05 · F2-G06** Thu phí quá hạn; người nhận có tài khoản thấy đơn gửi tới mình.
-8. **F1-G01** Tiến trình bay thật cho STANDARD. F1-G02 đã code/test cục bộ, chờ review + merge + deploy.
+8. **F1-G01** Tiến trình bay thật cho STANDARD.
 9. **F3-G03** IoT tự báo offline/hỏng; phần drone còn lại của F3-G02/G07.
 
 ## 5. Đã xong gần đây
@@ -96,6 +96,7 @@ Cách lấy và nạp: [cau-hinh-dich-vu-ngoai.md](04-engineering/cau-hinh-dich-
 | 2026-09-24 | **Đợt sửa lỗi UX + múi giờ, đã merge và deploy backend/frontend.** Gốc chung của 3 lỗi: backend trả `LocalDateTime` (chuỗi trần = UTC, container chạy UTC) nhưng mobile gọi `DateTime.parse(s).toLocal()` — `DateTime.parse` coi chuỗi trần là giờ máy nên `.toLocal()` vô nghĩa ⇒ mọi mốc hiện sớm 7 tiếng và **mọi hạn chót lùi 7 tiếng nên đơn vừa tạo đã "quá hạn"**; tách `core/utils/app_date_time.dart` dùng chung. Frontend còn vài chỗ `new Date(chuỗi)` cùng lỗi. **Mã giảm giá tự hết hạn**: `toDatetimeLocal` cắt thẳng chuỗi UTC vào ô `datetime-local` rồi lưu lại đổi VN→UTC lần nữa, mỗi lần admin sửa là mã lùi thêm 7 tiếng. **Gia hạn thuê tủ thu lại cả phần đã trả**: `extendRental`/`assessOvertime` cộng vào `totalPrice` rồi đặt `UNPAID`; thêm cột `paid_amount` (order `V14`) + `amountDue`, client thu phần còn thiếu. **Tạo user ở admin báo trùng mail sai**: không service nào kiểm trùng, auth lỗi thì xoá profile ⇒ tài khoản auth mồ côi chiếm email; thêm kiểm trùng + bắt buộc trường. **Số liệu Noti admin**: hook trả `stats: undefined` nên 6 thẻ luôn 0, `totalPages` cứng 1, 3 bộ lọc bị server bỏ qua. Thêm: nút quay lại thông báo (push dùng `context.go` xoá stack), mở được thông báo không có payload, chỉ đường tới tủ (thiếu `<queries>` nên `canLaunchUrl` false trên Android 11+), mã giao dịch + hình thức thanh toán trong chi tiết đơn, thông tin người nhận, lọc trạng thái ở KTV, lối đi tiếp khi kiểm tra định kỳ KHÔNG ĐẠT, thanh tiêu đề co khi cuộn (mới 4/25 màn), gỡ uỷ quyền lấy hộ. **Backend + frontend deploy xanh; mobile web deploy đỏ** do 7 test hỏng sẵn trên `main` chặn bước `flutter test` (235 pass / 7 fail, trùng con số trước và sau khi sửa). **% các luồng chưa tính lại** — chưa rà lại checklist. | mobile [#24](https://github.com/LockR-Tech/mobile/pull/24) [#25](https://github.com/LockR-Tech/mobile/pull/25) [#26](https://github.com/LockR-Tech/mobile/pull/26) · frontend [#19](https://github.com/LockR-Tech/frontend/pull/19) · backend [#26](https://github.com/LockR-Tech/backend/pull/26) · [runbook chạy cục bộ](04-engineering/chay-he-thong-cuc-bo.md) |
 | 2026-09-21 | **ADMIN quản lý drone: sửa điều khiển trạng thái/pin qua route admin.** Backend thêm đường admin riêng cho đổi trạng thái và cập nhật pin, giữ phân công KTV hiện tại, ghi audit log, chặn sửa/ngừng drone khi đang `RESERVED`/`IN_FLIGHT`, và không cho ADMIN/DRONE_TECHNICIAN tự ép các trạng thái workflow-managed (`RESERVED`, `IN_FLIGHT`) từ màn vận hành. Frontend `/admin/drones` gọi đúng route admin cho trạng thái/pin và disable sửa/ngừng khi drone đang có nhiệm vụ. Test backend targeted pass 13/13 ở PR này; docs chưa tính các chỉnh sửa sau 2026-09-21 22:51. | backend [#24](https://github.com/LockR-Tech/backend/pull/24) · frontend [#17](https://github.com/LockR-Tech/frontend/pull/17) |
 | 2026-09-21 | **Hoàn thiện L2 + phần KTV tủ của L3 + L4, đã merge.** Hotfix đơn thuê bị kết thúc khi mở lại ô (backend #20, deploy xanh). Gửi hàng/thuê ô: chặn mã đơn chưa trả và thuê quá hạn, xác nhận bỏ hàng cần đã mở ô, kiosk xác nhận bỏ hàng và kết thúc thuê bằng mã, app trả tiền thật (bỏ CASH) và chờ PAID. KTV tủ: KTV phụ trách tủ, định tuyến + thông báo phiếu, đóng phiếu trả tài sản, tủ bảo trì chặn đặt ô, kiểm tra định kỳ ĐẠT/KHÔNG ĐẠT, nhắc hạn 07:00. Trợ lý RAG: `assistant-service` + `assistant-db` (pgvector), trang Kho tri thức, màn hình trợ lý. Migration mới: `order_service` V13, `locker_service` V18, `assistant_db` V1. Backend #21–#23 deploy chung một lần (hai lần deploy trung gian bị huỷ ở bước build, chưa chạm VM). | backend [#20](https://github.com/LockR-Tech/backend/pull/20) [#21](https://github.com/LockR-Tech/backend/pull/21) [#22](https://github.com/LockR-Tech/backend/pull/22) [#23](https://github.com/LockR-Tech/backend/pull/23) · frontend [#15](https://github.com/LockR-Tech/frontend/pull/15) [#16](https://github.com/LockR-Tech/frontend/pull/16) · mobile [#18](https://github.com/LockR-Tech/mobile/pull/18)–[#21](https://github.com/LockR-Tech/mobile/pull/21) · iot [#5](https://github.com/LockR-Tech/iot/pull/5) · [ADR-0006](adr/0006-tro-ly-rag-claude-voyage-pgvector-rieng.md) |
+| 2026-09-20 | **F1-G02 an toàn điều phối drone đã merge và deploy:** thêm `RESERVED`; khóa order + drone chống nhận trùng; tái kiểm tra pin/bãi đáp trước cất cánh; hủy nhả reservation; simulator không ghi đè FAULT; mobile sửa race mở dialog và chỉ cho người phụ trách sửa drone. Nghiệm thu cục bộ lại trên `main` 21/09: backend 167 test, 0 fail (3 Testcontainers skip vì Docker không chạy); mobile 48 test, analyzer sạch. | backend [#18](https://github.com/LockR-Tech/backend/pull/18) · mobile [#15](https://github.com/LockR-Tech/mobile/pull/15) · [flow 1](02-flows/flow-1-drone-delivery.md) |
 | 2026-09-16 | **Deploy backend `569d323` lên production** (09:58, nghiệm thu health/public/admin đạt): đóng SEC-07 (bỏ OTP khỏi log), khởi tạo Firebase, truyền JWT secret cho `notification-service`, gửi mã mở tủ cho người nhận. Giữ secret cũ trong `.env` nên **không ai bị đăng xuất**. Mở được nhờ chuyển 6 repo sang public → Actions miễn phí. **SEC-01 vẫn mở**: secret là chuỗi mặc định, giờ công khai theo repo. | [DEPLOY-LOG](https://github.com/LockR-Tech/backend/blob/main/infra/azure/DEPLOY-LOG.md) |
 | 2026-09-16 | **Lưu ảnh chạy trên production**: nạp `CLOUDINARY_URL` + `MEDIA_FOLDER_ROOT` vào `.env` VM, khởi động lại `user`/`order`/`locker`/`store-service`; cả bốn xác nhận `Cloudinary media storage enabled`. Avatar, ảnh phiếu sự cố, ảnh cửa hàng, ảnh khuyến mãi hết trả 503. Không cần deploy lại web/mobile. | [runbook §4](04-engineering/cau-hinh-dich-vu-ngoai.md) · [ADR-0004](adr/0004-anh-luu-cloudinary-upload-truc-tiep.md) |
 | 2026-09-16 | **Quản lý dịch vụ trên admin**: trang `/admin/services` dựng lại — mỗi dịch vụ (gửi hàng, thuê ô, drone) một thẻ với giá, quy tắc sửa được tại chỗ và hiệu quả trong kỳ. Trang cũ gọi `/api/admin/services` vốn trả 404 nên chưa bao giờ chạy. Kèm bỏ mã số nội bộ khỏi admin và app: hiện tên tủ, tên cửa hàng, số ô in trên tủ. **Đã merge, chờ deploy.** | [frontend #8](https://github.com/LockR-Tech/frontend/pull/8) · [mobile #7](https://github.com/LockR-Tech/mobile/pull/7) |
