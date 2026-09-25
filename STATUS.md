@@ -4,8 +4,8 @@
 
 | | |
 |---|---|
-| **Cập nhật lần cuối** | 2026-09-22 |
-| **Người cập nhật** | Codex — cập nhật phần ADMIN quản lý drone theo backend #24 + frontend #17; không tính các chỉnh sửa sau 2026-09-21 22:51 mà chủ dự án chưa lấy |
+| **Cập nhật lần cuối** | 2026-09-25 |
+| **Người cập nhật** | BaoHuy-Dev — thêm tài liệu phần cứng `03-hardware/`, rà repo iot tới `454c49a`; số % các luồng chưa tính lại |
 | **Tổng tiến độ 4 luồng** | **67,2 %** |
 
 ## 0. Mốc code đã rà soát
@@ -17,7 +17,7 @@ Mọi con số bên dưới đúng với các commit này. Trước khi tin STAT
 | [backend](https://github.com/LockR-Tech/backend) | `684dcf5` | `main` |
 | [frontend](https://github.com/LockR-Tech/frontend) | `612912d` | `main` |
 | [mobile](https://github.com/LockR-Tech/mobile) | `5890184` | `main` |
-| [iot](https://github.com/LockR-Tech/iot) | `927b057` | `main` |
+| [iot](https://github.com/LockR-Tech/iot) | `454c49a` | `main` |
 | [legal](https://github.com/LockR-Tech/legal) | `87ad342` | `main` |
 
 ## 1. Tiến độ theo luồng
@@ -56,6 +56,7 @@ Mọi con số bên dưới đúng với các commit này. Trước khi tin STAT
 | Khóa vòng đời điều phối drone: `IDLE → RESERVED → IN_FLIGHT`, guard cất cánh/hủy và không ghi đè FAULT | **F1-G02** | Codex · backend `codex/drone-demo-3s`, mobile `codex/drone-maintenance-dialog-fix` | Đã code và qua test cục bộ; **chưa merge/deploy** |
 | L4 trợ lý RAG lên chạy thật: nạp khoá, seed tài liệu, chạy bộ đánh giá, chỉnh ngưỡng | F4-G09 | Chủ dự án | Code đã deploy; chờ `ANTHROPIC_API_KEY`, `EMBEDDING_API_KEY` trên VM ([runbook § 11b](04-engineering/cau-hinh-dich-vu-ngoai.md)) rồi chạy `backend/scripts/seed-knowledge.sh` |
 | Kiểm dữ liệu production bị lỗi thuê ô trước backend #20: đơn RENTAL bị COMPLETED sớm từ 2026-09-17, đơn INITIALIZED chưa trả tiền (giờ bị chặn mở ô), đơn thuê STORING quá hạn | F2-G01 | Chủ dự án | Chưa chạy truy vấn |
+| Lắp tủ vật lý theo sơ đồ nhà cung cấp: Pi ↔ USB-RS485 ↔ Arduino ↔ relay/khoá, kiosk chạy trên Pi | F2-G09 | Chủ dự án | Đang chuẩn bị phần cứng theo [03-hardware/controller-wiring-guide.md](03-hardware/controller-wiring-guide.md); code còn nợ: nâng 6→7 ngăn, `base: '/ui/'` cho kiosk, thống nhất payload lệnh mở (mục 7 của hướng dẫn) |
 
 Các nút thắt vận hành hiện có:
 

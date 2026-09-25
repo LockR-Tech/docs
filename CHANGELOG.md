@@ -2,6 +2,10 @@
 
 Mỗi thay đổi ở repo docs thêm **một dòng** vào ngày tương ứng (mới nhất ở trên). Ghi mã gap/SEC/ADR nếu có.
 
+## 2026-09-25
+
+- F2-G09: thêm thư mục [03-hardware/](03-hardware/) — [cabinet-wiring-spec.md](03-hardware/cabinet-wiring-spec.md) chép sơ đồ đấu nối của nhà cung cấp (nguồn 12 V, TB6600, relay 8 kênh, 7 khoá) và đối chiếu với firmware: code điều khiển tủ qua **Arduino trên RS485** (`locker_controller.ino`, `serial_manager.py`) chứ không phải Pi cắm thẳng GPIO như tài liệu gốc; firmware mới khai 3 ngăn, trần 6 (`MAX_SLOTS`), chưa có gì cho động cơ bước. [controller-wiring-guide.md](03-hardware/controller-wiring-guide.md): chọn Pi thay Jetson, danh sách chuẩn bị, thứ tự nối dây, bảng bring-up dùng các script sẵn có, kiosk trên Pi (ba bẫy đã kiểm trong code: build thiếu `base: '/ui/'`, kiosk nhận tủ qua `?lockerId=`, origin `localhost:8000` chưa trong CORS gateway), và danh sách việc còn nợ trong code. Rà `iot` tới `454c49a`; STATUS § 0 cập nhật mốc iot, § 3 nhận việc lắp tủ.
+
 ## 2026-09-24
 
 - Thêm [04-engineering/chay-he-thong-cuc-bo.md](04-engineering/chay-he-thong-cuc-bo.md): lệnh dựng admin web / landing / kiosk / mobile / giả lập tủ trên máy cá nhân, cổng mặc định theo `vite.config` từng repo, và 5 cái bẫy đã gặp (giả lập ghi thật vào production qua broker công khai — SEC-04; `flutter run` mất kết nối khi app bị kill; `adb` ngoài PATH; cổng không được nhả sau Ctrl+C; bẫy toolchain máy SA-KT32). Ghi rõ `flutter run -d chrome` nổ ở màn đăng nhập vì `main.dart` bỏ qua `Firebase.initializeApp` khi `kIsWeb` còn `login_screen` vẫn dựng `FirebaseAuth.instance`. Thêm dòng tra cứu vào AGENTS.md.
