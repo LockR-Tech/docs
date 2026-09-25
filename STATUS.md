@@ -56,7 +56,7 @@ Mọi con số bên dưới đúng với các commit này. Trước khi tin STAT
 | Khóa vòng đời điều phối drone: `IDLE → RESERVED → IN_FLIGHT`, guard cất cánh/hủy và không ghi đè FAULT | **F1-G02** | Codex · backend `codex/drone-demo-3s`, mobile `codex/drone-maintenance-dialog-fix` | Đã code và qua test cục bộ; **chưa merge/deploy** |
 | L4 trợ lý RAG lên chạy thật: nạp khoá, seed tài liệu, chạy bộ đánh giá, chỉnh ngưỡng | F4-G09 | Chủ dự án | Code đã deploy; chờ `ANTHROPIC_API_KEY`, `EMBEDDING_API_KEY` trên VM ([runbook § 11b](04-engineering/cau-hinh-dich-vu-ngoai.md)) rồi chạy `backend/scripts/seed-knowledge.sh` |
 | Kiểm dữ liệu production bị lỗi thuê ô trước backend #20: đơn RENTAL bị COMPLETED sớm từ 2026-09-17, đơn INITIALIZED chưa trả tiền (giờ bị chặn mở ô), đơn thuê STORING quá hạn | F2-G01 | Chủ dự án | Chưa chạy truy vấn |
-| Lắp tủ vật lý theo sơ đồ nhà cung cấp: Pi ↔ USB-RS485 ↔ Arduino ↔ relay/khoá, kiosk chạy trên Pi | F2-G09 | Chủ dự án | Đang chuẩn bị phần cứng theo [03-hardware/controller-wiring-guide.md](03-hardware/controller-wiring-guide.md); code còn nợ: nâng 6→7 ngăn, `base: '/ui/'` cho kiosk, thống nhất payload lệnh mở (mục 7 của hướng dẫn) |
+| Lắp tủ vật lý theo sơ đồ nhà cung cấp: Pi ↔ USB-RS485 ↔ Arduino ↔ relay/khoá, kiosk chạy trên Pi | F2-G09 | Chủ dự án | Đang chuẩn bị phần cứng theo [03-hardware/controller-wiring-guide.md](03-hardware/controller-wiring-guide.md); firmware đã khớp sơ đồ (7 ngăn, iot#7); code còn nợ: `base: '/ui/'` cho kiosk, thống nhất payload lệnh mở (mục 7 của hướng dẫn) |
 
 Các nút thắt vận hành hiện có:
 

@@ -33,7 +33,7 @@
 | | Nguồn chính hãng cho Pi | 1 | Pi 4: 5 V 3 A USB-C · Pi 5: 27 W USB-C PD. **Không** kéo Pi từ nguồn 12 V qua buck rẻ — sụt áp là Pi reboot giữa chừng |
 | | Thẻ microSD 32 GB A2 + Raspberry Pi OS 64-bit (Bookworm) | 1 | |
 | | Tản nhiệt / quạt (Pi 5 bắt buộc) | 1 | tủ kín, nóng |
-| | Arduino Uno R3 (hoặc Nano) | 1 | firmware `locker_controller.ino`; Uno đủ chân cho 7 ngăn ([spec § 5](cabinet-wiring-spec.md#5-bản-đồ-chân-arduino-uno-cho-7-ngăn-đề-xuất--chưa-vào-firmware)) |
+| | Arduino Uno R3 (hoặc Nano) | 1 | firmware `locker_controller.ino`; Uno đủ chân cho 7 ngăn ([spec § 5](cabinet-wiring-spec.md#5-bản-đồ-chân-arduino-uno-cho-7-ngăn)) |
 | **RS485** | Bộ chuyển USB ↔ RS485 **tự đảo chiều** (auto-direction, chip CH340/CP2102) | 1 | firmware chờ 50 ms cho adapter phía Pi tự chuyển TX→RX (`locker_controller.ino:432-434`); `main.py` tự nhận chip CH340/CP210x/FTDI (`serial_manager.py:100`) |
 | | Module MAX485 (TTL ↔ RS485) cho Arduino | 1 | DE và RE nối chung vào `D7` |
 | | Dây xoắn đôi 2 lõi + 1 dây GND | ~2 m | A/B xoắn đôi; GND đi kèm để hai đầu bus cùng mức |
@@ -129,15 +129,14 @@ Ethernet vào Pi, nguồn chính hãng vào cổng USB-C. Chưa bật.
 
 ### 4.1 Firmware Arduino
 
-Mở `iot/arduino/locker_controller/locker_controller.ino` bằng Arduino IDE, sửa rồi nạp qua USB:
+Sketch trong repo **đã khớp sơ đồ đấu nối**: 7 ngăn, `SLAVE_ID = 1`, mảng trạng thái bám `NUM_SLOTS` ([spec § 5](cabinet-wiring-spec.md#5-bản-đồ-chân-arduino-uno-cho-7-ngăn)). Mở `iot/arduino/locker_controller/locker_controller.ino` bằng Arduino IDE rồi nạp qua USB.
 
-| Dòng | Sửa thành | Vì sao |
+Chỉ còn hai chỗ phải tự quyết theo phần cứng thật:
+
+| Dòng | Khi nào sửa | Vì sao |
 |---|---|---|
-| `:12` `#define SLAVE_ID 2` | `1` cho tủ đầu tiên | `MAX_CABINETS = 1` và quét slave từ 1 (`settings.py:38`, `discovery_service.py:29`) |
-| `:15` `LOCK_PINS` | `{2, 4, 5, 3, 8, 10, A5}` | 7 ngăn ([spec § 5](cabinet-wiring-spec.md#5-bản-đồ-chân-arduino-uno-cho-7-ngăn-đề-xuất--chưa-vào-firmware)) |
-| `:16` `MAGNETIC_PINS` | `{11, 12, A0, A1, A2, A3, A4}` | |
-| `:34-36` `[6]` | `[NUM_SLOTS]` | mảng trạng thái theo số ngăn |
-| `:23-24` `RELAY_ON/OFF` | giữ `HIGH/LOW` nếu ở bước B.4 module kích HIGH; đổi thành `LOW/HIGH` nếu kích LOW | sai chiều = 7 khoá có điện liên tục từ lúc cấp nguồn |
+| `:32-33` `RELAY_ON` / `RELAY_OFF` | Bước B.4 cho thấy module kích **LOW** ⇒ đổi thành `LOW` / `HIGH` | Repo để `HIGH`/`LOW` và **chưa xác minh với module thật**. Sai chiều = 7 khoá có điện liên tục từ lúc cấp nguồn |
+| `:15` `#define SLAVE_ID 1` | Chỉ khi lắp **board thứ hai** trên cùng bus ⇒ đặt `2` | Pi quét từ 1 tới `MAX_CABINETS` (`settings.py:38`, `discovery_service.py:29`); tủ đầu tiên giữ `1` |
 
 Mở Serial Monitor 9600 baud, phải thấy `AISL Locker Controller v2.1` và 7 dòng `Slot n: … door=CLOSED/OPEN` (`:66-80`).
 
@@ -246,7 +245,7 @@ Nối dây xong vẫn chưa mở được ngăn bằng mã từ app cho tới kh
 
 | # | Việc | Ở đâu | Gap |
 |---|---|---|---|
-| 1 | Nâng trần 6 → 7 ngăn: `MAX_SLOTS`, mảng `[6]`, hai mảng chân | `iot/infracstructure/serial_manager.py:19`, `locker_controller.ino:15-16,34-36` | F2-G09 |
+| 1 | ~~Nâng trần 6 → 7 ngăn~~ — **đã làm** ([iot#7](https://github.com/LockR-Tech/iot/pull/7)): `MAX_SLOTS = 7`, hai mảng chân đủ 7, mảng trạng thái bám `NUM_SLOTS` | `iot/infracstructure/serial_manager.py:21`, `locker_controller.ino:24-25,45-47` | F2-G09 |
 | 2 | `base: '/ui/'` cho bản build kiosk | `iot/ui/vite.config.js` | F2-G09 |
 | 3 | Thống nhất payload lệnh mở: backend gửi `{commandId, box_id, action}` tới `cabinet/{lockerId}/command/open`, Pi cần `slotIndex` và dùng **tên** tủ trong topic | `backend/iot-service/…/LockerMqttService.java:30,183` · `iot/services/locker_service.py:170-181` | **F2-G09** — chặn toàn bộ |
 | 4 | Broker MQTT riêng có auth + TLS | `backend/docker-compose.yml` | SEC-04 |

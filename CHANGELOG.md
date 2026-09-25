@@ -4,6 +4,8 @@ Mỗi thay đổi ở repo docs thêm **một dòng** vào ngày tương ứng (
 
 ## 2026-09-25
 
+- F2-G09: firmware tủ khớp sơ đồ đấu nối ([iot#7](https://github.com/LockR-Tech/iot/pull/7)) — `LOCK_PINS` / `MAGNETIC_PINS` đủ 7 ngăn theo bản đồ ở [cabinet-wiring-spec § 5](03-hardware/cabinet-wiring-spec.md), `MAX_SLOTS` 6 → 7, `SLAVE_ID` 2 → 1 (Pi chỉ quét từ 1 tới `MAX_CABINETS`). Sửa kèm một lỗi tiềm ẩn: mảng trạng thái cảm biến khai cứng `[6]` trong khi mọi vòng lặp chạy tới `NUM_SLOTS` — nâng lên 7 mà giữ `[6]` là ghi tràn mảng; giờ khai `[NUM_SLOTS]`. `RELAY_ON` giữ `HIGH` và đánh dấu **chưa xác minh với module thật**. Hai tài liệu phần cứng cập nhật theo, mục 7 của hướng dẫn gạch việc 1.
+
 - F2-G09: thêm thư mục [03-hardware/](03-hardware/) — [cabinet-wiring-spec.md](03-hardware/cabinet-wiring-spec.md) chép sơ đồ đấu nối của nhà cung cấp (nguồn 12 V, TB6600, relay 8 kênh, 7 khoá) và đối chiếu với firmware: code điều khiển tủ qua **Arduino trên RS485** (`locker_controller.ino`, `serial_manager.py`) chứ không phải Pi cắm thẳng GPIO như tài liệu gốc; firmware mới khai 3 ngăn, trần 6 (`MAX_SLOTS`), chưa có gì cho động cơ bước. [controller-wiring-guide.md](03-hardware/controller-wiring-guide.md): chọn Pi thay Jetson, danh sách chuẩn bị, thứ tự nối dây, bảng bring-up dùng các script sẵn có, kiosk trên Pi (ba bẫy đã kiểm trong code: build thiếu `base: '/ui/'`, kiosk nhận tủ qua `?lockerId=`, origin `localhost:8000` chưa trong CORS gateway), và danh sách việc còn nợ trong code. Rà `iot` tới `454c49a`; STATUS § 0 cập nhật mốc iot, § 3 nhận việc lắp tủ.
 
 ## 2026-09-24

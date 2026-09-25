@@ -54,37 +54,37 @@ Pi **không** cắm chân GPIO nào vào relay hay cảm biến. `hardware/rpi_l
 | Tài liệu nhà cung cấp ghi | Trong firmware là | Bằng chứng |
 |---|---|---|
 | `PUL-`, `DIR-` TB6600 → GPIO Pi | **Chưa có dòng code nào** điều khiển động cơ bước — không ở Pi, không ở Arduino | không có `step`, `lid`, `nắp` trong `iot/` |
-| `IN1` … `IN7` → GPIO Pi | Chân **Arduino** `LOCK_PINS = {2, 4, 5}` — mới khai 3 ngăn | `locker_controller.ino:15` |
-| Dây tín hiệu khoá → GPIO Pi | Chân **Arduino** `MAGNETIC_PINS = {11, 12, A0}`, chế độ `INPUT_PULLUP`, **LOW = cửa đóng** | `locker_controller.ino:16`, `:55`, `:150` |
+| `IN1` … `IN7` → GPIO Pi | Chân **Arduino** `LOCK_PINS = {2, 4, 5, 3, 8, 10, A5}` — đủ 7 ngăn | `locker_controller.ino:24` |
+| Dây tín hiệu khoá → GPIO Pi | Chân **Arduino** `MAGNETIC_PINS = {11, 12, A0, A1, A2, A3, A4}`, chế độ `INPUT_PULLUP`, **LOW = cửa đóng** | `locker_controller.ino:25`, `:66`, `:161` |
 | `DC+` / `DC-` relay lấy 5 V "từ Raspberry Pi" | Pi không nằm trên mạch relay; cấp 5 V từ nguồn riêng ([hướng dẫn § 3.A](controller-wiring-guide.md#3-thứ-tự-nối-dây)) | — |
-| 7 khoá | Mỗi Arduino tối đa **6** ngăn: `MAX_SLOTS = 6`, mảng trạng thái `[6]`, lệnh setup từ chối layout dài hơn | `serial_manager.py:19`, `locker_controller.ino:34-36`, `setup_handler.py:61-65` |
-| Pi ↔ tủ | Pi ↔ **USB-RS485** ↔ MAX485 ↔ Arduino: `D6` RX, `D9` TX, `D7` DE/RE, 9600 baud; giao thức `S<id>:PING` / `T<n>` / `O<n>` / `C<n>`, trả JSON `{slave, slot, result, gpio, door, ms}` | `locker_controller.ino:4-7`, `:260-320`, `:388-400`; `serial_manager.py:22-36` |
-| Mức kích relay | `RELAY_ON = HIGH` — phải khớp module thật (nhiều module 8 kênh kích **LOW**); sai chiều thì mọi khoá bị cấp điện liên tục ngay khi Arduino khởi động | `locker_controller.ino:20-24`, `:53` |
+| 7 khoá | Khớp: `MAX_SLOTS = 7`, mảng trạng thái khai theo `NUM_SLOTS` nên tự bám số ngăn, lệnh setup nhận layout tới 7 | `serial_manager.py:21`, `locker_controller.ino:45-47`, `setup_handler.py:60-64` |
+| Pi ↔ tủ | Pi ↔ **USB-RS485** ↔ MAX485 ↔ Arduino: `D6` RX, `D9` TX, `D7` DE/RE, 9600 baud; giao thức `S<id>:PING` / `T<n>` / `O<n>` / `C<n>`, trả JSON `{slave, slot, result, gpio, door, ms}` | `locker_controller.ino:4-7`, `:271-331`, `:399-411`; `serial_manager.py:22-36` |
+| Mức kích relay | `RELAY_ON = HIGH` — **chưa xác minh với module thật** (nhiều module 8 kênh kích **LOW**); sai chiều thì mọi khoá bị cấp điện liên tục ngay khi Arduino khởi động. Đo ở [hướng dẫn § 3.B.4](controller-wiring-guide.md#3-thứ-tự-nối-dây) rồi sửa nếu cần | `locker_controller.ino:29-33`, `:65` |
 
-Hành vi mở một ngăn: relay `ON` 1000 ms → `OFF` → chờ 2000 ms cho lò xo bật cửa → đọc cảm biến → trả `door` (`locker_controller.ino:354-369`). Cuộn khoá không bao giờ có điện quá 1 s, và lệnh đi tuần tự từng ngăn (`serial_manager.py:407-440`) nên **tại một thời điểm chỉ một khoá hút** — con số này quyết định cỡ nguồn 12 V.
+Hành vi mở một ngăn: relay `ON` 1000 ms → `OFF` → chờ 2000 ms cho lò xo bật cửa → đọc cảm biến → trả `door` (`locker_controller.ino:365-390`). Cuộn khoá không bao giờ có điện quá 1 s, và lệnh đi tuần tự từng ngăn (`serial_manager.py:407-440`) nên **tại một thời điểm chỉ một khoá hút** — con số này quyết định cỡ nguồn 12 V.
 
 ### Ba điểm phải quyết trước khi nối
 
 | # | Điểm lệch | Lựa chọn | Đề xuất |
 |---|---|---|---|
 | 1 | **Ai điều khiển relay và đọc cảm biến** | (a) Giữ Arduino như firmware — Pi chỉ cần một cổng USB · (b) Pi cắm thẳng GPIO như tài liệu — phải viết lại `hardware/rpi_locker.py` thành GPIO thật và đổi `locker_service.py` đang gọi serial | **(a)**: khớp code đang có, Pi hay Jetson đều dùng được, nhiều tủ chung một bus phân biệt bằng `SLAVE_ID` |
-| 2 | **7 ngăn vs trần 6** | (a) Nâng `MAX_SLOTS` → 7, mảng `[6]` → `[7]`, thêm chân theo mục 5 · (b) Arduino Mega · (c) hai Arduino (4 + 3) | **(a)**: sửa 3 hằng số, Uno còn đủ chân |
+| 2 | ~~**7 ngăn vs trần 6**~~ | **Đã chọn (a) và làm** — `MAX_SLOTS = 7`, hai mảng chân đủ 7, mảng trạng thái bám `NUM_SLOTS` ([iot#7](https://github.com/LockR-Tech/iot/pull/7)) | xong |
 | 3 | **Nắp trượt (TB6600 + Nema 17)** | Chưa có firmware, chưa có lệnh MQTT, luồng drone F1.06 đang DEMO. Ba đường ở [hướng dẫn § 3.E](controller-wiring-guide.md#3-thứ-tự-nối-dây) | Làm sau khi 7 ngăn đã mở được bằng mã |
 
-## 5. Bản đồ chân Arduino Uno cho 7 ngăn (đề xuất — chưa vào firmware)
+## 5. Bản đồ chân Arduino Uno cho 7 ngăn
 
 Chân đã dùng: `D0`/`D1` (USB debug), `D6`/`D7`/`D9` (RS485). Còn `D2 D3 D4 D5 D8 D10 D11 D12 D13 A0–A5` = 15 chân cho 14 tín hiệu.
 
 | Ngăn (`slot`) | Relay | Chân khoá (`LOCK_PINS`) | Chân cảm biến (`MAGNETIC_PINS`) | Ghi chú |
 |---|---|---|---|---|
-| 0 | `IN1` | `D2` | `D11` | đang có trong firmware |
-| 1 | `IN2` | `D4` | `D12` | đang có |
-| 2 | `IN3` | `D5` | `A0` | đang có |
-| 3 | `IN4` | `D3` | `A1` | thêm |
-| 4 | `IN5` | `D8` | `A2` | thêm |
-| 5 | `IN6` | `D10` | `A3` | thêm |
-| 6 | `IN7` | `A5` | `A4` | thêm — **không dùng `D13`** cho khoá: bootloader nháy LED trên chân đó mỗi lần reset, relay 7 sẽ kêu tách và khoá giật |
+| 0 | `IN1` | `D2` | `D11` | |
+| 1 | `IN2` | `D4` | `D12` | |
+| 2 | `IN3` | `D5` | `A0` | |
+| 3 | `IN4` | `D3` | `A1` | |
+| 4 | `IN5` | `D8` | `A2` | |
+| 5 | `IN6` | `D10` | `A3` | |
+| 6 | `IN7` | `A5` | `A4` | **không dùng `D13`** cho khoá: bootloader nháy LED trên chân đó mỗi lần reset, relay 7 sẽ kêu tách và khoá giật |
 
 Thứ tự `slot` đi theo đúng thứ tự dây tín hiệu trên thanh domino của nhà cung cấp (mục 2: từ phải qua trái, nhìn từ sau tủ) — ghi số `slot` lên domino để kỹ thuật viên sau này không phải đoán.
 
-Sửa trong code khi áp dụng: `locker_controller.ino:15-16` (hai mảng), `:34-36` (`[6]` → `[7]`, hoặc dùng `[NUM_SLOTS]`), `serial_manager.py:19` (`MAX_SLOTS = 7`). Thay đổi này chưa nằm trong PR nào — xem [hướng dẫn § 7](controller-wiring-guide.md#7-việc-còn-nợ-trong-code).
+Bản đồ này **đã nằm trong firmware** ([iot#7](https://github.com/LockR-Tech/iot/pull/7)): `locker_controller.ino:24-25` (hai mảng), `:45-47` (mảng trạng thái khai `[NUM_SLOTS]` nên thêm ngăn không còn ghi tràn), `serial_manager.py:21` (`MAX_SLOTS = 7`). Nạp lại sketch là dùng được, không phải sửa tay nữa.
