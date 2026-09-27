@@ -1,4 +1,4 @@
-| 8 | Firebase FCM | Push notification hiện không gửi (code đã sẵn sàng, chỉ thiếu khoá). |# Cấu hình dịch vụ ngoài — runbook
+# Cấu hình dịch vụ ngoài — runbook
 
 Nơi nạp khoá cho từng dịch vụ ngoài, thứ tự nên làm, và cách kiểm tra đã ăn chưa.
 Liên quan: [release-deploy](release-deploy.md), [architecture § 5](../01-overview/architecture.md), [STATUS § 2](../STATUS.md).
