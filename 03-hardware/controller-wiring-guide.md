@@ -4,7 +4,7 @@
 |---|---|
 | **Dùng khi** | Lắp tủ vật lý theo [sơ đồ nhà cung cấp](cabinet-wiring-spec.md) và đưa phần mềm trong repo `iot` lên chạy trên tủ đó |
 | **Quyết định** | [ADR-0007](../adr/0007-tu-nam-viet-pi-dieu-khien-gpio-truc-tiep.md) — tủ Nam Việt dùng **GPIO trực tiếp** (`HARDWARE_BACKEND=gpio`); Arduino/RS485 giữ làm tuỳ chọn |
-| **Đối chiếu code** | `iot` tại `c843447` ([iot#8](https://github.com/LockR-Tech/iot/pull/8) — cách GPIO, `hardware/*.py`, `debug_gpio.py`) · `backend` gateway CORS tại `api-gateway/src/main/resources/application.yml:186-196` |
+| **Đối chiếu code** | `iot` tại `c843447` ([iot#8](https://github.com/LockR-Tech/iot/pull/8) — cách GPIO, `hardware/*.py`, `debug_gpio.py`) + [iot#9](https://github.com/LockR-Tech/iot/pull/9) (hợp đồng MQTT, chưa merge) · `backend` gateway CORS tại `api-gateway/src/main/resources/application.yml:186-196` |
 | **Đã dựng thử** | Pi 5 `lockr-tu01` ngày 2026-09-27, Raspberry Pi OS Trixie — hồ sơ và sự cố: [pi-lockr-tu01.md](pi-lockr-tu01.md). § 4.2–4.6 viết theo lần dựng đó |
 | **Gap** | F2-G09 (tủ thật chạy end-to-end) — [flow-2](../02-flows/flow-2-locker-send.md) |
 
@@ -195,10 +195,19 @@ Tạo `~/iot/.env` (không commit). Dòng chung cho cả hai cách; các biến 
 
 ```
 SIMULATION=true                           # xoá khi đã nối phần cứng (relay/cảm biến hoặc adapter RS485)
-MAC_ADDRESS=aa:bb:cc:dd:ee:ff             # MAC của cổng mạng đang dùng
-MQTT_BROKER=<broker>  MQTT_PORT_SSL=8883  MQTT_USE_TLS=true
+MAC_ADDRESS=AA:BB:CC:DD:EE:FF             # MAC của cổng mạng đang dùng
+LOCKER_ID=<id tủ trên admin>              # dự phòng khi Pi chưa được gán trên admin (§ 5.8)
+MQTT_BROKER=broker.hivemq.com  MQTT_PORT_SSL=8883  MQTT_USE_TLS=true
 BACKEND_API_URL=https://api.locker-drone.tech
 POSTGRES_PASSWORD=<mật khẩu tạo ở § 4.2>
+# REQUIRE_DOOR_SENSOR=false               # chỉ khi CHƯA nối cảm biến cửa: mở ô báo thành công dù cảm biến chưa thấy cửa mở
+```
+
+Broker riêng (khi đã bật trên VM — [mqtt-contract § 6](../01-overview/mqtt-contract.md#6-bật-broker-riêng-trên-vm)) thay dòng `MQTT_*` ở trên bằng:
+
+```
+MQTT_BROKER=api.locker-drone.tech  MQTT_PORT_SSL=443  MQTT_USE_TLS=true  MQTT_TRANSPORT=websockets
+MQTT_USERNAME=<MAC viết liền>  MQTT_PASSWORD=<mqtt-device.sh in ra>
 ```
 
 **GPIO** (tủ Nam Việt) — thêm:
@@ -223,8 +232,10 @@ SERIAL_PORT=/dev/serial/by-id/usb-1a86_USB_Serial-if00-port0   # đường dẫn
 
 - Chưa cắm adapter RS485 mà không đặt `SIMULATION=true` thì `main.py` dừng ngay với `RS485 connection failed on AUTO` (`serial_manager.py:158,168`) — `AUTO` không dò được cổng nào.
 - `SERIAL_PORT=AUTO` ưu tiên thiết bị có chữ "arduino" (`serial_manager.py:100-108`) — nếu USB Arduino cũng cắm vào Pi, `AUTO` có thể mở nhầm `/dev/ttyACM0` thay vì adapter RS485. Ghim đường dẫn `by-id`.
-- `MAC_ADDRESS`: backend gửi lệnh setup theo MAC và Pi bỏ qua lệnh không khớp (`locker_service.py:119-123`); để trống thì `uuid.getnode()` tự chọn eth0 hay wlan0 (`settings.py:11-20`) và có thể đổi giữa hai lần khởi động. Ghim vào MAC đã đăng ký với admin.
-- Broker: mặc định vẫn là `broker.hivemq.com` công khai (SEC-04) — tủ thật chỉ chạy demo cho tới khi có broker riêng ([STATUS § 4](../STATUS.md)).
+- `MAC_ADDRESS`: Pi tự báo mình theo MAC, admin gán tủ theo MAC, và Pi bỏ qua lệnh setup không khớp MAC; để trống thì `uuid.getnode()` tự chọn eth0 hay wlan0 và có thể đổi giữa hai lần khởi động. Ghim cứng.
+- `LOCKER_ID`: id số của tủ trên admin (xem URL `/admin/lockers/<id>`). Chỉ dùng tới khi admin gán Pi trên web (§ 5.8) — sau đó lệnh setup lưu tủ vào `config/cabinet_state.json` và ghi đè giá trị này. Kiosk (`ui/.env.local` `VITE_LOCKER_ID`) phải trỏ cùng tủ.
+- Ô số N trên admin = khoá thứ N (`GPIO_RELAY_PINS[N−1]`, relay `IN N`). Cửa dán nhãn lệch với dây thì đổi thứ tự `GPIO_RELAY_PINS` / `GPIO_DOOR_PINS`, không đánh số lại ô — [ADR-0008](../adr/0008-hop-dong-mqtt-backend-tu.md).
+- Broker: mặc định vẫn là `broker.hivemq.com` công khai (SEC-04) cho tới khi bật broker riêng.
 
 ### 4.4 Chạy `main.py` như dịch vụ
 
@@ -339,8 +350,8 @@ Làm đúng thứ tự; mỗi bước xanh mới sang bước sau. Các script �
 | 5.5 | Nắp về gốc, mở, đóng | `lid home` → `lid open` → `lid close` — tay để sẵn ở công tắc nguồn 24 V | dừng đúng tại công tắc; ghi lại `steps` của `open` ⇒ đặt `LID_MAX_STEPS` ≈ số đó × 1,2 | chạy ngược chiều → `LID_OPEN_DIR_HIGH=false`; `FAULT` → công tắc không nhận; motor rung không quay → giảm `LID_STEPS_PER_SEC`, kiểm DIP dòng |
 | 5.6 | Toàn bộ `main.py` | `sudo systemctl start lockr-controller` · `journalctl -u lockr-controller -f` | `GPIO locker ready: 7 slots …`, `GPIO hardware initialized (lid: on)`, `System is READY` | `Không tìm thấy gpiochip` → không phải Pi hoặc đặt `GPIO_CHIP` |
 | 5.7 | Trạng thái qua API | `curl localhost:8000/hardware/status` · nắp: `curl -X POST localhost:8000/hardware/lid/open` (`close`, `home`, `stop`) | `doors` đúng thực tế, `lid.state` đúng | `403` → đang gọi từ máy khác; dùng `ssh -L 8000:127.0.0.1:8000` |
-| 5.8 | Backend thấy tủ | admin web → tủ → thiết bị; hoặc `GET /api/manage/iot/device-status` | tủ `ONLINE` sau heartbeat | Pi có gửi (`heartbeat_service.py:18`) mà backend không thấy → khác broker hoặc khác **tên tủ**/MAC |
-| 5.9 | Mở bằng mã từ kiosk | kiosk nhập PIN của một đơn test | ngăn đúng mở, đơn đổi trạng thái | kiosk trắng/xám hoặc lỗi mạng → § 6; Pi nhận lệnh nhưng bỏ qua → payload thiếu `slotIndex` (F2-G09, [§ 7](#7-việc-còn-nợ-trong-code)) |
+| 5.8 | Gán Pi vào tủ | admin web → **Tủ** → mở tủ → khung **Bộ điều khiển tủ** → chọn Pi (MAC) → **Gán vào tủ**, để tick "Mở thử lần lượt từng ô", đứng cạnh tủ | Pi online; từng cửa bật ra lần lượt; trạng thái **Sẵn sàng · 7/7** | Không thấy Pi trong danh sách → Pi chưa kết nối broker (`journalctl -u lockr-controller`: tìm `MQTT Connected`) hoặc khác broker với backend; ô **JAMMED** → cửa không bật ra hoặc cảm biến ngược/chưa nối (5.2–5.3); "đang báo tủ #X" khác tủ này → bấm **Gửi lại sơ đồ** |
+| 5.9 | Mở bằng mã từ kiosk | kiosk nhập PIN của một đơn test | đúng ngăn in số trên cửa mở, đơn đổi trạng thái | kiosk trắng/xám hoặc lỗi mạng → § 6; mở nhầm ngăn → thứ tự `GPIO_RELAY_PINS` lệch nhãn cửa (§ 4.3); "IoT device timeout" → Pi không nhận lệnh: kiểm `LOCKER_ID`/gán tủ và broker |
 
 **(RS485)** — thay 5.1–5.7 ở trên bằng:
 
@@ -382,15 +393,15 @@ Làm đúng thứ tự; mỗi bước xanh mới sang bước sau. Các script �
 
 ## 7. Việc còn nợ trong code
 
-Nối dây xong vẫn chưa mở được ngăn bằng mã từ app cho tới khi các mục dưới đây có PR. Chưa mục nào được làm; thứ tự là thứ tự nên làm.
+Thứ tự là thứ tự nên làm. Việc 3 và 4 có PR ([iot#9](https://github.com/LockR-Tech/iot/pull/9), [backend#33](https://github.com/LockR-Tech/backend/pull/33), [frontend#22](https://github.com/LockR-Tech/frontend/pull/22) — [ADR-0008](../adr/0008-hop-dong-mqtt-backend-tu.md)); **chưa merge thì app vẫn chưa mở được ngăn thật**.
 
 | # | Việc | Ở đâu | Gap |
 |---|---|---|---|
 | 1 | ~~Nâng trần 6 → 7 ngăn~~ — **đã làm** ([iot#7](https://github.com/LockR-Tech/iot/pull/7)): `MAX_SLOTS = 7`, hai mảng chân đủ 7, mảng trạng thái bám `NUM_SLOTS` | `iot/infracstructure/serial_manager.py:21`, `locker_controller.ino:24-25,45-47` | F2-G09 |
 | 2 | ~~`base: '/ui/'` cho bản build kiosk~~ — **không còn chặn**: kiosk chạy bằng `vite preview` (§ 4.5). Chỉ cần nếu muốn phục vụ kiosk qua `main.py :8000/ui` **và** đã thêm origin đó vào CORS gateway | `iot/ui/vite.config.js` | F2-G09 |
-| 3 | Thống nhất payload lệnh mở: backend gửi `{commandId, box_id, action}` tới `cabinet/{lockerId}/command/open`, Pi cần `slotIndex` và dùng **tên** tủ trong topic | `backend/iot-service/…/LockerMqttService.java:30,183` · `iot/services/locker_service.py:170-181` | **F2-G09** — chặn toàn bộ |
-| 4 | Broker MQTT riêng có auth + TLS | `backend/docker-compose.yml` | SEC-04 |
-| 5 | Sự kiện cửa (`DOOR_CLOSED`) điều khiển vòng đời đơn/ô | `iot/services/locker_service.py:229-264` · iot-service | F2-G09, F3-G03 |
+| 3 | ~~Thống nhất payload lệnh mở~~ — **có PR**: topic `cabinet/{lockerId}`, lệnh mang `boxId` + `slotIndex = boxNumber − 1`, admin gán Pi vào tủ bằng MAC, trạng thái cửa về đúng ô ([mqtt-contract](../01-overview/mqtt-contract.md)). Còn: merge + deploy, cập nhật Pi, gán Pi trên admin (§ 5.8) | `backend/iot-service/…/LockerMqttService.java`, `GatewayProvisioningService.java` · `iot/services/locker_service.py`, `setup_handler.py` · `frontend/fe/…/lockers/components/GatewayPanel.tsx` | **F2-G09** |
+| 4 | ~~Broker MQTT riêng có auth + TLS~~ — **có PR, tắt mặc định**: Mosquitto profile `mqtt`, `wss://…/mqtt` qua Nginx, tài khoản + ACL theo tủ. Còn: bật trên VM ([mqtt-contract § 6](../01-overview/mqtt-contract.md#6-bật-broker-riêng-trên-vm)) | `backend/docker-compose.yml`, `backend/infra/mosquitto/`, `backend/infra/azure/enable-mqtt-websocket.sh` | SEC-04 |
+| 5 | Sự kiện cửa (`DOOR_CLOSED`) điều khiển vòng đời đơn/ô. Sự kiện đã về đúng ô (`box_hardware_status`, dùng cho "cửa quên đóng"); chưa có gì đổi trạng thái đơn/ô theo nó | `iot/services/locker_service.py` (`handle_door_event`) · iot-service | F2-G09, F3-G03 |
 | 6 | Nắp trượt: ~~code điều khiển~~ — **có** cho cách GPIO (`hardware/lid_controller.py`, API cục bộ `/hardware/lid/*`, [ADR-0007](../adr/0007-tu-nam-viet-pi-dieu-khien-gpio-truc-tiep.md)). Còn: lệnh MQTT mở/đóng nắp + luồng drone thật | backend iot-service · `iot/services/` | F1.06 |
 
-Việc 3 là nút cổ chai: không có nó thì lệnh mở từ backend tới Pi bị bỏ qua ngay ở `if slot_index is None: return` (`locker_service.py:167`), dù dây đã đúng và `T<n>` chạy hoàn hảo.
+Trước iot#9, lệnh mở từ backend bị Pi bỏ qua ngay ở `if slot_index is None: return`, dù dây đã đúng và `debug_gpio.py open n` chạy hoàn hảo. Pi chạy bản trước iot#9 thì triệu chứng vẫn là "IoT device timeout" trên app.

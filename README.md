@@ -29,6 +29,7 @@ docs/
 │   ├── admin-reporting-api.md    API báo cáo admin: đơn, thanh toán, doanh thu
 │   ├── business-settings.md      Quy tắc nghiệp vụ cấu hình trên admin
 │   ├── media-storage.md          Lưu ảnh trên Cloudinary
+│   ├── mqtt-contract.md          Hợp đồng MQTT backend ↔ tủ: topic, payload, ACL, broker riêng
 │   └── receiver-pickup-code.md   Gửi mã mở tủ cho người nhận qua SMS và email
 ├── 02-flows/                 Mỗi luồng: mục tiêu · checklist có bằng chứng · % · luồng hiện tại · gap
 ├── 03-hardware/

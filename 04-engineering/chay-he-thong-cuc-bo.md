@@ -111,7 +111,7 @@ $env:SIM_HEARTBEAT_CABINETS = "1,2,3,4,5"
 uv run python simulate_demo_cabinet.py
 ```
 
-⚠️ **Đừng dùng `SIMULATION=true uv run python main.py`** cho việc này: hợp đồng MQTT của `main.py` lệch với backend (cần `slotIndex`, dùng **tên** tủ trong topic) và nó còn chờ handshake `SETUP_LOCKERS` mà hiện không ai gửi — gap **F2-G09**. Chỉ `simulate_demo_cabinet.py` chạy end-to-end.
+Từ [iot#9](https://github.com/LockR-Tech/iot/pull/9) + [backend#33](https://github.com/LockR-Tech/backend/pull/33) (hợp đồng [ADR-0008](../adr/0008-hop-dong-mqtt-backend-tu.md)), `main.py` cũng trả lời được backend: `SIMULATION=true LOCKER_ID=<id tủ> uv run python main.py` đóng vai một tủ thật (mở ô nào cũng "thành công"). Khác `simulate_demo_cabinet.py` ở chỗ nó chỉ phục vụ **một** tủ, đi qua đúng code chạy trên Pi, và hiện trong admin → Tủ → **Bộ điều khiển tủ** để thử gán. Mỗi máy nên đặt `MAC_ADDRESS` riêng (ví dụ `02:00:00:00:00:01`) để khỏi đá Pi thật ra khỏi broker.
 
 Cần API cục bộ `:8000` của Pi controller (kiosk gọi `/system/info`) thì chạy `main.py` ở chế độ giả lập, kèm Postgres riêng:
 
