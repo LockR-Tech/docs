@@ -4,20 +4,20 @@
 |---|---|
 | **Dựng ngày** | 2026-09-26 → 2026-09-27 |
 | **Cách dựng chuẩn** | [controller-wiring-guide.md § 4](controller-wiring-guide.md#4-nạp-firmware-và-cấu-hình-phần-mềm) — file này chỉ ghi những gì **riêng** của máy này |
-| **Code** | `iot` tại `e7b04c8` |
+| **Code** | `iot` tại `c843447` ([iot#8](https://github.com/LockR-Tech/iot/pull/8)) |
 | **Gap** | F2-G09 |
 
 ## 1. Trạng thái
 
 | Mục | Hiện tại |
 |---|---|
-| Chế độ | **Giả lập** (`SIMULATION=true`) — chưa nối adapter RS485 + Arduino |
+| Chế độ | **GPIO** (`HARDWARE_BACKEND=gpio`, `LID_ENABLED=true`) — chưa nối dây tủ nên 7 cửa báo mở, nắp `UNKNOWN` |
 | `main.py` | `System is READY`, MQTT TLS `broker.hivemq.com:8883`, discovery `slaveId 1, 7 ngăn`, API `:8000` |
 | Kiosk | Chromium toàn màn hình `http://localhost:3002/`, tủ **tạm** `CAB-DEMO-01` (id 1) |
 | Khởi động → thấy kiosk | 2–9 phút (ổ USB chậm) |
 | ⚠ Hệ điều hành | **Cơ sở dữ liệu gói hỏng — không chạy `apt`/`apt-get`/`dpkg`** (sự cố 18). Máy vẫn chạy đủ; muốn cập nhật hệ điều hành phải ghi lại từ đầu |
 
-Kiểm lần cuối 2026-09-27: khởi động lại → `lockr-controller`, `lockr-kiosk`, PostgreSQL tự chạy, hệ thống `running`, kiosk hiện dữ liệu thật của `CAB-DEMO-01`.
+Kiểm lần cuối 2026-09-27: khởi động lại → `lockr-controller`, `lockr-kiosk`, PostgreSQL tự chạy, hệ thống `running`, kiosk hiện dữ liệu thật của `CAB-DEMO-01`. Chuyển sang GPIO 2026-09-27 17:06: `GPIO hardware initialized (lid: on)`, `System is READY`; `GET /hardware/status` trả 7 cửa + nắp; `POST /hardware/lid/*` từ máy khác trong LAN bị chặn 403.
 
 ## 2. Truy cập
 
@@ -39,7 +39,7 @@ Kiểm lần cuối 2026-09-27: khởi động lại → `lockr-controller`, `lo
 | Ổ hệ thống | **USB flash 32 GB** ở cổng USB 3 — tạm thời; nên thay microSD A2 hoặc SSD USB |
 | Bootloader | 2026-09-12 (cập nhật từ 2025-11-05) |
 
-Linh kiện tủ quan sát qua ảnh 2026-09-26 (chưa nối vào Pi): module relay 8 kênh cuộn 5 V (`SRD-05VDC-SL-C`), có opto, jumper chọn kích H/L, ngõ vào cọc vít `DC+ DC− IN1…IN8` — **khác loại `JD-VCC`** mà [§ 3.B](controller-wiring-guide.md#b-relay-và-khoá) giả định; driver TB6600 (9–42 VDC); nguồn tổ ong có công tắc 110/220 V; cầu đấu TB-2512L. Chưa có Arduino, MAX485, adapter USB-RS485.
+Linh kiện tủ quan sát qua ảnh 2026-09-26 (chưa nối vào Pi): module relay 8 kênh cuộn 5 V (`SRD-05VDC-SL-C`), có opto, jumper chọn kích H/L, ngõ vào cọc vít `DC+ DC− IN1…IN8` — **khác loại `JD-VCC`** mà [§ 3.B](controller-wiring-guide.md#b-relay-và-khoá) giả định; driver TB6600 (9–42 VDC); nguồn tổ ong có công tắc 110/220 V; cầu đấu TB-2512L. Tủ dùng **GPIO trực tiếp** ([ADR-0007](../adr/0007-tu-nam-viet-pi-dieu-khien-gpio-truc-tiep.md)) — không cần Arduino, MAX485, adapter USB-RS485. Màn: Waveshare 7" HDMI LCD (H), cảm ứng USB, chưa lắp.
 
 ## 4. Phần mềm và dịch vụ
 
@@ -65,9 +65,11 @@ Ngoài các bước ở [controller-wiring-guide § 4](controller-wiring-guide.m
 
 | Mục | Giá trị |
 |---|---|
-| `~/iot/.env` | `SIMULATION=true`, `SERIAL_PORT=AUTO`, `MAC_ADDRESS=2C:CF:67:DB:C5:C3`, `MQTT_BROKER=broker.hivemq.com`, `BACKEND_API_URL=https://api.locker-drone.tech`, `POSTGRES_*` (mật khẩu ngẫu nhiên) |
+| `~/iot/.env` | `HARDWARE_BACKEND=gpio`, `LID_ENABLED=true`, `SERIAL_PORT=AUTO` (không dùng), `MAC_ADDRESS=2C:CF:67:DB:C5:C3`, `MQTT_BROKER=broker.hivemq.com`, `BACKEND_API_URL=https://api.locker-drone.tech`, `POSTGRES_*` (mật khẩu ngẫu nhiên) · bản chạy giả lập trước đó: `~/iot/.env.bak-20260927-1706` |
 | `~/iot/ui/.env.local` | `VITE_API_URL=` (trống), `VITE_LOCAL_API_URL=http://localhost:8000`, `VITE_LOCKER_ID=1`, `VITE_LOCKER_CODE=CAB-DEMO-01`, bộ `VITE_FIREBASE_*` |
 | Tắt vì cơ sở dữ liệu gói hỏng | `apt-daily.timer`, `apt-daily-upgrade.timer`, `packagekit.service` (mask); `/etc/motd` cảnh báo không chạy `apt` |
+| `lockr-controller.service` | thêm `ExecStopPost=/usr/bin/pinctrl set 17,27,22,23,24,25,16 op dl` — ngắt mọi relay khi dịch vụ dừng/chết |
+| Thử GPIO trước khi merge | worktree `~/iot-gpio-test` (đã xoá sau merge): 19 test đạt; chip thật 2026-09-27 — relay GPIO17 HIGH đúng 1 s, 800 bước động cơ trong 1,27 s, chân relay lúc khởi động `no pd` (kéo xuống) |
 | `/root/pg-old-conf/` | cấu hình PostgreSQL cũ, cất đi khi tạo lại cụm (sự cố 18) |
 | `/lost+found/` | ~200 mục `fsck` dời vào sau lần mất điện — giữ làm bằng chứng |
 
@@ -113,7 +115,8 @@ Ngoài các bước ở [controller-wiring-guide § 4](controller-wiring-guide.m
 | Việc | Vì sao |
 |---|---|
 | Ghi lại hệ điều hành lên microSD A2 32 GB hoặc SSD USB, dựng lại theo guide § 4 | Bản cài hiện tại không cập nhật bảo mật được; USB flash có thể hỏng tiếp khi mất điện |
-| Nối dây tủ, nạp firmware, xác minh `RELAY_ON` với module relay trong tủ | Module có ngõ vào `DC+/DC−` + jumper H/L, khác loại tài liệu mô tả |
+| Nối dây theo [spec § 6](cabinet-wiring-spec.md#6-bản-đồ-chân-gpio-của-pi-hardware_backendgpio) và [guide § 3](controller-wiring-guide.md#3-thứ-tự-nối-dây) (jumper relay **H**, `PUL+`/`DIR+` về **3,3 V**, đo dây tín hiệu khoá trước), bring-up theo guide § 5 | Code GPIO đã thử trên chip thật nhưng chưa có phần cứng tủ nối vào |
+| Lắp màn Waveshare (cáp micro-HDMI → HDMI, USB cảm ứng, nguồn 5 V riêng) | Kiosk mới kiểm qua ảnh chụp màn hình ảo |
 | Tạo tủ riêng cho tủ 7 ngăn trên admin, đổi id kiosk | Đang trỏ tạm `CAB-DEMO-01` |
 | Thống nhất payload lệnh mở (F2-G09), broker riêng (SEC-04) | [guide § 7](controller-wiring-guide.md#7-việc-còn-nợ-trong-code) |
 | Đặt tủ trong mạng riêng | Cổng `:8000` không xác thực, có `/setup/clear`, `/test/open-otp` |
