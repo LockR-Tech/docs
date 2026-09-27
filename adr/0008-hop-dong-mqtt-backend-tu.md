@@ -2,7 +2,7 @@
 
 | | |
 |---|---|
-| **Trạng thái** | Proposed — chuyển Accepted khi PR backend được review và merge |
+| **Trạng thái** | Accepted — code merge 2026-09-27 theo quyết định chủ dự án (không chờ review nhóm), backend deploy cùng ngày |
 | **Ngày** | 2026-09-27 |
 | **Người quyết định** | Chủ dự án (chọn "sửa toàn bộ" cả ba giai đoạn) |
 | **Liên quan** | F2-G09, F2.10, F1.10 · SEC-04 · [ADR-0007](0007-tu-nam-viet-pi-dieu-khien-gpio-truc-tiep.md) · đặc tả: [mqtt-contract.md](../01-overview/mqtt-contract.md) · [iot#9](https://github.com/LockR-Tech/iot/pull/9), [backend#33](https://github.com/LockR-Tech/backend/pull/33), [frontend#22](https://github.com/LockR-Tech/frontend/pull/22) |

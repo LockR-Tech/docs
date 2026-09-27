@@ -4,7 +4,7 @@
 |---|---|
 | **Dùng khi** | Lắp tủ vật lý theo [sơ đồ nhà cung cấp](cabinet-wiring-spec.md) và đưa phần mềm trong repo `iot` lên chạy trên tủ đó |
 | **Quyết định** | [ADR-0007](../adr/0007-tu-nam-viet-pi-dieu-khien-gpio-truc-tiep.md) — tủ Nam Việt dùng **GPIO trực tiếp** (`HARDWARE_BACKEND=gpio`); Arduino/RS485 giữ làm tuỳ chọn |
-| **Đối chiếu code** | `iot` tại `c843447` ([iot#8](https://github.com/LockR-Tech/iot/pull/8) — cách GPIO, `hardware/*.py`, `debug_gpio.py`) + [iot#9](https://github.com/LockR-Tech/iot/pull/9) (hợp đồng MQTT, chưa merge) · `backend` gateway CORS tại `api-gateway/src/main/resources/application.yml:186-196` |
+| **Đối chiếu code** | `iot` tại `c843447` ([iot#8](https://github.com/LockR-Tech/iot/pull/8) — cách GPIO, `hardware/*.py`, `debug_gpio.py`) + `137d945` ([iot#9](https://github.com/LockR-Tech/iot/pull/9) — hợp đồng MQTT) · `backend` gateway CORS tại `api-gateway/src/main/resources/application.yml:186-196` |
 | **Đã dựng thử** | Pi 5 `lockr-tu01` ngày 2026-09-27, Raspberry Pi OS Trixie — hồ sơ và sự cố: [pi-lockr-tu01.md](pi-lockr-tu01.md). § 4.2–4.6 viết theo lần dựng đó |
 | **Gap** | F2-G09 (tủ thật chạy end-to-end) — [flow-2](../02-flows/flow-2-locker-send.md) |
 
@@ -393,14 +393,14 @@ Làm đúng thứ tự; mỗi bước xanh mới sang bước sau. Các script �
 
 ## 7. Việc còn nợ trong code
 
-Thứ tự là thứ tự nên làm. Việc 3 và 4 có PR ([iot#9](https://github.com/LockR-Tech/iot/pull/9), [backend#33](https://github.com/LockR-Tech/backend/pull/33), [frontend#22](https://github.com/LockR-Tech/frontend/pull/22) — [ADR-0008](../adr/0008-hop-dong-mqtt-backend-tu.md)); **chưa merge thì app vẫn chưa mở được ngăn thật**.
+Thứ tự là thứ tự nên làm. Việc 3 và 4 đã merge 2026-09-27 ([iot#9](https://github.com/LockR-Tech/iot/pull/9), [backend#33](https://github.com/LockR-Tech/backend/pull/33), [frontend#22](https://github.com/LockR-Tech/frontend/pull/22) — [ADR-0008](../adr/0008-hop-dong-mqtt-backend-tu.md)).
 
 | # | Việc | Ở đâu | Gap |
 |---|---|---|---|
 | 1 | ~~Nâng trần 6 → 7 ngăn~~ — **đã làm** ([iot#7](https://github.com/LockR-Tech/iot/pull/7)): `MAX_SLOTS = 7`, hai mảng chân đủ 7, mảng trạng thái bám `NUM_SLOTS` | `iot/infracstructure/serial_manager.py:21`, `locker_controller.ino:24-25,45-47` | F2-G09 |
 | 2 | ~~`base: '/ui/'` cho bản build kiosk~~ — **không còn chặn**: kiosk chạy bằng `vite preview` (§ 4.5). Chỉ cần nếu muốn phục vụ kiosk qua `main.py :8000/ui` **và** đã thêm origin đó vào CORS gateway | `iot/ui/vite.config.js` | F2-G09 |
-| 3 | ~~Thống nhất payload lệnh mở~~ — **có PR**: topic `cabinet/{lockerId}`, lệnh mang `boxId` + `slotIndex = boxNumber − 1`, admin gán Pi vào tủ bằng MAC, trạng thái cửa về đúng ô ([mqtt-contract](../01-overview/mqtt-contract.md)). Còn: merge + deploy, cập nhật Pi, gán Pi trên admin (§ 5.8) | `backend/iot-service/…/LockerMqttService.java`, `GatewayProvisioningService.java` · `iot/services/locker_service.py`, `setup_handler.py` · `frontend/fe/…/lockers/components/GatewayPanel.tsx` | **F2-G09** |
-| 4 | ~~Broker MQTT riêng có auth + TLS~~ — **có PR, tắt mặc định**: Mosquitto profile `mqtt`, `wss://…/mqtt` qua Nginx, tài khoản + ACL theo tủ. Còn: bật trên VM ([mqtt-contract § 6](../01-overview/mqtt-contract.md#6-bật-broker-riêng-trên-vm)) | `backend/docker-compose.yml`, `backend/infra/mosquitto/`, `backend/infra/azure/enable-mqtt-websocket.sh` | SEC-04 |
+| 3 | ~~Thống nhất payload lệnh mở~~ — **đã merge**: topic `cabinet/{lockerId}`, lệnh mang `boxId` + `slotIndex = boxNumber − 1`, admin gán Pi vào tủ bằng MAC, trạng thái cửa về đúng ô ([mqtt-contract](../01-overview/mqtt-contract.md)). Còn: gán Pi trên admin sau khi nối dây (§ 5.8) | `backend/iot-service/…/LockerMqttService.java`, `GatewayProvisioningService.java` · `iot/services/locker_service.py`, `setup_handler.py` · `frontend/fe/…/lockers/components/GatewayPanel.tsx` | **F2-G09** |
+| 4 | ~~Broker MQTT riêng có auth + TLS~~ — **đã deploy, tắt mặc định**: Mosquitto profile `mqtt`, `wss://…/mqtt` qua Nginx, tài khoản + ACL theo tủ. Còn: bật trên VM ([mqtt-contract § 6](../01-overview/mqtt-contract.md#6-bật-broker-riêng-trên-vm)) | `backend/docker-compose.yml`, `backend/infra/mosquitto/`, `backend/infra/azure/enable-mqtt-websocket.sh` | SEC-04 |
 | 5 | Sự kiện cửa (`DOOR_CLOSED`) điều khiển vòng đời đơn/ô. Sự kiện đã về đúng ô (`box_hardware_status`, dùng cho "cửa quên đóng"); chưa có gì đổi trạng thái đơn/ô theo nó | `iot/services/locker_service.py` (`handle_door_event`) · iot-service | F2-G09, F3-G03 |
 | 6 | Nắp trượt: ~~code điều khiển~~ — **có** cho cách GPIO (`hardware/lid_controller.py`, API cục bộ `/hardware/lid/*`, [ADR-0007](../adr/0007-tu-nam-viet-pi-dieu-khien-gpio-truc-tiep.md)). Còn: lệnh MQTT mở/đóng nắp + luồng drone thật | backend iot-service · `iot/services/` | F1.06 |
 

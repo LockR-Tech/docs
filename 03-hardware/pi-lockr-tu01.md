@@ -4,7 +4,7 @@
 |---|---|
 | **Dựng ngày** | 2026-09-26 → 2026-09-27 trên USB flash; **dựng lại trên thẻ microSD 2026-09-27** (bản USB hỏng, sự cố 18) |
 | **Cách dựng chuẩn** | [controller-wiring-guide.md § 4](controller-wiring-guide.md#4-nạp-firmware-và-cấu-hình-phần-mềm) — file này chỉ ghi những gì **riêng** của máy này |
-| **Code** | `iot` tại `c843447` ([iot#8](https://github.com/LockR-Tech/iot/pull/8)) |
+| **Code** | `iot` tại `137d945` ([iot#8](https://github.com/LockR-Tech/iot/pull/8) GPIO, [iot#9](https://github.com/LockR-Tech/iot/pull/9) hợp đồng MQTT) |
 | **Gap** | F2-G09 |
 
 ## 1. Trạng thái
@@ -12,7 +12,7 @@
 | Mục | Hiện tại |
 |---|---|
 | Chế độ | **GPIO** (`HARDWARE_BACKEND=gpio`, `LID_ENABLED=true`) — chưa nối dây tủ nên 7 cửa báo mở, nắp `UNKNOWN` |
-| `main.py` | `System is READY`, MQTT TLS `broker.hivemq.com:8883`, discovery `slaveId 1, 7 ngăn`, API `:8000` |
+| `main.py` | `System is READY`, MQTT TLS `broker.hivemq.com:8883`, discovery `slaveId 1, 7 ngăn`, API `:8000`. Từ 22:52 chạy `137d945`: **chưa phục vụ tủ nào** (`NOT CONFIGURED`, không đặt `LOCKER_ID`) — chờ admin gán |
 | Kiosk | Chromium toàn màn hình `http://localhost:3002/`, tủ **tạm** `CAB-DEMO-01` (id 1) |
 | Khởi động | lên mạng sau ~25 giây; kiosk hiện trong khoảng 3 phút |
 | Hệ điều hành | khoẻ, cập nhật được bằng `apt` bình thường |
@@ -128,6 +128,6 @@ Sự cố 1–18 xảy ra trên bản cài USB flash đầu tiên; 19–21 khi d
 | Nối dây theo [spec § 6](cabinet-wiring-spec.md#6-bản-đồ-chân-gpio-của-pi-hardware_backendgpio) và [guide § 3](controller-wiring-guide.md#3-thứ-tự-nối-dây) (jumper relay **H**, `PUL+`/`DIR+` về **3,3 V**, đo dây tín hiệu khoá trước), bring-up theo guide § 5 | Code GPIO đã thử trên chip thật nhưng chưa có phần cứng tủ nối vào |
 | Lắp màn Waveshare (C): cáp micro-HDMI → HDMI vào `HDMI0`, micro-USB của màn vào USB của Pi, Backlight ON | Kiosk mới kiểm qua ảnh chụp màn hình ảo |
 | Tạo tủ riêng cho tủ 7 ngăn trên admin (ô số 1–7), đổi `VITE_LOCKER_ID` của kiosk | Đang trỏ tạm `CAB-DEMO-01` (10 ô) |
-| Sau khi [iot#9](https://github.com/LockR-Tech/iot/pull/9) + [backend#33](https://github.com/LockR-Tech/backend/pull/33) merge: `cd ~/iot && git pull && sudo systemctl restart lockr-controller`, thêm `LOCKER_ID=<id tủ 7 ô>` vào `~/iot/.env`, rồi gán Pi trên admin ([guide § 5.8](controller-wiring-guide.md#5-kiểm-tra-từng-bước-bring-up)) | Hợp đồng MQTT mới ([ADR-0008](../adr/0008-hop-dong-mqtt-backend-tu.md)); bản `main` hiện tại trên Pi vẫn bỏ qua lệnh mở của backend |
+| Nối dây xong: gán Pi vào tủ 7 ô trên admin ([guide § 5.8](controller-wiring-guide.md#5-kiểm-tra-từng-bước-bring-up)). **Không** đặt `LOCKER_ID=1` — tủ #1 `CAB-DEMO-01` do giả lập demo trả lời, hai bên cùng trả lời thì demo lỗi | Code hợp đồng MQTT đã có trên Pi (`137d945`, [ADR-0008](../adr/0008-hop-dong-mqtt-backend-tu.md)) |
 | Chuyển sang broker riêng: cấp tài khoản `2CCF67DBC5C3` bằng `mqtt-device.sh`, đổi 5 biến `MQTT_*` trong `~/iot/.env` | SEC-04 — [mqtt-contract § 6](../01-overview/mqtt-contract.md#6-bật-broker-riêng-trên-vm) |
 | Đặt tủ trong mạng riêng | Cổng `:8000` không xác thực, có `/setup/clear`, `/test/open-otp` |
