@@ -40,13 +40,13 @@ Các bước ghi **(RS485)** chỉ dành cho cách thứ hai; không ghi gì là
 |---|---|---|---|
 | **Bo điều khiển** | Raspberry Pi 4B hoặc 5, 4 GB | 1 | xem § 0 |
 | | Nguồn chính hãng cho Pi | 1 | Pi 4: 5 V 3 A USB-C · Pi 5: 27 W USB-C PD. **Không** kéo Pi từ nguồn 12 V qua buck rẻ — sụt áp là Pi reboot giữa chừng |
-| | Thẻ microSD 32 GB **A1/A2** (hoặc SSD USB) + Raspberry Pi OS 64-bit có desktop | 1 | **Không dùng USB flash thường** làm ổ hệ thống: đo được 66 KB/s khi ghi file nhỏ, `apt` mất hơn 2 giờ, và một lần mất điện đã làm hỏng hệ thống file ([pi-lockr-tu01 sự cố 9, 18](pi-lockr-tu01.md#6-sự-cố-đã-gặp)) |
+| | Thẻ microSD 32 GB **A1/A2** (hoặc SSD USB) + Raspberry Pi OS 64-bit có desktop | 1 | **Không dùng USB flash thường** làm ổ hệ thống: đo được 66 KB/s khi ghi file nhỏ, `apt` mất hơn 2 giờ, và một lần mất điện đã làm hỏng hệ thống file ([pi-lockr-tu01 sự cố 9, 18](pi-lockr-tu01.md#7-sự-cố-đã-gặp)) |
 | | Đầu đọc thẻ microSD cho laptop | 1 | để ghi hệ điều hành bằng Raspberry Pi Imager |
 | | Tản nhiệt / quạt (Pi 5 bắt buộc) | 1 | tủ kín, nóng |
 | **Nối Pi ↔ tủ** | Dây Dupont cái (phía Pi) — đực/cái (phía domino, relay) | ~25 | 7 relay + 7 cảm biến + 4 nắp trượt + nguồn relay + GND |
 | **Nên có** | Diode 1N4007 | 7 | song song mỗi khoá, vạch trắng (cathode) về +12 V — Pi nối thẳng mạch khoá nên xung ngược khi relay ngắt dễ làm Pi treo |
 | | Cầu chì 12 V (10 A) + đế | 1 | ngay sau `+V` nguồn tổ ong |
-| **Màn hình** | Màn HDMI 7" có cảm ứng USB, 1024×600 (kiosk thiết kế đúng cỡ này) | 1 | tủ `lockr-tu01` dùng Waveshare 7" HDMI LCD (H); Pi 4/5 cần cáp **micro-HDMI → HDMI**; cấp nguồn màn riêng 5 V ≥ 2 A. Hoặc Raspberry Pi Touch Display 2 (DSI) |
+| **Màn hình** | Màn HDMI 7" có cảm ứng USB, 1024×600 (kiosk thiết kế đúng cỡ này) | 1 | tủ `lockr-tu01` dùng Waveshare 7inch HDMI LCD (C) — cổng HDMI thường + micro-USB (nguồn + cảm ứng); Pi 4/5 cần cáp **micro-HDMI → HDMI**. Hoặc Raspberry Pi Touch Display 2 (DSI) |
 | **Mạng** | Ethernet tới tủ (ưu tiên) hoặc Wi-Fi ổn định | 1 | Pi ra Internet tới `api.locker-drone.tech` và broker MQTT |
 | **Dụng cụ** | Đồng hồ vạn năng, tuốc-nơ-vít domino, kìm bấm cos | | kiểm cực tính, **đo dây tín hiệu khoá trước khi nối Pi** (§ 3.C) |
 | **(RS485)** | Arduino Uno R3 + cáp USB | 1 | firmware `locker_controller.ino` ([spec § 5](cabinet-wiring-spec.md#5-bản-đồ-chân-arduino-uno-cho-7-ngăn)) — không cần với cách `gpio` |
@@ -139,7 +139,7 @@ Code: `iot/hardware/lid_controller.py` — về gốc, mở, đóng theo công t
 
 ### F. Màn cảm ứng
 
-- **HDMI + USB** (Waveshare 7" HDMI LCD (H) của `lockr-tu01`): cáp micro-HDMI → HDMI vào cổng `HDMI0` của Pi (cạnh cổng nguồn), cáp USB của phần cảm ứng vào Pi, nguồn màn từ adapter riêng 5 V ≥ 2 A. Màn 1024×600 khớp khung cố định của kiosk. Chưa thử trên Pi — nếu hình sai độ phân giải, xem hướng dẫn Waveshare cho Pi 5 (KMS).
+- **HDMI + USB** (Waveshare 7inch HDMI LCD (C) của `lockr-tu01`): cáp micro-HDMI → HDMI vào cổng `HDMI0` của Pi (cạnh cổng nguồn); cáp micro-USB của màn vào một cổng USB của Pi — vừa cấp nguồn vừa truyền cảm ứng, nguồn 27 W của Pi 5 đủ nuôi; gạt công tắc **Backlight** sang ON. Màn 1024×600 khớp khung cố định của kiosk. Chưa thử trên Pi — nếu hình sai độ phân giải, xem hướng dẫn Waveshare cho Pi 5 (KMS).
 - **DSI (Pi Touch Display 2):** cáp DSI vào cổng `DISP`; `5V`/`GND` từ header 40 chân theo sơ đồ đi kèm màn — lưu ý header đã dùng nhiều chân cho tủ, kiểm không trùng.
 - Chưa cần xoay màn ở bước này; kiosk UI dùng bố cục ngang.
 
