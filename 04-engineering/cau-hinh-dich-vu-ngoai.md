@@ -237,19 +237,26 @@ Secret đặt ở **cả hai** repo `frontend` và `mobile`:
 
 ## 9. Broker MQTT (SEC-04)
 
-`iot-service/application.yml:81` đang trỏ `tcp://broker.hivemq.com:1883` — broker **công khai,
-không xác thực, không TLS**. Ai cũng publish được lệnh mở tủ vào `cabinet/{id}/command/open`.
+Mặc định iot-service vẫn trỏ `tcp://broker.hivemq.com:1883` — broker **công khai, không xác thực,
+không TLS**: ai cũng publish được lệnh mở tủ vào `cabinet/{id}/command/open`.
 
-Cần dựng broker riêng (Mosquitto trong `docker-compose.yml`) có user/password + TLS, rồi:
+Broker riêng đã có sẵn trong code ([backend#33](https://github.com/LockR-Tech/backend/pull/33),
+[ADR-0008](../adr/0008-hop-dong-mqtt-backend-tu.md)): Mosquitto trong `docker-compose.yml` dưới profile
+`mqtt`, Pi vào qua `wss://api.locker-drone.tech/mqtt` (Nginx + chứng chỉ certbot sẵn có, không mở
+cổng mới), mỗi Pi một tài khoản với ACL theo tủ. **Chưa bật** cho tới khi làm các bước dưới.
 
-```
-MQTT_BROKER_URL=ssl://<host>:8883
-MQTT_USERNAME=<user>
-MQTT_PASSWORD=<password>
-```
+| Nơi | Biến | Giá trị |
+|---|---|---|
+| `.env` VM | `COMPOSE_PROFILES` | `mqtt` |
+| `.env` VM | `MQTT_IOT_SERVICE_PASSWORD` (secret) | `openssl rand -hex 24` |
+| `.env` VM | `MQTT_BROKER_URL` | `tcp://mosquitto:1883` |
+| `.env` VM | `MQTT_USERNAME` · `MQTT_PASSWORD` (secret) | `iot-service` · giống `MQTT_IOT_SERVICE_PASSWORD` |
+| `~/iot/.env` Pi | `MQTT_BROKER` · `MQTT_PORT_SSL` · `MQTT_TRANSPORT` | `api.locker-drone.tech` · `443` · `websockets` |
+| `~/iot/.env` Pi | `MQTT_USERNAME` · `MQTT_PASSWORD` (secret) | do `sudo infra/mosquitto/mqtt-device.sh add <MAC> <lockerId>` in ra một lần |
 
-Phải cấu hình **đồng thời** ở `iot-service` và ở Raspberry Pi (repo `iot`), nếu không tủ mất kết nối.
-Đây là thay đổi code + hạ tầng, không chỉ nạp biến — xem gap **F2-G09**.
+Thứ tự đầy đủ (kể cả `enable-mqtt-websocket.sh` cho Nginx) và cách quay lại HiveMQ:
+[mqtt-contract § 6](../01-overview/mqtt-contract.md#6-bật-broker-riêng-trên-vm). Phải đổi **đồng thời** iot-service
+và mọi Pi, nếu không tủ mất kết nối.
 
 ---
 
@@ -344,7 +351,7 @@ model lạ không có trong danh sách thì service tự bỏ `effort` đi nên 
 | SMTP | `SPRING_MAIL_*`, `APP_MAIL_FROM` | `.env` VM | Không gửi được OTP và mã mở tủ |
 | Azure | `AZURE_VM_HOST` · `USER` · `SSH_KEY` · `PORT` | GitHub secrets (`backend`) | Không deploy được backend |
 | Cloudflare | `CLOUDFLARE_ACCOUNT_ID` · `API_TOKEN` | GitHub secrets (`frontend`, `mobile`) | Không deploy được web |
-| MQTT | `MQTT_BROKER_URL` · `USERNAME` · `PASSWORD` | `.env` VM | Dùng broker công khai — **lỗ hổng** |
+| MQTT | `COMPOSE_PROFILES=mqtt` · `MQTT_IOT_SERVICE_PASSWORD` · `MQTT_BROKER_URL` · `USERNAME` · `PASSWORD` | `.env` VM + `.env` Pi | Code có broker riêng, **chưa bật** — vẫn broker công khai (SEC-04) |
 | VNPay | `VNPAY_*` | `.env` VM | Chỉ chạy sandbox |
 | MoMo | `MOMO_*` | `.env` VM | Chỉ chạy endpoint test |
 | Firebase | `FIREBASE_CREDENTIALS_JSON` | `.env` VM | Không push notification |
