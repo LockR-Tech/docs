@@ -9,7 +9,7 @@
 | [backend](https://github.com/LockR-Tech/backend) | 12 service + `common-lib` | Java 21 · Spring Boot 3.5.14 · Spring Cloud 2025.0.2 · Maven | Azure VM (SSH + docker compose) |
 | [frontend](https://github.com/LockR-Tech/frontend) | `fe/` admin web · `landingPage/` | React 19 · Vite 7 · TypeScript · Tailwind 4 · RTK Query | Cloudflare Workers (chỉ khi đổi `fe/**`, `landingPage/**`) |
 | [mobile](https://github.com/LockR-Tech/mobile) | App Android/iOS + Flutter web | Flutter 3.44 · Riverpod + provider + bloc · go_router · dio | Mobile web lên Cloudflare Worker |
-| [iot](https://github.com/LockR-Tech/iot) | Pi controller · sketch Arduino · kiosk UI · giả lập | Python 3.13 (uv) · paho-mqtt · pyserial · FastAPI · React 19 | Không có CI/CD — cập nhật tay trên Pi |
+| [iot](https://github.com/LockR-Tech/iot) | Pi controller (khoá, cảm biến, nắp trượt qua GPIO hoặc Arduino RS485 — [ADR-0007](../adr/0007-tu-nam-viet-pi-dieu-khien-gpio-truc-tiep.md)) · sketch Arduino · kiosk UI · giả lập | Python 3.13 (uv) · paho-mqtt · pyserial · gpiod · FastAPI · React 19 | Không có CI/CD — cập nhật tay trên Pi |
 | [legal](https://github.com/LockR-Tech/legal) | `privacy-policy.html`, `data-deletion.html` | HTML tĩnh | GitHub Pages (public) |
 | [docs](https://github.com/LockR-Tech/docs) | Tài liệu này | Markdown · Mermaid → PDF A4 | — |
 

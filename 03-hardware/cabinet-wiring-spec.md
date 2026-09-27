@@ -3,10 +3,11 @@
 | | |
 |---|---|
 | **Nguồn** | "Tài liệu kỹ thuật & hướng dẫn đấu nối hệ thống tủ locker thông minh" đi kèm tủ, chủ dự án nhận 2026-09-25 |
-| **Đối chiếu code** | `iot` tại `454c49a`: `arduino/locker_controller/locker_controller.ino`, `infracstructure/serial_manager.py`, `services/locker_service.py` |
+| **Đối chiếu code** | `iot` tại `454c49a` (RS485) và nhánh `feat/f2-g09-gpio-truc-tiep` (GPIO): `arduino/locker_controller/locker_controller.ino`, `infracstructure/serial_manager.py`, `hardware/gpio_locker.py`, `hardware/lid_controller.py` |
+| **Quyết định** | [ADR-0007](../adr/0007-tu-nam-viet-pi-dieu-khien-gpio-truc-tiep.md) — tủ này dùng **GPIO trực tiếp** như tài liệu nhà cung cấp; RS485/Arduino giữ làm tuỳ chọn |
 | **Hướng dẫn thao tác** | [controller-wiring-guide.md](controller-wiring-guide.md) — chuẩn bị gì, nối theo thứ tự nào, kiểm tra ra sao |
 
-Mục 1–3 chép nguyên bảng của nhà cung cấp, chỉ đổi sang Markdown. Mục 4–5 là phần đối chiếu với code: tài liệu này mô tả **Raspberry Pi cắm thẳng GPIO** vào relay và driver, còn firmware trong repo nói chuyện với tủ qua **RS485 tới Arduino**. Nối theo mục 2 mà không đọc mục 4 thì phần mềm hiện có không mở được ngăn nào.
+Mục 1–3 chép nguyên bảng của nhà cung cấp, chỉ đổi sang Markdown. Mục 4–6 là phần đối chiếu với code. Tài liệu nhà cung cấp mô tả **Raspberry Pi cắm thẳng GPIO** vào relay và driver; code có cả hai cách, chọn bằng `HARDWARE_BACKEND` ([ADR-0007](../adr/0007-tu-nam-viet-pi-dieu-khien-gpio-truc-tiep.md)). Tủ Nam Việt dùng **`gpio`** — bản đồ chân ở **mục 6**, và nối theo mục 2 **với 3 chỉnh sửa** ở mục 6 vì GPIO Pi chỉ lên 3,3 V.
 
 ## 1. Tổng quan kiến trúc phần cứng
 
@@ -67,9 +68,9 @@ Hành vi mở một ngăn: relay `ON` 1000 ms → `OFF` → chờ 2000 ms cho l�
 
 | # | Điểm lệch | Lựa chọn | Đề xuất |
 |---|---|---|---|
-| 1 | **Ai điều khiển relay và đọc cảm biến** | (a) Giữ Arduino như firmware — Pi chỉ cần một cổng USB · (b) Pi cắm thẳng GPIO như tài liệu — phải viết lại `hardware/rpi_locker.py` thành GPIO thật và đổi `locker_service.py` đang gọi serial | **(a)**: khớp code đang có, Pi hay Jetson đều dùng được, nhiều tủ chung một bus phân biệt bằng `SLAVE_ID` |
+| 1 | ~~**Ai điều khiển relay và đọc cảm biến**~~ | (a) Giữ Arduino như firmware — Pi chỉ cần một cổng USB · (b) Pi cắm thẳng GPIO như tài liệu | **Đã quyết (2026-09-27):** GPIO trực tiếp, giữ RS485 làm tuỳ chọn ([ADR-0007](../adr/0007-tu-nam-viet-pi-dieu-khien-gpio-truc-tiep.md)) — không phải mua Arduino/MAX485/adapter. Đề xuất (a) trước đó bị thay vì tủ giao không kèm các linh kiện này |
 | 2 | ~~**7 ngăn vs trần 6**~~ | **Đã chọn (a) và làm** — `MAX_SLOTS = 7`, hai mảng chân đủ 7, mảng trạng thái bám `NUM_SLOTS` ([iot#7](https://github.com/LockR-Tech/iot/pull/7)) | xong |
-| 3 | **Nắp trượt (TB6600 + Nema 17)** | Chưa có firmware, chưa có lệnh MQTT, luồng drone F1.06 đang DEMO. Ba đường ở [hướng dẫn § 3.E](controller-wiring-guide.md#3-thứ-tự-nối-dây) | Làm sau khi 7 ngăn đã mở được bằng mã |
+| 3 | **Nắp trượt (TB6600 + Nema 17)** | Có code GPIO: về gốc/mở/đóng theo 2 công tắc hành trình, điều khiển qua API cục bộ (`hardware/lid_controller.py`). Chưa có lệnh MQTT — luồng drone F1.06 đang DEMO | Nối theo mục 6, thử bằng `debug_gpio.py lid …` |
 
 ## 5. Bản đồ chân Arduino Uno cho 7 ngăn
 
@@ -88,3 +89,37 @@ Chân đã dùng: `D0`/`D1` (USB debug), `D6`/`D7`/`D9` (RS485). Còn `D2 D3 D4 
 Thứ tự `slot` đi theo đúng thứ tự dây tín hiệu trên thanh domino của nhà cung cấp (mục 2: từ phải qua trái, nhìn từ sau tủ) — ghi số `slot` lên domino để kỹ thuật viên sau này không phải đoán.
 
 Bản đồ này **đã nằm trong firmware** ([iot#7](https://github.com/LockR-Tech/iot/pull/7)): `locker_controller.ino:24-25` (hai mảng), `:45-47` (mảng trạng thái khai `[NUM_SLOTS]` nên thêm ngăn không còn ghi tràn), `serial_manager.py:21` (`MAX_SLOTS = 7`). Nạp lại sketch là dùng được, không phải sửa tay nữa.
+
+## 6. Bản đồ chân GPIO của Pi (`HARDWARE_BACKEND=gpio`)
+
+Số chân **BCM** (GPIOxx), trong ngoặc là số chân vật lý trên header 40 chân. Mặc định trong `iot/config/settings.py`, đổi được bằng `.env` (`GPIO_RELAY_PINS`, `GPIO_DOOR_PINS`, `LID_*_PIN`). In lại bảng này trên Pi: `uv run python debug_gpio.py pins`.
+
+| Ngăn (`slot`) | Relay | Chân relay | Dây tín hiệu khoá (dây kia → GND) |
+|---|---|---|---|
+| 0 | `IN1` | GPIO17 (11) | GPIO5 (29) |
+| 1 | `IN2` | GPIO27 (13) | GPIO6 (31) |
+| 2 | `IN3` | GPIO22 (15) | GPIO12 (32) |
+| 3 | `IN4` | GPIO23 (16) | GPIO13 (33) |
+| 4 | `IN5` | GPIO24 (18) | GPIO19 (35) |
+| 5 | `IN6` | GPIO25 (22) | GPIO26 (37) |
+| 6 | `IN7` | GPIO16 (36) | GPIO20 (38) |
+
+| Tín hiệu | Nối vào |
+|---|---|
+| Relay `DC+` · `DC-` | 5 V (chân 2) · GND (chân 6) — như nhà cung cấp; mỗi lúc chỉ một relay hút |
+| TB6600 `PUL-` · `DIR-` | GPIO18 (12) · GPIO21 (40) |
+| TB6600 `PUL+` · `DIR+` | **3,3 V** (chân 1 hoặc 17) |
+| TB6600 `ENA±` | để trống (driver luôn bật) |
+| Công tắc hành trình gốc (nắp đóng) · cuối (nắp mở) | GPIO4 (7) · GPIO10 (19), chân kia → GND |
+
+Vì sao chọn các chân này:
+
+- Chân relay đều nằm trong GPIO9–27: lúc Pi mới cấp điện chúng là đầu vào **kéo xuống** (kiểm trên Pi 5 bằng `pinctrl get` 2026-09-27: `no pd`) ⇒ relay kích H không hút trước khi `main.py` chạy. GPIO0–8 kéo **lên** lúc khởi động — không dùng cho relay.
+- Tránh GPIO2/3 (I²C có điện trở kéo cứng), GPIO14/15 (console UART trong `cmdline.txt`), GPIO0/1 (EEPROM HAT).
+- Cảm biến và công tắc hành trình bật điện trở kéo lên bằng phần mềm: cửa đóng / công tắc bấm = LOW (giống firmware Arduino).
+
+**Ba chỉnh sửa so với mục 2 của nhà cung cấp** (tài liệu giả định GPIO 5 V, Pi chỉ 3,3 V):
+
+1. Jumper module relay đặt **H**. Ở L, đầu vào kéo lên 5 V; GPIO 3,3 V để lại ~1,7 V trên opto nên relay không nhả hẳn.
+2. `PUL+`, `DIR+` nối **3,3 V**, không nối +5 V — cùng lý do; code phát xung mức thấp (`LID_STEP_ACTIVE_LOW=true`).
+3. **Đo dây tín hiệu khoá trước khi nối**: phải là tiếp điểm khô (thông/ngắt theo cửa, không có điện áp). Có 12 V trên cặp dây này mà nối vào GPIO là hỏng Pi.
