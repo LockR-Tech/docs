@@ -28,7 +28,8 @@ docs/
 ├── 02-flows/                 Mỗi luồng: mục tiêu · checklist có bằng chứng · % · luồng hiện tại · gap
 ├── 03-hardware/
 │   ├── cabinet-wiring-spec.md     Sơ đồ đấu nối của nhà cung cấp + đối chiếu chân Arduino trong firmware
-│   └── controller-wiring-guide.md Chuẩn bị Pi/Jetson + màn cảm ứng, thứ tự nối dây, bring-up, kiosk trên Pi
+│   ├── controller-wiring-guide.md Chuẩn bị Pi/Jetson + màn cảm ứng, thứ tự nối dây, bring-up, kiosk trên Pi
+│   └── pi-lockr-tu01.md      Hồ sơ Pi của tủ lockr-tu01: cấu hình riêng, sự cố, vận hành
 ├── 04-engineering/
 │   ├── git-workflow.md       GitHub Flow, nhánh, PR, merge, hotfix
 │   ├── commit-convention.md  Conventional Commits, scope từng repo

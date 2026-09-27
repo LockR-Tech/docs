@@ -3,7 +3,8 @@
 | | |
 |---|---|
 | **Dùng khi** | Lắp tủ vật lý theo [sơ đồ nhà cung cấp](cabinet-wiring-spec.md) và đưa phần mềm trong repo `iot` lên chạy trên tủ đó |
-| **Đối chiếu code** | `iot` tại `454c49a` · `backend` gateway CORS tại `api-gateway/src/main/resources/application.yml:186-196` |
+| **Đối chiếu code** | `iot` tại `e7b04c8` · `backend` gateway CORS tại `api-gateway/src/main/resources/application.yml:186-196` |
+| **Đã dựng thử** | Pi 5 `lockr-tu01` ngày 2026-09-27, Raspberry Pi OS Trixie — hồ sơ và sự cố: [pi-lockr-tu01.md](pi-lockr-tu01.md). § 4.2–4.6 viết theo lần dựng đó |
 | **Gap** | F2-G09 (tủ thật chạy end-to-end) — [flow-2](../02-flows/flow-2-locker-send.md) |
 
 Đọc [cabinet-wiring-spec.md § 4](cabinet-wiring-spec.md#4-đối-chiếu-với-firmware-trong-repo) trước: firmware điều khiển tủ qua **Arduino trên bus RS485**, Pi/Jetson chỉ cần **một cổng USB** và màn hình. Hướng dẫn này đi theo kiến trúc đó.
@@ -31,7 +32,8 @@
 |---|---|---|---|
 | **Bo điều khiển** | Raspberry Pi 4B hoặc 5, 4 GB | 1 | xem § 0 |
 | | Nguồn chính hãng cho Pi | 1 | Pi 4: 5 V 3 A USB-C · Pi 5: 27 W USB-C PD. **Không** kéo Pi từ nguồn 12 V qua buck rẻ — sụt áp là Pi reboot giữa chừng |
-| | Thẻ microSD 32 GB A2 + Raspberry Pi OS 64-bit (Bookworm) | 1 | |
+| | Thẻ microSD 32 GB **A2** (hoặc SSD USB) + Raspberry Pi OS 64-bit có desktop | 1 | **Không dùng USB flash thường** làm ổ hệ thống: đo được 66 KB/s khi ghi file nhỏ, `apt` mất hơn 2 giờ, và một lần mất điện đã làm hỏng hệ thống file ([pi-lockr-tu01 sự cố 9, 18](pi-lockr-tu01.md#6-sự-cố-đã-gặp)) |
+| | Đầu đọc thẻ microSD cho laptop | 1 | để ghi hệ điều hành bằng Raspberry Pi Imager |
 | | Tản nhiệt / quạt (Pi 5 bắt buộc) | 1 | tủ kín, nóng |
 | | Arduino Uno R3 (hoặc Nano) | 1 | firmware `locker_controller.ino`; Uno đủ chân cho 7 ngăn ([spec § 5](cabinet-wiring-spec.md#5-bản-đồ-chân-arduino-uno-cho-7-ngăn)) |
 | **RS485** | Bộ chuyển USB ↔ RS485 **tự đảo chiều** (auto-direction, chip CH340/CP2102) | 1 | firmware chờ 50 ms cho adapter phía Pi tự chuyển TX→RX (`locker_controller.ino:432-434`); `main.py` tự nhận chip CH340/CP210x/FTDI (`serial_manager.py:100`) |
@@ -142,26 +144,45 @@ Mở Serial Monitor 9600 baud, phải thấy `AISL Locker Controller v2.1` và 7
 
 ### 4.2 Pi — hệ điều hành và runtime
 
+**Ghi hệ điều hành** bằng Raspberry Pi Imager: Device **Raspberry Pi 5** (hoặc 4), OS **Raspberry Pi OS (64-bit)** bản có desktop, Storage là thẻ microSD. Ở bước Customisation điền hostname (`lockr-tuNN`), user **kèm mật khẩu** (thiếu mật khẩu thì desktop không tự đăng nhập — § 4.5), Wi-Fi nếu không cắm LAN, bàn phím `us` (không chọn `vn` — hàng phím số thành chữ có dấu), bật SSH.
+
+- Imager 2.x ghi thiết lập qua **cloud-init** vào `user-data` và `network-config` trên phân vùng `bootfs`. Ghi xong mở hai file đó kiểm tra: nếu vẫn là mẫu toàn comment (lần dựng `lockr-tu01` bị vậy — có lẽ đã bấm *Skip customisation*) thì Pi sẽ không vào mạng, không có SSH. Tự điền hai file theo mẫu comment sẵn trong chính file đó, thêm một file rỗng tên `ssh`.
+- Khởi động bằng USB/SSD thì **khe thẻ phải trống** — Pi 5 ưu tiên thẻ nhớ và bỏ qua USB.
+- Lần đầu mất ~5 phút (nới phân vùng, khởi động lại rồi mới vào mạng). Tìm Pi bằng `ping <hostname>.local`. Wi-Fi công ty thường chặn thiết bị nhìn thấy nhau — khi cài dùng mạng riêng hoặc LAN.
+
+**Cài runtime** (Raspberry Pi OS Trixie đã có sẵn `git` và `chromium` — tên gói không còn là `chromium-browser`):
+
 ```bash
-sudo apt update && sudo apt install -y git docker.io chromium-browser
-sudo usermod -aG docker,dialout $USER      # dialout: quyền mở /dev/ttyUSB*; đăng xuất/đăng nhập lại
+sudo apt update && sudo apt full-upgrade -y
+sudo apt install -y postgresql
+curl -fsSL https://deb.nodesource.com/setup_22.x | sudo -E bash - && sudo apt install -y nodejs   # build kiosk
 curl -LsSf https://astral.sh/uv/install.sh | sh
+sudo usermod -aG dialout $USER             # quyền mở /dev/ttyUSB*; đăng xuất/đăng nhập lại
 git clone https://github.com/LockR-Tech/iot.git ~/iot && cd ~/iot
-uv sync                                    # tự tải Python 3.13 theo .python-version
-docker compose -f docker-compose.postgres.yml up -d
+uv sync                                    # Python 3.13 có sẵn trên Trixie; bản khác uv tự tải
+
+PW=$(openssl rand -hex 16)                  # mật khẩu DB — chỉ nằm trong ~/iot/.env (§ 4.3)
+sudo -u postgres psql -c "ALTER USER postgres PASSWORD '$PW';"
+sudo -u postgres createdb iot_locker        # bảng do main.py tự tạo lần chạy đầu
 ```
+
+- PostgreSQL cài bằng `apt` chỉ nghe `127.0.0.1`. **Không** dùng `docker-compose.postgres.yml` trên Pi: file đó mở cổng 5432 ra mọi mạng với mật khẩu mặc định (`iot/docker-compose.postgres.yml:10,13`) — tủ nằm trên Wi-Fi dùng chung là lộ database.
+- `apt` rất lâu trên ổ chậm; chạy nền để rớt SSH không làm `dpkg` dừng giữa chừng: `sudo systemd-run --unit=apt-upgrade --collect bash -c 'apt-get update && apt-get -y full-upgrade'` rồi `journalctl -u apt-upgrade -f`.
 
 ### 4.3 `.env` trên Pi
 
 Tạo `~/iot/.env` (không commit). Ba dòng dưới đây là những chỗ hay hỏng; các biến còn lại xem `config/settings.py`:
 
 ```
+SIMULATION=true                                                  # xoá dòng này khi đã nối adapter RS485 + Arduino
 SERIAL_PORT=/dev/serial/by-id/usb-1a86_USB_Serial-if00-port0   # đường dẫn ghi ở bước D.1
 MAC_ADDRESS=aa:bb:cc:dd:ee:ff                                    # MAC của cổng mạng đang dùng
 MQTT_BROKER=<broker>  MQTT_PORT_SSL=8883  MQTT_USE_TLS=true
 BACKEND_API_URL=https://api.locker-drone.tech
+POSTGRES_PASSWORD=<mật khẩu tạo ở § 4.2>
 ```
 
+- Chưa cắm adapter RS485 mà không đặt `SIMULATION=true` thì `main.py` dừng ngay với `RS485 connection failed on AUTO` (`serial_manager.py:158,168`) — `AUTO` không dò được cổng nào.
 - `SERIAL_PORT=AUTO` ưu tiên thiết bị có chữ "arduino" (`serial_manager.py:100-108`) — nếu USB Arduino cũng cắm vào Pi, `AUTO` có thể mở nhầm `/dev/ttyACM0` thay vì adapter RS485. Ghim đường dẫn `by-id`.
 - `MAC_ADDRESS`: backend gửi lệnh setup theo MAC và Pi bỏ qua lệnh không khớp (`locker_service.py:119-123`); để trống thì `uuid.getnode()` tự chọn eth0 hay wlan0 (`settings.py:11-20`) và có thể đổi giữa hai lần khởi động. Ghim vào MAC đã đăng ký với admin.
 - Broker: mặc định vẫn là `broker.hivemq.com` công khai (SEC-04) — tủ thật chỉ chạy demo cho tới khi có broker riêng ([STATUS § 4](../STATUS.md)).
@@ -173,13 +194,13 @@ BACKEND_API_URL=https://api.locker-drone.tech
 ```ini
 [Unit]
 Description=Lock.R cabinet controller
-After=network-online.target docker.service
-Wants=network-online.target
+After=network-online.target postgresql.service
+Wants=network-online.target postgresql.service
 
 [Service]
-User=pi
-WorkingDirectory=/home/pi/iot          # python-dotenv đọc .env theo thư mục này
-ExecStart=/home/pi/.local/bin/uv run python main.py
+User=lockr
+WorkingDirectory=/home/lockr/iot       # python-dotenv đọc .env theo thư mục này
+ExecStart=/home/lockr/.local/bin/uv run python main.py
 Restart=on-failure
 RestartSec=5
 
@@ -187,27 +208,80 @@ RestartSec=5
 WantedBy=multi-user.target
 ```
 
-`sudo systemctl enable --now lockr-controller` · xem log: `journalctl -u lockr-controller -f`.
+Đổi `lockr` thành user đã tạo ở Imager (Raspberry Pi OS mới không còn user `pi` mặc định). `sudo systemctl enable --now lockr-controller` · xem log: `journalctl -u lockr-controller -f`.
 
 ### 4.5 Kiosk trên Pi
 
-`main.py` tự phục vụ bản build của kiosk tại `http://localhost:8000/ui/` nếu có thư mục `ui/dist` (`config_api.py:152-155`). Ba việc phải làm trước, đều đã kiểm trong code:
+**Không mở kiosk ở `http://localhost:8000/ui/`.** `main.py` có phục vụ `ui/dist` ở đường dẫn đó (`config_api.py:154`), nhưng ngày 2026-09-27 gateway production trả **403** cho preflight CORS từ origin `http://localhost:8000` — chỉ `localhost:3000/3001` được cho qua (`APP_CORS_ALLOWED_ORIGINS`, `application.yml:196`). Thay vào đó chạy bản build bằng **`vite preview` ở cổng 3002**: preview dùng lại proxy `/api` của `ui/vite.config.js:20-25` (trỏ `https://api.locker-drone.tech`, bỏ header `Origin`) nên không dính CORS và không phải sửa VM.
 
-1. **`vite.config.js` chưa có `base`** nên `ui/dist/index.html` trỏ `/assets/…` — mở ở `/ui/` sẽ trắng màn vì 404 JS/CSS. Thêm `base: '/ui/'` vào `defineConfig` rồi mới build. (Chưa có trong repo — [§ 7](#7-việc-còn-nợ-trong-code).)
-2. **`ui/.env.local`** trên Pi: `VITE_API_URL=https://api.locker-drone.tech` (bản build không còn Vite proxy — ghi chú ngay trong file mẫu), `VITE_LOCAL_API_URL=http://localhost:8000`, `VITE_LOCKER_ID=<id tủ trong admin>` (hoặc thêm `?lockerId=<id>` vào URL — `KioskScreen.jsx:22-25`). Đăng nhập bằng số điện thoại trên kiosk cần thêm bộ `VITE_FIREBASE_*` của một Firebase *Web app* — hiện chưa tạo.
-3. **CORS trên VM:** kiosk chạy ở origin `http://localhost:8000`, gateway chỉ cho origin trong `APP_CORS_ALLOWED_ORIGINS` (`application.yml:186-196`). Thêm `http://localhost:8000` vào biến đó trong `.env` VM rồi `docker compose up -d api-gateway`. Không làm thì mọi gọi `/api/...` từ kiosk bị chặn dù backend vẫn sống.
+1. **`ui/.env.local`** trên Pi (không commit):
 
-Build và tự chạy khi bật máy:
+   ```
+   VITE_API_URL=                               # để trống ⇒ gọi /api tương đối qua proxy (api.js:18)
+   VITE_LOCAL_API_URL=http://localhost:8000
+   VITE_LOCKER_ID=<id tủ có thật trên production>   # GET https://api.locker-drone.tech/api/lockers
+   VITE_LOCKER_CODE=<mã tủ>
+   ```
 
-```bash
-cd ~/iot/ui && npm install && npm run build
-# lệnh kiosk — thêm vào autostart của phiên desktop
-# (Bookworm: ~/.config/wayfire.ini mục [autostart], hoặc ~/.config/labwc/autostart tuỳ bản)
-chromium-browser --kiosk --noerrdialogs --disable-infobars --incognito \
-  --disable-session-crashed-bubble "http://localhost:8000/ui/?lockerId=<id>"
-```
+   URL `?lockerId=` / `?lockerCode=` ghi đè hai biến cuối (`KioskScreen.jsx:24-25`). Đăng nhập bằng số điện thoại trên kiosk cần thêm bộ `VITE_FIREBASE_*` của một Firebase *Web app* — hiện chưa tạo.
 
-Tắt tắt màn: `sudo raspi-config` → Display Options → Screen Blanking → No.
+2. **Build:** `cd ~/iot/ui && npm ci --no-audit --no-fund && npm run build && sync`. Đổi `.env.local` phải build lại.
+
+3. **Dịch vụ** `/etc/systemd/system/lockr-kiosk.service`:
+
+   ```ini
+   [Unit]
+   Description=Lock.R kiosk UI (vite preview :3002)
+   After=network-online.target lockr-controller.service
+   Wants=network-online.target
+
+   [Service]
+   User=lockr
+   WorkingDirectory=/home/lockr/iot/ui
+   ExecStart=/home/lockr/iot/ui/node_modules/.bin/vite preview --port 3002 --strictPort --host 127.0.0.1
+   Restart=on-failure
+   RestartSec=5
+
+   [Install]
+   WantedBy=multi-user.target
+   ```
+
+4. **Chromium toàn màn hình khi bật máy.** `~/kiosk.sh` — chờ máy khởi động xong mới mở (mở sớm trên ổ chậm thì network service của Chromium sập, trang kẹt màu xám), Chromium thoát thì mở lại:
+
+   ```bash
+   #!/bin/bash
+   URL="http://localhost:3002/"
+   systemctl is-system-running --wait >/dev/null 2>&1
+   for i in $(seq 1 150); do curl -s -o /dev/null -m 2 "$URL" && break; sleep 2; done
+   sleep 10
+   while true; do
+     /usr/bin/chromium --kiosk "$URL" --noerrdialogs --disable-infobars --no-first-run \
+       --disable-session-crashed-bubble --incognito --password-store=basic --ozone-platform=wayland
+     sleep 3
+   done
+   ```
+
+   ```bash
+   chmod +x ~/kiosk.sh
+   echo "/home/lockr/kiosk.sh &" > ~/.config/labwc/autostart      # desktop Trixie là labwc
+   sudo mkdir -p /etc/chromium/policies/managed                   # tắt khung "dịch trang"
+   echo '{"TranslateEnabled": false}' | sudo tee /etc/chromium/policies/managed/lockr-kiosk.json
+   sudo raspi-config nonint do_boot_behaviour B4                  # desktop tự đăng nhập
+   sudo raspi-config nonint do_blanking 1                         # không tắt màn hình
+   ```
+
+   Cờ `--disable-features=Translate` không có tác dụng với Chromium 153 — phải dùng policy. Tự đăng nhập chỉ chạy khi user có mật khẩu; user bị khoá mật khẩu thì LightDM hiện màn đăng nhập.
+
+Giao diện kiosk là khung cố định **1024×600** (màn 7"); màn lớn hơn thì phần dư để trống.
+
+### 4.6 Ổ đĩa, mất điện, log
+
+| Việc | Lệnh / file | Vì sao |
+|---|---|---|
+| Giới hạn dữ liệu chờ ghi | `/etc/sysctl.d/90-lockr-slow-usb.conf`: `vm.dirty_background_bytes = 4194304`, `vm.dirty_bytes = 16777216` | Mặc định Linux dồn hàng trăm MB trong RAM; mất điện là mất — lần dựng `lockr-tu01` mất nguyên bản build kiosk và hỏng hệ thống file |
+| Tắt máy đúng cách | `sudo sync && sudo poweroff`, đợi đèn xanh tắt hẳn mới rút nguồn | Không rút nguồn ngang; Pi không lên sau `reboot` thì đợi ≥ 10 phút (có thể đang ghi dở) |
+| Log qua các lần khởi động | `/etc/systemd/journald.conf.d/50-persistent.conf`: `[Journal]` `Storage=persistent` `SystemMaxUse=100M` | Raspberry Pi OS mặc định `Storage=volatile` (`/usr/lib/systemd/journald.conf.d/40-rpi-volatile-storage.conf`) — tạo thư mục `/var/log/journal` thôi là chưa đủ |
+| Cập nhật bootloader | `sudo rpi-eeprom-update -a` rồi `reboot` | Bootloader cũ khởi động từ USB kém ổn định |
 
 ## 5. Kiểm tra từng bước (bring-up)
 
@@ -223,7 +297,7 @@ Làm đúng thứ tự; mỗi bước xanh mới sang bước sau. Các script �
 | 5.6 | Toàn bộ `main.py` | `uv run python main.py` (hoặc `journalctl -u lockr-controller -f`) | `RS485 connected: … @ 9600` (`serial_manager.py:150`), `Discovery results reported`, `System is READY` | `No serial ports found` → `dialout` chưa có hiệu lực, đăng nhập lại |
 | 5.7 | API cục bộ | `curl localhost:8000/system/info` | JSON có `macAddress` trùng `.env` | |
 | 5.8 | Backend thấy tủ | admin web → tủ → thiết bị; hoặc `GET /api/manage/iot/device-status` | tủ `ONLINE` sau heartbeat | Pi có gửi (`heartbeat_service.py:18`) mà backend không thấy → khác broker hoặc khác **tên tủ**/MAC |
-| 5.9 | Mở bằng mã từ kiosk | kiosk nhập PIN của một đơn test | ngăn đúng mở, đơn đổi trạng thái | kiosk trắng → § 4.5.1; gọi API lỗi CORS → § 4.5.3; Pi nhận lệnh nhưng bỏ qua → payload thiếu `slotIndex` (F2-G09, [§ 7](#7-việc-còn-nợ-trong-code)) |
+| 5.9 | Mở bằng mã từ kiosk | kiosk nhập PIN của một đơn test | ngăn đúng mở, đơn đổi trạng thái | kiosk trắng/xám hoặc lỗi mạng → § 6; Pi nhận lệnh nhưng bỏ qua → payload thiếu `slotIndex` (F2-G09, [§ 7](#7-việc-còn-nợ-trong-code)) |
 
 ## 6. Lỗi hay gặp
 
@@ -236,8 +310,14 @@ Làm đúng thứ tự; mỗi bước xanh mới sang bước sau. Các script �
 | `main.py` mở được cổng nhưng PING timeout | mở nhầm `/dev/ttyACM0` (USB Arduino) thay vì adapter RS485 — ghim `SERIAL_PORT` |
 | PING lúc được lúc không | adapter không tự đảo chiều; thiếu GND chung; A/B không xoắn đôi |
 | Backend không gửi lệnh setup tới Pi | MAC trong lệnh ≠ `MAC_ADDRESS` của Pi (`locker_service.py:119-123`) |
-| Kiosk trắng màn ở `/ui/` | thiếu `base: '/ui/'` khi build |
-| Kiosk hiện nhưng mọi nút báo lỗi mạng | origin `localhost:8000` chưa trong `APP_CORS_ALLOWED_ORIGINS` |
+| Kiosk hiện nhưng mọi nút báo lỗi mạng | Mở kiosk ở `:8000/ui` hoặc `VITE_API_URL` trỏ thẳng production ⇒ CORS 403. Dùng `vite preview` :3002 với `VITE_API_URL=` trống (§ 4.5) |
+| Kiosk trắng trang, `dist/index.html` 0 byte | Mất điện khi bản build còn trong RAM — build lại + `sync`, đặt giới hạn ghi (§ 4.6) |
+| Kiosk kẹt màu xám sau khi bật máy, log `Network service crashed` | Chromium mở lúc máy còn đang khởi động — dùng `kiosk.sh` ở § 4.5 |
+| Màn hình hiện ô đăng nhập thay vì kiosk | User chưa có mật khẩu hoặc tự đăng nhập bị tắt — `passwd`, rồi `raspi-config nonint do_boot_behaviour B4` |
+| Khung "Vietnamese / English" trên kiosk | Policy `TranslateEnabled: false` (§ 4.5) |
+| Pi không bao giờ đọc USB/SSD | Có thẻ nhớ trong khe — Pi 5 ưu tiên thẻ |
+| Pi lên nhưng không vào mạng, không SSH được | Customisation của Imager không được ghi — kiểm `user-data`, `network-config` (§ 4.2) |
+| `main.py` dừng ngay, `RS485 connection failed on AUTO` | Chưa cắm adapter RS485 — đặt `SIMULATION=true` (§ 4.3) |
 
 ## 7. Việc còn nợ trong code
 
@@ -246,7 +326,7 @@ Nối dây xong vẫn chưa mở được ngăn bằng mã từ app cho tới kh
 | # | Việc | Ở đâu | Gap |
 |---|---|---|---|
 | 1 | ~~Nâng trần 6 → 7 ngăn~~ — **đã làm** ([iot#7](https://github.com/LockR-Tech/iot/pull/7)): `MAX_SLOTS = 7`, hai mảng chân đủ 7, mảng trạng thái bám `NUM_SLOTS` | `iot/infracstructure/serial_manager.py:21`, `locker_controller.ino:24-25,45-47` | F2-G09 |
-| 2 | `base: '/ui/'` cho bản build kiosk | `iot/ui/vite.config.js` | F2-G09 |
+| 2 | ~~`base: '/ui/'` cho bản build kiosk~~ — **không còn chặn**: kiosk chạy bằng `vite preview` (§ 4.5). Chỉ cần nếu muốn phục vụ kiosk qua `main.py :8000/ui` **và** đã thêm origin đó vào CORS gateway | `iot/ui/vite.config.js` | F2-G09 |
 | 3 | Thống nhất payload lệnh mở: backend gửi `{commandId, box_id, action}` tới `cabinet/{lockerId}/command/open`, Pi cần `slotIndex` và dùng **tên** tủ trong topic | `backend/iot-service/…/LockerMqttService.java:30,183` · `iot/services/locker_service.py:170-181` | **F2-G09** — chặn toàn bộ |
 | 4 | Broker MQTT riêng có auth + TLS | `backend/docker-compose.yml` | SEC-04 |
 | 5 | Sự kiện cửa (`DOOR_CLOSED`) điều khiển vòng đời đơn/ô | `iot/services/locker_service.py:229-264` · iot-service | F2-G09, F3-G03 |

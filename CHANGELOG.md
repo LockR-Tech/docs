@@ -2,6 +2,10 @@
 
 Mỗi thay đổi ở repo docs thêm **một dòng** vào ngày tương ứng (mới nhất ở trên). Ghi mã gap/SEC/ADR nếu có.
 
+## 2026-09-27
+
+- F2-G09: dựng thử Pi 5 `lockr-tu01` (Raspberry Pi OS Trixie) theo [controller-wiring-guide](03-hardware/controller-wiring-guide.md) và sửa § 4 theo kết quả: PostgreSQL cài bằng `apt` thay `docker-compose.postgres.yml` (file đó mở 5432 ra mạng với mật khẩu mặc định); gói `chromium` thay `chromium-browser`; kiểm cloud-init khi Imager không ghi Customisation; `SIMULATION=true` khi chưa có adapter RS485. **Kiosk**: gateway production trả 403 CORS cho `localhost:8000` (kiểm 2026-09-27) nên bỏ cách `:8000/ui`, chạy bản build bằng `vite preview` :3002 dùng lại proxy `/api` — việc nợ `base: '/ui/'` không còn chặn. Thêm § 4.6 (giới hạn dữ liệu chờ ghi, tắt máy đúng cách, journal vĩnh viễn, bootloader) và 8 dòng lỗi hay gặp. Thêm hồ sơ máy [pi-lockr-tu01.md](03-hardware/pi-lockr-tu01.md) với 18 sự cố, gồm hỏng hệ thống file trên USB flash sau mất điện. STATUS § 0 mốc iot `454c49a` → `e7b04c8`, § 3 cập nhật việc lắp tủ.
+
 ## 2026-09-25
 
 - F1-G08 (local, chưa merge/deploy): thêm bước `AWAITING_LOADING → READY_TO_LAUNCH` bắt buộc trước khi phóng; lưu trạm nguồn, người nạp, khối lượng, mã niêm phong và checklist đúng kiện/cố định/khóa khoang; chặn quá tải, sai người phụ trách và launch thiếu hồ sơ; migration V15 đưa mission cũ về chờ nạp; mobile thêm hàng đợi và form xác nhận. F1.04 MISSING → DONE, L1 60 → 70 %; cập nhật sơ đồ drone mission.
