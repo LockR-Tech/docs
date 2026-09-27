@@ -3,7 +3,7 @@
 | | |
 |---|---|
 | **Nguồn** | "Tài liệu kỹ thuật & hướng dẫn đấu nối hệ thống tủ locker thông minh" đi kèm tủ, chủ dự án nhận 2026-09-25 |
-| **Đối chiếu code** | `iot` tại `454c49a` (RS485) và nhánh `feat/f2-g09-gpio-truc-tiep` (GPIO): `arduino/locker_controller/locker_controller.ino`, `infracstructure/serial_manager.py`, `hardware/gpio_locker.py`, `hardware/lid_controller.py` |
+| **Đối chiếu code** | `iot` tại `454c49a` (RS485) và `c843447` ([iot#8](https://github.com/LockR-Tech/iot/pull/8), GPIO): `arduino/locker_controller/locker_controller.ino`, `infracstructure/serial_manager.py`, `hardware/gpio_locker.py`, `hardware/lid_controller.py` |
 | **Quyết định** | [ADR-0007](../adr/0007-tu-nam-viet-pi-dieu-khien-gpio-truc-tiep.md) — tủ này dùng **GPIO trực tiếp** như tài liệu nhà cung cấp; RS485/Arduino giữ làm tuỳ chọn |
 | **Hướng dẫn thao tác** | [controller-wiring-guide.md](controller-wiring-guide.md) — chuẩn bị gì, nối theo thứ tự nào, kiểm tra ra sao |
 

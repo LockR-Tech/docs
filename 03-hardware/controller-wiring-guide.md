@@ -4,7 +4,7 @@
 |---|---|
 | **Dùng khi** | Lắp tủ vật lý theo [sơ đồ nhà cung cấp](cabinet-wiring-spec.md) và đưa phần mềm trong repo `iot` lên chạy trên tủ đó |
 | **Quyết định** | [ADR-0007](../adr/0007-tu-nam-viet-pi-dieu-khien-gpio-truc-tiep.md) — tủ Nam Việt dùng **GPIO trực tiếp** (`HARDWARE_BACKEND=gpio`); Arduino/RS485 giữ làm tuỳ chọn |
-| **Đối chiếu code** | `iot` tại `e7b04c8` + nhánh `feat/f2-g09-gpio-truc-tiep` (cách GPIO, `hardware/*.py`, `debug_gpio.py`) · `backend` gateway CORS tại `api-gateway/src/main/resources/application.yml:186-196` |
+| **Đối chiếu code** | `iot` tại `c843447` ([iot#8](https://github.com/LockR-Tech/iot/pull/8) — cách GPIO, `hardware/*.py`, `debug_gpio.py`) · `backend` gateway CORS tại `api-gateway/src/main/resources/application.yml:186-196` |
 | **Đã dựng thử** | Pi 5 `lockr-tu01` ngày 2026-09-27, Raspberry Pi OS Trixie — hồ sơ và sự cố: [pi-lockr-tu01.md](pi-lockr-tu01.md). § 4.2–4.6 viết theo lần dựng đó |
 | **Gap** | F2-G09 (tủ thật chạy end-to-end) — [flow-2](../02-flows/flow-2-locker-send.md) |
 

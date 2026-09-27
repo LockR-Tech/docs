@@ -5,7 +5,7 @@
 | **Trạng thái** | Accepted |
 | **Ngày** | 2026-09-27 |
 | **Người quyết định** | Chủ dự án |
-| **Liên quan** | F2-G09, F1.06 · [cabinet-wiring-spec § 4](../03-hardware/cabinet-wiring-spec.md#4-đối-chiếu-với-firmware-trong-repo) (điểm quyết định 1) · iot PR `feat/f2-g09-gpio-truc-tiep` |
+| **Liên quan** | F2-G09, F1.06 · [cabinet-wiring-spec § 4](../03-hardware/cabinet-wiring-spec.md#4-đối-chiếu-với-firmware-trong-repo) (điểm quyết định 1) · [iot#8](https://github.com/LockR-Tech/iot/pull/8) |
 
 ## Bối cảnh
 
