@@ -10,5 +10,6 @@ Ghi lại **vì sao** dự án làm theo một cách, để người sau không 
 | [0004](0004-anh-luu-cloudinary-upload-truc-tiep.md) | Lưu ảnh trên Cloudinary, client upload trực tiếp bằng chữ ký của server | Proposed | 2026-09-15 |
 | [0005](0005-quy-tac-nghiep-vu-cau-hinh-tren-admin.md) | Quy tắc nghiệp vụ cấu hình trên admin, mỗi service tự sở hữu | Proposed | 2026-09-15 |
 | [0006](0006-tro-ly-rag-claude-voyage-pgvector-rieng.md) | Trợ lý hỏi đáp dùng Claude + Voyage AI, kho vector là container pgvector riêng | Accepted | 2026-09-21 |
+| [0007](0007-tu-nam-viet-pi-dieu-khien-gpio-truc-tiep.md) | Tủ Nam Việt — Pi điều khiển khoá, cảm biến và nắp trượt bằng GPIO trực tiếp | Accepted | 2026-09-27 |
 
 Tạo ADR mới: chép [0000-template.md](0000-template.md) thành `NNNN-ten-ngan.md` (số kế tiếp), thêm dòng vào bảng trên.
