@@ -2,6 +2,10 @@
 
 Mỗi thay đổi ở repo docs thêm **một dòng** vào ngày tương ứng (mới nhất ở trên). Ghi mã gap/SEC/ADR nếu có.
 
+## 2026-09-29
+
+- Trang đăng nhập admin thiết kế lại theo Lock.R, bỏ đăng nhập Partner ([frontend#24](https://github.com/LockR-Tech/frontend/pull/24)): STATUS § 5 thêm một dòng. Không đổi verdict/%.
+
 ## 2026-09-27
 
 - F2-G09 · SEC-04: iot#9, backend#33, frontend#22 đã merge và deploy (backend 16:03 UTC xanh), Pi `lockr-tu01` lên `137d945`. [ADR-0008](adr/0008-hop-dong-mqtt-backend-tu.md) → Accepted. STATUS § 0 mốc iot `c843447` → `137d945`, § 2 SEC-04, § 3 (việc lắp tủ; thêm việc bật broker riêng), § 4 mục 5, § 5; flow-1 F1.10, flow-2 F2.10/F2-G09 (verdict giữ nguyên), `architecture.md`, guide § 7, hồ sơ Pi (cảnh báo không đặt `LOCKER_ID=1`).
