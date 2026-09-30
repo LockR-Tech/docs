@@ -4,7 +4,7 @@
 |---|---|
 | **Dùng khi** | Đang đứng trước khoang điện của tủ, cần biết dây nào bắt vào cọc nào |
 | **Ảnh** | Ảnh gốc ở [`locker/`](../locker/) (toàn cảnh 2026-09-30, 12 ảnh chi tiết 2026-10-01). Ảnh có nhãn ở `img/tu01/`, sinh bằng `python scripts/annotate-tu01-photos.py` |
-| **Bản đồ chân** | [cabinet-wiring-spec § 6](cabinet-wiring-spec.md#6-bản-đồ-chân-gpio-của-pi-hardware_backendgpio) — file này chỉ thêm **vị trí thật trên tủ** |
+| **Bản đồ chân** | **Theo hướng dẫn của người làm tủ** (nhận 2026-10-01), khác mặc định trong code — [cabinet-wiring-spec § 6.1](cabinet-wiring-spec.md#61-tủ-lockr-tu01-chân-theo-người-làm-tủ). Pi đã đặt `.env` theo bản đồ này (§ 9) |
 | **Quy trình đầy đủ** | [controller-wiring-guide § 3–5](controller-wiring-guide.md#3-thứ-tự-nối-dây) |
 | **Gap** | F2-G09 |
 
@@ -53,16 +53,18 @@ Quy ước: **ô N** dùng relay `IN(N)` và là ô số N của tủ `CAB-TU01`
 |---|---|---|
 | `DC−` | 6 | GND |
 | `DC+` | 2 | 5 V nuôi cuộn relay |
-| `IN1` | 11 | GPIO17 · ô 1 |
-| `IN2` | 13 | GPIO27 · ô 2 |
-| `IN3` | 15 | GPIO22 · ô 3 |
-| `IN4` | 16 | GPIO23 · ô 4 |
-| `IN5` | 18 | GPIO24 · ô 5 |
-| `IN6` | 22 | GPIO25 · ô 6 |
-| `IN7` | 36 | GPIO16 · ô 7 |
+| `IN1` | 29 | GPIO5 · ô 1 |
+| `IN2` | 31 | GPIO6 · ô 2 |
+| `IN3` | 33 | GPIO13 · ô 3 |
+| `IN4` | 35 | GPIO19 · ô 4 |
+| `IN5` | 37 | GPIO26 · ô 5 |
+| `IN6` | 15 | GPIO22 · ô 6 |
+| `IN7` | 16 | GPIO23 · ô 7 |
 | `IN8` | — | để trống |
 
 3. Kiểm: chưa cắm 220 V, cắm USB-C cho Pi. Trong lúc Pi khởi động **không relay nào được kêu**. Relay nào kêu tách ngay là jumper kênh đó còn ở L.
+
+Người làm tủ dặn: cấp `5 V` và `GND` cho module từ Pi, rồi `IN1`–`IN7` về GPIO 5, 6, 13, 19, 26, 22, 23. Người làm tủ không nêu vị trí jumper. **GPIO5 và GPIO6 (`IN1`, `IN2`) được Pi kéo lên 3,3 V trong lúc khởi động**, trước khi `main.py` đưa chúng về mức thấp: nếu K1 hoặc K2 kêu trong khoảng đó thì dừng lại, xem § 8 mục 1.
 
 Đầu ra relay (dây xanh mảnh) nhà cung cấp đã nối sẵn tới dây âm của khoá và `−V`. Không tháo.
 
@@ -70,7 +72,9 @@ Quy ước: **ô N** dùng relay `IN(N)` và là ô số N của tủ `CAB-TU01`
 
 ![Domino 1: hàng trống phía relay và 6 cặp dây tín hiệu](img/tu01/04-domino-1.jpg)
 
-Hàng xa relay có 12 dây: nâu ở cọc chẵn, vàng ở cọc lẻ, mỗi cặp nâu + vàng là dây báo đóng/mở của một khoá. Hàng phía relay **trống**, dây về Pi bắt vào đó.
+Hàng xa relay có 12 dây: nâu ở cọc chẵn, vàng sọc xanh ở cọc lẻ, mỗi cặp nâu + vàng là dây báo đóng/mở của một khoá. Hàng phía relay **trống**, dây về Pi bắt vào đó.
+
+Người làm tủ dặn: **dây vàng sọc xanh gom chung rồi nối vào GND của Pi; dây nâu nối vào GPIO 4, 12, 16, 20, 21, 24, 25.**
 
 **Đo trước khi nối, bắt buộc:**
 
@@ -82,18 +86,19 @@ Nối dây (thứ tự ô bên dưới là dự kiến; bước 2 cho thứ tự
 
 | Cọc domino 1 (hàng trống) | Nối tới | Tín hiệu |
 |---|---|---|
-| 2 | chân 25 của Pi | GND chung |
-| 2 → 4 → 6 → 8 → 10 → 12 | 5 đoạn dây ngắn nối liền nhau | GND cho 6 cặp |
-| 1 | chân 29 | GPIO5 · cửa ô 1 |
-| 3 | chân 31 | GPIO6 · cửa ô 2 |
-| 5 | chân 32 | GPIO12 · cửa ô 3 |
-| 7 | chân 33 | GPIO13 · cửa ô 4 |
-| 9 | chân 35 | GPIO19 · cửa ô 5 |
-| 11 | chân 37 | GPIO26 · cửa ô 6 |
+| 1 (đối diện dây vàng) | chân 25 của Pi | GND chung |
+| 1 → 3 → 5 → 7 → 9 → 11 | 5 đoạn dây ngắn nối liền nhau | gom các dây vàng sọc xanh về GND |
+| 2 (đối diện dây nâu) | chân 7 | GPIO4 · cửa ô 1 |
+| 4 | chân 32 | GPIO12 · cửa ô 2 |
+| 6 | chân 36 | GPIO16 · cửa ô 3 |
+| 8 | chân 38 | GPIO20 · cửa ô 4 |
+| 10 | chân 40 | GPIO21 · cửa ô 5 |
+| 12 | chân 18 | GPIO24 · cửa ô 6 |
+| dây nâu thứ bảy | chân 22 | GPIO25 · cửa ô 7 |
 
 Không nối cọc GND chung này với `−V` của nguồn 12 V.
 
-Cặp thứ bảy: xem cọc 11–12 của domino 2 ở § 5.
+Người làm tủ nêu 7 chân GPIO cho 7 dây nâu, nhưng ảnh chỉ thấy **6 dây nâu** trên domino 1. Dây tín hiệu của khoá thứ bảy chưa xác định: hỏi lại người làm tủ, hoặc đo cặp dây vàng ở cọc 11–12 của domino 2 (§ 5).
 
 ## 5. Domino 2 và driver TB6600 — 4 dây (và cặp dây vàng)
 
@@ -120,13 +125,15 @@ Nối dây vào **phía trống** của cọc 4–7:
 | `PUL+` | 4 hoặc 7 (theo kết quả đo) | 1 — **3,3 V**, không phải 5 V |
 | `DIR+` | 6 | 17 — **3,3 V** |
 | `PUL−` | 5 | 12 — GPIO18 |
-| `DIR−` | 7 hoặc 4 | 40 — GPIO21 |
+| `DIR−` | 7 hoặc 4 | 13 — GPIO27 |
+
+Người làm tủ chưa nêu chân cho nắp trượt. GPIO21 (mặc định của `DIR−` trong code) đã dùng cho cửa ô 5 nên `DIR−` dời sang GPIO27.
 
 `ENA−`, `ENA+` trên driver để trống. Tài liệu nhà cung cấp bảo nối `PUL+`, `DIR+` vào 5 V; với Pi phải là 3,3 V ([spec § 6](cabinet-wiring-spec.md#6-bản-đồ-chân-gpio-của-pi-hardware_backendgpio)).
 
 **Cặp dây vàng ở cọc 11–12.** Đo như § 4: 0 V so với `−V`, rồi thông mạch khi đóng mở cửa ô còn lại hoặc khi bấm tay công tắc hành trình của nắp.
 
-- Là cặp tín hiệu của ô 7: cọc 11 → chân 38 (GPIO20), cọc 12 → chân 30 (GND).
+- Là cặp tín hiệu của ô 7: một cọc → chân 22 (GPIO25), cọc kia → chân 30 (GND).
 - Là công tắc hành trình: nối theo § 6.
 
 ## 6. Công tắc hành trình của nắp trượt — 4 dây
@@ -135,10 +142,10 @@ Nối dây vào **phía trống** của cọc 4–7:
 
 | Công tắc | Cọc `NO` → chân Pi | Cọc `COM` → chân Pi |
 |---|---|---|
-| Gốc (bị nhấn khi nắp **đóng** hết) | 7 — GPIO4 | 9 — GND |
+| Gốc (bị nhấn khi nắp **đóng** hết) | 11 — GPIO17 | 9 — GND |
 | Cuối (bị nhấn khi nắp **mở** hết) | 19 — GPIO10 | 14 — GND |
 
-Công tắc chỉ có cọc `NC`: vẫn nối được, đổi `LID_LIMIT_ACTIVE_LOW=false`.
+GPIO4 (mặc định của công tắc gốc trong code) đã dùng cho cửa ô 1 nên công tắc gốc dời sang GPIO17. Công tắc chỉ có cọc `NC`: vẫn nối được, đổi `LID_LIMIT_ACTIVE_LOW=false`.
 
 ## 7. Nguồn tổ ong
 
@@ -150,13 +157,30 @@ Công tắc chọn điện áp phải ở **220 V**. Không vặn biến trở `
 
 | # | Câu hỏi | Cách biết |
 |---|---|---|
-| 1 | Jumper đang ở H hay L | Đọc chữ in cạnh jumper; bước kiểm ở § 3 |
-| 2 | Cặp nào trên domino 1 thuộc ô nào | Thông mạch khi đóng mở từng cửa (§ 4) |
+| 1 | Jumper đang ở H hay L, và K1/K2 có kêu lúc Pi khởi động không (GPIO5, GPIO6 bị kéo lên) | Đọc chữ in cạnh jumper; bước kiểm ở § 3. K1/K2 kêu ⇒ thêm `gpio=5,6,13,19,26,22,23=op,dl` vào `/boot/firmware/config.txt` (chưa thử trên Pi 5 này), hoặc hỏi người làm tủ jumper đặt mức nào |
+| 2 | Cặp nào trên domino 1 thuộc ô nào; dây nâu thứ bảy ở đâu | Thông mạch khi đóng mở từng cửa (§ 4); hỏi người làm tủ |
 | 3 | Dây tín hiệu khoá có phải tiếp điểm khô | Đo điện áp so với `−V` (§ 4) |
 | 4 | Cọc 4 hay cọc 7 của domino 2 là `PUL+` | Thông mạch từ vít driver (§ 5) |
 | 5 | Cặp dây vàng ở cọc 11–12 của domino 2 là gì | Thông mạch khi đóng mở cửa hoặc bấm công tắc (§ 5) |
-| 6 | Dây hai công tắc hành trình về tới đâu | Lần dây từ ray nắp (§ 6) |
+| 6 | Dây hai công tắc hành trình về tới đâu; người làm tủ nối nắp trượt vào chân nào | Lần dây từ ray nắp (§ 6); hỏi người làm tủ |
 
-## 9. Sau khi nối
+## 9. Cấu hình trên Pi cho bản đồ chân này
+
+Bản đồ chân của người làm tủ khác mặc định trong `iot/config/settings.py`, nên `~/iot/.env` của Pi `lockr-tu01` đặt (đã áp dụng 2026-10-01, `main.py` báo `System is READY`):
+
+```
+GPIO_RELAY_PINS=5,6,13,19,26,22,23
+GPIO_DOOR_PINS=4,12,16,20,21,24,25
+LID_PUL_PIN=18
+LID_DIR_PIN=27
+LID_HOME_PIN=17
+LID_END_PIN=10
+```
+
+`ExecStopPost` của `lockr-controller.service` đổi theo: `pinctrl set 5,6,13,19,26,22,23 op dl`.
+
+**Không nối dây theo file này vào một Pi còn chạy chân mặc định.** Với chân mặc định, GPIO16, 24, 25 là ngõ ra relay và GPIO21 là ngõ ra `DIR−` ở mức cao; nối dây tín hiệu khoá vào đó thì cửa đóng sẽ chập ngõ ra xuống GND.
+
+## 10. Sau khi nối
 
 Bring-up theo [controller-wiring-guide § 5](controller-wiring-guide.md#5-kiểm-tra-từng-bước-bring-up): `debug_gpio.py pins`, `doors`, `open N`, `lid …`. Sai thứ tự ô, sai chiều nắp, relay kích ngược đều sửa bằng `.env`, không phải nối lại. Xong thì gán Pi vào tủ `CAB-TU01` trên admin (guide § 5.8) và chuyển tủ từ `MAINTENANCE` sang `ACTIVE`.

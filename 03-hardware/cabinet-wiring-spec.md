@@ -123,3 +123,42 @@ Vì sao chọn các chân này:
 1. Jumper module relay đặt **H**. Ở L, đầu vào kéo lên 5 V; GPIO 3,3 V để lại ~1,7 V trên opto nên relay không nhả hẳn.
 2. `PUL+`, `DIR+` nối **3,3 V**, không nối +5 V — cùng lý do; code phát xung mức thấp (`LID_STEP_ACTIVE_LOW=true`).
 3. **Đo dây tín hiệu khoá trước khi nối**: phải là tiếp điểm khô (thông/ngắt theo cửa, không có điện áp). Có 12 V trên cặp dây này mà nối vào GPIO là hỏng Pi.
+
+### 6.1 Tủ `lockr-tu01`: chân theo người làm tủ
+
+Ngày 2026-10-01 người làm tủ gửi hướng dẫn nối dây riêng cho tủ này. Bảng ở trên là **mặc định trong code**; tủ `lockr-tu01` nối theo người làm tủ và đặt lại chân bằng `.env`. Vị trí từng cọc trên tủ: [tu01-wiring-photos.md](tu01-wiring-photos.md).
+
+| Ô | Relay | Chân relay (người làm tủ) | Dây nâu tín hiệu khoá (người làm tủ) |
+|---|---|---|---|
+| 1 | `IN1` | GPIO5 (29) | GPIO4 (7) |
+| 2 | `IN2` | GPIO6 (31) | GPIO12 (32) |
+| 3 | `IN3` | GPIO13 (33) | GPIO16 (36) |
+| 4 | `IN4` | GPIO19 (35) | GPIO20 (38) |
+| 5 | `IN5` | GPIO26 (37) | GPIO21 (40) |
+| 6 | `IN6` | GPIO22 (15) | GPIO24 (18) |
+| 7 | `IN7` | GPIO23 (16) | GPIO25 (22) |
+
+| Tín hiệu | Nối vào | Nguồn |
+|---|---|---|
+| Relay `DC+` · `DC-` | 5 V (chân 2) · GND (chân 6) | người làm tủ: "cấp nguồn 5 V và GND từ Pi" |
+| Dây vàng sọc xanh của các khoá | gom chung → GND (chân 25) | người làm tủ |
+| TB6600 `PUL-` · `DIR-` | GPIO18 (12) · **GPIO27 (13)** | người làm tủ chưa nêu; `DIR-` dời khỏi GPIO21 vì trùng dây khoá ô 5 |
+| TB6600 `PUL+` · `DIR+` | 3,3 V (chân 1 · chân 17) | như mục 6 |
+| Công tắc hành trình gốc · cuối | **GPIO17 (11)** · GPIO10 (19), chân kia → GND (9 · 14) | người làm tủ chưa nêu; gốc dời khỏi GPIO4 vì trùng dây khoá ô 1 |
+
+```
+GPIO_RELAY_PINS=5,6,13,19,26,22,23
+GPIO_DOOR_PINS=4,12,16,20,21,24,25
+LID_PUL_PIN=18
+LID_DIR_PIN=27
+LID_HOME_PIN=17
+LID_END_PIN=10
+```
+
+Người làm tủ liệt kê chân relay theo thứ tự `IN1`→`IN7`. Bảy chân dây nâu được liệt kê tăng dần, chưa chắc là thứ tự ô; thứ tự thật lấy từ phép thử đóng mở cửa rồi sắp lại `GPIO_DOOR_PINS`.
+
+Khác với lý do chọn chân ở trên:
+
+- **GPIO5, GPIO6 (`IN1`, `IN2`) kéo lên lúc Pi khởi động.** Với jumper H, hai relay này có thể hút từ lúc cấp điện tới khi `main.py` chạy. Phải kiểm khi nối (không relay nào kêu lúc khởi động). Nếu kêu: ép mức thấp từ firmware bằng `gpio=5,6,13,19,26,22,23=op,dl` trong `/boot/firmware/config.txt` (chưa thử trên Pi 5 này), hoặc hỏi lại người làm tủ vị trí jumper.
+- Đổi `GPIO_RELAY_PINS` thì `ExecStopPost` của `lockr-controller.service` đổi theo: `pinctrl set 5,6,13,19,26,22,23 op dl`.
+- Ba chỉnh sửa vì GPIO 3,3 V (jumper H, `PUL+`/`DIR+` về 3,3 V, đo dây tín hiệu khoá trước) vẫn giữ nguyên.

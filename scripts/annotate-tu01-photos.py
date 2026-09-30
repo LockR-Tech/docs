@@ -125,10 +125,10 @@ c = Canvas('p07', (490, 440, 1430, 770), 1.48)
 top = {12: 560, 11: 625, 10: 695, 9: 768, 8: 838, 7: 905, 6: 972, 5: 1038, 4: 1100, 3: 1168, 2: 1235, 1: 1322}
 bot = {12: 548, 11: 615, 10: 690, 9: 762, 8: 838, 7: 908, 6: 975, 5: 1045, 4: 1115, 3: 1188, 2: 1260, 1: 1340}
 for n, x in top.items():
-    col = GRN if n % 2 else GRY
+    col = GRY if n % 2 else GRN      # người làm tủ: dây nâu (cọc chẵn) về GPIO, dây vàng sọc xanh (cọc lẻ) gom về GND
     c.circle(x, 536, 22, col, 5)
     c.pill(x, 492, str(n), 24, bg=col, fg=INK, anchor='mm')
-c.pill(960, 456, 'Hàng TRỐNG phía relay: dây về Pi bắt vào đây.  Xanh lá (cọc lẻ) về GPIO · xám (cọc chẵn) về GND', 22, anchor='mm')
+c.pill(960, 456, 'Hàng TRỐNG phía relay, dây về Pi bắt vào đây.  Xanh lá: cọc chẵn (dây nâu) về GPIO · xám: cọc lẻ (dây vàng) gom về GND', 21, anchor='mm')
 for o, (a, b) in zip(range(6, 0, -1), [(12, 11), (10, 9), (8, 7), (6, 5), (4, 3), (2, 1)]):
     xa, xb = bot[a], bot[b]
     c.line(xa - 14, 722, xb + 14, 722, YEL, 5); c.line(xa - 14, 722, xa - 14, 708, YEL, 5); c.line(xb + 14, 722, xb + 14, 708, YEL, 5)
