@@ -87,6 +87,8 @@ Pi ──USB──► adapter USB-RS485 ──A/B/GND──► MAX485 ──► 
 
 Làm theo thứ tự, **tắt 220 V** trong suốt các bước A–E. Mỗi bước có một phép kiểm tra trước khi sang bước sau.
 
+Tủ `lockr-tu01`: vị trí thật của từng cọc, kèm ảnh đánh nhãn, ở [tu01-wiring-photos.md](tu01-wiring-photos.md). Trên tủ này dây tín hiệu khoá và 4 dây tín hiệu driver đã được nhà cung cấp gom về hai thanh domino, nên dây từ Pi bắt vào domino chứ không bắt thẳng vào khoá hay driver.
+
 ### A. Nguồn
 
 1. Nối `L`, `N`, `GND` (tiếp địa thật) vào nguồn tổ ong. **Gạt công tắc 110/220 V về 220 V.** Chưa cắm điện.
@@ -139,7 +141,10 @@ Code: `iot/hardware/lid_controller.py` — về gốc, mở, đóng theo công t
 
 ### F. Màn cảm ứng
 
-- **HDMI + USB** (Waveshare 7inch HDMI LCD (C) của `lockr-tu01`): cáp micro-HDMI → HDMI vào cổng `HDMI0` của Pi (cạnh cổng nguồn); cáp micro-USB của màn vào một cổng USB của Pi — vừa cấp nguồn vừa truyền cảm ứng, nguồn 27 W của Pi 5 đủ nuôi; gạt công tắc **Backlight** sang ON. Màn 1024×600 khớp khung cố định của kiosk. Chưa thử trên Pi — nếu hình sai độ phân giải, xem hướng dẫn Waveshare cho Pi 5 (KMS).
+- **HDMI + USB** (Waveshare 7inch HDMI LCD (C) của `lockr-tu01`): cáp micro-HDMI → HDMI vào cổng `HDMI0` của Pi (cạnh cổng nguồn); cáp micro-USB của màn vào một cổng USB của Pi — vừa cấp nguồn vừa truyền cảm ứng, nguồn 27 W của Pi 5 đủ nuôi; gạt công tắc **Backlight** sang ON. Màn 1024×600 khớp khung cố định của kiosk. Đã thử trên Pi 2026-09-30: không cần driver, KMS đọc EDID ra 1024×600@59,85 Hz, cảm ứng nhận là `WaveShare WS170120` (`0eef:0005`), dải toạ độ đúng 1024×600.
+  - **Cắm cả hai dây trước khi bật Pi.** Cắm nóng lúc desktop đang chạy thì HDMI chập chờn vài chục lần và labwc có thể crash (sự cố ở § 6).
+  - Thêm ` video=HDMI-A-1:1024x600@60D` vào **cuối dòng** `/boot/firmware/cmdline.txt` (một dòng duy nhất): `D` ép cổng luôn "đã kết nối", đầu chuyển micro-HDMI lỏng thì labwc không bị gỡ màn hình rồi crash. Kernel log có `forcing HDMI-A-1 connector on` là đúng.
+  - Cố định đầu chuyển micro-HDMI khi lắp vào tủ — cáp dẹt nặng kéo lệch đầu chuyển là nguồn chập chờn chính.
 - **DSI (Pi Touch Display 2):** cáp DSI vào cổng `DISP`; `5V`/`GND` từ header 40 chân theo sơ đồ đi kèm màn — lưu ý header đã dùng nhiều chân cho tủ, kiểm không trùng.
 - Chưa cần xoay màn ở bước này; kiosk UI dùng bố cục ngang.
 
@@ -298,19 +303,28 @@ WantedBy=multi-user.target
    WantedBy=multi-user.target
    ```
 
-4. **Chromium toàn màn hình khi bật máy.** `~/kiosk.sh` — chờ máy khởi động xong mới mở (mở sớm trên ổ chậm thì network service của Chromium sập, trang kẹt màu xám), Chromium thoát thì mở lại:
+4. **Chromium toàn màn hình khi bật máy.** `~/kiosk.sh` — chờ máy khởi động xong mới mở (mở sớm trên ổ chậm thì network service của Chromium sập, trang kẹt màu xám), Chromium thoát thì mở lại, labwc chết thì thoát theo (không để vòng lặp mồ côi mở Chromium vô ích):
 
    ```bash
    #!/bin/bash
    URL="http://localhost:3002/"
+   LABWC_PID=$(pgrep -u "$(id -u)" -x -n labwc)
    systemctl is-system-running --wait >/dev/null 2>&1
    for i in $(seq 1 150); do curl -s -o /dev/null -m 2 "$URL" && break; sleep 2; done
    sleep 10
-   while true; do
+   while kill -0 "$LABWC_PID" 2>/dev/null; do
      /usr/bin/chromium --kiosk "$URL" --noerrdialogs --disable-infobars --no-first-run \
        --disable-session-crashed-bubble --incognito --password-store=basic --ozone-platform=wayland
      sleep 3
    done
+   ```
+
+   **Bàn phím ảo nằm trong trang kiosk** (`ui/src/components/VirtualKeyboard.jsx`), hiện khi chạm vào ô nhập. Không dùng được squeekboard của Raspberry Pi OS: labwc ẩn lớp chứa nó khi có cửa sổ toàn màn hình, nên `--kiosk` + `--enable-wayland-ime` vẫn không thấy bàn phím. Máy không có màn cảm ứng thì bàn phím không hiện; thêm `?osk=1` vào URL để ép hiện khi thử trên laptop.
+
+   **Tắt giả lập chuột của cảm ứng.** Lần đầu desktop chạy với màn cảm ứng cắm sẵn, `/usr/bin/autotouch` của Raspberry Pi OS ghi `~/.config/labwc/rc.xml` với `mouseEmulation="yes"` — mọi lần chạm tới Chromium thành click chuột (không vuốt cuộn được, trang không biết là chạm). Sửa `yes` → `no` (giữ nguyên `deviceName`, `mapToOutput`), rồi `pkill -HUP -x labwc`. autotouch thấy dòng `mouseEmulation` thì không ghi đè:
+
+   ```xml
+   <touch deviceName="WaveShare WS170120 (USB 3-1)" mapToOutput="HDMI-A-1" mouseEmulation="no"/>
    ```
 
    ```bash
@@ -323,6 +337,46 @@ WantedBy=multi-user.target
    ```
 
    Cờ `--disable-features=Translate` không có tác dụng với Chromium 153 — phải dùng policy. Tự đăng nhập chỉ chạy khi user có mật khẩu; user bị khoá mật khẩu thì LightDM hiện màn đăng nhập.
+
+5. **Tự đăng nhập lại khi labwc chết.** LightDM chỉ tự đăng nhập một lần lúc bật máy; labwc crash thì màn đăng nhập nằm đó tới lần bật sau. `/usr/local/bin/lockr-display-watchdog` (`chmod 755`):
+
+   ```bash
+   #!/bin/bash
+   USER_NAME=lockr
+   misses=0
+   while true; do
+     sleep 10
+     if systemctl is-active --quiet lightdm && ! pgrep -u "$USER_NAME" -x labwc >/dev/null; then
+       misses=$((misses + 1))
+     else
+       misses=0
+     fi
+     if [ "$misses" -ge 3 ]; then
+       echo "Không thấy labwc của $USER_NAME — khởi động lại lightdm để tự đăng nhập lại"
+       systemctl restart lightdm
+       misses=0
+       sleep 60
+     fi
+   done
+   ```
+
+   `/etc/systemd/system/lockr-display-watchdog.service`:
+
+   ```ini
+   [Unit]
+   Description=Lock.R kiosk: tự đăng nhập lại desktop khi labwc chết
+   After=lightdm.service
+
+   [Service]
+   ExecStart=/usr/local/bin/lockr-display-watchdog
+   Restart=always
+   RestartSec=10
+
+   [Install]
+   WantedBy=graphical.target
+   ```
+
+   `sudo systemctl daemon-reload && sudo systemctl enable --now lockr-display-watchdog`. Kiosk quay lại ~40 giây sau khi labwc chết. Muốn thoát ra desktop để bảo trì thì `sudo systemctl stop lockr-display-watchdog` trước.
 
 Giao diện kiosk là khung cố định **1024×600** (màn 7"); màn lớn hơn thì phần dư để trống.
 
@@ -386,6 +440,9 @@ Làm đúng thứ tự; mỗi bước xanh mới sang bước sau. Các script �
 | Kiosk trắng trang, `dist/index.html` 0 byte | Mất điện khi bản build còn trong RAM — build lại + `sync`, đặt giới hạn ghi (§ 4.6) |
 | Kiosk kẹt màu xám sau khi bật máy, log `Network service crashed` | Chromium mở lúc máy còn đang khởi động — dùng `kiosk.sh` ở § 4.5 |
 | Màn hình hiện ô đăng nhập thay vì kiosk | User chưa có mật khẩu hoặc tự đăng nhập bị tắt — `passwd`, rồi `raspi-config nonint do_boot_behaviour B4` |
+| Kiosk đang chạy tự về ô đăng nhập; `~/.xsession-errors` có `wlr_swapchain_create: Assertion 'width > 0 && height > 0'` | HDMI chập chờn làm labwc crash — `video=…@60D` (§ 3.F), `lockr-display-watchdog` (§ 4.5) |
+| Chạm được các nút nhưng không gõ được số điện thoại, email, mã OTP | Thiếu bàn phím ảo — bản UI có `VirtualKeyboard.jsx` (§ 4.5); squeekboard không hiện được trên Chromium `--kiosk` |
+| Chạm như click chuột: không vuốt cuộn được, trang nhận `pointerType=mouse` | autotouch bật `mouseEmulation="yes"` trong `~/.config/labwc/rc.xml` — đổi sang `no` (§ 4.5) |
 | Khung "Vietnamese / English" trên kiosk | Policy `TranslateEnabled: false` (§ 4.5) |
 | Pi không bao giờ đọc USB/SSD | Có thẻ nhớ trong khe — Pi 5 ưu tiên thẻ |
 | Pi lên nhưng không vào mạng, không SSH được | Customisation của Imager không được ghi — kiểm `user-data`, `network-config` (§ 4.2) |

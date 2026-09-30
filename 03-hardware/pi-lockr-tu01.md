@@ -4,7 +4,7 @@
 |---|---|
 | **Dựng ngày** | 2026-09-26 → 2026-09-27 trên USB flash; **dựng lại trên thẻ microSD 2026-09-27** (bản USB hỏng, sự cố 18) |
 | **Cách dựng chuẩn** | [controller-wiring-guide.md § 4](controller-wiring-guide.md#4-nạp-firmware-và-cấu-hình-phần-mềm) — file này chỉ ghi những gì **riêng** của máy này |
-| **Code** | `iot` tại `137d945` ([iot#8](https://github.com/LockR-Tech/iot/pull/8) GPIO, [iot#9](https://github.com/LockR-Tech/iot/pull/9) hợp đồng MQTT) |
+| **Code** | `iot` tại `f76eaaa` ([iot#8](https://github.com/LockR-Tech/iot/pull/8) GPIO, [iot#9](https://github.com/LockR-Tech/iot/pull/9) hợp đồng MQTT, [iot#10](https://github.com/LockR-Tech/iot/pull/10) bàn phím ảo kiosk) |
 | **Gap** | F2-G09 |
 
 ## 1. Trạng thái
@@ -12,12 +12,15 @@
 | Mục | Hiện tại |
 |---|---|
 | Chế độ | **GPIO** (`HARDWARE_BACKEND=gpio`, `LID_ENABLED=true`) — chưa nối dây tủ nên 7 cửa báo mở, nắp `UNKNOWN` |
-| `main.py` | `System is READY`, MQTT TLS `broker.hivemq.com:8883`, discovery `slaveId 1, 7 ngăn`, API `:8000`. Từ 22:52 chạy `137d945`: **chưa phục vụ tủ nào** (`NOT CONFIGURED`, không đặt `LOCKER_ID`) — chờ admin gán |
-| Kiosk | Chromium toàn màn hình `http://localhost:3002/`, tủ **tạm** `CAB-DEMO-01` (id 1) |
-| Khởi động | lên mạng sau ~25 giây; kiosk hiện trong khoảng 3 phút |
+| `main.py` | `System is READY`, MQTT TLS `broker.hivemq.com:8883`, discovery `slaveId 1, 7 ngăn`, API `:8000`. **Chưa phục vụ tủ nào** (`NOT CONFIGURED`, không đặt `LOCKER_ID`) — chờ nối dây xong rồi gán vào tủ `CAB-TU01` |
+| Tủ trên production | **`CAB-TU01`** "Tủ thật TU01 (7 ô)", id **7**, store 1, `MAINTENANCE`, tạo 2026-10-01. Ô 1–2 `DRONE`, ô 3 `XL`, ô 4–7 `STANDARD` (boxId 38–44) theo bố cục CAB-PROD trong `CellType.java`. Chưa gán Pi |
+| Kiosk | Chromium toàn màn hình `http://localhost:3002/` trên màn Waveshare (lắp 2026-09-30), vẫn trỏ **tạm** `CAB-DEMO-01` (id 1). Cảm ứng + bàn phím ảo trong trang chạy được mọi màn hình |
+| Khởi động | lên mạng sau ~25 giây; kiosk hiện sau ~1,5 phút |
 | Hệ điều hành | khoẻ, cập nhật được bằng `apt` bình thường |
 
-Kiểm lần cuối 2026-09-27 21:12 sau khi dựng lại trên thẻ: khởi động lại → `lockr-controller`, `lockr-kiosk`, PostgreSQL tự chạy, hệ thống `running`, `GPIO hardware initialized (lid: on)`, kiosk hiện dữ liệu thật của `CAB-DEMO-01`; `POST /hardware/lid/*` từ máy khác trong LAN bị chặn 403.
+Kiểm 2026-09-30 22:42 sau khi lắp màn và khởi động lại: kernel `forcing HDMI-A-1 connector on`, 1024×600, cảm ứng nhận từ lúc khởi động, `lockr-controller`, `lockr-kiosk`, `lockr-display-watchdog`, PostgreSQL `active`, kiosk hiện sau ~1,5 phút; chạm thử (thiết bị cảm ứng ảo qua `uinput`) mọi nút trang chủ, ô chọn tủ, gõ OTP/số điện thoại/email bằng bàn phím ảo đều chạy.
+
+Kiểm 2026-09-27 21:12 sau khi dựng lại trên thẻ: khởi động lại → `lockr-controller`, `lockr-kiosk`, PostgreSQL tự chạy, hệ thống `running`, `GPIO hardware initialized (lid: on)`, kiosk hiện dữ liệu thật của `CAB-DEMO-01`; `POST /hardware/lid/*` từ máy khác trong LAN bị chặn 403.
 
 ## 2. Truy cập
 
@@ -27,7 +30,7 @@ Kiểm lần cuối 2026-09-27 21:12 sau khi dựng lại trên thẻ: khởi đ
 | User | `lockr`, `sudo` không hỏi mật khẩu |
 | Mật khẩu user, mật khẩu PostgreSQL, Wi-Fi | **Lưu ngoài git** — hỏi chủ dự án (giữ nguyên khi dựng lại trên thẻ) |
 | SSH không mật khẩu | Khoá của laptop người dựng (cloud-init `ssh_authorized_keys`) |
-| Mạng | Wi-Fi tạm 2.4 GHz của người dựng, IP DHCP. Tủ thật cần mạng riêng (LAN hoặc router 4G) |
+| Mạng | Wi-Fi, IP DHCP. Tủ chuyển chỗ 2026-10-01: tạm bắt điểm phát từ laptop người dựng (đặt trùng tên và mật khẩu Wi-Fi cũ), Pi ở `192.168.137.167`. Tủ thật cần mạng riêng (LAN hoặc router 4G); thêm Wi-Fi mới: `sudo nmcli device wifi connect "<tên>" password "<mật khẩu>"` |
 | MAC `wlan0` / `eth0` | `2C:CF:67:DB:C5:C3` (ghim làm `MAC_ADDRESS`) / `2C:CF:67:DB:C5:C2` |
 
 ## 3. Phần cứng
@@ -39,7 +42,7 @@ Kiểm lần cuối 2026-09-27 21:12 sau khi dựng lại trên thẻ: khởi đ
 | Ổ hệ thống | **Thẻ microSD SanDisk Ultra 64 GB** (58 GB sau khi nới phân vùng); 200 lần ghi đồng bộ file nhỏ mất 1,5 s |
 | USB flash 32 GB cũ | đã rút ra, cất làm dự phòng — bản cài trên đó hỏng cơ sở dữ liệu gói (sự cố 18). **Không cắm lại cùng lúc với thẻ**: hai ổ ghi từ cùng một image |
 | Bootloader | 2026-09-12 (cập nhật từ 2025-11-05; lưu trong EEPROM nên giữ nguyên khi đổi ổ) |
-| Màn hình | **Waveshare 7inch HDMI LCD (C) Rev 4.1** — 1024×600, cảm ứng điện dung qua USB, cổng HDMI thường + micro-USB (nguồn + cảm ứng), công tắc Backlight. Chưa lắp; cần cáp micro-HDMI → HDMI |
+| Màn hình | **Waveshare 7inch HDMI LCD (C) Rev 4.1** — 1024×600, cảm ứng điện dung qua USB, cổng HDMI thường + micro-USB (nguồn + cảm ứng), công tắc Backlight. **Đã lắp 2026-09-30**: `HDMI0` (`HDMI-A-1`) qua đầu chuyển micro-HDMI, 1024×600@59,85 Hz từ EDID; cảm ứng `WaveShare WS170120` (`0eef:0005`) ở cổng USB, nguồn không sụt (`throttled=0x0`) |
 
 Linh kiện tủ quan sát qua ảnh 2026-09-26 (chưa nối vào Pi): module relay 8 kênh cuộn 5 V (`SRD-05VDC-SL-C`), có opto, jumper chọn kích H/L, ngõ vào cọc vít `DC+ DC− IN1…IN8` — **khác loại `JD-VCC`** mà [§ 3.B](controller-wiring-guide.md#b-relay-và-khoá) giả định; driver TB6600 (9–42 VDC); nguồn tổ ong có công tắc 110/220 V; cầu đấu TB-2512L. Tủ dùng **GPIO trực tiếp** ([ADR-0007](../adr/0007-tu-nam-viet-pi-dieu-khien-gpio-truc-tiep.md)) — không cần Arduino, MAX485, adapter USB-RS485.
 
@@ -60,6 +63,7 @@ Linh kiện tủ quan sát qua ảnh 2026-09-26 (chưa nối vào Pi): module re
 | `lockr-kiosk` | `vite preview` bản build kiosk | `127.0.0.1:3002` |
 | `postgresql` | database `iot_locker` | `127.0.0.1:5432` |
 | phiên desktop | `~/kiosk.sh` → Chromium kiosk | — |
+| `lockr-display-watchdog` | phiên desktop mất labwc ~30 giây → `systemctl restart lightdm` để tự đăng nhập lại | — |
 
 ## 5. Cách dựng lại trên thẻ microSD (2026-09-27)
 
@@ -78,11 +82,13 @@ Ngoài các bước ở [controller-wiring-guide § 4](controller-wiring-guide.m
 | `~/iot/ui/.env.local` | `VITE_API_URL=` (trống), `VITE_LOCAL_API_URL=http://localhost:8000`, `VITE_LOCKER_ID=1`, `VITE_LOCKER_CODE=CAB-DEMO-01`, bộ `VITE_FIREBASE_*` |
 | `lockr-controller.service` | `ExecStopPost=/usr/bin/pinctrl set 17,27,22,23,24,25,16 op dl` — ngắt mọi relay khi dịch vụ dừng/chết |
 | `/etc/sysctl.d/90-lockr-dirty-limits.conf` | `vm.dirty_background_bytes=4194304`, `vm.dirty_bytes=16777216` |
-| `/root/pi-setup.sh` | script đã dùng để dựng (không chứa mật khẩu) — chạy lại được |
+| `~/.config/labwc/rc.xml` | `<touch deviceName="WaveShare WS170120 (USB 3-1)" mapToOutput="HDMI-A-1" mouseEmulation="no"/>` |
+| `/boot/firmware/cmdline.txt` | thêm `video=HDMI-A-1:1024x600@60D` (bản gốc: `cmdline.txt.bak-20260930`) |
+| `/root/pi-setup.sh` | script đã dùng để dựng (không chứa mật khẩu) — chạy lại được; **chưa có** các bước 2026-09-30 (`kiosk.sh` mới, watchdog, `cmdline.txt`, `rc.xml`) |
 
 ## 7. Sự cố đã gặp
 
-Sự cố 1–18 xảy ra trên bản cài USB flash đầu tiên; 19–21 khi dựng lại trên thẻ.
+Sự cố 1–18 xảy ra trên bản cài USB flash đầu tiên; 19–21 khi dựng lại trên thẻ; 22–25 khi lắp màn hình.
 
 | # | Hiện tượng | Nguyên nhân | Đã xử lý |
 |---|---|---|---|
@@ -107,6 +113,10 @@ Sự cố 1–18 xảy ra trên bản cài USB flash đầu tiên; 19–21 khi d
 | 19 | Ngay sau khi ghi thẻ, Windows báo một phân vùng FAT16 60 GB, `bootfs` thiếu `issue.txt` | Windows chưa đọc lại bảng phân vùng | Đợi vài giây tới khi hiện đúng 2 phân vùng rồi mới ghi file vào `bootfs` |
 | 20 | `rpi-imager.exe --cli` báo "requires elevation" | Imager trên Windows luôn cần quyền admin | Chạy qua `Start-Process -Verb RunAs`, người dùng bấm Yes |
 | 21 | Lần khởi động đầu sau khi bật journal vĩnh viễn không được lưu | Đổi cấu hình journald nhưng không `journalctl --flush` | Từ lần khởi động sau lưu bình thường |
+| 22 | Kiosk tự về ô đăng nhập ~10 phút sau khi cắm màn | Màn cắm nóng: HDMI chập chờn nhiều lần, rồi labwc 0.20.1 crash `wlr_swapchain_create: Assertion 'width > 0 && height > 0'` khi tắt output `HDMI-A-1` không được. LightDM không tự đăng nhập lại; `kiosk.sh` cũ vẫn lặp mở Chromium vào compositor đã chết | `video=HDMI-A-1:1024x600@60D`, `lockr-display-watchdog`, `kiosk.sh` thoát theo labwc ([guide § 4.5](controller-wiring-guide.md#45-kiosk-trên-pi)). Thử `kill -ABRT` labwc: kiosk tự lên lại sau ~40 giây |
+| 23 | Chạm vào thẻ trang chủ được, nhưng không gõ được mã OTP, số điện thoại, email | Không có bàn phím. squeekboard có chạy và báo `Visible`, nhưng labwc ẩn lớp `top` của nó khi có cửa sổ toàn màn hình — thêm `--enable-wayland-ime` cũng không hiện | Bàn phím ảo trong trang `ui/src/components/VirtualKeyboard.jsx` |
+| 24 | Trang chủ: ô chọn tủ bị cắt mép trên, thẻ "Gửi Đồ / Thuê Tủ" bị cắt mép dưới | Cột phải cao ~650 px, khung chỉ 548 px; `justify-content: center` đẩy phần thừa ra cả hai đầu | Thu gọn khoảng cách, `justify-content: safe center` |
+| 25 | Bàn phím ảo không hiện khi chạm bằng tay (chạm ảo qua `uinput` thì hiện) | `autotouch` của Raspberry Pi OS tự ghi `~/.config/labwc/rc.xml` với `mouseEmulation="yes"` cho `WaveShare WS170120 (USB 3-1)` lúc desktop khởi động có màn cắm sẵn — labwc đổi chạm thành click chuột; log trong trang (DevTools) toàn `pointerdown mouse`. Thiết bị ảo tên khác nên không dính | `mouseEmulation="no"` (bản cũ `rc.xml.bak-20260930`); bàn phím hiện theo `navigator.maxTouchPoints > 0`. Kiểm bằng tay 23:08: `pointerdown touch` → `osk SHOWN`, gõ được |
 
 ## 8. Vận hành
 
@@ -125,9 +135,11 @@ Sự cố 1–18 xảy ra trên bản cài USB flash đầu tiên; 19–21 khi d
 
 | Việc | Vì sao |
 |---|---|
-| Nối dây theo [spec § 6](cabinet-wiring-spec.md#6-bản-đồ-chân-gpio-của-pi-hardware_backendgpio) và [guide § 3](controller-wiring-guide.md#3-thứ-tự-nối-dây) (jumper relay **H**, `PUL+`/`DIR+` về **3,3 V**, đo dây tín hiệu khoá trước), bring-up theo guide § 5 | Code GPIO đã thử trên chip thật nhưng chưa có phần cứng tủ nối vào |
-| Lắp màn Waveshare (C): cáp micro-HDMI → HDMI vào `HDMI0`, micro-USB của màn vào USB của Pi, Backlight ON | Kiosk mới kiểm qua ảnh chụp màn hình ảo |
-| Tạo tủ riêng cho tủ 7 ngăn trên admin (ô số 1–7), đổi `VITE_LOCKER_ID` của kiosk | Đang trỏ tạm `CAB-DEMO-01` (10 ô) |
-| Nối dây xong: gán Pi vào tủ 7 ô trên admin ([guide § 5.8](controller-wiring-guide.md#5-kiểm-tra-từng-bước-bring-up)). **Không** đặt `LOCKER_ID=1` — tủ #1 `CAB-DEMO-01` do giả lập demo trả lời, hai bên cùng trả lời thì demo lỗi | Code hợp đồng MQTT đã có trên Pi (`137d945`, [ADR-0008](../adr/0008-hop-dong-mqtt-backend-tu.md)) |
+| Nối dây theo [hướng dẫn có ảnh](tu01-wiring-photos.md) (jumper relay **H**, `PUL+`/`DIR+` về **3,3 V**, đo dây tín hiệu khoá trước; 6 điểm ảnh chưa trả lời được ở § 8 của hướng dẫn), bring-up theo guide § 5 | Code GPIO đã thử trên chip thật nhưng chưa có phần cứng tủ nối vào |
+| Lắp màn vào tủ, cố định đầu chuyển micro-HDMI | Đầu chuyển lỏng làm HDMI chập chờn (sự cố 22) |
+| Cân nhắc ẩn ô chọn tủ trên kiosk thật | Khách đứng trước tủ chọn được tủ khác trong danh sách |
+| Đổi kiosk sang tủ thật: `VITE_LOCKER_ID=7`, `VITE_LOCKER_CODE=CAB-TU01` trong `~/iot/ui/.env.local`, build lại | Tủ `CAB-TU01` đã tạo 2026-10-01; kiosk còn trỏ tạm `CAB-DEMO-01` (10 ô) |
+| Thêm Wi-Fi cố định của chỗ đặt tủ mới | Pi đang sống nhờ điểm phát từ laptop |
+| Nối dây xong: gán Pi vào tủ `CAB-TU01` (id 7) trên admin ([guide § 5.8](controller-wiring-guide.md#5-kiểm-tra-từng-bước-bring-up)), rồi chuyển tủ từ `MAINTENANCE` sang `ACTIVE`. **Không** đặt `LOCKER_ID=1` — tủ #1 `CAB-DEMO-01` do giả lập demo trả lời, hai bên cùng trả lời thì demo lỗi | Code hợp đồng MQTT đã có trên Pi (`137d945`, [ADR-0008](../adr/0008-hop-dong-mqtt-backend-tu.md)) |
 | Chuyển sang broker riêng: cấp tài khoản `2CCF67DBC5C3` bằng `mqtt-device.sh`, đổi 5 biến `MQTT_*` trong `~/iot/.env` | SEC-04 — [mqtt-contract § 6](../01-overview/mqtt-contract.md#6-bật-broker-riêng-trên-vm) |
 | Đặt tủ trong mạng riêng | Cổng `:8000` không xác thực, có `/setup/clear`, `/test/open-otp` |
