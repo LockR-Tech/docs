@@ -53,6 +53,7 @@ Mọi con số bên dưới đúng với các commit này. Trước khi tin STAT
 
 | Việc | Gap | Người/nhánh | Trạng thái |
 |---|---|---|---|
+| Theo dõi hành trình drone cho khách / điều phối viên / admin (đủ field, mốc giờ, nhật ký mới nhất trước, tự làm mới), trang web `/admin/drone-orders`, thông báo chặng giao mở đúng màn | F1-G07 · F1-G10 | nhánh `feat/f1-g07-live-drone-tracking` (backend, mobile, frontend, docs) | Code + test xong cục bộ: order-service 72 test xanh, api-gateway 30 test xanh, mobile test drone/thông báo/điều phối xanh, web `tsc` + eslint sạch; **chưa commit/merge/deploy**, chưa chạy thử trên thiết bị. Còn: vị trí thật + live map |
 | Bước nạp hàng drone bắt buộc trước launch | F1-G08 | Codex · local `main` backend/mobile | Code + migration + test đã xong; backend 104 test xanh, mobile 50 test xanh, analyzer sạch; **chưa commit/merge/deploy** |
 | L4 trợ lý RAG lên chạy thật: nạp khoá, seed tài liệu, chạy bộ đánh giá, chỉnh ngưỡng | F4-G09 | Chủ dự án | Code đã deploy; chờ `ANTHROPIC_API_KEY`, `EMBEDDING_API_KEY` trên VM ([runbook § 11b](04-engineering/cau-hinh-dich-vu-ngoai.md)) rồi chạy `backend/scripts/seed-knowledge.sh` |
 | Kiểm dữ liệu production bị lỗi thuê ô trước backend #20: đơn RENTAL bị COMPLETED sớm từ 2026-09-17, đơn INITIALIZED chưa trả tiền (giờ bị chặn mở ô), đơn thuê STORING quá hạn | F2-G01 | Chủ dự án | Chưa chạy truy vấn |
