@@ -4,8 +4,8 @@
 
 | | |
 |---|---|
-| **Cập nhật lần cuối** | 2026-10-01 |
-| **Người cập nhật** | Claude Code — 2026-10-01: màn cảm ứng tủ thật chạy được, bàn phím ảo kiosk ([iot#10](https://github.com/LockR-Tech/iot/pull/10)) đã merge, tủ `CAB-TU01` (id 7) đã tạo trên production, hướng dẫn nối dây theo ảnh. Trước đó 2026-09-27: hợp đồng MQTT backend ↔ tủ ([ADR-0008](adr/0008-hop-dong-mqtt-backend-tu.md), F2-G09 + SEC-04): iot#9, backend#33, frontend#22 **đã merge và deploy 2026-09-27** (chủ dự án duyệt, không chờ review nhóm); Pi `lockr-tu01` chạy `137d945`. Trước đó 2026-09-25 Codex hoàn thiện cục bộ F1-G08 (nạp hàng drone bắt buộc trước launch) — **F1-G08 chưa merge/deploy** |
+| **Cập nhật lần cuối** | 2026-10-02 |
+| **Người cập nhật** | Antigravity — 2026-10-02: mobile hoàn thiện xử lý sự cố ô tủ kỹ thuật và hồ sơ điều chuyển ô an toàn trên chi tiết đơn hàng (nhánh `feat/incident-box-relocation-order-detail`). Trước đó 2026-10-01: màn cảm ứng tủ thật chạy được, bàn phím ảo kiosk ([iot#10](https://github.com/LockR-Tech/iot/pull/10)) đã merge, tủ `CAB-TU01` (id 7) đã tạo trên production, hướng dẫn nối dây theo ảnh. |
 | **Tổng tiến độ 4 luồng** | **69,7 %** |
 
 ## 0. Mốc code đã rà soát
@@ -16,7 +16,7 @@ Mọi con số bên dưới đúng với các commit này. Trước khi tin STAT
 |---|---|---|
 | [backend](https://github.com/LockR-Tech/backend) | `0bd047d` + F1-G08 local | `main` |
 | [frontend](https://github.com/LockR-Tech/frontend) | `612912d` | `main` |
-| [mobile](https://github.com/LockR-Tech/mobile) | `d717b76` + F1-G08 local | `main` |
+| [mobile](https://github.com/LockR-Tech/mobile) | `a1eab45` | `feat/incident-box-relocation-order-detail` |
 | [iot](https://github.com/LockR-Tech/iot) | `f76eaaa` | `main` |
 | [legal](https://github.com/LockR-Tech/legal) | `87ad342` | `main` |
 
@@ -95,6 +95,7 @@ Cách lấy và nạp: [cau-hinh-dich-vu-ngoai.md](04-engineering/cau-hinh-dich-
 
 | Ngày | Việc | Liên kết |
 |---|---|---|
+| 2026-10-02 | **Mobile: Khắc phục sự cố gán nhầm đơn hàng & hồ sơ điều chuyển ô an toàn.** Khắc phục lỗi gán nhầm phiếu sự cố ô tủ đang xử lý vào đơn hàng đã hủy (`CANCELED`) hoặc hoàn tất (`COMPLETED`); nhận diện mã đơn từ log KTV điều chuyển ô (`[ĐIỀU CHUYỂN Ô] ... sang ô #X`); bổ sung thẻ hồ sơ điều chuyển ô (`_OrderRelocationCard`) hiển thị ô cũ, PIN cũ đã vô hiệu hóa, ô mới, PIN mới đang kích hoạt, mốc thời gian KTV mở ô cũ và hoàn tất chuyển ô, ảnh minh chứng hiện trường của KTV kèm nút xem trực tiếp biên bản sự cố. | mobile [a1eab45](https://github.com/LockR-Tech/mobile/commit/a1eab45) · [PR mobile](https://github.com/LockR-Tech/mobile/pull/new/feat/incident-box-relocation-order-detail) |
 | 2026-10-01 | **Tủ thật: màn cảm ứng, bàn phím ảo kiosk, tủ `CAB-TU01`, hướng dẫn nối dây theo ảnh.** Lắp màn Waveshare 7" lên Pi lộ 4 lỗi: labwc crash khi HDMI chập chờn (ép cổng `video=…D` + watchdog tự đăng nhập lại), không có bàn phím (squeekboard bị cửa sổ `--kiosk` che ⇒ bàn phím ảo trong trang), trang chủ tràn khung 1024×600, và `autotouch` của Raspberry Pi OS biến chạm thành click chuột (`mouseEmulation="no"`). Tạo tủ `CAB-TU01` (id 7, 7 ô, `MAINTENANCE`) trên production. Ảnh khoang điện đánh nhãn từng cọc; dây từ Pi bắt vào hai thanh domino. Không đổi verdict/%: tủ chưa nối dây. | [iot#10](https://github.com/LockR-Tech/iot/pull/10) · [nối dây theo ảnh](03-hardware/tu01-wiring-photos.md) · [hồ sơ Pi](03-hardware/pi-lockr-tu01.md) |
 | 2026-09-29 | **Trang đăng nhập admin thiết kế lại theo Lock.R.** Bỏ nội dung giặt ủi cũ (LockerWash, ảnh máy giặt) và tab đăng nhập Partner; chỉ còn email + mật khẩu → OTP 2FA. Minh hoạ tủ + drone, chuỗi i18n en/vi/ja, bỏ link "Quên mật khẩu?" trỏ route không tồn tại. Trang và API `/partner/*` vẫn còn trong code. | [frontend#24](https://github.com/LockR-Tech/frontend/pull/24) |
 | 2026-09-27 | **Hợp đồng MQTT backend ↔ tủ, đã merge và deploy.** Trước đó lệnh mở của backend bị Pi bỏ qua (thiếu `slotIndex`, topic theo tên tủ) nên app chưa mở được tủ thật. Nay topic `cabinet/{lockerId}`, lệnh mang `boxId` + `slotIndex = boxNumber − 1`; admin gán Pi vào tủ bằng MAC (bảng `gateway_devices`, Flyway iot `V5`, khung **Bộ điều khiển tủ** trên trang sơ đồ tủ) và Pi mở thử từng ô; trạng thái cửa `OPEN/CLOSED` về đúng ô. Sửa kèm: Pi mất subscription khi rớt mạng, không tự nối nếu mạng chưa lên, tự gửi lệnh close cho chính mình; backend ghi nhầm ô trạng thái cửa, không thử nối lại khi broker chưa lên. Broker Mosquitto riêng (tài khoản + ACL theo tủ, `wss` qua Nginx) có sẵn nhưng **chưa bật**. Test: Pi 37, iot-service 38, chạy thử đầu-cuối trên Docker; backend deploy 16:03 UTC xanh, frontend deploy xanh, Pi cập nhật 23:03. Merge theo quyết định chủ dự án, không chờ review nhóm. Verdict F2.10 giữ PARTIAL (broker, sự kiện cửa → vòng đời). | [iot#9](https://github.com/LockR-Tech/iot/pull/9) · [backend#33](https://github.com/LockR-Tech/backend/pull/33) · [frontend#22](https://github.com/LockR-Tech/frontend/pull/22) · docs [#35](https://github.com/LockR-Tech/docs/pull/35) · [ADR-0008](adr/0008-hop-dong-mqtt-backend-tu.md) · [mqtt-contract](01-overview/mqtt-contract.md) |

@@ -2,6 +2,10 @@
 
 Mỗi thay đổi ở repo docs thêm **một dòng** vào ngày tương ứng (mới nhất ở trên). Ghi mã gap/SEC/ADR nếu có.
 
+## 2026-10-02
+
+- Mobile · L3 (xử lý sự cố ô tủ & điều chuyển ô): khắc phục lỗi gán nhầm phiếu sự cố ô tủ đang mở vào các đơn hàng đã hủy (`CANCELED`) hoặc hoàn tất (`COMPLETED`) trong quá khứ; bổ sung cơ chế liên kết phiếu sự cố theo mã đơn `orderCode` và tự động nhận diện đơn đích khi KTV thực hiện `[ĐIỀU CHUYỂN Ô] ... sang ô #X`; bổ sung hồ sơ điều chuyển ô an toàn trong chi tiết đơn hàng (`_OrderRelocationCard`), gồm ô ban đầu, mã PIN cũ đã vô hiệu hoá, ô mới tiếp nhận, mốc thời gian KTV mở ô cũ kiểm tra hiện trường, mốc thời gian hoàn tất chuyển ô, mã PIN mở ô mới đang kích hoạt, ảnh KTV chụp minh chứng và nút mở trực tiếp phiếu sự cố.
+
 ## 2026-10-01
 
 - F1-G01 (một phần) · F1-G03 · F1-G04 (một phần) · F1-G07 · F1-G09 (local, chưa merge): đơn drone STANDARD được điều phối viên xác nhận từng chặng (`…/advance`), chặng cuối đặt ô nhận OCCUPIED; đơn DEMO phát vị trí nội suy lên STOMP và app bật bản đồ trực tiếp; huỷ đơn drone đã PAID hoàn về ví (`payment-service` thêm `/internal/payments/orders/{id}/refund`); người nhận khác người đặt. flow-1 thêm mục "Cập nhật 2026-10-01"; `drone-mission.mmd` D5–D9, `drone-status.mmd` T4 + PDF; `architecture.md` § 6. Verdict và % giữ nguyên, chờ nghiệm thu.
