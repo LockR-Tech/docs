@@ -143,7 +143,7 @@ Code: `iot/hardware/lid_controller.py` — về gốc, mở, đóng theo công t
 
 - **HDMI + USB** (Waveshare 7inch HDMI LCD (C) của `lockr-tu01`): cáp micro-HDMI → HDMI vào cổng `HDMI0` của Pi (cạnh cổng nguồn); cáp micro-USB của màn vào một cổng USB của Pi — vừa cấp nguồn vừa truyền cảm ứng, nguồn 27 W của Pi 5 đủ nuôi; gạt công tắc **Backlight** sang ON. Màn 1024×600 khớp khung cố định của kiosk. Đã thử trên Pi 2026-09-30: không cần driver, KMS đọc EDID ra 1024×600@59,85 Hz, cảm ứng nhận là `WaveShare WS170120` (`0eef:0005`), dải toạ độ đúng 1024×600.
   - **Cắm cả hai dây trước khi bật Pi.** Cắm nóng lúc desktop đang chạy thì HDMI chập chờn vài chục lần và labwc có thể crash (sự cố ở § 6).
-  - Thêm ` video=HDMI-A-1:1024x600@60D` vào **cuối dòng** `/boot/firmware/cmdline.txt` (một dòng duy nhất): `D` ép cổng luôn "đã kết nối", đầu chuyển micro-HDMI lỏng thì labwc không bị gỡ màn hình rồi crash. Kernel log có `forcing HDMI-A-1 connector on` là đúng.
+  - Thêm ` video=HDMI-A-1:1024x600@60D` vào **cuối dòng** `/boot/firmware/cmdline.txt` (một dòng duy nhất): `D` ép cổng luôn "đã kết nối", đầu chuyển micro-HDMI lỏng thì labwc không bị gỡ màn hình rồi crash. Kernel log có `forcing HDMI-A-1 connector on` là đúng. Đi kèm bắt buộc: `~/.config/kanshi/config` với `profile kiosk { output HDMI-A-1 enable mode 1024x600 position 0,0 }` — màn lấy nguồn từ USB của Pi nên khi bật nguội Pi chưa đọc được EDID, cổng đã bị ép thì không dò lại, và labwc sẽ chọn 1024×768.
   - Cố định đầu chuyển micro-HDMI khi lắp vào tủ — cáp dẹt nặng kéo lệch đầu chuyển là nguồn chập chờn chính.
 - **DSI (Pi Touch Display 2):** cáp DSI vào cổng `DISP`; `5V`/`GND` từ header 40 chân theo sơ đồ đi kèm màn — lưu ý header đã dùng nhiều chân cho tủ, kiểm không trùng.
 - Chưa cần xoay màn ở bước này; kiosk UI dùng bố cục ngang.
@@ -442,6 +442,7 @@ Làm đúng thứ tự; mỗi bước xanh mới sang bước sau. Các script �
 | Màn hình hiện ô đăng nhập thay vì kiosk | User chưa có mật khẩu hoặc tự đăng nhập bị tắt — `passwd`, rồi `raspi-config nonint do_boot_behaviour B4` |
 | Kiosk đang chạy tự về ô đăng nhập; `~/.xsession-errors` có `wlr_swapchain_create: Assertion 'width > 0 && height > 0'` | HDMI chập chờn làm labwc crash — `video=…@60D` (§ 3.F), `lockr-display-watchdog` (§ 4.5) |
 | Chạm được các nút nhưng không gõ được số điện thoại, email, mã OTP | Thiếu bàn phím ảo — bản UI có `VirtualKeyboard.jsx` (§ 4.5); squeekboard không hiện được trên Chromium `--kiosk` |
+| Hình ra 1024×768, kiosk chỉ chiếm phần trên màn | Bật nguội không đọc được EDID khi cổng bị ép — đặt `mode 1024x600` trong kanshi (§ 3.F) |
 | Chạm như click chuột: không vuốt cuộn được, trang nhận `pointerType=mouse` | autotouch bật `mouseEmulation="yes"` trong `~/.config/labwc/rc.xml` — đổi sang `no` (§ 4.5) |
 | Khung "Vietnamese / English" trên kiosk | Policy `TranslateEnabled: false` (§ 4.5) |
 | Pi không bao giờ đọc USB/SSD | Có thẻ nhớ trong khe — Pi 5 ưu tiên thẻ |

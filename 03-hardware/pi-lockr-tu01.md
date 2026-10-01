@@ -14,7 +14,7 @@
 | Chế độ | **GPIO** (`HARDWARE_BACKEND=gpio`, `LID_ENABLED=true`) — chưa nối dây tủ nên 7 cửa báo mở, nắp `UNKNOWN` |
 | `main.py` | `System is READY`, MQTT TLS `broker.hivemq.com:8883`, discovery `slaveId 1, 7 ngăn`, API `:8000`. **Chưa phục vụ tủ nào** (`NOT CONFIGURED`, không đặt `LOCKER_ID`) — chờ nối dây xong rồi gán vào tủ `CAB-TU01` |
 | Tủ trên production | **`CAB-TU01`** "Tủ thật TU01 (7 ô)", id **7**, store 1, `MAINTENANCE`, tạo 2026-10-01. Ô 1–2 `DRONE`, ô 3 `XL`, ô 4–7 `STANDARD` (boxId 38–44) theo bố cục CAB-PROD trong `CellType.java`. Chưa gán Pi |
-| Kiosk | Chromium toàn màn hình `http://localhost:3002/` trên màn Waveshare (lắp 2026-09-30), vẫn trỏ **tạm** `CAB-DEMO-01` (id 1). Cảm ứng + bàn phím ảo trong trang chạy được mọi màn hình |
+| Kiosk | Chromium toàn màn hình `http://localhost:3002/` trên màn Waveshare (lắp 2026-09-30), từ 2026-10-01 trỏ vào tủ thật **`CAB-TU01`** (id 7). Cảm ứng + bàn phím ảo trong trang chạy được mọi màn hình. Tủ còn `MAINTENANCE` và chưa gán Pi nên kiosk hiện "0 Trống / 7 ô", mở tủ chưa chạy |
 | Khởi động | lên mạng sau ~25 giây; kiosk hiện sau ~1,5 phút |
 | Hệ điều hành | khoẻ, cập nhật được bằng `apt` bình thường |
 
@@ -79,16 +79,17 @@ Ngoài các bước ở [controller-wiring-guide § 4](controller-wiring-guide.m
 | Mục | Giá trị |
 |---|---|
 | `~/iot/.env` | `HARDWARE_BACKEND=gpio`, `LID_ENABLED=true`, `SERIAL_PORT=AUTO` (không dùng), `MAC_ADDRESS=2C:CF:67:DB:C5:C3`, `MQTT_BROKER=broker.hivemq.com`, `BACKEND_API_URL=https://api.locker-drone.tech`, `POSTGRES_*`. Từ 2026-10-01 thêm chân theo người làm tủ ([spec § 6.1](cabinet-wiring-spec.md#61-tủ-lockr-tu01-chân-theo-người-làm-tủ)): `GPIO_RELAY_PINS=5,6,13,19,26,22,23`, `GPIO_DOOR_PINS=4,12,16,20,21,24,25`, `LID_PUL_PIN=18`, `LID_DIR_PIN=27`, `LID_HOME_PIN=17`, `LID_END_PIN=10` (bản cũ `.env.bak-20261001-pins`) |
-| `~/iot/ui/.env.local` | `VITE_API_URL=` (trống), `VITE_LOCAL_API_URL=http://localhost:8000`, `VITE_LOCKER_ID=1`, `VITE_LOCKER_CODE=CAB-DEMO-01`, bộ `VITE_FIREBASE_*` |
+| `~/iot/ui/.env.local` | `VITE_API_URL=` (trống), `VITE_LOCAL_API_URL=http://localhost:8000`, `VITE_LOCKER_ID=7`, `VITE_LOCKER_CODE=CAB-TU01` (trước 2026-10-01: tủ demo id 1), bộ `VITE_FIREBASE_*` |
 | `lockr-controller.service` | `ExecStopPost=/usr/bin/pinctrl set 5,6,13,19,26,22,23 op dl` — ngắt mọi relay khi dịch vụ dừng/chết; danh sách chân theo `GPIO_RELAY_PINS` (bản cũ `.service.bak-20261001`) |
 | `/etc/sysctl.d/90-lockr-dirty-limits.conf` | `vm.dirty_background_bytes=4194304`, `vm.dirty_bytes=16777216` |
+| `~/.config/kanshi/config` | `profile kiosk { output HDMI-A-1 enable mode 1024x600 position 0,0 }` — giữ 1024×600 cả khi không đọc được EDID (sự cố 26) |
 | `~/.config/labwc/rc.xml` | `<touch deviceName="WaveShare WS170120 (USB 3-1)" mapToOutput="HDMI-A-1" mouseEmulation="no"/>` |
 | `/boot/firmware/cmdline.txt` | thêm `video=HDMI-A-1:1024x600@60D` (bản gốc: `cmdline.txt.bak-20260930`) |
 | `/root/pi-setup.sh` | script đã dùng để dựng (không chứa mật khẩu) — chạy lại được; **chưa có** các bước 2026-09-30 (`kiosk.sh` mới, watchdog, `cmdline.txt`, `rc.xml`) |
 
 ## 7. Sự cố đã gặp
 
-Sự cố 1–18 xảy ra trên bản cài USB flash đầu tiên; 19–21 khi dựng lại trên thẻ; 22–25 khi lắp màn hình.
+Sự cố 1–18 xảy ra trên bản cài USB flash đầu tiên; 19–21 khi dựng lại trên thẻ; 22–26 khi lắp màn hình.
 
 | # | Hiện tượng | Nguyên nhân | Đã xử lý |
 |---|---|---|---|
@@ -117,6 +118,7 @@ Sự cố 1–18 xảy ra trên bản cài USB flash đầu tiên; 19–21 khi d
 | 23 | Chạm vào thẻ trang chủ được, nhưng không gõ được mã OTP, số điện thoại, email | Không có bàn phím. squeekboard có chạy và báo `Visible`, nhưng labwc ẩn lớp `top` của nó khi có cửa sổ toàn màn hình — thêm `--enable-wayland-ime` cũng không hiện | Bàn phím ảo trong trang `ui/src/components/VirtualKeyboard.jsx` |
 | 24 | Trang chủ: ô chọn tủ bị cắt mép trên, thẻ "Gửi Đồ / Thuê Tủ" bị cắt mép dưới | Cột phải cao ~650 px, khung chỉ 548 px; `justify-content: center` đẩy phần thừa ra cả hai đầu | Thu gọn khoảng cách, `justify-content: safe center` |
 | 25 | Bàn phím ảo không hiện khi chạm bằng tay (chạm ảo qua `uinput` thì hiện) | `autotouch` của Raspberry Pi OS tự ghi `~/.config/labwc/rc.xml` với `mouseEmulation="yes"` cho `WaveShare WS170120 (USB 3-1)` lúc desktop khởi động có màn cắm sẵn — labwc đổi chạm thành click chuột; log trong trang (DevTools) toàn `pointerdown mouse`. Thiết bị ảo tên khác nên không dính | `mouseEmulation="no"` (bản cũ `rc.xml.bak-20260930`); bàn phím hiện theo `navigator.maxTouchPoints > 0`. Kiểm bằng tay 23:08: `pointerdown touch` → `osk SHOWN`, gõ được |
+| 26 | Sau khi tắt hẳn rồi bật lại, hình ra 1024×768: kiosk chỉ chiếm phần trên, bị bóp méo trên màn 1024×600 | Màn lấy nguồn từ USB của Pi nên lúc kernel dò cổng (giây 0,9) màn chưa lên, không có EDID. Cổng đang bị ép "đã kết nối" (`video=…D`, sự cố 22) nên không có sự kiện cắm lại để dò lần nữa; labwc chọn chế độ dự phòng đầu tiên là 1024×768. Khởi động lại nóng không bị vì màn vẫn có điện | `~/.config/kanshi/config` đặt cứng `mode 1024x600`; áp dụng ngay, không cần khởi động lại |
 
 ## 8. Vận hành
 
@@ -138,7 +140,6 @@ Sự cố 1–18 xảy ra trên bản cài USB flash đầu tiên; 19–21 khi d
 | Nối dây theo [hướng dẫn có ảnh](tu01-wiring-photos.md) (jumper relay **H**, `PUL+`/`DIR+` về **3,3 V**, đo dây tín hiệu khoá trước; 6 điểm ảnh chưa trả lời được ở § 8 của hướng dẫn), bring-up theo guide § 5 | Code GPIO đã thử trên chip thật nhưng chưa có phần cứng tủ nối vào |
 | Lắp màn vào tủ, cố định đầu chuyển micro-HDMI | Đầu chuyển lỏng làm HDMI chập chờn (sự cố 22) |
 | Cân nhắc ẩn ô chọn tủ trên kiosk thật | Khách đứng trước tủ chọn được tủ khác trong danh sách |
-| Đổi kiosk sang tủ thật: `VITE_LOCKER_ID=7`, `VITE_LOCKER_CODE=CAB-TU01` trong `~/iot/ui/.env.local`, build lại | Tủ `CAB-TU01` đã tạo 2026-10-01; kiosk còn trỏ tạm `CAB-DEMO-01` (10 ô) |
 | Khi nối relay: kiểm K1, K2 không kêu lúc Pi khởi động | Người làm tủ dùng GPIO5, GPIO6 cho `IN1`, `IN2`; hai chân này kéo lên lúc khởi động ([spec § 6.1](cabinet-wiring-spec.md#61-tủ-lockr-tu01-chân-theo-người-làm-tủ)) |
 | Hỏi người làm tủ: chân của nắp trượt (TB6600, 2 công tắc hành trình), vị trí jumper relay, dây nâu thứ bảy | Hướng dẫn 2026-10-01 mới nêu relay và dây tín hiệu khoá |
 | Nối dây xong: gán Pi vào tủ `CAB-TU01` (id 7) trên admin ([guide § 5.8](controller-wiring-guide.md#5-kiểm-tra-từng-bước-bring-up)), rồi chuyển tủ từ `MAINTENANCE` sang `ACTIVE`. **Không** đặt `LOCKER_ID=1` — tủ #1 `CAB-DEMO-01` do giả lập demo trả lời, hai bên cùng trả lời thì demo lỗi | Code hợp đồng MQTT đã có trên Pi (`137d945`, [ADR-0008](../adr/0008-hop-dong-mqtt-backend-tu.md)) |

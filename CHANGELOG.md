@@ -4,6 +4,7 @@ Mỗi thay đổi ở repo docs thêm **một dòng** vào ngày tương ứng (
 
 ## 2026-10-01
 
+- F2-G09: kiosk của Pi `lockr-tu01` trỏ vào tủ thật `CAB-TU01` (id 7). Hồ sơ Pi thêm sự cố 26 (bật nguội ra 1024×768 vì cổng HDMI bị ép mà không đọc được EDID ⇒ kanshi đặt cứng 1024×600); guide § 3.F, § 6. STATUS § 3.
 - F2-G09: bản đồ chân tủ `lockr-tu01` đổi theo **hướng dẫn của người làm tủ** — `IN1…IN7` về GPIO 5, 6, 13, 19, 26, 22, 23; dây nâu tín hiệu khoá về GPIO 4, 12, 16, 20, 21, 24, 25; dây vàng sọc xanh gom về GND. `cabinet-wiring-spec` thêm § 6.1; `tu01-wiring-photos` § 3–6, § 8, thêm § 9 (`.env` trên Pi), ảnh `04-domino-1.jpg` đổi nhãn; hồ sơ Pi § 6, § 9. `DIR−` và công tắc gốc của nắp dời sang GPIO27, GPIO17 vì trùng chân cửa. Không đổi verdict/%. Pi đã vào Wi-Fi của chỗ đặt tủ mới.
 - F2-G09: [03-hardware/tu01-wiring-photos.md](03-hardware/tu01-wiring-photos.md) — nối dây tủ `lockr-tu01` theo ảnh; ảnh gốc ở `locker/`, ảnh đánh nhãn ở `03-hardware/img/tu01/` (sinh bằng `scripts/annotate-tu01-photos.py`). Guide § 3.F, § 4.5 (kiosk.sh thoát theo labwc, watchdog, `mouseEmulation`), § 6; hồ sơ Pi: sự cố 22–25, tủ `CAB-TU01` id 7, Pi lên `f76eaaa` ([iot#10](https://github.com/LockR-Tech/iot/pull/10)), Pi đổi chỗ. STATUS § 0 mốc iot `137d945` → `f76eaaa`, § 3, § 4, § 5. Không đổi verdict/%.
 
