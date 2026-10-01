@@ -30,7 +30,7 @@ Kiểm 2026-09-27 21:12 sau khi dựng lại trên thẻ: khởi động lại �
 | User | `lockr`, `sudo` không hỏi mật khẩu |
 | Mật khẩu user, mật khẩu PostgreSQL, Wi-Fi | **Lưu ngoài git** — hỏi chủ dự án (giữ nguyên khi dựng lại trên thẻ) |
 | SSH không mật khẩu | Khoá của laptop người dựng (cloud-init `ssh_authorized_keys`) |
-| Mạng | Wi-Fi, IP DHCP. Tủ chuyển chỗ 2026-10-01: tạm bắt điểm phát từ laptop người dựng (đặt trùng tên và mật khẩu Wi-Fi cũ), Pi ở `192.168.137.167`. Tủ thật cần mạng riêng (LAN hoặc router 4G); thêm Wi-Fi mới: `sudo nmcli device wifi connect "<tên>" password "<mật khẩu>"` |
+| Mạng | Wi-Fi, IP DHCP. Tủ chuyển chỗ 2026-10-01: đã thêm Wi-Fi của chỗ mới (hồ sơ NetworkManager, ưu tiên tự kết nối 10; tên mạng và mật khẩu **lưu ngoài git**). Hồ sơ Wi-Fi cũ giữ lại làm dự phòng: phát một điểm truy cập trùng tên và mật khẩu cũ từ laptop hoặc điện thoại là Pi bắt được. Thêm mạng khác: `sudo nmcli device wifi connect "<tên>" password "<mật khẩu>"`. Tủ thật cần mạng riêng (LAN hoặc router 4G) |
 | MAC `wlan0` / `eth0` | `2C:CF:67:DB:C5:C3` (ghim làm `MAC_ADDRESS`) / `2C:CF:67:DB:C5:C2` |
 
 ## 3. Phần cứng
@@ -78,9 +78,9 @@ Ngoài các bước ở [controller-wiring-guide § 4](controller-wiring-guide.m
 
 | Mục | Giá trị |
 |---|---|
-| `~/iot/.env` | `HARDWARE_BACKEND=gpio`, `LID_ENABLED=true`, `SERIAL_PORT=AUTO` (không dùng), `MAC_ADDRESS=2C:CF:67:DB:C5:C3`, `MQTT_BROKER=broker.hivemq.com`, `BACKEND_API_URL=https://api.locker-drone.tech`, `POSTGRES_*` |
+| `~/iot/.env` | `HARDWARE_BACKEND=gpio`, `LID_ENABLED=true`, `SERIAL_PORT=AUTO` (không dùng), `MAC_ADDRESS=2C:CF:67:DB:C5:C3`, `MQTT_BROKER=broker.hivemq.com`, `BACKEND_API_URL=https://api.locker-drone.tech`, `POSTGRES_*`. Từ 2026-10-01 thêm chân theo người làm tủ ([spec § 6.1](cabinet-wiring-spec.md#61-tủ-lockr-tu01-chân-theo-người-làm-tủ)): `GPIO_RELAY_PINS=5,6,13,19,26,22,23`, `GPIO_DOOR_PINS=4,12,16,20,21,24,25`, `LID_PUL_PIN=18`, `LID_DIR_PIN=27`, `LID_HOME_PIN=17`, `LID_END_PIN=10` (bản cũ `.env.bak-20261001-pins`) |
 | `~/iot/ui/.env.local` | `VITE_API_URL=` (trống), `VITE_LOCAL_API_URL=http://localhost:8000`, `VITE_LOCKER_ID=1`, `VITE_LOCKER_CODE=CAB-DEMO-01`, bộ `VITE_FIREBASE_*` |
-| `lockr-controller.service` | `ExecStopPost=/usr/bin/pinctrl set 17,27,22,23,24,25,16 op dl` — ngắt mọi relay khi dịch vụ dừng/chết |
+| `lockr-controller.service` | `ExecStopPost=/usr/bin/pinctrl set 5,6,13,19,26,22,23 op dl` — ngắt mọi relay khi dịch vụ dừng/chết; danh sách chân theo `GPIO_RELAY_PINS` (bản cũ `.service.bak-20261001`) |
 | `/etc/sysctl.d/90-lockr-dirty-limits.conf` | `vm.dirty_background_bytes=4194304`, `vm.dirty_bytes=16777216` |
 | `~/.config/labwc/rc.xml` | `<touch deviceName="WaveShare WS170120 (USB 3-1)" mapToOutput="HDMI-A-1" mouseEmulation="no"/>` |
 | `/boot/firmware/cmdline.txt` | thêm `video=HDMI-A-1:1024x600@60D` (bản gốc: `cmdline.txt.bak-20260930`) |
@@ -139,7 +139,8 @@ Sự cố 1–18 xảy ra trên bản cài USB flash đầu tiên; 19–21 khi d
 | Lắp màn vào tủ, cố định đầu chuyển micro-HDMI | Đầu chuyển lỏng làm HDMI chập chờn (sự cố 22) |
 | Cân nhắc ẩn ô chọn tủ trên kiosk thật | Khách đứng trước tủ chọn được tủ khác trong danh sách |
 | Đổi kiosk sang tủ thật: `VITE_LOCKER_ID=7`, `VITE_LOCKER_CODE=CAB-TU01` trong `~/iot/ui/.env.local`, build lại | Tủ `CAB-TU01` đã tạo 2026-10-01; kiosk còn trỏ tạm `CAB-DEMO-01` (10 ô) |
-| Thêm Wi-Fi cố định của chỗ đặt tủ mới | Pi đang sống nhờ điểm phát từ laptop |
+| Khi nối relay: kiểm K1, K2 không kêu lúc Pi khởi động | Người làm tủ dùng GPIO5, GPIO6 cho `IN1`, `IN2`; hai chân này kéo lên lúc khởi động ([spec § 6.1](cabinet-wiring-spec.md#61-tủ-lockr-tu01-chân-theo-người-làm-tủ)) |
+| Hỏi người làm tủ: chân của nắp trượt (TB6600, 2 công tắc hành trình), vị trí jumper relay, dây nâu thứ bảy | Hướng dẫn 2026-10-01 mới nêu relay và dây tín hiệu khoá |
 | Nối dây xong: gán Pi vào tủ `CAB-TU01` (id 7) trên admin ([guide § 5.8](controller-wiring-guide.md#5-kiểm-tra-từng-bước-bring-up)), rồi chuyển tủ từ `MAINTENANCE` sang `ACTIVE`. **Không** đặt `LOCKER_ID=1` — tủ #1 `CAB-DEMO-01` do giả lập demo trả lời, hai bên cùng trả lời thì demo lỗi | Code hợp đồng MQTT đã có trên Pi (`137d945`, [ADR-0008](../adr/0008-hop-dong-mqtt-backend-tu.md)) |
 | Chuyển sang broker riêng: cấp tài khoản `2CCF67DBC5C3` bằng `mqtt-device.sh`, đổi 5 biến `MQTT_*` trong `~/iot/.env` | SEC-04 — [mqtt-contract § 6](../01-overview/mqtt-contract.md#6-bật-broker-riêng-trên-vm) |
 | Đặt tủ trong mạng riêng | Cổng `:8000` không xác thực, có `/setup/clear`, `/test/open-otp` |
