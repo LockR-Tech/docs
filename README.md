@@ -12,7 +12,7 @@ Tủ khoá thông minh + giao hàng bằng drone. Repo này là **nguồn sự t
 | Sắp merge / deploy | [release-deploy](04-engineering/release-deploy.md) |
 | Nạp khoá dịch vụ ngoài | [cau-hinh-dich-vu-ngoai](04-engineering/cau-hinh-dich-vu-ngoai.md) |
 | Chạy hệ thống trên máy mình | [chay-he-thong-cuc-bo](04-engineering/chay-he-thong-cuc-bo.md) |
-| Lắp tủ vật lý: Pi/Jetson, Arduino, relay, màn cảm ứng | [03-hardware/controller-wiring-guide](03-hardware/controller-wiring-guide.md) |
+| Lắp tủ vật lý: Pi/Jetson, Arduino, relay, màn cảm ứng | [03-hardware/controller-wiring-guide](03-hardware/controller-wiring-guide.md) · tủ thật có ảnh: [tu01-wiring-photos](03-hardware/tu01-wiring-photos.md) |
 | Cần in sơ đồ | [diagrams/](diagrams/README.md) |
 
 ## Cấu trúc
@@ -35,7 +35,9 @@ docs/
 ├── 03-hardware/
 │   ├── cabinet-wiring-spec.md     Sơ đồ đấu nối của nhà cung cấp + đối chiếu chân Arduino trong firmware
 │   ├── controller-wiring-guide.md Chuẩn bị Pi/Jetson + màn cảm ứng, thứ tự nối dây, bring-up, kiosk trên Pi
-│   └── pi-lockr-tu01.md      Hồ sơ Pi của tủ lockr-tu01: cấu hình riêng, sự cố, vận hành
+│   ├── pi-lockr-tu01.md      Hồ sơ Pi của tủ lockr-tu01: cấu hình riêng, sự cố, vận hành
+│   ├── tu01-wiring-photos.md Nối dây tủ lockr-tu01 theo ảnh: cọc nào, dây nào, đo gì trước khi nối
+│   └── img/tu01/             Ảnh tủ đã đánh nhãn (sinh bằng scripts/annotate-tu01-photos.py từ locker/)
 ├── 04-engineering/
 │   ├── git-workflow.md       GitHub Flow, nhánh, PR, merge, hotfix
 │   ├── commit-convention.md  Conventional Commits, scope từng repo

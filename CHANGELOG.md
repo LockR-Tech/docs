@@ -2,6 +2,10 @@
 
 Mỗi thay đổi ở repo docs thêm **một dòng** vào ngày tương ứng (mới nhất ở trên). Ghi mã gap/SEC/ADR nếu có.
 
+## 2026-10-01
+
+- F2-G09: [03-hardware/tu01-wiring-photos.md](03-hardware/tu01-wiring-photos.md) — nối dây tủ `lockr-tu01` theo ảnh; ảnh gốc ở `locker/`, ảnh đánh nhãn ở `03-hardware/img/tu01/` (sinh bằng `scripts/annotate-tu01-photos.py`). Guide § 3.F, § 4.5 (kiosk.sh thoát theo labwc, watchdog, `mouseEmulation`), § 6; hồ sơ Pi: sự cố 22–25, tủ `CAB-TU01` id 7, Pi lên `f76eaaa` ([iot#10](https://github.com/LockR-Tech/iot/pull/10)), Pi đổi chỗ. STATUS § 0 mốc iot `137d945` → `f76eaaa`, § 3, § 4, § 5. Không đổi verdict/%.
+
 ## 2026-09-29
 
 - Trang đăng nhập admin thiết kế lại theo Lock.R, bỏ đăng nhập Partner ([frontend#24](https://github.com/LockR-Tech/frontend/pull/24)): STATUS § 5 thêm một dòng. Không đổi verdict/%.
