@@ -159,6 +159,7 @@ Người làm tủ liệt kê chân relay theo thứ tự `IN1`→`IN7`. Bảy c
 
 Khác với lý do chọn chân ở trên:
 
-- **GPIO5, GPIO6 (`IN1`, `IN2`) kéo lên lúc Pi khởi động.** Với jumper H, hai relay này có thể hút từ lúc cấp điện tới khi `main.py` chạy. Phải kiểm khi nối (không relay nào kêu lúc khởi động). Nếu kêu: ép mức thấp từ firmware bằng `gpio=5,6,13,19,26,22,23=op,dl` trong `/boot/firmware/config.txt` (chưa thử trên Pi 5 này), hoặc hỏi lại người làm tủ vị trí jumper.
+- **GPIO5, GPIO6 (`IN1`, `IN2`) kéo lên lúc Pi khởi động.** Với jumper H, hai relay này có thể hút từ lúc cấp điện tới khi `main.py` chạy (~64 giây sau khi kernel khởi động). Đã chặn bằng `gpio=5,6,13,19,26,22,23=op,dl` trong `/boot/firmware/config.txt`: đo 2026-10-01 trên Pi 5 (bootloader 2026-09-12), ở giây thứ 3 cả 7 chân đã là ngõ ra mức thấp. Còn lại vài giây đầu sau khi cấp điện, trước khi firmware đọc `config.txt`, chưa đo được khi chưa có relay: lúc nối vẫn phải kiểm không relay nào kêu khi bật nguồn. Nếu K1/K2 vẫn nháy: mắc điện trở 10 kΩ từ `IN1`, `IN2` xuống GND, hoặc hỏi lại người làm tủ vị trí jumper.
+- Đổi `GPIO_RELAY_PINS` thì sửa luôn danh sách chân ở dòng `gpio=` này.
 - Đổi `GPIO_RELAY_PINS` thì `ExecStopPost` của `lockr-controller.service` đổi theo: `pinctrl set 5,6,13,19,26,22,23 op dl`.
 - Ba chỉnh sửa vì GPIO 3,3 V (jumper H, `PUL+`/`DIR+` về 3,3 V, đo dây tín hiệu khoá trước) vẫn giữ nguyên.
