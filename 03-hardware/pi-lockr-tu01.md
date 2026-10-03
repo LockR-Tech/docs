@@ -84,6 +84,7 @@ Ngoài các bước ở [controller-wiring-guide § 4](controller-wiring-guide.m
 | `/etc/sysctl.d/90-lockr-dirty-limits.conf` | `vm.dirty_background_bytes=4194304`, `vm.dirty_bytes=16777216` |
 | `~/.config/kanshi/config` | `profile kiosk { output HDMI-A-1 enable mode 1024x600 position 0,0 }` — giữ 1024×600 cả khi không đọc được EDID (sự cố 26) |
 | `~/.config/labwc/rc.xml` | `<touch deviceName="WaveShare WS170120 (USB 3-1)" mapToOutput="HDMI-A-1" mouseEmulation="no"/>` |
+| `/boot/firmware/config.txt` | thêm `gpio=5,6,13,19,26,22,23=op,dl` — chân relay ra mức thấp từ firmware; đo ở giây thứ 3 sau khi kernel khởi động cả 7 chân đã `op dl`, `main.py` tới giây 64 mới chạy (bản gốc: `config.txt.bak-20261001`) |
 | `/boot/firmware/cmdline.txt` | thêm `video=HDMI-A-1:1024x600@60D` (bản gốc: `cmdline.txt.bak-20260930`) |
 | `/root/pi-setup.sh` | script đã dùng để dựng (không chứa mật khẩu) — chạy lại được; **chưa có** các bước 2026-09-30 (`kiosk.sh` mới, watchdog, `cmdline.txt`, `rc.xml`) |
 
@@ -140,7 +141,7 @@ Sự cố 1–18 xảy ra trên bản cài USB flash đầu tiên; 19–21 khi d
 | Nối dây theo [hướng dẫn có ảnh](tu01-wiring-photos.md) (jumper relay **H**, `PUL+`/`DIR+` về **3,3 V**, đo dây tín hiệu khoá trước; 6 điểm ảnh chưa trả lời được ở § 8 của hướng dẫn), bring-up theo guide § 5 | Code GPIO đã thử trên chip thật nhưng chưa có phần cứng tủ nối vào |
 | Lắp màn vào tủ, cố định đầu chuyển micro-HDMI | Đầu chuyển lỏng làm HDMI chập chờn (sự cố 22) |
 | Cân nhắc ẩn ô chọn tủ trên kiosk thật | Khách đứng trước tủ chọn được tủ khác trong danh sách |
-| Khi nối relay: kiểm K1, K2 không kêu lúc Pi khởi động | Người làm tủ dùng GPIO5, GPIO6 cho `IN1`, `IN2`; hai chân này kéo lên lúc khởi động ([spec § 6.1](cabinet-wiring-spec.md#61-tủ-lockr-tu01-chân-theo-người-làm-tủ)) |
+| Khi nối relay: kiểm K1, K2 không nháy lúc cấp điện cho Pi | GPIO5, GPIO6 (`IN1`, `IN2`) kéo lên lúc khởi động; đã ép mức thấp từ firmware, nhưng vài giây đầu trước khi firmware đọc `config.txt` chưa đo được ([spec § 6.1](cabinet-wiring-spec.md#61-tủ-lockr-tu01-chân-theo-người-làm-tủ)) |
 | Hỏi người làm tủ: chân của nắp trượt (TB6600, 2 công tắc hành trình), vị trí jumper relay, dây nâu thứ bảy | Hướng dẫn 2026-10-01 mới nêu relay và dây tín hiệu khoá |
 | Nối dây xong: gán Pi vào tủ `CAB-TU01` (id 7) trên admin ([guide § 5.8](controller-wiring-guide.md#5-kiểm-tra-từng-bước-bring-up)), rồi chuyển tủ từ `MAINTENANCE` sang `ACTIVE`. **Không** đặt `LOCKER_ID=1` — tủ #1 `CAB-DEMO-01` do giả lập demo trả lời, hai bên cùng trả lời thì demo lỗi | Code hợp đồng MQTT đã có trên Pi (`137d945`, [ADR-0008](../adr/0008-hop-dong-mqtt-backend-tu.md)) |
 | Chuyển sang broker riêng: cấp tài khoản `2CCF67DBC5C3` bằng `mqtt-device.sh`, đổi 5 biến `MQTT_*` trong `~/iot/.env` | SEC-04 — [mqtt-contract § 6](../01-overview/mqtt-contract.md#6-bật-broker-riêng-trên-vm) |

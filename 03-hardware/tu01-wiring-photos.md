@@ -64,7 +64,7 @@ Quy ước: **ô N** dùng relay `IN(N)` và là ô số N của tủ `CAB-TU01`
 
 3. Kiểm: chưa cắm 220 V, cắm USB-C cho Pi. Trong lúc Pi khởi động **không relay nào được kêu**. Relay nào kêu tách ngay là jumper kênh đó còn ở L.
 
-Người làm tủ dặn: cấp `5 V` và `GND` cho module từ Pi, rồi `IN1`–`IN7` về GPIO 5, 6, 13, 19, 26, 22, 23. Người làm tủ không nêu vị trí jumper. **GPIO5 và GPIO6 (`IN1`, `IN2`) được Pi kéo lên 3,3 V trong lúc khởi động**, trước khi `main.py` đưa chúng về mức thấp: nếu K1 hoặc K2 kêu trong khoảng đó thì dừng lại, xem § 8 mục 1.
+Người làm tủ dặn: cấp `5 V` và `GND` cho module từ Pi, rồi `IN1`–`IN7` về GPIO 5, 6, 13, 19, 26, 22, 23. Người làm tủ không nêu vị trí jumper. **GPIO5 và GPIO6 (`IN1`, `IN2`) mặc định được Pi kéo lên 3,3 V lúc khởi động.** Pi `lockr-tu01` đã ép 7 chân relay về mức thấp từ firmware (§ 9), đo được từ giây thứ 3. Vài giây đầu ngay sau khi cấp điện thì chưa đo được: nếu K1 hoặc K2 nháy lúc bật nguồn thì dừng lại, xem § 8 mục 1.
 
 Đầu ra relay (dây xanh mảnh) nhà cung cấp đã nối sẵn tới dây âm của khoá và `−V`. Không tháo.
 
@@ -157,7 +157,7 @@ Công tắc chọn điện áp phải ở **220 V**. Không vặn biến trở `
 
 | # | Câu hỏi | Cách biết |
 |---|---|---|
-| 1 | Jumper đang ở H hay L, và K1/K2 có kêu lúc Pi khởi động không (GPIO5, GPIO6 bị kéo lên) | Đọc chữ in cạnh jumper; bước kiểm ở § 3. K1/K2 kêu ⇒ thêm `gpio=5,6,13,19,26,22,23=op,dl` vào `/boot/firmware/config.txt` (chưa thử trên Pi 5 này), hoặc hỏi người làm tủ jumper đặt mức nào |
+| 1 | Jumper đang ở H hay L, và K1/K2 có kêu lúc Pi khởi động không (GPIO5, GPIO6 bị kéo lên) | Đọc chữ in cạnh jumper; bước kiểm ở § 3. K1/K2 vẫn nháy lúc bật nguồn (dù đã có dòng `gpio=` ở § 9) ⇒ mắc điện trở 10 kΩ từ `IN1`, `IN2` xuống GND, hoặc hỏi người làm tủ jumper đặt mức nào |
 | 2 | Cặp nào trên domino 1 thuộc ô nào; dây nâu thứ bảy ở đâu | Thông mạch khi đóng mở từng cửa (§ 4); hỏi người làm tủ |
 | 3 | Dây tín hiệu khoá có phải tiếp điểm khô | Đo điện áp so với `−V` (§ 4) |
 | 4 | Cọc 4 hay cọc 7 của domino 2 là `PUL+` | Thông mạch từ vít driver (§ 5) |
@@ -178,6 +178,8 @@ LID_END_PIN=10
 ```
 
 `ExecStopPost` của `lockr-controller.service` đổi theo: `pinctrl set 5,6,13,19,26,22,23 op dl`.
+
+`/boot/firmware/config.txt` thêm `gpio=5,6,13,19,26,22,23=op,dl`: firmware đưa 7 chân relay về mức thấp trước khi hệ điều hành chạy. Không có dòng này, GPIO5 và GPIO6 bị kéo lên suốt khoảng một phút đầu, tới khi `main.py` khởi động.
 
 **Không nối dây theo file này vào một Pi còn chạy chân mặc định.** Với chân mặc định, GPIO16, 24, 25 là ngõ ra relay và GPIO21 là ngõ ra `DIR−` ở mức cao; nối dây tín hiệu khoá vào đó thì cửa đóng sẽ chập ngõ ra xuống GND.
 
