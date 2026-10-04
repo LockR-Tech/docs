@@ -57,10 +57,10 @@ Mọi phản hồi bọc `ApiResponse { success, code, message, data, errors }`.
 
 | Scope | Nhóm | Quy tắc |
 |---|---|---|
-| order | Giá & phí | Phí gửi hàng, phí drone, giá thuê ô STANDARD/XL mỗi giờ, phí lưu trữ mỗi món, phí quá hạn mỗi giờ, trần phí quá hạn (VND và %) |
+| order | Giá & phí | Phí gửi hàng, phí drone cơ bản và phụ phí mỗi nấc khối lượng, giá thuê ô STANDARD/XL mỗi giờ, phí lưu trữ mỗi món, phí quá hạn mỗi giờ, trần phí quá hạn (VND và %) |
 | order | Thời hạn & tự động hoá | Hạn lấy hàng gửi, hạn lấy hàng drone, tự huỷ đơn chưa bỏ hàng, nhả ô quá hạn (0 = tắt), khoảng cách nhắc quá hạn |
 | order | Thuê tủ | Giờ thuê tối thiểu/tối đa/mặc định, nút chọn nhanh, gia hạn mặc định/tối đa |
-| order | Thanh toán · Drone | Bắt buộc thanh toán trước khi bỏ hàng; drone DEMO bật/tắt, user được dùng, thời gian mỗi chặng; pin tối thiểu nhận đơn; khối lượng kiện mặc định |
+| order | Thanh toán · Drone | Bắt buộc thanh toán trước khi bỏ hàng; drone DEMO bật/tắt, user được dùng, thời gian mỗi chặng; pin tối thiểu nhận đơn; khối lượng kiện mặc định, tải tối đa, khối lượng cơ bản, nấc khối lượng, các mức khách chọn, sai số cân cho phép |
 | locker | Bảo trì & SLA | SLA, số phiếu trễ bị chặn nhận việc, bậc phạt cảnh báo/hạn chế/đình chỉ, bắt buộc ảnh nghiệm thu, giới hạn ảnh mỗi lần/mỗi phiếu |
 | locker | Ô tủ · Drone | Giữ ô RESERVED, kích thước ô hiển thị cho app; pin thấp chặn cất cánh |
 | payment | Nạp ví · Phương thức | Nạp tối thiểu/tối đa/mặc định, mốc nạp nhanh; phương thức bật; tiền mặt tự hoàn tất |
