@@ -2,6 +2,10 @@
 
 Mỗi thay đổi ở repo docs thêm **một dòng** vào ngày tương ứng (mới nhất ở trên). Ghi mã gap/SEC/ADR nếu có.
 
+## 2026-10-04
+
+- Hạ tầng: production chuyển sang VM Azure mới `85.211.182.170` (Malaysia West, Ubuntu 24.04, `Standard_B2as_v2`) vì subscription cũ hết credit; chép nguyên dữ liệu 9 DB + `assistant-db`, RabbitMQ, nginx/Let's Encrypt; DNS `api.locker-drone.tech` và secret `AZURE_VM_HOST` đã trỏ sang máy mới. `architecture.md` § 3, `release-deploy.md` § 1.
+
 ## 2026-10-02
 
 - Mobile · L3 (xử lý sự cố ô tủ & điều chuyển ô): khắc phục lỗi gán nhầm phiếu sự cố ô tủ đang mở vào các đơn hàng đã hủy (`CANCELED`) hoặc hoàn tất (`COMPLETED`) trong quá khứ; bổ sung cơ chế liên kết phiếu sự cố theo mã đơn `orderCode` và tự động nhận diện đơn đích khi KTV thực hiện `[ĐIỀU CHUYỂN Ô] ... sang ô #X`; bổ sung hồ sơ điều chuyển ô an toàn trong chi tiết đơn hàng (`_OrderRelocationCard`), gồm ô ban đầu, mã PIN cũ đã vô hiệu hoá, ô mới tiếp nhận, mốc thời gian KTV mở ô cũ kiểm tra hiện trường, mốc thời gian hoàn tất chuyển ô, mã PIN mở ô mới đang kích hoạt, ảnh KTV chụp minh chứng và nút mở trực tiếp phiếu sự cố.
