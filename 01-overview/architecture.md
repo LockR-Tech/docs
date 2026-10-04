@@ -44,7 +44,7 @@ Mỗi service có database Postgres riêng, Flyway, `ddl-auto: validate`.
 
 | | Local | Production |
 |---|---|---|
-| Máy | Docker Desktop | Azure VM `20.24.196.177`, Ubuntu 22.04, `Standard_B2as_v2` 8 GB, swap 4 GB |
+| Máy | Docker Desktop | Azure VM `85.211.182.170` (Malaysia West, từ 2026-10-04), Ubuntu 24.04, `Standard_B2as_v2` 8 GB, swap 4 GB |
 | Lối vào | Gateway `http://localhost:18080` | Nginx :443 (Let's Encrypt) → `127.0.0.1:8080`; NSG chỉ mở 22/80/443 |
 | Postgres | `postgres:16-alpine` `127.0.0.1:15432` | cùng image, không mở ra ngoài |
 | Postgres vector (trợ lý) | `pgvector/pgvector:pg16` (`assistant-db`) `127.0.0.1:15433`, volume `assistant_db_data` | cùng image, `shared_buffers=64MB`; mật khẩu `ASSISTANT_DB_PASSWORD` (chỉ có tác dụng lần đầu tạo volume) |

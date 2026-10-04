@@ -4,7 +4,7 @@
 
 | Thành phần | URL | Chạy trên | Nguồn deploy |
 |---|---|---|---|
-| API | `https://api.locker-drone.tech` | Azure VM `20.24.196.177` — `/opt/laundry-locker-microservices` | `LockR-Tech/backend` → `deploy-azure.yml` |
+| API | `https://api.locker-drone.tech` | Azure VM `85.211.182.170` — `/opt/laundry-locker-microservices` | `LockR-Tech/backend` → `deploy-azure.yml` |
 | Admin web | `https://admin.locker-drone.tech` | Cloudflare Worker `laundry-locker-frontend-1` | `LockR-Tech/frontend` → `deploy.yml` |
 | Landing | `https://locker-drone.tech` | Cloudflare Worker `laundry-locker-landing` | `LockR-Tech/frontend` → `deploy.yml` |
 | Mobile web | Worker `laundry-locker-mobile-web` | Cloudflare | `LockR-Tech/mobile` → `deploy-web.yml` |
