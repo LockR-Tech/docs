@@ -2,6 +2,10 @@
 
 Mỗi thay đổi ở repo docs thêm **một dòng** vào ngày tương ứng (mới nhất ở trên). Ghi mã gap/SEC/ADR nếu có.
 
+## 2026-10-06
+
+- F2-G09: bảng điều khiển kỹ thuật `/service` trên Pi ([iot#12](https://github.com/LockR-Tech/iot/pull/12)) — mở từng ô với thời gian kích tuỳ chọn, sơ đồ 40 chân theo cấu hình đang chạy, chạy/chỉnh tốc độ trục nắp (vòng/giây, xung, tăng tốc, số vòng), chỉ nhận lệnh từ chính Pi qua SSH tunnel. Tủ `lockr-tu01` có **hai trục, 4 công tắc hành trình** (module 3 dây): `tu01-wiring-photos` § 6 viết lại (6.1 trục 1, 6.2 trục 2 với driver TB6600 thứ hai, GPIO9/11/7/8), § 8, § 9 (`LID_PULSE_US` 1000, `LID2_ENABLED`); guide § 3.E, § 4.3, § 5, § 6, § 7; hồ sơ Pi § 8. Không đổi verdict/%.
+
 ## 2026-10-04
 
 - Hạ tầng: production chuyển sang VM Azure mới `85.211.182.170` (Malaysia West, Ubuntu 24.04, `Standard_B2as_v2`) vì subscription cũ hết credit; chép nguyên dữ liệu 9 DB + `assistant-db`, RabbitMQ, nginx/Let's Encrypt; DNS `api.locker-drone.tech` và secret `AZURE_VM_HOST` đã trỏ sang máy mới. `architecture.md` § 3, `release-deploy.md` § 1.

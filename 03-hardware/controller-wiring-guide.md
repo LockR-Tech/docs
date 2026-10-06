@@ -129,7 +129,7 @@ Tủ `lockr-tu01`: vị trí thật của từng cọc, kèm ảnh đánh nhãn,
 
 ### E. Nắp trượt — TB6600 + Nema 17 + 2 công tắc hành trình (GPIO)
 
-Code: `iot/hardware/lid_controller.py` — về gốc, mở, đóng theo công tắc hành trình, tăng tốc dần, dừng được giữa chừng; chạy hết `LID_MAX_STEPS` mà không chạm công tắc thì dừng và báo `FAULT`. Chưa có lệnh MQTT (luồng drone F1.06 đang giả lập) — điều khiển qua `debug_gpio.py` hoặc API cục bộ (§ 5).
+Code: `iot/hardware/lid_controller.py` — về gốc, mở, đóng theo công tắc hành trình, tăng tốc dần, dừng được giữa chừng; chạy hết `LID_MAX_STEPS` mà không chạm công tắc thì dừng và báo `FAULT`. Chưa có lệnh MQTT (luồng drone F1.06 đang giả lập) — điều khiển qua `debug_gpio.py`, API cục bộ, hoặc bảng điều khiển kỹ thuật `/service` (§ 5). Tủ có hai trục thì mỗi trục một TB6600 riêng; trục 2 bật bằng `LID2_ENABLED=true`.
 
 1. Motor: 4 dây → `A+ A- B+ B-` (tìm cặp cuộn bằng thang thông mạch). Nguồn 24 V ở bước A.3.
 2. Tín hiệu: `PUL+`, `DIR+` → **3,3 V** của Pi (chân 1 hoặc 17) — **không** nối +5 V như tài liệu nhà cung cấp: GPIO Pi chỉ lên 3,3 V, để lại 1,7 V trên opto nên TB6600 không tắt hẳn. `PUL-` → GPIO18, `DIR-` → GPIO21. `ENA±` để trống.
@@ -224,6 +224,8 @@ LID_ENABLED=true                          # khi đã nối TB6600 + 2 công tắ
 # GPIO_RELAY_PINS=17,27,22,23,24,25,16    GPIO_DOOR_PINS=5,6,12,13,19,26,20
 # GPIO_RELAY_ACTIVE_HIGH=true             GPIO_DOOR_CLOSED_LOW=true
 # LID_OPEN_DIR_HIGH=true  LID_LIMIT_ACTIVE_LOW=true  LID_STEPS_PER_SEC=800  LID_MAX_STEPS=20000
+# LID_PULSE_US=1000  LID_STEPS_PER_REV=1600            # xung PUL dài cho opto TB6600 ở 3,3 V; bước/vòng theo DIP
+# LID2_ENABLED=true  LID2_PUL_PIN=9  LID2_DIR_PIN=11  LID2_HOME_PIN=7  LID2_END_PIN=8   # trục thứ hai (driver thứ hai)
 ```
 
 - `HARDWARE_BACKEND=gpio` chỉ có tác dụng khi **không** đặt `SIMULATION=true`.
@@ -407,6 +409,14 @@ Làm đúng thứ tự; mỗi bước xanh mới sang bước sau. Các script �
 | 5.8 | Gán Pi vào tủ | admin web → **Tủ** → mở tủ → khung **Bộ điều khiển tủ** → chọn Pi (MAC) → **Gán vào tủ**, để tick "Mở thử lần lượt từng ô", đứng cạnh tủ | Pi online; từng cửa bật ra lần lượt; trạng thái **Sẵn sàng · 7/7** | Không thấy Pi trong danh sách → Pi chưa kết nối broker (`journalctl -u lockr-controller`: tìm `MQTT Connected`) hoặc khác broker với backend; ô **JAMMED** → cửa không bật ra hoặc cảm biến ngược/chưa nối (5.2–5.3); "đang báo tủ #X" khác tủ này → bấm **Gửi lại sơ đồ** |
 | 5.9 | Mở bằng mã từ kiosk | kiosk nhập PIN của một đơn test | đúng ngăn in số trên cửa mở, đơn đổi trạng thái | kiosk trắng/xám hoặc lỗi mạng → § 6; mở nhầm ngăn → thứ tự `GPIO_RELAY_PINS` lệch nhãn cửa (§ 4.3); "IoT device timeout" → Pi không nhận lệnh: kiểm `LOCKER_ID`/gán tủ và broker |
 
+**Bảng điều khiển kỹ thuật** (GPIO, từ iot#12) — làm được 5.2–5.5 và 5.7 mà **không phải dừng dịch vụ**: trang `/service` chạy trong `main.py`. Từ laptop: `ssh -N -L 8800:127.0.0.1:8000 lockr@<pi>` rồi mở `http://localhost:8800/service` (trang chỉ nhận lệnh từ chính Pi). Có 4 tab:
+- **Ô tủ**: lưới theo sơ đồ ô trên máy chủ, mỗi ô ghi relay `INn`, GPIO, chân Pi, trạng thái cửa; mở từng ô với thời gian kích 0,1–10 s, hoặc mở lần lượt tất cả.
+- **Trục quay**: đèn công tắc gốc/cuối, vị trí tính từ gốc, về gốc / đóng hết / mở hết / dừng, chạy N vòng; chỉnh vòng/giây, tốc độ khởi động, tăng tốc, độ rộng xung, bước mỗi vòng, tối đa vòng, chiều, mức công tắc — lưu ở `~/iot/config/lid_tuning.json`, giữ qua khởi động lại.
+- **Sơ đồ chân**: header 40 chân theo `.env` đang chạy.
+- **Nhật ký**: các lệnh đã gửi.
+
+Chạy thử không cần Pi: `uv run python debug_service_panel.py`.
+
 **(RS485)** — thay 5.1–5.7 ở trên bằng:
 
 | # | Kiểm gì | Lệnh / thao tác | Kết quả đúng | Nếu sai |
@@ -427,7 +437,7 @@ Làm đúng thứ tự; mỗi bước xanh mới sang bước sau. Các script �
 | **GPIO:** một khoá có điện mãi sau khi `main.py` chết | thiếu `ExecStopPost` ép chân relay về LOW (§ 4.4) — Pi 5 giữ mức chân sau khi tiến trình thoát |
 | **GPIO:** `debug_gpio.py` báo `Device or resource busy` | `lockr-controller` đang giữ chân — `sudo systemctl stop lockr-controller` |
 | **GPIO:** Pi treo hoặc khởi động lại khi khoá nhả | xung ngược của cuộn khoá — mắc diode 1N4007 song song mỗi khoá (§ 3.B.2) |
-| **GPIO:** nắp rung mà không chạy, hoặc chạy lúc được lúc không | `PUL+`/`DIR+` đang ở 5 V thay vì 3,3 V (§ 3.E.2); tốc độ quá cao — giảm `LID_STEPS_PER_SEC`; DIP dòng quá thấp |
+| **GPIO:** nắp rung mà không chạy, hoặc chạy lúc được lúc không | `PUL+`/`DIR+` đang ở 5 V thay vì 3,3 V (§ 3.E.2); xung PUL quá ngắn — tủ thật cần ~1000 µs (`LID_PULSE_US`, hoặc chỉnh trên `/service`); tốc độ quá cao — giảm vòng/giây; DIP dòng quá thấp |
 | **GPIO:** nắp báo `FAULT`, `LIMIT_NOT_REACHED` | chạy hết `LID_MAX_STEPS` mà không chạm công tắc: công tắc hỏng/lỏng, sai chân, hoặc `LID_MAX_STEPS` nhỏ hơn hành trình thật |
 | **(RS485)** Cấp nguồn xong cả 7 relay hút, khoá nóng | `RELAY_ON` ngược chiều module (§ 4.1) |
 | **(RS485)** Relay 7 kêu tách mỗi lần Arduino reset | dùng `D13` cho khoá — đổi sang `A5` |
@@ -460,6 +470,6 @@ Thứ tự là thứ tự nên làm. Việc 3 và 4 đã merge 2026-09-27 ([iot#
 | 3 | ~~Thống nhất payload lệnh mở~~ — **đã merge**: topic `cabinet/{lockerId}`, lệnh mang `boxId` + `slotIndex = boxNumber − 1`, admin gán Pi vào tủ bằng MAC, trạng thái cửa về đúng ô ([mqtt-contract](../01-overview/mqtt-contract.md)). Còn: gán Pi trên admin sau khi nối dây (§ 5.8) | `backend/iot-service/…/LockerMqttService.java`, `GatewayProvisioningService.java` · `iot/services/locker_service.py`, `setup_handler.py` · `frontend/fe/…/lockers/components/GatewayPanel.tsx` | **F2-G09** |
 | 4 | ~~Broker MQTT riêng có auth + TLS~~ — **đã deploy, tắt mặc định**: Mosquitto profile `mqtt`, `wss://…/mqtt` qua Nginx, tài khoản + ACL theo tủ. Còn: bật trên VM ([mqtt-contract § 6](../01-overview/mqtt-contract.md#6-bật-broker-riêng-trên-vm)) | `backend/docker-compose.yml`, `backend/infra/mosquitto/`, `backend/infra/azure/enable-mqtt-websocket.sh` | SEC-04 |
 | 5 | Sự kiện cửa (`DOOR_CLOSED`) điều khiển vòng đời đơn/ô. Sự kiện đã về đúng ô (`box_hardware_status`, dùng cho "cửa quên đóng"); chưa có gì đổi trạng thái đơn/ô theo nó | `iot/services/locker_service.py` (`handle_door_event`) · iot-service | F2-G09, F3-G03 |
-| 6 | Nắp trượt: ~~code điều khiển~~ — **có** cho cách GPIO (`hardware/lid_controller.py`, API cục bộ `/hardware/lid/*`, [ADR-0007](../adr/0007-tu-nam-viet-pi-dieu-khien-gpio-truc-tiep.md)). Còn: lệnh MQTT mở/đóng nắp + luồng drone thật | backend iot-service · `iot/services/` | F1.06 |
+| 6 | Nắp trượt: ~~code điều khiển~~ — **có** cho cách GPIO (`hardware/lid_controller.py`, nhiều trục, API cục bộ `/hardware/lid/*` và bảng `/service`, [ADR-0007](../adr/0007-tu-nam-viet-pi-dieu-khien-gpio-truc-tiep.md)). Còn: lệnh MQTT mở/đóng nắp + luồng drone thật | backend iot-service · `iot/services/` | F1.06 |
 
 Trước iot#9, lệnh mở từ backend bị Pi bỏ qua ngay ở `if slot_index is None: return`, dù dây đã đúng và `debug_gpio.py open n` chạy hoàn hảo. Pi chạy bản trước iot#9 thì triệu chứng vẫn là "IoT device timeout" trên app.
