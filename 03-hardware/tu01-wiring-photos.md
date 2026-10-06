@@ -136,16 +136,35 @@ Người làm tủ chưa nêu chân cho nắp trượt. GPIO21 (mặc định c�
 - Là cặp tín hiệu của ô 7: một cọc → chân 22 (GPIO25), cọc kia → chân 30 (GND).
 - Là công tắc hành trình: nối theo § 6.
 
-## 6. Công tắc hành trình của nắp trượt — 4 dây
+## 6. Hai trục nắp trượt và 4 công tắc hành trình
 
-Ảnh chưa cho thấy dây của hai công tắc hành trình. Tìm hai công tắc ở hai đầu ray nắp trượt và lần dây về khoang điện.
+Tủ có **hai trục** (hai nắp trên hai ô DRONE), mỗi trục một động cơ Nema 17 + vít me và **hai công tắc** ở hai đầu ray. Công tắc là **module 3 dây** (bo đen nhỏ, cần gạt, LED, giắc `VCC`/`GND`/`SIG`), không phải công tắc 2 cọc `NO`/`COM`. Dây đỏ `VCC` chỉ được vào **3,3 V**: chân `SIG` mang đúng điện áp cấp vào `VCC`.
 
-| Công tắc | Cọc `NO` → chân Pi | Cọc `COM` → chân Pi |
+### 6.1 Trục 1 — driver có sẵn trong tủ
+
+| Công tắc | `VCC` (đỏ) | `GND` (đen) | `SIG` (trắng) |
+|---|---|---|---|
+| Gốc (bị nhấn khi nắp **đóng** hết) | kẹp chung cọc `PUL+` của domino 2 (3,3 V từ chân 1) | chân 9 | chân 11 — GPIO17 |
+| Cuối (bị nhấn khi nắp **mở** hết) | kẹp chung cọc 6 `DIR+` của domino 2 (3,3 V từ chân 17) | chân 14 | chân 19 — GPIO10 |
+
+GPIO4 (mặc định của công tắc gốc trong code) đã dùng cho cửa ô 1 nên công tắc gốc dời sang GPIO17. Module báo mức cao khi bị nhấn thì đặt `LID_LIMIT_ACTIVE_LOW=false`.
+
+### 6.2 Trục 2 — driver TB6600 thứ hai
+
+Khoang điện chỉ có một TB6600 (trục 1); một driver không chạy được hai động cơ độc lập, nên trục 2 cần thêm một TB6600 cùng loại, DIP giống driver 1 (`OFF ON OFF ON ON OFF`: 1600 xung/vòng, 1,5 A).
+
+| Dây | Từ | Tới |
 |---|---|---|
-| Gốc (bị nhấn khi nắp **đóng** hết) | 11 — GPIO17 | 9 — GND |
-| Cuối (bị nhấn khi nắp **mở** hết) | 19 — GPIO10 | 14 — GND |
+| Nguồn driver 2 | cọc `+V`, `−V` còn trống của nguồn tổ ong (12 V) | `VCC`, `GND` của driver 2 |
+| 4 dây động cơ trục 2 | động cơ | `A+ A− B+ B−` của driver 2, cùng thứ tự màu như trục 1 |
+| 3,3 V cho trục 2 | đoạn ngắn từ cọc 6 (vít phía driver) | cọc 8 của domino 2 (đang trống) |
+| `PUL+` + `DIR+` (bắc cầu trên driver 2) | driver 2 | cọc 8 |
+| `PUL−` | driver 2 | chân 21 — GPIO9 |
+| `DIR−` | driver 2 | chân 23 — GPIO11 |
+| Công tắc gốc trục 2 | `VCC` / `GND` / `SIG` | cọc 8 / chân 20 / chân 26 — GPIO7 |
+| Công tắc cuối trục 2 | `VCC` / `GND` / `SIG` | cọc 8 / chân 34 / chân 24 — GPIO8 |
 
-GPIO4 (mặc định của công tắc gốc trong code) đã dùng cho cửa ô 1 nên công tắc gốc dời sang GPIO17. Công tắc chỉ có cọc `NC`: vẫn nối được, đổi `LID_LIMIT_ACTIVE_LOW=false`.
+Phần mềm: trục 2 bật bằng `LID2_ENABLED=true` (§ 9); chân mặc định trong code khớp bảng trên. Hướng dẫn có hình: bước 5B của trang hướng dẫn nối dây (bản 2, 2026-10-06).
 
 ## 7. Nguồn tổ ong
 
@@ -162,7 +181,8 @@ Công tắc chọn điện áp phải ở **220 V**. Không vặn biến trở `
 | 3 | Dây tín hiệu khoá có phải tiếp điểm khô | Đo điện áp so với `−V` (§ 4) |
 | 4 | Cọc 4 hay cọc 7 của domino 2 là `PUL+` | Thông mạch từ vít driver (§ 5) |
 | 5 | Cặp dây vàng ở cọc 11–12 của domino 2 là gì | Thông mạch khi đóng mở cửa hoặc bấm công tắc (§ 5) |
-| 6 | Dây hai công tắc hành trình về tới đâu; người làm tủ nối nắp trượt vào chân nào | Lần dây từ ray nắp (§ 6); hỏi người làm tủ |
+| 6 | Dây bốn công tắc hành trình về tới đâu; trục nào nằm trên ô nào | Lần dây từ hai ray nắp (§ 6); dán nhãn |
+| 7 | Đã có driver TB6600 thứ hai cho trục 2 chưa | Nhìn trong tủ (§ 6.2) |
 
 ## 9. Cấu hình trên Pi cho bản đồ chân này
 
@@ -177,6 +197,8 @@ LID_HOME_PIN=17
 LID_END_PIN=10
 ```
 
+Từ 2026-10-06 (iot#12) `LID_PULSE_US` mặc định 1000 µs — xung 20 µs cũ chỉ làm động cơ rung. Trục 2 nối xong thì thêm `LID2_ENABLED=true` (chân mặc định GPIO9/11/7/8 như § 6.2). Tốc độ, xung, số vòng chỉnh trên bảng điều khiển kỹ thuật `/service` và lưu ở `~/iot/config/lid_tuning.json`, không cần sửa `.env`.
+
 `ExecStopPost` của `lockr-controller.service` đổi theo: `pinctrl set 5,6,13,19,26,22,23 op dl`.
 
 `/boot/firmware/config.txt` thêm `gpio=5,6,13,19,26,22,23=op,dl`: firmware đưa 7 chân relay về mức thấp trước khi hệ điều hành chạy. Không có dòng này, GPIO5 và GPIO6 bị kéo lên suốt khoảng một phút đầu, tới khi `main.py` khởi động.
@@ -185,4 +207,4 @@ LID_END_PIN=10
 
 ## 10. Sau khi nối
 
-Bring-up theo [controller-wiring-guide § 5](controller-wiring-guide.md#5-kiểm-tra-từng-bước-bring-up): `debug_gpio.py pins`, `doors`, `open N`, `lid …`. Sai thứ tự ô, sai chiều nắp, relay kích ngược đều sửa bằng `.env`, không phải nối lại. Xong thì gán Pi vào tủ `CAB-TU01` trên admin (guide § 5.8) và chuyển tủ từ `MAINTENANCE` sang `ACTIVE`.
+Bring-up theo [controller-wiring-guide § 5](controller-wiring-guide.md#5-kiểm-tra-từng-bước-bring-up): `debug_gpio.py pins`, `doors`, `open N`, `lid …`, hoặc bảng điều khiển kỹ thuật `/service` (guide § 5, mục cuối) mà không phải dừng dịch vụ. Sai thứ tự ô, sai chiều nắp, relay kích ngược đều sửa bằng `.env`, không phải nối lại. Xong thì gán Pi vào tủ `CAB-TU01` trên admin (guide § 5.8) và chuyển tủ từ `MAINTENANCE` sang `ACTIVE`.
