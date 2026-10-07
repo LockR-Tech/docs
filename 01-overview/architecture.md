@@ -36,6 +36,8 @@ Mỗi service có database Postgres riêng, Flyway, `ddl-auto: validate`.
 
 **MQTT (iot-service)** — hợp đồng đầy đủ: [mqtt-contract.md](mqtt-contract.md) ([ADR-0008](../adr/0008-hop-dong-mqtt-backend-tu.md)). Phát `cabinet/{lockerId}/command/open` (`boxId` + `slotIndex = boxNumber − 1`, chờ `/result` theo `app.iot.unlock-wait-seconds`), `cabinet/{lockerId}/command/sync`, `iot/{mac}/command/setup|clear-setup`, `iot/{mac}/discovery/start`; nghe `cabinet/+/command/+/result`, `cabinet/+/heartbeat`, `cabinet/+/locker/+/status`, `iot/+/discovery/result`, `iot/+/setup/progress|result`. Admin gán Pi vào tủ: `GET /api/admin/iot/gateways`, `POST /api/admin/iot/gateways/{id}/assign|unassign|discover`, `DELETE /api/admin/iot/gateways/{id}`. ⚠ Broker mặc định vẫn là `broker.hivemq.com:1883` công khai (SEC-04) cho tới khi bật broker riêng (bảng dưới). Hợp đồng này có từ [backend#33](https://github.com/LockR-Tech/backend/pull/33) + [iot#9](https://github.com/LockR-Tech/iot/pull/9) (merge 2026-09-27).
 
+**MQTT (order-service — telemetry drone)** — hợp đồng: [drone-telemetry-contract.md](drone-telemetry-contract.md). Kết nối riêng, chỉ nghe `lockr/drones/+/telemetry` do Pi trên drone (`iot/drone-iot/`) gửi; bản tin ký HMAC theo khoá từng drone. Tắt mặc định (`APP_DRONE_TELEMETRY_ENABLED`); biến `DRONE_TELEMETRY_SECRET` (secret), `DRONE_MQTT_BROKER_URL`, `DRONE_MQTT_USERNAME`, `DRONE_MQTT_PASSWORD`. Không đi qua iot-service.
+
 **Gateway** (`api-gateway/src/main/resources/application.yml`): `/api/auth/**`→auth · `/api/users/**`, `/api/user/**`, `/api/media/**`→user · `/api/orders/**`, `/api/drone-technician/drone-orders/**`, `/api/admin/drone-orders/**` (ADMIN — hành trình drone), `/api/promotions/**`, `/api/admin/dashboard/**`→order · `/api/lockers/**`, `/api/boxes/**`, `/api/maintenance/**`, `/api/locker-technician/**`, `/api/drone-technician/**`, `/api/admin/drones/**`→locker · `/api/payments/**`, `/api/wallet/**`→payment · `/api/notifications/**`, `/ws/**`→notification · `/api/iot/**`, `/api/locker-technician/devices/**`→iot (khai báo trước locker-service để không bị nuốt) · `/api/stores/**`→store · `/api/loyalty/**`→loyalty · `/api/assistant/**` (mọi JWT), `/api/admin/knowledge/**` (ADMIN)→assistant. `/internal/**` luôn 403 từ ngoài.
 
 Đường công khai của kiosk (mã là credential, không JWT): `/api/iot/verify-pin`, `/verify-access`, `/unlock`, `/unlock-with-code`, `/confirm-drop-with-code`, `/end-rental-with-code`. RBAC đáng chú ý: LOCKER_TECHNICIAN chỉ được `GET /api/admin/lockers/reports` (không giao/đóng/gia hạn bản admin); `PUT /api/maintenance/schedules/**` chỉ ADMIN.
@@ -79,7 +81,7 @@ Mỗi service có database Postgres riêng, Flyway, `ddl-auto: validate`.
 
 ## 6. Realtime
 
-STOMP tại `/ws` (notification-service): `/user/queue/notifications` (mobile đăng ký), `/topic/deliveries/{orderId}/position` (live map drone — order-service phát vị trí nội suy cho đơn DEMO qua `POST /internal/deliveries/{orderId}/position`; đơn STANDARD chưa có nguồn vị trí). Web admin chỉ dùng WebSocket ở Partner portal cũ.
+STOMP tại `/ws` (notification-service): `/user/queue/notifications` (mobile đăng ký), `/topic/deliveries/{orderId}/position` (live map drone — order-service phát vị trí nội suy cho đơn DEMO qua `POST /internal/deliveries/{orderId}/position`; đơn STANDARD lấy vị trí thật từ telemetry drone khi bật — [drone-telemetry-contract](drone-telemetry-contract.md)). Web admin chỉ dùng WebSocket ở Partner portal cũ.
 
 ## 7. CI/CD
 
