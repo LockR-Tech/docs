@@ -63,6 +63,16 @@ Flyway, **chỉ tiến, không lùi**. Rollback code **không** rollback schema 
 
 ⚠ `.previous` chỉ giữ **một** bản trước và bị ghi đè ở lần deploy kế. ⚠ Bản cũ phải tương thích schema hiện tại (§ 4) — nếu không Flyway sẽ từ chối khởi động.
 
+**Deploy đỏ ngay ở bước "Deploy on Azure VM" do quyền trên VM** (xảy ra từ 05/10 tới 08/10/2026 sau khi chuyển VM — 11 lần deploy liền không lên, production đứng ở code 04/10). Script chạy bằng user deploy (`azureuser`), **không sudo**, nên VM phải đúng các bước quyền của `backend/infra/azure/bootstrap-vm.sh` (dòng 69-78). Khi dựng/chuyển VM bằng tay, chạy lại các lệnh này rồi bấm chạy lại workflow:
+
+| Lỗi trong log | Sửa trên VM |
+|---|---|
+| `mkdir: cannot create directory '/opt/laundry-locker-microservices.new': Permission denied` | `sudo chgrp azureuser /opt && sudo chmod 2775 /opt` và `sudo chown -R azureuser:azureuser /opt/laundry-locker-microservices` |
+| `open /home/azureuser/.docker/buildx/.lock: permission denied` | `sudo chown -R azureuser:azureuser /home/azureuser/.docker` (thường do từng chạy `docker` bằng sudo) |
+| `permission denied` khi gọi `docker` | `sudo usermod -aG docker azureuser` (phiên SSH mới mới nhận nhóm) |
+
+Kiểm tra nhanh trước khi deploy: `mkdir /opt/laundry-locker-microservices.permtest && rmdir $_ && docker buildx ls` (chạy bằng `azureuser`, không sudo). Theo dõi `infra/azure/DEPLOY-LOG.md` trong repo backend: nhiều dòng `failure` liên tiếp nghĩa là code đã merge **chưa** lên production.
+
 ### Cloudflare (admin web, landing, mobile web)
 
 ```bash

@@ -2,7 +2,7 @@
 
 | Tiến độ | Rà soát | Sơ đồ |
 |---|---|---|
-| **94 %** (7,5 / 8) | 2026-09-21 · backend [#23](https://github.com/LockR-Tech/backend/pull/23) · frontend [#16](https://github.com/LockR-Tech/frontend/pull/16) · mobile [#21](https://github.com/LockR-Tech/mobile/pull/21) (đã merge 2026-09-21) | [Kiến trúc](../diagrams/pdf/architecture.pdf) (khối `assistant`) |
+| **100 %** (8 / 8) | 2026-10-10 · backend [#23](https://github.com/LockR-Tech/backend/pull/23), [#50](https://github.com/LockR-Tech/backend/pull/50) · frontend [#16](https://github.com/LockR-Tech/frontend/pull/16), [#35](https://github.com/LockR-Tech/frontend/pull/35) · mobile [#21](https://github.com/LockR-Tech/mobile/pull/21) — chạy thật trên production từ 2026-10-07 | [Kiến trúc](../diagrams/pdf/architecture.pdf) (khối `assistant`) |
 
 Viết tắt: `AS` = `backend/assistant-service/src/main/java/com/huynqb/laundrylocker/assistant`. Quyết định công nghệ: [ADR-0006](../adr/0006-tro-ly-rag-claude-voyage-pgvector-rieng.md).
 
@@ -19,11 +19,11 @@ Nạp tài liệu nội bộ (hướng dẫn sử dụng, quy trình vận hành
 | F4.03 | Truy xuất + LLM trả lời có trích nguồn | Top-k theo cosine `AS/knowledge/ChunkRepository.java:41`; Claude, mỗi đoạn một document block bật Citations `AS/provider/ClaudeAnswerGenerator.java:99,122`; stop_reason refusal ⇒ từ chối lịch sự `:80` | **DONE** | — |
 | F4.04 | API hỏi đáp qua gateway | `POST /api/assistant/ask` `AS/controller/AssistantController.java:27`; route `backend/api-gateway/src/main/resources/application.yml:79` (`/api/assistant/**` cần JWT, `/api/admin/knowledge/**` chỉ ADMIN) | **DONE** | — |
 | F4.05 | Giao diện hỏi đáp (mobile/web) | App: route `/assistant`, `/assistant/history` `mobile/lib/core/routing/app_router.dart:104-105`; màn hỏi đáp `mobile/lib/features/assistant/presentation/pages/assistant_chat_page.dart:18`, nguồn trích dẫn `…/widgets/assistant_sources.dart:9`; lối vào "Trợ giúp" `mobile/lib/features/profile/presentation/pages/profile_page.dart:447`, nút trên trang KTV tủ/KTV drone; request hỏi chờ riêng 120 s | **DONE** | Web admin chỉ xem lại hội thoại, không có ô hỏi |
-| F4.06 | ADMIN quản lý kho tài liệu | API `AS/controller/KnowledgeAdminController.java`; web `/admin/knowledge` `frontend/fe/src/routes/routes-config.tsx:371`, trang `frontend/fe/src/pages/Admin/knowledge/index.tsx:33` (tài liệu, hội thoại, đánh giá), API slice `frontend/fe/src/stores/apis/admin/knowledge.ts`; cấu hình trợ lý là tab `assistant` ở `/admin/settings` | **DONE** | — |
+| F4.06 | ADMIN quản lý kho tài liệu | API `AS/controller/KnowledgeAdminController.java`; web `/admin/knowledge` `frontend/fe/src/routes/routes-config.tsx:371`, trang `frontend/fe/src/pages/Admin/knowledge/index.tsx:33` (tài liệu, hội thoại, đánh giá), API slice `frontend/fe/src/stores/apis/admin/knowledge.ts`; xem nội dung tài liệu — file gốc `GET …/documents/{id}/file` và các đoạn đã đánh chỉ mục `GET …/documents/{id}/chunks` (backend #50), giao diện `frontend/fe/src/pages/Admin/knowledge/DocumentDetailSheet.tsx` (frontend #35); cấu hình trợ lý là tab `assistant` ở `/admin/settings` | **DONE** | — |
 | F4.07 | Phân quyền tài liệu theo vai trò + lịch sử hội thoại | Lọc `allowed_roles && vai trò người hỏi` `AS/knowledge/ChunkRepository.java:51` (ADMIN đọc tất cả); hội thoại + tin nhắn + citations `AS/chat/AssistantService.java:70` | **DONE** | — |
-| F4.08 | Guardrail + bộ đánh giá | Dưới ngưỡng ⇒ "tài liệu chưa đề cập", không gọi LLM `AS/chat/AssistantService.java:38,114`; giới hạn câu/giờ `:85`; ngưỡng/top-k/giới hạn chỉnh trên admin `AS/settings/AssistantSettingsCatalog.java:29`; 27 câu đánh giá `backend/scripts/knowledge/eval-cases.json`, `POST /api/admin/knowledge/eval` `AS/eval/EvalService.java:107` | PARTIAL | Chưa chạy bộ đánh giá với khoá thật ⇒ ngưỡng mặc định 35 % chưa hiệu chỉnh |
+| F4.08 | Guardrail + bộ đánh giá | Dưới ngưỡng ⇒ "tài liệu chưa đề cập", không gọi LLM `AS/chat/AssistantService.java:38,114`; giới hạn câu/giờ `:85`; ngưỡng/top-k/giới hạn chỉnh trên admin `AS/settings/AssistantSettingsCatalog.java:29`; 27 câu đánh giá `backend/scripts/knowledge/eval-cases.json`, `POST /api/admin/knowledge/eval` `AS/eval/EvalService.java:107`. **Đã chạy trên production 2026-10-07** (10 tài liệu, 89 đoạn): ngưỡng 35 % đạt 27/27 — trúng tài liệu 22/22 (điểm thấp nhất 0,407), từ chối đúng 5/5 (điểm cao nhất 0,345); giữ 35 % | **DONE** | — |
 
-**Điểm:** DONE 7 × 1 + PARTIAL 1 × 0,5 = 7,5 / 8 = **94 %**.
+**Điểm:** DONE 8 × 1 = 8 / 8 = **100 %**.
 
 ## 3. Luồng chạy
 
@@ -63,5 +63,5 @@ Tìm kiếm dùng mọi đoạn đang có, không lọc theo trạng thái tài 
 | ID | Việc | Ở đâu | Mục checklist |
 |---|---|---|---|
 | ~~F4-G01 → F4-G08~~ | Hạ tầng pgvector, `assistant-service`, nạp tài liệu, hỏi đáp, gateway, seed, trang Kho tri thức, màn hình trợ lý — **đã làm** (backend #23, frontend #16, mobile #21) | — | F4.01 → F4.07 |
-| **F4-G09** | Bộ đánh giá **đã có** (27 câu, endpoint, test Testcontainers pgvector). Còn: nạp khoá API trên VM, chạy `POST /api/admin/knowledge/eval` trên dữ liệu thật, chỉnh `app.assistant.min-score-percent` tới khi trúng tài liệu ≥ 90 % và từ chối đúng các câu ngoài phạm vi | `/admin/settings` scope `assistant` | F4.08 |
+| ~~F4-G09~~ | **Đã làm 2026-10-07:** nạp khoá Anthropic + Voyage trên VM, seed 10 tài liệu + 27 câu, chạy bộ đánh giá: 27/27 ở ngưỡng 35 % (giữ nguyên — xem F4.08). Lưu ý vận hành: khoá Voyage chưa gắn thẻ ⇒ 3 request/phút, 10K token/phút (nạp nhiều tài liệu liền nhau sẽ lỗi 429 — đánh chỉ mục lại từng tài liệu, cách nhau ~1 phút); `seed-knowledge.sh` chạy trong Git Bash trên Windows làm hỏng dấu tiêu đề (curl nhận tham số qua code page ANSI) | — | F4.08 |
 | **F4-G10** | Nội dung: sửa FAQ landing page cho khớp sản phẩm rồi nạp; cập nhật chính sách quyền riêng tư nêu việc câu hỏi được gửi tới Anthropic/Voyage | `frontend/landingPage/…`, `legal/privacy-policy.html` | — |
