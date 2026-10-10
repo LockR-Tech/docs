@@ -2,12 +2,25 @@
 
 Mỗi thay đổi ở repo docs thêm **một dòng** vào ngày tương ứng (mới nhất ở trên). Ghi mã gap/SEC/ADR nếu có.
 
+## 2026-10-09
+
+- F1-G04 · F1-G06 (đã đẩy lên nhánh, chưa merge `main`): rà soát rule nghiệp vụ đơn drone — báo chuyến bay thất bại, giữ hồ sơ nhiệm vụ khi huỷ, ba hạn tự huỷ (chưa trả tiền, chưa tiếp nhận, nợ phụ thu), khai báo kiện, người gửi xác nhận bỏ kiện, kiện chờ trả, khách từ chối phụ thu, tầm bay/số đơn mở/tạm dừng bay, cộng đúng tiền từng lần thanh toán. flow-1 thêm mục 2026-10-09; sơ đồ `drone-mission` thêm D10, D12.
+
+## 2026-10-07
+
+- F1-G04 (local, chưa merge): đơn drone bị huỷ theo luồng hoàn tiền mới của backend #45 — `REFUND_PENDING` chờ admin chuyển khoản thay cho "hoàn về ví"; flow-1 thêm đoạn 2026-10-07. Không đổi %.
+
+## 2026-10-06
+
+- F1-G04 · F1-G06 (một phần, local, chưa merge): rà soát thanh toán đơn drone — tự hoàn khoản tiền tới sau khi đơn đã huỷ, không đánh dấu `REFUNDED` khi hoàn 0 đ, khoá đơn ở khách huỷ và sự kiện thanh toán, `nextAction`/`paymentRequired` khớp guard trả trước. flow-1 thêm mục "Cập nhật 2026-10-06" kèm các điểm còn hở. Không đổi %.
+
 ## 2026-10-10
 
 - F1-G11 (nhánh `feature/drone-parcel-drop-incident`, chưa deploy): triển khai luồng quản lý sự cố rơi kiện drone end-to-end gồm camera/telemetry thật hoặc trạng thái unavailable, report idempotent, chặn delivered, RTL có acknowledgement, phiếu kiểm tra drone, nhiệm vụ KTV tủ thu hồi bằng ảnh/GPS, Admin verify/proposal có phiên bản, khách accept/dispute và snapshot policy bồi thường theo order. Thêm adapter + callback cho payout, redelivery và RTL; khi hạ tầng thật chưa có thì ghi `Integration Unavailable`, không trả success giả. Thêm đặc tả `drone-parcel-drop-incidents.md`, sơ đồ state machine và liên kết flow-1. Lưu ý: Backend xuất hiện commit/push `73a852f` và merge/push `fe3f1a5` từ thao tác ngoài phiên agent trong lúc chạy test; web/mobile/docs còn local.
 
 ## 2026-10-04
 
+- F1-G01 (local, chưa merge): telemetry drone thật. Thêm `01-overview/drone-telemetry-contract.md` (topic `lockr/drones/{droneId}/telemetry|status`, payload schemaVersion 1, chữ ký HMAC theo khoá từng drone, quy tắc suy chặng, biến môi trường); flow-1 thêm mục "Cập nhật 2026-10-04 (telemetry drone thật)" và sửa dòng F1-G01; `architecture.md` § 2 + § 6; STATUS § 3 thêm việc đang làm, đóng câu hỏi Q3. Verdict và % giữ nguyên, chờ bay thử.
 - Hạ tầng: production chuyển sang VM Azure mới `85.211.182.170` (Malaysia West, Ubuntu 24.04, `Standard_B2as_v2`) vì subscription cũ hết credit; chép nguyên dữ liệu 9 DB + `assistant-db`, RabbitMQ, nginx/Let's Encrypt; DNS `api.locker-drone.tech` và secret `AZURE_VM_HOST` đã trỏ sang máy mới. `architecture.md` § 3, `release-deploy.md` § 1.
 
 ## 2026-10-02
