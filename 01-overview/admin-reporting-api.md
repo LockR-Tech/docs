@@ -66,13 +66,13 @@ Multi-value filters (`status`, `type`, `method`, ...) accept `status=STORING,EXP
 ### 0.6 Domain values actually produced
 - Order `status`: `INITIALIZED`, `STORING`, `EXPIRED`, `AWAITING_DISPATCH`, `COMPLETED`, `CANCELED` (legacy `RETURNED` may exist)
 - Order `type`: `SEND`, `RENTAL`, `DRONE_DELIVERY`, `STORAGE` (legacy)
-- Order `paymentStatus`: `UNPAID`, `PAID`, `REFUNDED`
-- Drone `deliveryStage`: `AWAITING_DISPATCH`, `ACCEPTED`, `LAUNCHING`, `DEPARTED`, `EN_ROUTE`, `APPROACHING`, `ARRIVED`, `READY_FOR_PICKUP`
-- Payment `method`: `CASH`, `WALLET`, `VNPAY`, `MOMO`, `VNPAY_TOPUP` (wallet top-up, `orderId = 0`)
-- Payment `status`: `PENDING`, `COMPLETED`, `FAILED`
-- Payment `kind` (computed): `ORDER` | `TOPUP` (`TOPUP` = method `VNPAY_TOPUP` or `orderId <= 0`)
+- Order `paymentStatus`: `UNPAID`, `PAID`, `REFUND_PENDING` (canceled drone order waiting for the admin's bank transfer), `REFUNDED`
+- Drone `deliveryStage`: `AWAITING_DISPATCH`, `ACCEPTED`, `LAUNCHING`, `DEPARTED`, `EN_ROUTE`, `APPROACHING`, `ARRIVED`, `READY_FOR_PICKUP`, `DROP_REPORTED` (parcel drop incident opened)
+- Payment `method`: `CASH`, `WALLET`, `VNPAY`, `MOMO`, `SEPAY`, `VNPAY_TOPUP` / `SEPAY_TOPUP` (wallet top-up, `orderId = 0`)
+- Payment `status`: `PENDING`, `COMPLETED`, `FAILED`. Admin status edits are refused for top-ups and for final statuses (money only moves through gateway callbacks).
+- Payment `kind` (computed): `ORDER` | `TOPUP` (`TOPUP` = method `*_TOPUP` or `orderId <= 0`)
 - Refund `status`: `COMPLETED` (created as completed today)
-- Wallet tx `type`: `CREDIT` | `DEBIT`. `source`: `TOPUP` | `ORDER_PAYMENT` | `REFUND` | `ADJUST`
+- Wallet tx `type`: `CREDIT` | `DEBIT`. `source`: `TOPUP` | `ORDER_PAYMENT` | `REFUND` | `ADJUST` | `WITHDRAW`
 
 ---
 
@@ -210,6 +210,9 @@ are `null` when there is no data, or when the source service failed. The list st
 ```
 Field notes:
 - The first block matches the legacy `OrderResponse` exactly: same names, same meaning.
+- `appliedPromotionCodes` is a **comma-joined string** (`"SALE10,FREESHIP"`) or null — not an array.
+- `orderDetails[]` items are `{serviceId, quantity, price, description}`; `price` is already the line total
+  (fee × quantity). There is no service name or unit — show `description`.
 - `receiver`: `name`/`phone` are what was typed on the order (SEND recipient or pickup delegate). `userId` is
   `receiverUserId ?? receiverId`. The `account*` fields come from that user account and can be null.
 - `store`: the order's `storeId` when present, otherwise the locker's store.
@@ -648,3 +651,22 @@ collection in the range, newest first.
 
 Gateway: new route `order-service-admin-revenue` for `/api/admin/revenue`, `/api/admin/revenue/**` → order-service.
 The other new public paths are under prefixes that were already routed (`/api/admin/orders/**` and `/api/admin/payments/**`).
+
+---
+
+## 6. Service feedback & dashboard insights (`/admin/feedback`, `/admin/dashboard`) — order-service
+
+Feedback = customer order ratings (`order_schema.order_ratings`, 1–5 stars + comment). Flyway `V22` adds the admin
+columns (`admin_reply`, `replied_at/by`, `resolved`, `resolved_at/by`, `updated_at`). Gateway route `admin-feedback`
+sends `/api/admin/feedback`, `/api/admin/feedback/**`, `/api/admin/analytics/**` to order-service; peak hours sit under
+the existing `/api/admin/dashboard/**` route. Customer name/email come from user-service and are null when it is down.
+
+| Endpoint | Body / query | Returns |
+|---|---|---|
+| `GET /api/admin/feedback` | `page`, `size` (≤100), `minRating`, `maxRating`, `isResolved` | page of `{id, userId, userName, email, rating, comment, relatedOrderId, orderCode, orderDescription, isResolved, replied, createdAt, updatedAt}`, newest first |
+| `GET /api/admin/feedback/{id}` | — | `{… userEmail, userPhone, serviceType, orderAmount, adminReply, repliedAt, resolvedBy (admin name), resolvedAt …}` |
+| `PATCH` (or `PUT`) `/api/admin/feedback/{id}/status` | `{status: "RESOLVED" \| "PENDING"}` | the list item; 400 `FEEDBACK_STATUS_INVALID` otherwise |
+| `POST /api/admin/feedback/{id}/reply` | `{reply}` (≤2000) | detail; the customer gets a `FEEDBACK_REPLY` notification (best effort) |
+| `GET /api/admin/analytics/feedback?period=day\|week\|month` | — | `{averageRating, totalFeedback, ratingDistribution{"1".."5"}, feedbackToday, feedbackThisWeek, feedbackThisMonth, trends[{date, count, avgRating}], unresolvedCount}`; `trends` = 14 days / 12 weeks / 12 months (VN dates, zero-filled) |
+| `GET /api/admin/analytics/satisfaction` | — | `{overallSatisfactionScore (avg/5×100), npsScore (% 5★ − % 1–3★), positivePercentage (4–5★), negativePercentage (1–2★), mostCommonComplaint (top complaint type, 90 days), topServiceQuality, departmentScores{orderType: avg}}` |
+| `GET /api/admin/dashboard/peak-hours?from=&to=` | yyyy-MM-dd, same rules as revenue | `[{hour 0–23 (VN), orders}]`, always 24 items |

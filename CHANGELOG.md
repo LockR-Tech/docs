@@ -16,6 +16,9 @@ Mỗi thay đổi ở repo docs thêm **một dòng** vào ngày tương ứng (
 
 ## 2026-10-10
 
+- F4-G09: L4 lên **100 %** — RAG chạy thật trên production từ 07/10, bộ đánh giá 27/27 ở ngưỡng 35 % (F4.08 PARTIAL → DONE), F4.06 thêm bằng chứng xem nội dung tài liệu (backend #50, frontend #35); STATUS § 1 tổng 69,7 % → 71,3 %, § 5 thêm hai dòng 07/10 và 08/10.
+- Vận hành: `release-deploy.md` § 5 thêm cách sửa lỗi quyền trên VM làm deploy đỏ 05–08/10 (`/opt` cho user deploy, `~/.docker` của root, nhóm `docker`) và kiểm tra nhanh trước khi deploy.
+- Web admin (PR đang mở: backend #54, frontend #39): `admin-reporting-api.md` thêm § 6 đánh giá dịch vụ / thống kê / giờ cao điểm, giá trị `REFUND_PENDING`, `DROP_REPORTED`, `SEPAY`/`SEPAY_TOPUP`, `WITHDRAW`, dạng thật của `appliedPromotionCodes` và `orderDetails`; STATUS § 3 thêm dòng sửa lỗi web admin.
 - F1-G11 (nhánh `feature/drone-parcel-drop-incident`, chưa deploy): triển khai luồng quản lý sự cố rơi kiện drone end-to-end gồm camera/telemetry thật hoặc trạng thái unavailable, report idempotent, chặn delivered, RTL có acknowledgement, phiếu kiểm tra drone, nhiệm vụ KTV tủ thu hồi bằng ảnh/GPS, Admin verify/proposal có phiên bản, khách accept/dispute và snapshot policy bồi thường theo order. Thêm adapter + callback cho payout, redelivery và RTL; khi hạ tầng thật chưa có thì ghi `Integration Unavailable`, không trả success giả. Thêm đặc tả `drone-parcel-drop-incidents.md`, sơ đồ state machine và liên kết flow-1. Lưu ý: Backend xuất hiện commit/push `73a852f` và merge/push `fe3f1a5` từ thao tác ngoài phiên agent trong lúc chạy test; web/mobile/docs còn local.
 
 ## 2026-10-04
