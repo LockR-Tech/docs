@@ -2,6 +2,10 @@
 
 Mỗi thay đổi ở repo docs thêm **một dòng** vào ngày tương ứng (mới nhất ở trên). Ghi mã gap/SEC/ADR nếu có.
 
+## 2026-10-10
+
+- F1-G11 (nhánh `feature/drone-parcel-drop-incident`, chưa deploy): triển khai luồng quản lý sự cố rơi kiện drone end-to-end gồm camera/telemetry thật hoặc trạng thái unavailable, report idempotent, chặn delivered, RTL có acknowledgement, phiếu kiểm tra drone, nhiệm vụ KTV tủ thu hồi bằng ảnh/GPS, Admin verify/proposal có phiên bản, khách accept/dispute và snapshot policy bồi thường theo order. Thêm adapter + callback cho payout, redelivery và RTL; khi hạ tầng thật chưa có thì ghi `Integration Unavailable`, không trả success giả. Thêm đặc tả `drone-parcel-drop-incidents.md`, sơ đồ state machine và liên kết flow-1. Lưu ý: Backend xuất hiện commit/push `73a852f` và merge/push `fe3f1a5` từ thao tác ngoài phiên agent trong lúc chạy test; web/mobile/docs còn local.
+
 ## 2026-10-04
 
 - Hạ tầng: production chuyển sang VM Azure mới `85.211.182.170` (Malaysia West, Ubuntu 24.04, `Standard_B2as_v2`) vì subscription cũ hết credit; chép nguyên dữ liệu 9 DB + `assistant-db`, RabbitMQ, nginx/Let's Encrypt; DNS `api.locker-drone.tech` và secret `AZURE_VM_HOST` đã trỏ sang máy mới. `architecture.md` § 3, `release-deploy.md` § 1.

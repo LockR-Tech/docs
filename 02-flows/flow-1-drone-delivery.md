@@ -1,5 +1,7 @@
 # L1 — Giao hàng bằng drone → mã PIN → nhận hàng
 
+> Sự cố rơi kiện trong chuyến bay được đặc tả riêng tại [Drone Parcel Drop Incident](../01-overview/drone-parcel-drop-incidents.md). Luồng này dừng order/mission ở `DROP_REPORTED`, tạo phiếu kiểm tra drone + nhiệm vụ thu hồi kiện và chỉ tiếp tục giao lại sau khi evidence, Hub handover và phương án khách hàng đều hợp lệ.
+
 | Tiến độ | Rà soát | Sơ đồ |
 |---|---|---|
 | **70 %** (7 / 10) — chỉ trọn vẹn ở chế độ **DEMO** | 2026-09-25 · backend `0bd047d` + F1-G08 local · mobile `d717b76` + F1-G08 local · iot `454c49a` | [Vòng đời giao hàng](../diagrams/pdf/drone-mission.pdf) · [Trạng thái drone](../diagrams/pdf/drone-status.pdf) · [Trạng thái đơn](../diagrams/pdf/order-status.pdf) |

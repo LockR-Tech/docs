@@ -4,8 +4,8 @@
 
 | | |
 |---|---|
-| **Cập nhật lần cuối** | 2026-10-02 |
-| **Người cập nhật** | Antigravity — 2026-10-02: mobile hoàn thiện xử lý sự cố ô tủ kỹ thuật và hồ sơ điều chuyển ô an toàn trên chi tiết đơn hàng (nhánh `feat/incident-box-relocation-order-detail`). Trước đó 2026-10-01: màn cảm ứng tủ thật chạy được, bàn phím ảo kiosk ([iot#10](https://github.com/LockR-Tech/iot/pull/10)) đã merge, tủ `CAB-TU01` (id 7) đã tạo trên production, hướng dẫn nối dây theo ảnh. |
+| **Cập nhật lần cuối** | 2026-10-10 |
+| **Người cập nhật** | Codex — 2026-10-10: triển khai F1-G11 quản lý sự cố rơi kiện drone end-to-end trên nhánh `feature/drone-parcel-drop-incident`. Backend xuất hiện commit/push `73a852f` và merge/push `fe3f1a5` do thao tác ngoài phiên agent lúc đang kiểm thử; web/mobile/docs vẫn local, chưa deploy. Camera, RTL, payout và tạo delivery attempt dùng adapter thật hoặc trạng thái `Integration Unavailable`, không giả lập thành công. |
 | **Tổng tiến độ 4 luồng** | **69,7 %** |
 
 ## 0. Mốc code đã rà soát
@@ -53,6 +53,7 @@ Mọi con số bên dưới đúng với các commit này. Trước khi tin STAT
 
 | Việc | Gap | Người/nhánh | Trạng thái |
 |---|---|---|---|
+| Quản lý sự cố rơi kiện hàng drone end-to-end: camera/telemetry evidence, dừng giao hàng, RTL an toàn, phiếu kiểm tra drone + thu hồi kiện, xác minh và phương án giao lại/bồi thường | F1-G11 | Codex · `feature/drone-parcel-drop-incident` (backend, frontend, mobile, iot, docs) | Đã triển khai và kiểm thử local; Backend đã được thao tác bên ngoài commit/push/merge trong lúc test, web/mobile/docs chưa commit và chưa deploy. Còn phụ thuộc hạ tầng HLS/MAVLink/payout/tạo delivery attempt thật; adapter trả `Integration Unavailable` rõ ràng. |
 | Theo dõi hành trình drone cho khách / điều phối viên / admin (đủ field, mốc giờ, nhật ký mới nhất trước, tự làm mới), trang web `/admin/drone-orders`, thông báo chặng giao mở đúng màn | F1-G07 · F1-G10 | nhánh `feat/f1-g07-live-drone-tracking` (backend, mobile, frontend, docs) | Code + test xong cục bộ: order-service 72 test xanh, api-gateway 30 test xanh, mobile test drone/thông báo/điều phối xanh, web `tsc` + eslint sạch; **chưa commit/merge/deploy**, chưa chạy thử trên thiết bị. Còn: vị trí thật + live map |
 | Bước nạp hàng drone bắt buộc trước launch | F1-G08 | Codex · local `main` backend/mobile | Code + migration + test đã xong; backend 104 test xanh, mobile 50 test xanh, analyzer sạch; **chưa commit/merge/deploy** |
 | L4 trợ lý RAG lên chạy thật: nạp khoá, seed tài liệu, chạy bộ đánh giá, chỉnh ngưỡng | F4-G09 | Chủ dự án | Code đã deploy; chờ `ANTHROPIC_API_KEY`, `EMBEDDING_API_KEY` trên VM ([runbook § 11b](04-engineering/cau-hinh-dich-vu-ngoai.md)) rồi chạy `backend/scripts/seed-knowledge.sh` |

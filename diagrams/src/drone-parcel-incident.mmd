@@ -1,0 +1,29 @@
+%% @title Sự cố rơi kiện Drone
+%% @subtitle Nguồn: order-service/DroneParcelIncidentService · triển khai local 2026-10-10
+%% @orientation portrait
+%% @legend <span class="sw ok"></span>Transition đã validate ở backend
+%% @legend <span class="sw gap"></span>Tích hợp vật lý/payment còn cần adapter thật
+%% @note Return flight là state machine độc lập: gọi API không được coi là drone đã về Hub.
+%% @note Compensation accepted giữ PAYMENT_PENDING tới khi payment adapter xác nhận thành công.
+stateDiagram-v2
+    [*] --> REPORTED: report + evidence snapshot
+    REPORTED --> INVESTIGATING: delivery stopped
+    REPORTED --> MANUAL_INTERVENTION_REQUIRED: RTL unsafe/unavailable
+    INVESTIGATING --> RECOVERY_IN_PROGRESS: technician starts search
+    RECOVERY_IN_PROGRESS --> AWAITING_ADMIN_REVIEW: found / not found / unsafe submitted
+    AWAITING_ADMIN_REVIEW --> AWAITING_CUSTOMER_RESPONSE: admin verifies and proposes
+    AWAITING_CUSTOMER_RESPONSE --> RESOLUTION_IN_PROGRESS: customer accepts
+    AWAITING_CUSTOMER_RESPONSE --> DISPUTED: customer requests review
+    DISPUTED --> AWAITING_CUSTOMER_RESPONSE: new proposal version
+    RESOLUTION_IN_PROGRESS --> RESOLVED: redelivery/payment confirmed
+    RESOLVED --> CLOSED: all linked work closed
+
+    state "Return flight (independent physical acknowledgement)" as ReturnFlight {
+        [*] --> RETURN_REQUESTED
+        RETURN_REQUESTED --> COMMAND_ACCEPTED
+        COMMAND_ACCEPTED --> RETURNING
+        RETURNING --> COMPLETED
+        RETURN_REQUESTED --> MANUAL_INTERVENTION_REQUIRED
+        COMMAND_ACCEPTED --> FAILED
+        RETURNING --> FAILED
+    }
