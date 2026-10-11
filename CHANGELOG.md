@@ -14,6 +14,11 @@ Mỗi thay đổi ở repo docs thêm **một dòng** vào ngày tương ứng (
 
 - F1-G04 · F1-G06 (một phần, local, chưa merge): rà soát thanh toán đơn drone — tự hoàn khoản tiền tới sau khi đơn đã huỷ, không đánh dấu `REFUNDED` khi hoàn 0 đ, khoá đơn ở khách huỷ và sự kiện thanh toán, `nextAction`/`paymentRequired` khớp guard trả trước. flow-1 thêm mục "Cập nhật 2026-10-06" kèm các điểm còn hở. Không đổi %.
 
+## 2026-10-11
+
+- SEC-02 · F3-G01 · F3-G05: STATUS § 2 ghi phần đã vá (backend #54) và PR còn lại (backend #55); flow-3 cập nhật gap F3-G01, F3-G05 (kiểm tài khoản ACTIVE ở gateway, tài khoản `DELETED` khi xoá người dùng — backend #56). Không đổi %.
+- STATUS § 3 thay dòng web admin bằng 4 PR đang mở (backend #55, #56, mobile #52, frontend #40); § 5 thêm 2026-10-10 web admin lên production; ghi chú deploy mobile web đỏ từ cuối tháng 9.
+
 ## 2026-10-10
 
 - F4-G09: L4 lên **100 %** — RAG chạy thật trên production từ 07/10, bộ đánh giá 27/27 ở ngưỡng 35 % (F4.08 PARTIAL → DONE), F4.06 thêm bằng chứng xem nội dung tài liệu (backend #50, frontend #35); STATUS § 1 tổng 69,7 % → 71,3 %, § 5 thêm hai dòng 07/10 và 08/10.
