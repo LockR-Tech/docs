@@ -30,7 +30,7 @@ Mọi phản hồi bọc `ApiResponse { success, code, message, data, errors }`.
 { "scope": "order", "key": "app.order.send-base-fee", "group": "Giá & phí", "label": "Phí gửi hàng qua tủ",
   "description": "Giá mỗi đơn gửi hàng (SEND). Áp dụng cho đơn tạo sau khi lưu.",
   "type": "INTEGER", "value": "15000", "defaultValue": "15000", "overridden": false,
-  "min": "0", "max": "100000000", "unit": "VND", "allowedValues": [], "publicValue": true,
+  "min": "0", "max": "100000000", "unit": "VND", "allowedValues": [], "allowedItems": [], "publicValue": true,
   "updatedByUserId": null, "updatedAt": null }
 ```
 
@@ -39,7 +39,7 @@ Mọi phản hồi bọc `ApiResponse { success, code, message, data, errors }`.
 | `INTEGER` | `"15000"` | `15000` hoặc `"15000"` |
 | `DECIMAL` | `"12.5"` | `12.5` |
 | `BOOLEAN` | `"true"` / `"false"` | `true` |
-| `STRING` | chuỗi, có thể rỗng; `allowedValues` khác rỗng ⇒ phải thuộc danh sách | `"CASH,WALLET"` |
+| `STRING` | chuỗi, có thể rỗng; `allowedValues` khác rỗng ⇒ phải thuộc danh sách; `allowedItems` khác rỗng (backend #65) ⇒ danh sách cách nhau bởi dấu phẩy, **mỗi phần tử** phải thuộc `allowedItems` (sai ⇒ `SETTING_INVALID`; giá trị đã lưu còn phần tử nay không hỗ trợ thì khi đọc bỏ phần tử đó) | `"CASH,WALLET"` |
 | `INTEGER_LIST` | `"2,4,8"` | `[2, 4, 8]` hoặc `"2,4,8"` |
 
 **SettingAuditView**: `{ id, key, oldValue, newValue, actorUserId, changedAt }` — `newValue = null` nghĩa là khôi phục mặc định.
@@ -63,7 +63,7 @@ Mọi phản hồi bọc `ApiResponse { success, code, message, data, errors }`.
 | order | Thanh toán · Drone | Bắt buộc thanh toán trước khi bỏ hàng; drone DEMO bật/tắt, user được dùng, thời gian mỗi chặng; pin tối thiểu nhận đơn; khối lượng kiện mặc định, tải tối đa, khối lượng cơ bản, nấc khối lượng, các mức khách chọn, sai số cân cho phép |
 | locker | Bảo trì & SLA | SLA, số phiếu trễ bị chặn nhận việc, bậc phạt cảnh báo/hạn chế/đình chỉ, bắt buộc ảnh nghiệm thu, giới hạn ảnh mỗi lần/mỗi phiếu |
 | locker | Ô tủ · Drone | Giữ ô RESERVED, kích thước ô hiển thị cho app; pin thấp chặn cất cánh |
-| payment | Nạp ví · Phương thức | Nạp tối thiểu/tối đa/mặc định, mốc nạp nhanh; phương thức bật; tiền mặt tự hoàn tất |
+| payment | Nạp ví · Phương thức | Nạp tối thiểu/tối đa/mặc định, mốc nạp nhanh; phương thức bật (`app.payment.enabled-methods`: chỉ nhận `CASH`, `WALLET`, `SEPAY`, mặc định `SEPAY` từ backend #65); tiền mặt tự hoàn tất |
 | iot | Mở tủ & chống dò mã | Số lần sai trước khi khoá, thời gian khoá, thời gian chờ tủ phản hồi, thời gian cửa mở |
 | auth | Xác thực | Hạn OTP, độ dài OTP, hạn token tạm (đăng ký, 2FA admin) |
 | loyalty | Hạng & phần thưởng | Điểm lên Silver/Gold/Platinum, số tem đổi thưởng, điểm đổi thưởng, số tem mỗi lần |

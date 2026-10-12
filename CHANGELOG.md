@@ -2,6 +2,10 @@
 
 Mỗi thay đổi ở repo docs thêm **một dòng** vào ngày tương ứng (mới nhất ở trên). Ghi mã gap/SEC/ADR nếu có.
 
+## 2026-10-13
+
+- F2-G04 · F2.03 (PR mở, chưa merge: backend #64, #65, iot #16, frontend #46, mobile #62): chỉ còn thanh toán SePay (VietQR), gỡ MoMo/VNPay — `architecture.md` (+ sơ đồ `architecture`), `admin-reporting-api.md` (VNPAY/MOMO/VNPAY_TOPUP thành giá trị cũ, `bankTransfer`), `business-settings.md` (`allowedItems`, `enabled-methods` mặc định `SEPAY`), flow-2 F2.03 đổi tên hạng mục + bằng chứng (verdict giữ PARTIAL, không đổi %), F2-G04 bỏ việc VNPay IPN / CASH kiosk, flow-1 thêm mục 2026-10-13; `cau-hinh-dich-vu-ngoai.md` § 10 SePay thay VNPay/MoMo, § 11c cấu hình Firebase cho đăng nhập SĐT; `chay-he-thong-cuc-bo.md`, `release-deploy.md` bỏ `VNPAY_*`/`MOMO_*`. STATUS: backend #59, #61, #62, mobile #56, iot #15 đã merge nhưng chờ backend #64 mới deploy được; thêm dòng đợt này, nút thắt CI đỏ, việc chủ dự án sau deploy (§ 4).
+
 ## 2026-10-09
 
 - F1-G04 · F1-G06 (đã đẩy lên nhánh, chưa merge `main`): rà soát rule nghiệp vụ đơn drone — báo chuyến bay thất bại, giữ hồ sơ nhiệm vụ khi huỷ, ba hạn tự huỷ (chưa trả tiền, chưa tiếp nhận, nợ phụ thu), khai báo kiện, người gửi xác nhận bỏ kiện, kiện chờ trả, khách từ chối phụ thu, tầm bay/số đơn mở/tạm dừng bay, cộng đúng tiền từng lần thanh toán. flow-1 thêm mục 2026-10-09; sơ đồ `drone-mission` thêm D10, D12.
