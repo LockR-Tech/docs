@@ -48,8 +48,9 @@ Xếp theo **rủi ro** trước, tiện nghi sau. Hai việc đầu là lỗ h�
 | 4 | **Twilio** | Mã mở tủ chưa gửi được qua SMS. |
 | 5 | **SMTP thật** | OTP đăng nhập và mã mở tủ qua email. |
 | 6 | **Broker MQTT riêng** (SEC-04) | Đang dùng broker công khai không xác thực — ai cũng gửi lệnh mở tủ được. |
-| 7 | VNPay / MoMo thật | Chỉ cần khi thu tiền thật. |
+| 7 | **SePay** — tài khoản nhận VietQR (VNPay / MoMo đã bỏ, backend #65) | Cách thanh toán duy nhất của app và kiosk; thiếu tài khoản nhận thì không có mã VietQR. |
 | 8 | Firebase FCM | Push notification hiện không gửi. |
+| 9 | Firebase Auth — đăng nhập SĐT | App (mobile #62) chỉ gửi được OTP khi project Firebase đã bật Phone, Blaze, SHA của khoá ký. |
 
 ---
 
@@ -260,26 +261,49 @@ và mọi Pi, nếu không tủ mất kết nối.
 
 ---
 
-## 10. VNPay / MoMo
+## 10. SePay (chuyển khoản VietQR)
 
-Đang dùng endpoint sandbox. Chuyển sang thật cần hợp đồng với nhà cung cấp.
+> **VNPay / MoMo đã bỏ** ([backend #65](https://github.com/LockR-Tech/backend/pull/65), PR mở 13/10):
+> gỡ service, endpoint return/IPN/callback, cấu hình, biến compose và đường công khai ở gateway. Tạo
+> thanh toán / checkout / nạp ví bằng `MOMO`, `VNPAY` ⇒ 400 `PAYMENT_METHOD_UNSUPPORTED`; giao dịch cũ
+> vẫn đọc và hiển thị được, không xoá dữ liệu. Sau khi deploy, **xoá** các dòng `VNPAY_*`, `MOMO_*` khỏi
+> `.env` VM — không còn service nào đọc.
 
-```
-VNPAY_TMN_CODE=...
-VNPAY_HASH_SECRET=...
-VNPAY_PAY_URL=...
-VNPAY_RETURN_URL=https://api.locker-drone.tech/api/payments/vnpay/return
+Từ backend #65, SePay là cách thanh toán duy nhất cho khách (app và kiosk). Checkout `SEPAY` tạo giao
+dịch `PENDING` kèm ảnh VietQR (`qrCodeUrl`), nội dung chuyển khoản = `referenceId` của giao dịch. **Chỉ
+webhook SePay** chuyển giao dịch sang `COMPLETED` (⇒ `payment.completed` ⇒ đơn `PAID`); app và kiosk chỉ
+hỏi lại trạng thái đơn. Nạp ví không ghi phương thức ⇒ SePay.
 
-MOMO_PARTNER_CODE=...
-MOMO_ACCESS_KEY=...
-MOMO_SECRET_KEY=...
-MOMO_ENDPOINT=...
-MOMO_IPN_URL=https://api.locker-drone.tech/api/payments/momo/ipn
-MOMO_REDIRECT_URL=...
-```
+| Biến | Bắt buộc | Dùng cho |
+|---|---|---|
+| `SEPAY_API_KEY` | **có** | Khoá webhook: SePay gửi `Authorization: Apikey <khoá>`; phải trùng khoá đặt ở SePay Dashboard → Webhooks |
+| `SEPAY_BANK_BIN` | **có** | Mã BIN ngân hàng của tài khoản nhận |
+| `SEPAY_BANK_ACCOUNT_NO` | **có** | Số tài khoản nhận |
+| `SEPAY_ACCOUNT_NAME` | không (mặc định `LaundryLocker`) | Tên chủ tài khoản, hiện cho khách |
+| `SEPAY_MERCHANT_ID` · `SEPAY_SECRET_KEY` | không | Chỉ khi dùng cổng SePay PG (trang chuyển tiếp); thiếu thì trang đó trả 503 `SEPAY_GATEWAY_NOT_CONFIGURED` |
 
-> ⚠️ Trước khi thu tiền thật phải vá **F2-G04**: IPN VNPay hiện **không kiểm số tiền**, và
-> CASH do khách tự bấm xác nhận đã trả.
+Từ backend #65, compose truyền các biến này vào `payment-service` và code **không còn giá trị mặc định**
+cho khoá / tài khoản nhận. Thiếu biến bắt buộc ⇒ deploy dừng ở bước `docker compose config` (container cũ
+vẫn chạy) — **đặt biến trong `.env` VM trước khi merge #65**. Webhook chỉ được nhận khi khớp `SEPAY_API_KEY`
+(hoặc chữ ký hợp lệ khi có merchant + secret); chưa cấu hình khoá thì mọi webhook bị từ chối.
+
+**Đổi khoá webhook:** tạo khoá mới ở SePay Dashboard → ghi vào `SEPAY_API_KEY` trong `.env` VM → cập nhật
+cùng khoá ở cấu hình webhook trên SePay → `docker compose up -d payment-service` (lệch khoá giữa hai bên ⇒
+giao dịch không được ghi nhận).
+
+Lấy ở SePay Dashboard → Ngân hàng → Tài khoản liên kết. Có đủ BIN + số tài khoản thì giao dịch SePay
+có ảnh VietQR và response trả thêm `bankTransfer {bankBin, accountNo, accountName, amount, transferContent}`:
+`amount` làm tròn tới đồng, `transferContent` = `referenceId` (trùng `addInfo` của ảnh QR, để webhook
+khớp đúng giao dịch). App dùng `bankTransfer` để mở app ngân hàng điền sẵn STK, số tiền, nội dung.
+**Cấu hình nghiệp vụ:** `app.payment.enabled-methods` mặc định `SEPAY`, chỉ nhận `CASH`, `WALLET`,
+`SEPAY` (lưu giá trị khác ⇒ 400 `SETTING_INVALID`); giá trị cũ còn `VNPAY`/`MOMO` thì khi đọc bỏ hai mục
+đó. Giá trị admin đã lưu trước đây **không tự đổi** ⇒ sau deploy vào web admin → Cấu hình nghiệp vụ →
+Thanh toán, đặt lại `SEPAY` nếu cần. Kho tri thức trợ lý cũng phải nạp lại (tài liệu hướng dẫn khách nay
+nói về Ví LockR + VietQR/SePay).
+
+**Kiểm tra:** tạo đơn trên app → bước thanh toán hiện mã VietQR, số tiền, nội dung chuyển khoản; response
+checkout có `bankTransfer`; chuyển khoản đúng nội dung ⇒ đơn `PAID` sau vài giây (app hỏi lại khoảng 3 s
+một lần).
 
 ---
 
@@ -341,6 +365,36 @@ model lạ không có trong danh sách thì service tự bỏ `effort` đi nên 
 
 ---
 
+## 11c. Firebase Auth — đăng nhập số điện thoại
+
+App ([mobile #62](https://github.com/LockR-Tech/mobile/pull/62), PR mở 13/10) đăng nhập / đăng ký bằng SĐT qua
+Firebase Phone Auth rồi đổi ID token lấy JWT ở `POST /api/auth/firebase` (auth-service xác minh token bằng
+`FIREBASE_CREDENTIALS_JSON`, § 11). Phần còn lại cấu hình trong Firebase Console, project
+`laundry-locker-19a9d` — không nằm trong `.env`:
+
+1. Authentication → Sign-in method: bật **Phone** (giữ Google).
+2. Nâng gói **Blaze** để gửi SMS thật. Chưa nâng thì chỉ dùng được **số điện thoại thử** khai báo trong
+   mục Phone.
+3. Authentication → Settings → SMS region policy: cho phép **Việt Nam**.
+4. Project settings → app Android: thêm **SHA-1 và SHA-256 của mọi khoá ký** (debug keystore của từng máy
+   dev, upload key, khoá Play App Signing), rồi tải lại `google-services.json` vào app.
+5. Bật **Play Integrity API** cho project.
+6. **Mobile web**: thêm Web App, dán `firebaseConfig` vào `lib/firebase_options.dart`, thêm tên miền mobile
+   web vào Authentication → Settings → Authorized domains. Chưa dán thì
+   `DefaultFirebaseOptions.isWebConfigured` = `false`: bản web không khởi tạo Firebase, ẩn nút SĐT / Google,
+   đăng nhập email vẫn chạy.
+7. **iOS**: thêm app iOS, chạy `flutterfire configure --project=laundry-locker-19a9d` (lệnh này ghi đè file —
+   thêm lại getter `isWebConfigured`), tải APNs key lên Firebase, thêm URL scheme theo hướng dẫn Firebase.
+   Hiện phần iOS của `firebase_options.dart` vẫn trỏ project khác.
+
+Đăng nhập Facebook đang ẩn (`FeatureFlags.facebookLoginEnabled = false`), không cần cấu hình.
+
+**Kiểm tra:** bản Android ký bằng khoá đã khai SHA → Đăng nhập → SĐT → nhận OTP 6 số → vào app; lần đầu
+hiện "Hoàn tất đăng ký". Thiếu cấu hình thì app báo lỗi tiếng Việt (chưa bật Phone / Blaze, hết hạn mức
+SMS, app chưa được cấp quyền — thường do thiếu SHA).
+
+---
+
 ## 12. Bảng tra nhanh
 
 | Dịch vụ | Biến | Đặt ở | Thiếu thì sao |
@@ -352,9 +406,10 @@ model lạ không có trong danh sách thì service tự bỏ `effort` đi nên 
 | Azure | `AZURE_VM_HOST` · `USER` · `SSH_KEY` · `PORT` | GitHub secrets (`backend`) | Không deploy được backend |
 | Cloudflare | `CLOUDFLARE_ACCOUNT_ID` · `API_TOKEN` | GitHub secrets (`frontend`, `mobile`) | Không deploy được web |
 | MQTT | `COMPOSE_PROFILES=mqtt` · `MQTT_IOT_SERVICE_PASSWORD` · `MQTT_BROKER_URL` · `USERNAME` · `PASSWORD` | `.env` VM + `.env` Pi | Code có broker riêng, **chưa bật** — vẫn broker công khai (SEC-04) |
-| VNPay | `VNPAY_*` | `.env` VM | Chỉ chạy sandbox |
-| MoMo | `MOMO_*` | `.env` VM | Chỉ chạy endpoint test |
-| Firebase | `FIREBASE_CREDENTIALS_JSON` | `.env` VM | Không push notification |
+| SePay | `SEPAY_API_KEY` · `SEPAY_BANK_BIN` · `SEPAY_BANK_ACCOUNT_NO` (bắt buộc) · `SEPAY_ACCOUNT_NAME` | `.env` VM (§ 10) | Thiếu ⇒ deploy dừng ở `docker compose config`; sai khoá ⇒ webhook bị từ chối, đơn không lên `PAID` |
+| ~~VNPay · MoMo~~ | ~~`VNPAY_*` · `MOMO_*`~~ | — | Đã bỏ (backend #65): xoá khỏi `.env` VM |
+| Firebase | `FIREBASE_CREDENTIALS_JSON` | `.env` VM | Không push notification, không xác minh được đăng nhập Firebase (SĐT / Google) |
+| Firebase Auth (SĐT) | — (Firebase Console: Phone, Blaze, SHA, Play Integrity — § 11c) | Firebase Console + `google-services.json` / `firebase_options.dart` của app | Không gửi được OTP SĐT |
 | Anthropic | `ANTHROPIC_API_KEY`, `ASSISTANT_CHAT_MODEL` | `.env` VM | Trợ lý hỏi đáp trả 503 |
 | Voyage AI | `EMBEDDING_API_KEY`, `EMBEDDING_MODEL` | `.env` VM | Tài liệu không được đánh chỉ mục, trợ lý trả 503 |
 | DB trợ lý | `ASSISTANT_DB_PASSWORD` | `.env` VM (trước lần deploy đầu) | Dùng mật khẩu mặc định trong compose |

@@ -68,7 +68,7 @@ Multi-value filters (`status`, `type`, `method`, ...) accept `status=STORING,EXP
 - Order `type`: `SEND`, `RENTAL`, `DRONE_DELIVERY`, `STORAGE` (legacy)
 - Order `paymentStatus`: `UNPAID`, `PAID`, `REFUND_PENDING` (canceled drone order waiting for the admin's bank transfer), `REFUNDED`
 - Drone `deliveryStage`: `AWAITING_DISPATCH`, `ACCEPTED`, `LAUNCHING`, `DEPARTED`, `EN_ROUTE`, `APPROACHING`, `ARRIVED`, `READY_FOR_PICKUP`, `DROP_REPORTED` (parcel drop incident opened)
-- Payment `method`: `CASH`, `WALLET`, `VNPAY`, `MOMO`, `SEPAY`, `VNPAY_TOPUP` / `SEPAY_TOPUP` (wallet top-up, `orderId = 0`)
+- Payment `method`: `CASH`, `WALLET`, `SEPAY`, `SEPAY_TOPUP` (wallet top-up, `orderId = 0`). **Legacy, old data only:** `VNPAY`, `MOMO`, `VNPAY_TOPUP`. VNPay and MoMo were removed in [backend #65](https://github.com/LockR-Tech/backend/pull/65) (open PR): creating a payment / checkout / top-up with them gives `400 PAYMENT_METHOD_UNSUPPORTED`, but old rows are kept and still listed, filtered and reported.
 - Payment `status`: `PENDING`, `COMPLETED`, `FAILED`. Admin status edits are refused for top-ups and for final statuses (money only moves through gateway callbacks).
 - Payment `kind` (computed): `ORDER` | `TOPUP` (`TOPUP` = method `*_TOPUP` or `orderId <= 0`)
 - Refund `status`: `COMPLETED` (created as completed today)
@@ -270,12 +270,14 @@ Affects `/api/payments/**`, `/api/admin/payments`, `/api/admin/payments/{id}`, a
 ```
 The legacy `GET /api/admin/payments` (unsorted full list) is unchanged.
 
+`bankTransfer` (added in [backend #65](https://github.com/LockR-Tech/backend/pull/65), open PR): `{ bankBin, accountNo, accountName, amount, transferContent }`, only for `SEPAY` payments when the receiving account is configured (`SEPAY_BANK_BIN`, `SEPAY_BANK_ACCOUNT_NO`, `SEPAY_ACCOUNT_NAME`), otherwise `null`. `amount` is rounded to whole VND; `transferContent` = `referenceId` (the `addInfo` of the QR image) and must stay unchanged so the SePay webhook can match the payment.
+
 ### 2.2 `GET /api/admin/payments/search` (NEW)
 | Query | Notes |
 |---|---|
 | `page`, `size` | §0.5 |
 | `status` | multi: `PENDING`, `COMPLETED`, `FAILED` |
-| `method` | multi: `CASH`, `WALLET`, `VNPAY`, `MOMO`, `VNPAY_TOPUP` |
+| `method` | multi: `CASH`, `WALLET`, `SEPAY`, `SEPAY_TOPUP`; legacy `VNPAY`, `MOMO`, `VNPAY_TOPUP` still match old rows |
 | `kind` | `ALL` (default) \| `ORDER` \| `TOPUP`. Anything else gives `400 INVALID_KIND` |
 | `includeTopups` | boolean, default true. `false` with no `kind` (or `kind=ALL`) means `kind=ORDER`. An explicit `kind` wins. |
 | `from`, `to` | on `createdAt`, §0.3 |
@@ -313,7 +315,7 @@ Response `data`: `PageResponse<AdminPaymentResponse>`:
 }
 ```
 - `paidAt` = `updatedAt` when `status = COMPLETED`, otherwise null. The table has no paid_at column. CASH/WALLET
-  complete at creation. VNPAY/MOMO complete on the gateway callback.
+  complete at creation. SEPAY completes on the SePay webhook (legacy VNPAY/MOMO rows completed on the gateway callback).
 - `refundedAmount` = sum of COMPLETED refunds of this payment.
 - `order` is null for top-ups (`kind = TOPUP`) or when order-service is unreachable.
   `customer` is null when user-service is unreachable.
@@ -327,7 +329,7 @@ Response `data`: `PageResponse<AdminPaymentResponse>`:
   "orderPayments": [ { "...": "AdminPaymentResponse of OTHER payments of the same order, newest first" } ]
 }
 ```
-- `walletTransactions`: for `VNPAY_TOPUP`, the TOPUP credit (`referenceId` = payment `referenceId`). For `WALLET`,
+- `walletTransactions`: for a top-up (`SEPAY_TOPUP`, legacy `VNPAY_TOPUP`), the TOPUP credit (`referenceId` = payment `referenceId`). For `WALLET`,
   the ORDER_PAYMENT debit of that order (`referenceId` = `ORDERPAY-{orderId}`). Otherwise `[]`.
 - `orderPayments` is `[]` for top-ups. `404 NOT_FOUND` if the id is unknown.
 
@@ -406,8 +408,8 @@ Response `data`: `PageResponse<AdminWalletTransactionResponse>`:
     ],
     "byMethod": [
       { "key": "WALLET", "count": 50, "amount": 800000.00, "completedCount": 50, "completedAmount": 800000.00 },
-      { "key": "VNPAY_TOPUP", "count": 20, "amount": 700000.00, "completedCount": 15, "completedAmount": 600000.00 },
-      { "key": "VNPAY", "count": 30, "amount": 520000.00, "completedCount": 21, "completedAmount": 350000.00 },
+      { "key": "SEPAY_TOPUP", "count": 20, "amount": 700000.00, "completedCount": 15, "completedAmount": 600000.00 },
+      { "key": "SEPAY", "count": 30, "amount": 520000.00, "completedCount": 21, "completedAmount": 350000.00 },
       { "key": "CASH", "count": 12, "amount": 190000.00, "completedCount": 12, "completedAmount": 190000.00 },
       { "key": "MOMO", "count": 8, "amount": 140000.00, "completedCount": 3, "completedAmount": 70000.00 }
     ]
@@ -426,7 +428,7 @@ Response `data`: `PageResponse<AdminWalletTransactionResponse>`:
 - `netCollectedAmount` = `orderPayments.completedAmount − refundAmount`, so top-ups are excluded.
 - `*Pct` = (current − previous) / |previous| × 100. It is `null` when previous = 0.
   `successRatePoints` = difference in percentage points, and is `null` if either side is null.
-- `byStatus`/`byMethod` are sorted by `amount` desc and only list keys that occur.
+- `byStatus`/`byMethod` are sorted by `amount` desc and only list keys that occur. Legacy keys (`MOMO` in the example) appear only when old rows fall in the range.
 
 ---
 
@@ -434,9 +436,9 @@ Response `data`: `PageResponse<AdminWalletTransactionResponse>`:
 
 ### 3.1 Revenue rule (authoritative)
 - **Revenue (`totalRevenue`)** = sum of payments with `status = COMPLETED` for a real order (`orderId > 0`).
-  - Wallet top-ups (`VNPAY_TOPUP`) are **excluded**. They are deposits.
+  - Wallet top-ups (`*_TOPUP`: `SEPAY_TOPUP`, legacy `VNPAY_TOPUP`) are **excluded**. They are deposits.
   - Orders paid with the wallet (`WALLET`) **are included** when that order payment completes.
-  - Includes CASH, VNPAY, MOMO.
+  - Includes CASH, SEPAY (and legacy VNPAY, MOMO rows).
   - Counts regardless of the order's current status. A canceled order that was paid and not refunded is still revenue.
 - **Revenue date** = the Vietnam calendar day of the collection time = payment `updatedAt` for COMPLETED payments.
 - **Refunds (`refundAmount`)** = refunds with `status = COMPLETED` and `orderId > 0`, dated by `processedAt`
@@ -523,12 +525,13 @@ Sorted by `revenue` desc. Refunds are attributed to the method of the refunded p
   "from": "2026-09-01", "to": "2026-09-15", "totalRevenue": 1410000.00,
   "items": [
     { "method": "WALLET", "revenue": 800000.00, "refundAmount": 10000.00, "netRevenue": 790000.00, "sharePct": 56.74, "paymentCount": 50, "paidOrderCount": 49 },
-    { "method": "VNPAY", "revenue": 350000.00, "refundAmount": 10000.00, "netRevenue": 340000.00, "sharePct": 24.82, "paymentCount": 21, "paidOrderCount": 21 },
+    { "method": "SEPAY", "revenue": 350000.00, "refundAmount": 10000.00, "netRevenue": 340000.00, "sharePct": 24.82, "paymentCount": 21, "paidOrderCount": 21 },
     { "method": "CASH", "revenue": 190000.00, "refundAmount": 0, "netRevenue": 190000.00, "sharePct": 13.48, "paymentCount": 12, "paidOrderCount": 12 },
     { "method": "MOMO", "revenue": 70000.00, "refundAmount": 0, "netRevenue": 70000.00, "sharePct": 4.96, "paymentCount": 3, "paidOrderCount": 3 }
   ]
 }
 ```
+`MOMO` here is a legacy row from old data; new payments only use `CASH`, `WALLET`, `SEPAY` (backend #65).
 
 ### 3.6 `GET /api/admin/revenue/by-locker?storeId=`
 Includes **every locker**, even those with zero revenue. It adds one row with `lockerId: null` for orders without a
