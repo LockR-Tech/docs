@@ -179,7 +179,8 @@ Get-Content scripts\seed-local-complete.sql -Raw | docker exec -i ll-ms-postgres
 | `SPRING_MAIL_*` | auth: `localhost:1025`; notification: trống ⇒ tắt kênh email | gửi email thật |
 | `FIREBASE_CREDENTIALS_JSON` | trống | đăng nhập số điện thoại / Google, push |
 | ~~`VNPAY_*` · `MOMO_*`~~ | — | **đã bỏ** cùng VNPay/MoMo (backend #65) |
-| `SEPAY_BANK_BIN` · `SEPAY_BANK_ACCOUNT_NO` · `SEPAY_ACCOUNT_NAME` | compose chưa truyền vào `payment-service` | đổi tài khoản nhận VietQR — [cau-hinh-dich-vu-ngoai § 10](cau-hinh-dich-vu-ngoai.md#10-sepay-chuyển-khoản-vietqr) |
+| `SEPAY_API_KEY` · `SEPAY_BANK_BIN` · `SEPAY_BANK_ACCOUNT_NO` | **không có — bắt buộc** từ backend #65 (máy dev đặt giá trị thử bất kỳ; webhook chỉ nhận khi gửi đúng `Apikey`) | luôn phải đặt — [cau-hinh-dich-vu-ngoai § 10](cau-hinh-dich-vu-ngoai.md#10-sepay-chuyển-khoản-vietqr) |
+| `SEPAY_ACCOUNT_NAME` · `SEPAY_MERCHANT_ID` · `SEPAY_SECRET_KEY` | `LaundryLocker` · trống · trống | đổi tên tài khoản hiện cho khách / dùng cổng SePay PG |
 | `MQTT_BROKER_URL` | `tcp://broker.hivemq.com:1883` (`iot-service/…/application.yml:81`) | broker riêng (SEC-04) |
 
 ### Sửa code rồi chạy lại một service

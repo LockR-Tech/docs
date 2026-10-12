@@ -66,7 +66,7 @@ Mỗi service có database Postgres riêng, Flyway, `ddl-auto: validate`.
 
 | Tích hợp | Tình trạng |
 |---|---|
-| SePay (VietQR) | Cách thanh toán duy nhất cho khách từ [backend #65](https://github.com/LockR-Tech/backend/pull/65) (PR mở): ảnh VietQR + `bankTransfer` (STK, số tiền, nội dung = `referenceId`) để app mở app ngân hàng điền sẵn; chỉ webhook SePay đưa giao dịch sang `COMPLETED`. Biến `SEPAY_BANK_BIN`, `SEPAY_BANK_ACCOUNT_NO`, `SEPAY_ACCOUNT_NAME` (compose chưa truyền — [runbook § 10](../04-engineering/cau-hinh-dich-vu-ngoai.md#10-sepay-chuyển-khoản-vietqr)) |
+| SePay (VietQR) | Cách thanh toán duy nhất cho khách từ [backend #65](https://github.com/LockR-Tech/backend/pull/65) (PR mở): ảnh VietQR + `bankTransfer` (STK, số tiền, nội dung = `referenceId`) để app mở app ngân hàng điền sẵn; chỉ webhook SePay đưa giao dịch sang `COMPLETED`. Biến `SEPAY_API_KEY`, `SEPAY_BANK_BIN`, `SEPAY_BANK_ACCOUNT_NO` bắt buộc, không có giá trị mặc định ([runbook § 10](../04-engineering/cau-hinh-dich-vu-ngoai.md#10-sepay-chuyển-khoản-vietqr)) |
 | ~~VNPay · MoMo~~ | **Đã bỏ** ở backend #65: service, endpoint return/IPN/callback, biến `VNPAY_*`/`MOMO_*`, đường công khai ở gateway. Tạo giao dịch mới ⇒ 400 `PAYMENT_METHOD_UNSUPPORTED`; giao dịch cũ vẫn đọc được |
 | Ví nội bộ | Thật (sổ cái `wallet_transactions`) |
 | Tiền mặt | Hoàn tất ngay khi chọn — chưa có xác nhận của nhân viên. App khách đã bỏ CASH (mobile #19); kiosk bỏ nút CASH demo ở [iot #16](https://github.com/LockR-Tech/iot/pull/16) (PR mở). `app.payment.enabled-methods` mặc định chỉ `SEPAY` (backend #65) |
