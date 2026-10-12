@@ -6,7 +6,7 @@ Nguồn sự thật cho mọi topic và payload giữa **iot-service** (backend)
 - iot: `tests/test_mqtt_contract.py` ([iot#9](https://github.com/LockR-Tech/iot/pull/9))
 - giao diện gán thiết bị: [frontend#22](https://github.com/LockR-Tech/frontend/pull/22)
 
-Phiên bản hợp đồng: **1** (2026-09-27).
+Phiên bản hợp đồng: **1.1** (2026-10-12) — thêm lệnh khởi động lại bộ điều khiển (§ 2.1, § 2.2). Bản 1: 2026-09-27.
 
 ## 1. Định danh
 
@@ -43,6 +43,16 @@ Pi đổi `slotIndex` ra chân phần cứng: `GPIO_RELAY_PINS[slotIndex]` và `
 `state` ∈ `RESERVED | OCCUPIED | AVAILABLE | FAULT`; `orderId` có thể thiếu. Không kèm `slotIndex` để luồng đặt chỗ khỏi thêm một lời gọi sang locker-service; Pi vẫn chấp nhận nếu sau này có.
 
 **Đóng ô** — `cabinet/{lockerId}/command/close`: dành sẵn; backend hiện chưa gửi. Payload và kết quả giống lệnh mở; `SUCCESS` khi cảm biến thấy cửa đóng.
+
+**Khởi động lại bộ điều khiển** — `cabinet/{lockerId}/command/restart`
+
+```json
+{ "commandId": "9a1e…", "action": "RESTART" }
+```
+
+- Gửi khi KTV bấm "Khởi động lại" (`POST /api/locker-technician/devices/{id}/restart`). Chỉ khởi động lại tiến trình `lockr-controller`, **không** reboot máy.
+- Pi gửi kết quả (§ 2.2) **rồi mới** thoát tiến trình với mã 75; systemd chạy lại `lockr-controller` (unit hiện dùng `Restart=on-failure`, mã khác 0 nên vẫn được chạy lại). Chạy lại xong Pi kết nối broker, gửi heartbeat/discovery như lúc khởi động.
+- Lệnh chạy cùng hàng đợi với lệnh phần cứng: lệnh mở ô đang dở xong trước. Lệnh trùng (QoS 1 giao lại) chỉ được trả lời, không thoát lần nữa. `action` khác `RESTART` ⇒ `FAILED`, không thoát.
 
 ### 2.2 Tủ → backend
 
@@ -92,6 +102,16 @@ Lệnh mở xếp hàng trên Pi: mỗi lúc chỉ một khoá có điện, lệ
 ```
 
 Backend ghi `device_statuses` với `deviceId` = `macAddress` (nếu thiếu thì lấy đoạn `{lockerId}` của topic) và `lockerId` = đoạn topic; đồng thời cập nhật "thấy lần cuối" của thiết bị trong `gateway_devices`. Pi gửi một nhịp ngay mỗi lần (lại) kết nối broker.
+
+**Kết quả khởi động lại** — `cabinet/{lockerId}/command/restart/result` (QoS 1)
+
+```json
+{ "commandId": "9a1e…", "status": "ACCEPTED" }
+```
+
+- `status` ∈ `ACCEPTED | FAILED`; `FAILED` kèm `errorMessage`. Pi chờ broker xác nhận kết quả tối đa 5 giây rồi vẫn thoát.
+- Backend khớp bằng `commandId`, chờ tối đa `app.iot.unlock-wait-seconds` (như lệnh mở); hết giờ ⇒ REST trả `status: TIMEOUT`. REST trả `data: {accepted, status: ACCEPTED|TIMEOUT|FAILED, message, deviceId, lockerId}`; mỗi lần ghi một dòng `box_access_logs` (`boxId` 0, `credentialType` MASTER, `result` RESTART_ACCEPTED | RESTART_TIMEOUT | RESTART_FAILED).
+- Backend đã subscribe `cabinet/+/command/+/result` nên không cần subscription mới. Pi bản cũ không trả lời ⇒ backend báo TIMEOUT.
 
 ## 3. Cấp phát — `iot/{mac}/…`
 
@@ -162,6 +182,8 @@ File mật khẩu của Mosquitto cấm dấu `:` trong tên, nên tên đăng n
 | Tài khoản không phải MAC (giả lập) | `cabinet/{lockerId}/command/#` | `cabinet/{lockerId}/command/+/result`, `…/locker/+/status`, `…/heartbeat` |
 
 Thiết bị **không** ghi được `…/command/open` và không nhận lệnh của tủ khác. Mosquitto vẫn trả SUBACK thành công khi subscribe ngoài quyền nhưng không giao tin — muốn kiểm quyền thì xem tin có tới hay không. `lockerId` = `*` cho quyền mọi tủ, chỉ dùng cho giả lập `simulate_demo_cabinet.py` (nó nghe `cabinet/+/command/open`).
+
+Lệnh khởi động lại không cần đổi ACL: Pi đã đọc `cabinet/{lockerId}/command/#` (gồm `…/command/restart`) và ghi `cabinet/{lockerId}/command/+/result` (gồm `…/restart/result`); `iot-service` ghi `cabinet/#`. Thiết bị vẫn không gửi được lệnh restart cho tủ khác.
 
 Kiểm chứng 2026-09-27 trên Docker (Mosquitto 2.1 + Nginx TLS): ẩn danh và sai mật khẩu bị từ chối; Pi không gửi được lệnh mở, không nhận lệnh tủ khác, không giả được discovery của Pi khác; Pi tự nối và subscribe lại sau khi broker khởi động lại.
 

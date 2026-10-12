@@ -14,6 +14,11 @@ Mỗi thay đổi ở repo docs thêm **một dòng** vào ngày tương ứng (
 
 - F1-G04 · F1-G06 (một phần, local, chưa merge): rà soát thanh toán đơn drone — tự hoàn khoản tiền tới sau khi đơn đã huỷ, không đánh dấu `REFUNDED` khi hoàn 0 đ, khoá đơn ở khách huỷ và sự kiện thanh toán, `nextAction`/`paymentRequired` khớp guard trả trước. flow-1 thêm mục "Cập nhật 2026-10-06" kèm các điểm còn hở. Không đổi %.
 
+## 2026-10-12
+
+- `mqtt-contract.md` lên 1.1: lệnh khởi động lại bộ điều khiển `cabinet/{lockerId}/command/restart` + kết quả, không đổi ACL (backend #61, iot #15).
+- STATUS § 3: thay 4 dòng ngày 11/10 (đã merge) bằng đợt rà soát app mobile (mobile #56, backend #61, iot #15) và PR vá đăng nhập số điện thoại (backend #59); § 5 thêm 2026-10-11. Không đổi % (đổi khi merge kèm bằng chứng).
+
 ## 2026-10-11
 
 - SEC-02 · F3-G01 · F3-G05: STATUS § 2 ghi phần đã vá (backend #54) và PR còn lại (backend #55); flow-3 cập nhật gap F3-G01, F3-G05 (kiểm tài khoản ACTIVE ở gateway, tài khoản `DELETED` khi xoá người dùng — backend #56). Không đổi %.
