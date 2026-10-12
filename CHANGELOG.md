@@ -2,6 +2,10 @@
 
 Mỗi thay đổi ở repo docs thêm **một dòng** vào ngày tương ứng (mới nhất ở trên). Ghi mã gap/SEC/ADR nếu có.
 
+## 2026-10-12
+
+- F1-G12 (local, chưa merge/deploy): ghi nhận nghiệm thu lấy hàng tận nhà/admin web, mobile 321 test, test PostgreSQL thật và các sửa quy tắc KTV bận, drone/tủ gửi đủ điều kiện, tự thử drone thay thế; kết quả build/test và giới hạn nghiệp vụ trong `handoff/2026-10-12-drone-home-pickup-validation.md`. Không đổi %.
+
 ## 2026-10-09
 
 - F1-G04 · F1-G06 (đã đẩy lên nhánh, chưa merge `main`): rà soát rule nghiệp vụ đơn drone — báo chuyến bay thất bại, giữ hồ sơ nhiệm vụ khi huỷ, ba hạn tự huỷ (chưa trả tiền, chưa tiếp nhận, nợ phụ thu), khai báo kiện, người gửi xác nhận bỏ kiện, kiện chờ trả, khách từ chối phụ thu, tầm bay/số đơn mở/tạm dừng bay, cộng đúng tiền từng lần thanh toán. flow-1 thêm mục 2026-10-09; sơ đồ `drone-mission` thêm D10, D12.
