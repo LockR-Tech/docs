@@ -1,14 +1,14 @@
 # Nghiệm thu lấy hàng tận nhà — 2026-10-12
 
-Nhánh local: `feat/f1-g12-drone-home-pickup`. Chưa commit/merge/deploy.
+Đã push nhánh `feat/f1-g12-home-pickup-admin-20261012-v2` ở bốn repo backend, frontend, mobile và docs. Các nhánh đã rebase trên `origin/main`, chưa merge/deploy.
 
 ## Kiểm chứng
 
-- Mobile: `flutter test --reporter compact`, 321/321 test qua.
-- Backend: `mvn -B clean test -Dcyclonedx.skip=true` trên toàn reactor, JDK 21: **BUILD SUCCESS**, 608 test qua, 0 thất bại, 0 lỗi, 0 bỏ qua (89 báo cáo XML). Docker/PostgreSQL/pgvector thật được bật cho test tích hợp.
+- Mobile trước rebase: `flutter test --reporter compact`, 321/321 test qua. Lượt chạy lại sau rebase không được cấp quyền nên chưa có bằng chứng mới trên HEAD đã push.
+- Backend trước rebase: `mvn -B clean test -Dcyclonedx.skip=true` trên toàn reactor, JDK 21: **BUILD SUCCESS**, 608 test qua, 0 thất bại, 0 lỗi, 0 bỏ qua (89 báo cáo XML). Docker/PostgreSQL/pgvector thật được bật cho test tích hợp. Lượt chạy lại sau rebase không được cấp quyền nên chưa có bằng chứng mới trên HEAD đã push.
 - PostgreSQL order-service: 14 test giao không hoàn tất, 13 test lấy hàng tận nhà, 2 test migration/schema qua; không bị bỏ qua.
 - Bản build JAR toàn backend: `mvn -B package -DskipTests -Dcyclonedx.skip=true` **BUILD SUCCESS trên 14 module**, tạo JAR của 12 service và common-lib. Không chạy lại test vì code không đổi. Kết thúc 21:26 ngày 2026-10-12 (UTC+7).
-- Admin web: `npm test` qua 3/3 test quy tắc; lint riêng tất cả file trong đợt sửa 0 lỗi/0 cảnh báo. `npm run lint` toàn repo 0 lỗi, còn 70 cảnh báo ở code cũ. Đã xoá script cập nhật nhãn tạm; `git diff --check` sạch. `npm run build` (TypeScript + Vite production) thành công, còn cảnh báo chunk lớn hơn 500 kB. Chưa bấm thử toàn luồng trên trình duyệt với backend deploy.
+- Admin web trên HEAD sau rebase: `npm test` qua 3/3 test quy tắc; `npm run build` (TypeScript + Vite production) thành công sau khi sửa field chuẩn `CustomerSummary.phoneNumber`, còn cảnh báo chunk lớn hơn 500 kB. Lint riêng tất cả file trong đợt sửa trước rebase 0 lỗi/0 cảnh báo; `npm run lint` toàn repo khi đó 0 lỗi, còn 70 cảnh báo ở code cũ. Chưa bấm thử toàn luồng trên trình duyệt với backend deploy.
 
 ## Admin web trong đợt sửa
 

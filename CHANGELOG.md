@@ -4,7 +4,7 @@ Mỗi thay đổi ở repo docs thêm **một dòng** vào ngày tương ứng (
 
 ## 2026-10-12
 
-- F1-G12 (local, chưa merge/deploy): ghi nhận nghiệm thu lấy hàng tận nhà/admin web, mobile 321 test, test PostgreSQL thật và các sửa quy tắc KTV bận, drone/tủ gửi đủ điều kiện, tự thử drone thay thế; kết quả build/test và giới hạn nghiệp vụ trong `handoff/2026-10-12-drone-home-pickup-validation.md`. Không đổi %.
+- F1-G12 (đã push nhánh `feat/f1-g12-home-pickup-admin-20261012-v2` ở backend/frontend/mobile/docs, chưa merge/deploy): ghi nhận nghiệm thu lấy hàng tận nhà/admin web, mobile 321 test và backend 608 test trước rebase; admin web build production cùng 3/3 rule test qua sau rebase. Chi tiết kết quả và giới hạn nghiệp vụ trong `handoff/2026-10-12-drone-home-pickup-validation.md`. Không đổi %.
 
 ## 2026-10-09
 
