@@ -4,7 +4,7 @@
 
 | | |
 |---|---|
-| **Cập nhật lần cuối** | 2026-10-10 |
+| **Cập nhật lần cuối** | 2026-10-12 |
 | **Người cập nhật** | Claude Code — 2026-10-11: sửa lỗi web admin (backend #54, frontend #39) đã merge + deploy 10/10. Mở tiếp: SEC-02 khoá `/api/users/**` theo chủ sở hữu + chặn token của tài khoản bị khoá ([backend #55](https://github.com/LockR-Tech/backend/pull/55)), xoá người dùng nhả email/SĐT ([backend #56](https://github.com/LockR-Tech/backend/pull/56)), mở khẩn cấp trên app KTV báo đúng + sửa 5 test làm deploy mobile web đỏ từ cuối tháng 9 ([mobile #52](https://github.com/LockR-Tech/mobile/pull/52)), web admin đủ tiếng Anh ([frontend #40](https://github.com/LockR-Tech/frontend/pull/40)) — **chưa merge**. |
 | **Tổng tiến độ 4 luồng** | **71,3 %** |
 
@@ -47,6 +47,8 @@ Mọi con số bên dưới đúng với các commit này. Trước khi tin STAT
 | **SEC-08** | Token Cloudflare (quyền Edit Workers) từng bị dán vào lịch sử chat khi nạp secret | GitHub secrets `CLOUDFLARE_API_TOKEN` của `frontend`, `mobile` | Ai có lịch sử chat deploy đè được admin web, landing, mobile web. Tạo token mới → nạp lại → xoá token cũ. |
 
 ## 3. Đang làm
+
+Nghiệm thu cục bộ 2026-10-12 trên `feat/f1-g12-drone-home-pickup`: Codex hoàn thiện admin web lấy hàng/gán KTV/liên kết phiếu–đơn–hoàn tiền/xác nhận giao không hoàn tất; web production build qua, 3 test quy tắc qua, lint file sửa sạch; lint toàn web 0 lỗi và 70 cảnh báo cũ. Mobile đã qua 321/321 test; toàn backend 608/608 test qua, 0 lỗi, 0 bỏ qua; PostgreSQL/pgvector thật đã chạy, gồm 14 test giao không hoàn tất, 13 test lấy hàng tận nhà và 2 test schema/migration. Build JAR toàn bộ 14 module **BUILD SUCCESS**. Chi tiết và giới hạn nghiệp vụ ở [báo cáo nghiệm thu](handoff/2026-10-12-drone-home-pickup-validation.md). Chưa commit/merge/deploy; chưa nghiệm thu liên service/trình duyệt; không đổi % checklist.
 
 > 📌 **Bàn giao đầy đủ: [handoff/2026-09-16-trang-thai-day-du-va-viec-con-lai.md](handoff/2026-09-16-trang-thai-day-du-va-viec-con-lai.md)** — đọc file đó trước nếu bạn vừa vào dự án hoặc đổi máy.
 > Cần bản **ngắn** (vướng mắc + việc còn lại, 1 trang): [handoff/2026-09-16-tom-tat-viec-con-lai.md](handoff/2026-09-16-tom-tat-viec-con-lai.md).
