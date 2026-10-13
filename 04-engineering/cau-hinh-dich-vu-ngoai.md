@@ -367,23 +367,33 @@ model lạ không có trong danh sách thì service tự bỏ `effort` đi nên 
 
 ## 11c. Firebase Auth — đăng nhập số điện thoại
 
-App ([mobile #62](https://github.com/LockR-Tech/mobile/pull/62), PR mở 13/10) đăng nhập / đăng ký bằng SĐT qua
+App ([mobile #62](https://github.com/LockR-Tech/mobile/pull/62)) và kiosk đăng nhập / đăng ký bằng SĐT qua
 Firebase Phone Auth rồi đổi ID token lấy JWT ở `POST /api/auth/firebase` (auth-service xác minh token bằng
-`FIREBASE_CREDENTIALS_JSON`, § 11). Phần còn lại cấu hình trong Firebase Console, project
-`laundry-locker-19a9d` — không nằm trong `.env`:
+`FIREBASE_CREDENTIALS_JSON`, § 11).
 
-1. Authentication → Sign-in method: bật **Phone** (giữ Google).
-2. Nâng gói **Blaze** để gửi SMS thật. Chưa nâng thì chỉ dùng được **số điện thoại thử** khai báo trong
-   mục Phone.
-3. Authentication → Settings → SMS region policy: cho phép **Việt Nam**.
-4. Project settings → app Android: thêm **SHA-1 và SHA-256 của mọi khoá ký** (debug keystore của từng máy
+**Project Firebase: `lockr-drone-delivery`** (từ 13/10, thay `laundry-locker-19a9d`; gói Blaze). App
+Android, bản mobile web, kiosk và khoá service account trên VM **phải cùng project này** — lệch project ⇒
+backend trả `AUTH_FIREBASE_INVALID`, push không gửi được.
+
+| Nơi | Cấu hình | Trạng thái 13/10 |
+|---|---|---|
+| Firebase Auth | Phone + Google bật; số thử; SMS region policy chỉ Việt Nam | ✅ |
+| Authorized domains | `laundry-locker-mobile-web.nqbhuy2004nt.workers.dev` (mobile web), `127.0.0.1` (kiosk ở `http://127.0.0.1:3002`) | ✅ |
+| App Android `com.laundrylocker.mobile` | `android/app/google-services.json` + `FirebaseOptions.android`, Web client ID trong `EnvConfig.googleWebClientId` | [mobile #64](https://github.com/LockR-Tech/mobile/pull/64) |
+| Mobile web | Web app "LockR Web" trong `FirebaseOptions.web` (`isWebConfigured` = `true`) | [mobile #64](https://github.com/LockR-Tech/mobile/pull/64) |
+| Kiosk (Pi) | `VITE_FIREBASE_*` của cùng Web app trong `ui/.env.local`, rồi `npm run build` + restart `lockr-kiosk` | chờ cập nhật trên Pi |
+| VM | `FIREBASE_CREDENTIALS_JSON` = khoá service account của project này (§ 11) | chờ chủ dự án đặt |
+
+Việc còn lại khi thêm máy / khoá ký mới:
+
+1. Project settings → app Android: thêm **SHA-1 và SHA-256 của mọi khoá ký** (debug keystore của từng máy
    dev, upload key, khoá Play App Signing), rồi tải lại `google-services.json` vào app.
-5. Bật **Play Integrity API** cho project.
-6. **Mobile web**: thêm Web App, dán `firebaseConfig` vào `lib/firebase_options.dart`, thêm tên miền mobile
-   web vào Authentication → Settings → Authorized domains. Chưa dán thì
-   `DefaultFirebaseOptions.isWebConfigured` = `false`: bản web không khởi tạo Firebase, ẩn nút SĐT / Google,
-   đăng nhập email vẫn chạy.
-7. **iOS**: thêm app iOS, chạy `flutterfire configure --project=laundry-locker-19a9d` (lệnh này ghi đè file —
+2. **Google Sign-In trên Android** cần OAuth client Android (package + SHA-1) nằm trong project này. Một cặp
+   package + SHA-1 chỉ thuộc **một** project Google Cloud: nếu Console báo "Another project contains an
+   OAuth 2.0 client that uses this same SHA-1…", xoá OAuth client / app Android trùng ở project cũ rồi thêm
+   lại SHA-1 ở project mới và tải lại `google-services.json`. Đăng nhập SĐT không phụ thuộc OAuth client.
+3. Bật **Play Integrity API** cho project (máy thật xác minh không cần reCAPTCHA).
+4. **iOS**: thêm app iOS, chạy `flutterfire configure --project=lockr-drone-delivery` (lệnh này ghi đè file —
    thêm lại getter `isWebConfigured`), tải APNs key lên Firebase, thêm URL scheme theo hướng dẫn Firebase.
    Hiện phần iOS của `firebase_options.dart` vẫn trỏ project khác.
 
