@@ -4,6 +4,8 @@ Mỗi thay đổi ở repo docs thêm **một dòng** vào ngày tương ứng (
 
 ## 2026-10-13
 
+- F4.09 · F4.10 (backend #68): trợ lý trả lời theo đơn hàng thật của người hỏi, hiểu tiếng Việt không dấu — flow-4 thêm 2 hạng mục (L4 giữ 100 %), F4-G10 thêm việc ghi dữ liệu đơn vào chính sách quyền riêng tư, ghi chú hạn mức Voyage; architecture: assistant-service gọi order-service/locker-service.
+- F4.01 · F4.08: thêm `01-overview/tom-tat-luong-nghiep-vu.md` (19 luồng, từng bước ai làm gì) và nạp vào kho tri thức cho KTV/admin; flow-4 § 4 ghi lần nạp lại 13/10 (11 tài liệu).
 - F2-G03 · F2.06 (mobile #67): người gửi chia sẻ mã lấy hàng cho người nhận từ app trong lúc chưa có SMS — flow-2 F2.06 thêm bằng chứng, F2-G03 ghi cách tạm thời. Firebase chuyển sang project `lockr-drone-delivery` (§ 11c, STATUS § 4 mục 3; mobile #64–#66, iot #17).
 - F2-G04 · F2.03 (PR mở, chưa merge: backend #64, #65, iot #16, frontend #46, mobile #62): chỉ còn thanh toán SePay (VietQR), gỡ MoMo/VNPay — `architecture.md` (+ sơ đồ `architecture`), `admin-reporting-api.md` (VNPAY/MOMO/VNPAY_TOPUP thành giá trị cũ, `bankTransfer`), `business-settings.md` (`allowedItems`, `enabled-methods` mặc định `SEPAY`), flow-2 F2.03 đổi tên hạng mục + bằng chứng (verdict giữ PARTIAL, không đổi %), F2-G04 bỏ việc VNPay IPN / CASH kiosk, flow-1 thêm mục 2026-10-13; `cau-hinh-dich-vu-ngoai.md` § 10 SePay thay VNPay/MoMo, § 11c cấu hình Firebase cho đăng nhập SĐT; `chay-he-thong-cuc-bo.md`, `release-deploy.md` bỏ `VNPAY_*`/`MOMO_*`. STATUS: backend #59, #61, #62, mobile #56, iot #15 đã merge nhưng chờ backend #64 mới deploy được; thêm dòng đợt này, nút thắt CI đỏ, việc chủ dự án sau deploy (§ 4).
 

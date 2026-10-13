@@ -22,6 +22,8 @@ Nạp tài liệu nội bộ (hướng dẫn sử dụng, quy trình vận hành
 | F4.06 | ADMIN quản lý kho tài liệu | API `AS/controller/KnowledgeAdminController.java`; web `/admin/knowledge` `frontend/fe/src/routes/routes-config.tsx:371`, trang `frontend/fe/src/pages/Admin/knowledge/index.tsx:33` (tài liệu, hội thoại, đánh giá), API slice `frontend/fe/src/stores/apis/admin/knowledge.ts`; xem nội dung tài liệu — file gốc `GET …/documents/{id}/file` và các đoạn đã đánh chỉ mục `GET …/documents/{id}/chunks` (backend #50), giao diện `frontend/fe/src/pages/Admin/knowledge/DocumentDetailSheet.tsx` (frontend #35); cấu hình trợ lý là tab `assistant` ở `/admin/settings` | **DONE** | — |
 | F4.07 | Phân quyền tài liệu theo vai trò + lịch sử hội thoại | Lọc `allowed_roles && vai trò người hỏi` `AS/knowledge/ChunkRepository.java:51` (ADMIN đọc tất cả); hội thoại + tin nhắn + citations `AS/chat/AssistantService.java:70` | **DONE** | — |
 | F4.08 | Guardrail + bộ đánh giá | Dưới ngưỡng ⇒ "tài liệu chưa đề cập", không gọi LLM `AS/chat/AssistantService.java:38,114`; giới hạn câu/giờ `:85`; ngưỡng/top-k/giới hạn chỉnh trên admin `AS/settings/AssistantSettingsCatalog.java:29`; 27 câu đánh giá `backend/scripts/knowledge/eval-cases.json`, `POST /api/admin/knowledge/eval` `AS/eval/EvalService.java:107`. **Đã chạy trên production 2026-10-07** (10 tài liệu, 89 đoạn): ngưỡng 35 % đạt 27/27 — trúng tài liệu 22/22 (điểm thấp nhất 0,407), từ chối đúng 5/5 (điểm cao nhất 0,345); giữ 35 % | **DONE** | — |
+| F4.09 | Trả lời theo **đơn hàng thật** của người hỏi | Nhận câu hỏi về đơn (không phân biệt dấu, mã `ORD-…`, câu nối tiếp) `AS/query/OrderIntent.java`; tải đơn đã tạo + đơn người khác gửi cho người hỏi qua order-service với `X-User-Id` từ gateway, tên tủ/ô qua locker-service `AS/orders/OrderContextService.java`; tài liệu "Đơn hàng của bạn" không chứa PIN/QR/mã lấy hàng, email, ghi chú, SĐT chỉ 3 số cuối `AS/orders/OrderDocumentFormatter.java`; có tài liệu đơn thì không chặn ở ngưỡng truy xuất `AS/chat/AssistantService.java`; bật/tắt `app.assistant.order-context-enabled` ([backend #68](https://github.com/LockR-Tech/backend/pull/68)) | **DONE** | Dữ liệu đơn gửi tới Anthropic khi trả lời — ghi vào chính sách quyền riêng tư (F4-G10) |
+| F4.10 | Hiểu tiếng Việt **không dấu** | Nhận câu không dấu `AS/query/VietnameseText.java`; thêm dấu bằng một lần gọi Claude, chỉ nhận khi chỉ khác dấu và giữ nguyên số/mã `AS/provider/ClaudeDiacriticsRestorer.java`, dùng cho truy xuất + nhận ý định + trả lời, bộ đánh giá dùng cùng bước `AS/query/QuestionPreparer.java`; 4 câu không dấu trong `eval-cases.json`; bật/tắt `app.assistant.restore-diacritics` (backend #68) | **DONE** | — |
 
 **Điểm:** DONE 8 × 1 = 8 / 8 = **100 %**.
 
@@ -47,12 +49,17 @@ Tìm kiếm dùng mọi đoạn đang có, không lọc theo trạng thái tài 
 
 ## 4. Tài liệu nạp ban đầu (`backend/scripts/seed-knowledge.sh`)
 
+**Hạn mức Voyage:** tài khoản chưa gắn phương thức thanh toán chỉ được 3 request + 10K token/phút; từ backend #68 bộ nhúng chia lô theo số ký tự và chờ rồi thử lại khi 429 nên tài liệu dài vẫn nạp được (chậm). Gắn phương thức thanh toán ở dashboard Voyage để bỏ giới hạn.
+
+**Nạp lại 2026-10-13** trên production (11 tài liệu): bản mới của hướng dẫn khách hàng (đăng nhập SĐT, chỉ chuyển khoản VietQR/SePay + mở app ngân hàng, chia sẻ mã lấy hàng, yêu cầu hoàn tiền), tài liệu luồng L1–L4, quy trình KTV, phát hành; thêm tài liệu tóm tắt luồng nghiệp vụ. Tài liệu không đổi nội dung bị máy chủ chặn trùng (`DOCUMENT_DUPLICATE`) và giữ nguyên. Bộ đánh giá thay bằng `eval-cases.json` mới.
+
 | Tài liệu | Vai trò được đọc | Nguồn |
 |---|---|---|
 | Hướng dẫn sử dụng Lock.R cho khách hàng | Tất cả | `backend/scripts/knowledge/huong-dan-khach-hang.md` — viết theo hành vi đã code của L2 (gửi hàng, thuê ô, thanh toán, báo hỏng) |
 | Chính sách quyền riêng tư · Hướng dẫn xóa dữ liệu người dùng | Tất cả | `legal/privacy-policy.html`, `legal/data-deletion.html` |
 | Điều khoản dịch vụ | Tất cả | `mobile/assets/markdown/terms_of_service.md` |
 | Quy trình vận hành và bảo trì tủ cho kỹ thuật viên | LOCKER_TECHNICIAN · ADMIN | `backend/scripts/knowledge/huong-dan-ktv-tu.md` |
+| Tóm tắt các luồng nghiệp vụ Lock.R (từng bước ai làm gì) | LOCKER_TECHNICIAN · DRONE_TECHNICIAN · ADMIN | `docs/01-overview/tom-tat-luong-nghiep-vu.md` |
 | Các luồng nghiệp vụ L1–L4 | LOCKER_TECHNICIAN · DRONE_TECHNICIAN · ADMIN | `docs/02-flows/*.md` |
 | Quy trình phát hành và triển khai | ADMIN | `docs/04-engineering/release-deploy.md` |
 
@@ -64,4 +71,4 @@ Tìm kiếm dùng mọi đoạn đang có, không lọc theo trạng thái tài 
 |---|---|---|---|
 | ~~F4-G01 → F4-G08~~ | Hạ tầng pgvector, `assistant-service`, nạp tài liệu, hỏi đáp, gateway, seed, trang Kho tri thức, màn hình trợ lý — **đã làm** (backend #23, frontend #16, mobile #21) | — | F4.01 → F4.07 |
 | ~~F4-G09~~ | **Đã làm 2026-10-07:** nạp khoá Anthropic + Voyage trên VM, seed 10 tài liệu + 27 câu, chạy bộ đánh giá: 27/27 ở ngưỡng 35 % (giữ nguyên — xem F4.08). Lưu ý vận hành: khoá Voyage chưa gắn thẻ ⇒ 3 request/phút, 10K token/phút (nạp nhiều tài liệu liền nhau sẽ lỗi 429 — đánh chỉ mục lại từng tài liệu, cách nhau ~1 phút); `seed-knowledge.sh` chạy trong Git Bash trên Windows làm hỏng dấu tiêu đề (curl nhận tham số qua code page ANSI) | — | F4.08 |
-| **F4-G10** | Nội dung: sửa FAQ landing page cho khớp sản phẩm rồi nạp; cập nhật chính sách quyền riêng tư nêu việc câu hỏi được gửi tới Anthropic/Voyage | `frontend/landingPage/…`, `legal/privacy-policy.html` | — |
+| **F4-G10** | Nội dung: sửa FAQ landing page cho khớp sản phẩm rồi nạp; cập nhật chính sách quyền riêng tư nêu việc câu hỏi — và dữ liệu đơn của người hỏi khi hỏi về đơn (F4.09) — được gửi tới Anthropic/Voyage | `frontend/landingPage/…`, `legal/privacy-policy.html` | — |

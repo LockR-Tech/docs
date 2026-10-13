@@ -30,7 +30,7 @@ Mỗi service có database Postgres riêng, Flyway, `ddl-auto: validate`.
 | iot-service | 8088 | Cầu MQTT tới tủ, xác thực PIN/QR, mở khoá, sức khoẻ thiết bị, gán bộ điều khiển (Pi) vào tủ | device_statuses, box_hardware_status, box_access_logs, access_attempts, gateway_devices | MQTT · Feign → locker (`/internal/lockers/{id}/layout`), order |
 | store-service | 8089 | Cửa hàng, tìm gần | stores | Feign → order |
 | loyalty-service | 8092 | Điểm, tem, phần thưởng | loyalty_accounts, point_transactions | — |
-| assistant-service | 8093 | Trợ lý hỏi đáp RAG: kho tri thức, đánh chỉ mục, hỏi đáp có trích nguồn, bộ đánh giá ([L4](../02-flows/flow-4-rag-assistant.md)) | **DB riêng `assistant-db` (pgvector)**: kb_documents, kb_chunks (`vector(1024)`, HNSW cosine), assistant_conversations, assistant_messages, eval_cases | HTTPS → Anthropic (Claude), Voyage AI (embedding) · không dùng RabbitMQ/Feign |
+| assistant-service | 8093 | Trợ lý hỏi đáp RAG: kho tri thức, đánh chỉ mục, hỏi đáp có trích nguồn, bộ đánh giá ([L4](../02-flows/flow-4-rag-assistant.md)) | **DB riêng `assistant-db` (pgvector)**: kb_documents, kb_chunks (`vector(1024)`, HNSW cosine), assistant_conversations, assistant_messages, eval_cases | HTTPS → Anthropic (Claude), Voyage AI (embedding) · Feign → order-service (đơn của người hỏi), locker-service (tên tủ/ô) · không dùng RabbitMQ |
 
 **RabbitMQ** — một topic exchange `laundry.events`, hai hàng đợi có consumer: `order.payment.events` (→ order), `notification.events` (→ notification; bind `order.status.changed`, `payment.*`, `locker.report.claimed/resolved/routed/assigned`, `locker.schedule.due`, `delivery.status.changed`). Không ai tiêu thụ `order.created`, `locker.box.*`, `iot.device.status.changed`, `notification.requested`.
 
