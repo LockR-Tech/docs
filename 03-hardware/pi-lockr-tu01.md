@@ -132,6 +132,7 @@ Sự cố 1–18 xảy ra trên bản cài USB flash đầu tiên; 19–21 khi d
 | Cập nhật hệ thống | `sudo apt update && sudo apt full-upgrade -y` |
 | Đổi tủ trên kiosk | sửa `VITE_LOCKER_ID`, `VITE_LOCKER_CODE` trong `~/iot/ui/.env.local` → `npm run build && sync` → `sudo systemctl restart lockr-kiosk lightdm` |
 | Xem kiosk khi chưa có màn hình | `ssh -N -L 3002:127.0.0.1:3002 -L 8000:127.0.0.1:8000 lockr@lockr-tu01.local`, mở `http://localhost:3002` trên laptop |
+| Bảng điều khiển kỹ thuật (mở ô, sơ đồ chân, chạy/chỉnh tốc độ trục) | `ssh -N -L 8800:127.0.0.1:8000 lockr@lockr-tu01.local`, mở `http://localhost:8800/service` — không phải dừng dịch vụ ([guide § 5](controller-wiring-guide.md#5-kiểm-tra-từng-bước-bring-up)) |
 | Kiểm phần cứng khi lắp tủ | `sudo systemctl stop lockr-controller`, rồi `cd ~/iot && uv run python debug_gpio.py pins / doors / open N / lid …` ([guide § 5](controller-wiring-guide.md#5-kiểm-tra-từng-bước-bring-up)) |
 
 ## 9. Việc còn lại

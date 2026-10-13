@@ -19,6 +19,7 @@ Mỗi thay đổi ở repo docs thêm **một dòng** vào ngày tương ứng (
 
 ## 2026-10-06
 
+- F2-G09: bảng điều khiển kỹ thuật `/service` trên Pi ([iot#12](https://github.com/LockR-Tech/iot/pull/12)) — mở từng ô với thời gian kích tuỳ chọn, sơ đồ 40 chân theo cấu hình đang chạy, chạy/chỉnh tốc độ trục nắp (vòng/giây, xung, tăng tốc, số vòng), chỉ nhận lệnh từ chính Pi qua SSH tunnel. Tủ `lockr-tu01` có **hai trục, 4 công tắc hành trình** (module 3 dây): `tu01-wiring-photos` § 6 viết lại (6.1 trục 1, 6.2 trục 2 với driver TB6600 thứ hai, GPIO9/11/7/8), § 8, § 9 (`LID_PULSE_US` 1000, `LID2_ENABLED`); guide § 3.E, § 4.3, § 5, § 6, § 7; hồ sơ Pi § 8. Không đổi verdict/%.
 - F1-G04 · F1-G06 (một phần, local, chưa merge): rà soát thanh toán đơn drone — tự hoàn khoản tiền tới sau khi đơn đã huỷ, không đánh dấu `REFUNDED` khi hoàn 0 đ, khoá đơn ở khách huỷ và sự kiện thanh toán, `nextAction`/`paymentRequired` khớp guard trả trước. flow-1 thêm mục "Cập nhật 2026-10-06" kèm các điểm còn hở. Không đổi %.
 
 ## 2026-10-12
