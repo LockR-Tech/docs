@@ -123,7 +123,20 @@ Ba điều dễ hiểu nhầm, đã kiểm chứng ngày 16/09:
 
 ---
 
-## 5. Twilio (SMS mã mở tủ)
+## 5. SMS mã mở tủ — eSMS.vn (mặc định) hoặc Twilio
+
+Từ [backend #73](https://github.com/LockR-Tech/backend/pull/73) notification-service gửi SMS qua **eSMS.vn** (nhà cung cấp trong nước) hoặc Twilio. Chọn bằng `APP_SMS_PROVIDER` (`esms` | `twilio`; trống ⇒ eSMS nếu có khoá, rồi Twilio, rồi chỉ ghi log). Khi người gửi xác nhận bỏ hàng, order-service thử **cả ba kênh**: thông báo trong app (SĐT trùng tài khoản Lock.R), SMS tới SĐT người gửi nhập, email nếu có; người gửi được báo kênh nào đã tới, chưa tới thì app nhắc dùng "Chia sẻ mã cho người nhận".
+
+| Biến (`.env` VM) | Ý nghĩa |
+|---|---|
+| `APP_SMS_ESMS_API_KEY` · `APP_SMS_ESMS_SECRET_KEY` | Khoá API (esms.vn → Quản lý API) — secret |
+| `APP_SMS_ESMS_BRANDNAME` | Trống ⇒ đầu số cố định (SmsType 8); có brandname đã đăng ký ⇒ SmsType 2 (cần đăng ký mẫu tin khớp nội dung SMS) |
+| `APP_SMS_ESMS_SMS_TYPE` · `APP_SMS_ESMS_UNICODE` | Tuỳ chọn, ghi đè mặc định |
+| `APP_SMS_ESMS_SANDBOX` | `true` ⇒ eSMS nhận nhưng không gửi, không tính tiền — dùng để thử |
+
+Việc của chủ dự án: mở tài khoản eSMS, nạp tiền (mã lỗi 103 = hết tiền), đặt biến, chạy lại deploy; thử sandbox trước (log `SMS accepted by eSMS … sandbox`), rồi tắt sandbox và gửi thử một đơn tới số của mình. eSMS bật lọc IP (mã 140) thì khai IP public của VM.
+
+### 5a. Twilio (tuỳ chọn)
 
 Hợp đồng: [receiver-pickup-code](../01-overview/receiver-pickup-code.md)
 
