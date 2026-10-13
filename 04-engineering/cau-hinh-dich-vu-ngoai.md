@@ -382,7 +382,7 @@ backend trả `AUTH_FIREBASE_INVALID`, push không gửi được.
 | App Android `com.laundrylocker.mobile` | `android/app/google-services.json` + `FirebaseOptions.android`, Web client ID trong `EnvConfig.googleWebClientId`, OAuth client Android (type 1) | ✅ [mobile #64](https://github.com/LockR-Tech/mobile/pull/64), [#65](https://github.com/LockR-Tech/mobile/pull/65) |
 | Mobile web | Web app "LockR Web" trong `FirebaseOptions.web` (`isWebConfigured` = `true`) | ✅ [mobile #64](https://github.com/LockR-Tech/mobile/pull/64) |
 | Kiosk (Pi) | `VITE_FIREBASE_*` của cùng Web app trong `ui/.env.local`, rồi `npm run build` + restart `lockr-kiosk` | chờ cập nhật trên Pi |
-| VM | `FIREBASE_CREDENTIALS_JSON` = khoá service account của project này (§ 11) | chờ chủ dự án đặt |
+| VM | `FIREBASE_CREDENTIALS_JSON` = khoá service account của project này (§ 11) | ✅ 13/10 |
 
 Việc còn lại khi thêm máy / khoá ký mới:
 
