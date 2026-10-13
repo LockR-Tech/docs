@@ -47,12 +47,15 @@ Tìm kiếm dùng mọi đoạn đang có, không lọc theo trạng thái tài 
 
 ## 4. Tài liệu nạp ban đầu (`backend/scripts/seed-knowledge.sh`)
 
+**Nạp lại 2026-10-13** trên production (11 tài liệu): bản mới của hướng dẫn khách hàng (đăng nhập SĐT, chỉ chuyển khoản VietQR/SePay + mở app ngân hàng, chia sẻ mã lấy hàng, yêu cầu hoàn tiền), tài liệu luồng L1–L4, quy trình KTV, phát hành; thêm tài liệu tóm tắt luồng nghiệp vụ. Tài liệu không đổi nội dung bị máy chủ chặn trùng (`DOCUMENT_DUPLICATE`) và giữ nguyên. Bộ đánh giá thay bằng `eval-cases.json` mới.
+
 | Tài liệu | Vai trò được đọc | Nguồn |
 |---|---|---|
 | Hướng dẫn sử dụng Lock.R cho khách hàng | Tất cả | `backend/scripts/knowledge/huong-dan-khach-hang.md` — viết theo hành vi đã code của L2 (gửi hàng, thuê ô, thanh toán, báo hỏng) |
 | Chính sách quyền riêng tư · Hướng dẫn xóa dữ liệu người dùng | Tất cả | `legal/privacy-policy.html`, `legal/data-deletion.html` |
 | Điều khoản dịch vụ | Tất cả | `mobile/assets/markdown/terms_of_service.md` |
 | Quy trình vận hành và bảo trì tủ cho kỹ thuật viên | LOCKER_TECHNICIAN · ADMIN | `backend/scripts/knowledge/huong-dan-ktv-tu.md` |
+| Tóm tắt các luồng nghiệp vụ Lock.R (từng bước ai làm gì) | LOCKER_TECHNICIAN · DRONE_TECHNICIAN · ADMIN | `docs/01-overview/tom-tat-luong-nghiep-vu.md` |
 | Các luồng nghiệp vụ L1–L4 | LOCKER_TECHNICIAN · DRONE_TECHNICIAN · ADMIN | `docs/02-flows/*.md` |
 | Quy trình phát hành và triển khai | ADMIN | `docs/04-engineering/release-deploy.md` |
 
