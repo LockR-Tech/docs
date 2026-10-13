@@ -5,19 +5,20 @@
 %% @legend <span class="sw demo"></span>Chỉ đạt được ở DEMO
 %% @legend <span class="sw gap"></span>Cần có — CHƯA code
 %% @legend <span class="sw end"></span>Kết thúc
-%% @row D1 | ∅ → AWAITING_DISPATCH | <code>POST /api/orders/drone-deliveries</code> | CUSTOMER | giữ ô DRONE ở tủ gửi và tủ nhận, UNPAID, báo DRONE_TECHNICIAN; người nhận tuỳ chọn (SĐT)
-%% @row D2 | AWAITING_DISPATCH → ACCEPTED | <code>POST /api/drone-technician/drone-orders/{id}/accept</code> | DRONE_TECHNICIAN | PAID · drone IDLE · pin đủ ngưỡng · locker ACTIVE · pad OK → khóa DB và giữ drone RESERVED → mission AWAITING_LOADING; chặn mission trùng
+%% @row D1 | ∅ → AWAITING_DISPATCH | <code>POST /api/orders/drone-deliveries</code> | CUSTOMER | giữ ô DRONE ở hai tủ, UNPAID; cam kết không hàng cấm; chặn quá tầm bay / quá số đơn mở / tạm dừng bay
+%% @row D2 | AWAITING_DISPATCH → ACCEPTED | <code>POST /api/drone-technician/drone-orders/{id}/accept</code> | DRONE_TECHNICIAN | PAID · người gửi đã bỏ kiện · drone IDLE · pin đủ ngưỡng · locker ACTIVE · pad OK → khóa DB và giữ drone RESERVED → mission AWAITING_LOADING; chặn mission trùng
 %% @row D3 | ACCEPTED / AWAITING_LOADING → READY_TO_LAUNCH | <code>POST …/{id}/loading-confirmation</code> | đội viên đã nhận | ghi trạm nguồn, người nạp, cân nặng, niêm phong; bắt buộc đúng kiện · cố định · khóa khoang; chặn quá tải; nhả ô DRONE ở tủ gửi
 %% @row D4 | ACCEPTED / READY_TO_LAUNCH → LAUNCHING | <code>POST …/{id}/launch</code> | đội viên đã nhận | bắt buộc hồ sơ nạp; kiểm tra lại RESERVED · active · pin · pad OK; compare-and-set drone IN_FLIGHT
-%% @row D5 | ACCEPTED → CANCELED | <code>POST …/{id}/cancel</code> | đội viên đã nhận | cho phép khi AWAITING_LOADING hoặc READY_TO_LAUNCH; RESERVED → IDLE, xoá mission, nhả ô ở cả hai tủ, báo khách; đơn PAID hoàn về ví (REFUNDED)
+%% @row D5 | ACCEPTED → CANCELED | <code>POST …/{id}/cancel</code> | đội viên đã nhận | cho phép khi AWAITING_LOADING hoặc READY_TO_LAUNCH; RESERVED → IDLE, mission giữ lại ở CANCELED (lý do, người huỷ, giờ huỷ), nhả ô ở cả hai tủ, báo khách; đơn PAID tạo yêu cầu hoàn tiền (REFUND_PENDING)
 %% @row D6 | AWAITING_DISPATCH → CANCELED | <code>PUT /api/orders/{id}/cancel</code> | CUSTOMER | order và deliveryStage → CANCELED, nhả ô; app không có nút huỷ cho đơn drone; đơn PAID hoàn về ví (REFUNDED)
 %% @row !D7 | LAUNCHING → DEPARTED → … → ARRIVED | <code>DroneDeliverySimulator</code> mỗi 3 giây | hệ thống | chỉ DEMO. Push ở DEPARTED, APPROACHING, ARRIVED; phát vị trí nội suy lên STOMP mỗi giây
 %% @row D8 | LAUNCHING → … → READY_FOR_PICKUP | <code>POST …/{id}/advance</code> | đội viên đã nhận | chỉ STANDARD: xác nhận tay từng chặng (chưa có telemetry, không có vị trí)
 %% @row D9 | ARRIVED → READY_FOR_PICKUP | simulator hoặc <code>…/advance</code> | hệ thống · đội viên | mission DEPOSITED, order STORING, ô nhận OCCUPIED, cấp PIN hạn 24h, drone IDLE; gửi mã cho người nhận khác người đặt
-%% @row ~D10 | EN_ROUTE · APPROACHING → FAILED · DELAYED | abort / lỗi drone / thời tiết | hệ thống · DRONE_TECHNICIAN | CHƯA CÓ (app mobile đã có nhãn delayed/failed nhưng backend không gửi)
+%% @row D10 | LAUNCHING … ARRIVED → FAILED | <code>POST …/{id}/fail</code> | đội viên đã nhận · ADMIN | order CANCELED + chặng FAILED, mission FAILED, nhả ô nhận, drone → FAULT, hoàn tiền, đội bay trả kiện. DELAYED CHƯA CÓ
+%% @row D12 | → CANCELED (quá hạn chờ) | quét mỗi 5 phút · <code>…/decline-surcharge</code> | hệ thống · CUSTOMER | chưa trả tiền 30 phút; đã trả mà chưa bỏ kiện/chưa tiếp nhận 120 phút; nợ phụ thu 60 phút hoặc khách từ chối. Kiện đã vào hệ thống thì chờ <code>…/parcel-return</code>
 %% @row D11 | READY_FOR_PICKUP → (order COMPLETED) | <code>PUT /api/orders/{id}/complete</code> | người đặt | cần PAID; deliveryStage → COMPLETED theo trạng thái đơn. Mở ô bằng PIN ở kiosk <b>không</b> hoàn tất đơn
 %% @note Theo dõi hành trình: khách <code>GET /api/orders/{id}/drone-delivery</code>, điều phối viên <code>/api/drone-technician/drone-orders/{id}</code>, admin <code>/api/admin/drone-orders/{id}</code> — cùng một read model (lộ trình, mốc giờ, hồ sơ nạp hàng, nhật ký mới nhất trước), client tự làm mới 3–5 giây; bản đồ live (STOMP) đã tắt bằng feature flag, không service nào phát vị trí.
-%% @note DroneMission.status dùng AWAITING_LOADING/READY_TO_LAUNCH rồi cùng tên chặng bay + DEPOSITED; khi huỷ, dòng mission bị <b>xoá</b> thay vì đánh dấu CANCELED.
+%% @note DroneMission.status dùng AWAITING_LOADING/READY_TO_LAUNCH rồi cùng tên chặng bay + DEPOSITED; nhiệm vụ không giao được hàng được <b>giữ lại</b> ở CANCELED (huỷ trước khi phóng) hoặc FAILED (hỏng sau khi phóng) kèm <code>ended_at</code>, <code>end_reason</code>, <code>end_note</code>, <code>failed_stage</code>.
 %%{init: {"flowchart": {"nodeSpacing": 26, "rankSpacing": 40, "padding": 8, "curve": "basis"}}}%%
 flowchart TB
     S(("●")) -->|D1| AW(["AWAITING_DISPATCH<br/><small>chờ điều phối</small>"])
@@ -25,8 +26,8 @@ flowchart TB
     ACC -->|D3| LOAD(["ACCEPTED<br/><small>mission READY_TO_LAUNCH</small>"])
     LOAD -->|D4| LAU(["LAUNCHING<br/><small>drone IN_FLIGHT</small>"])
     ACC -->|D5| CAN(["CANCELED"])
-    LOAD -->|D5| CAN
-    AW -->|D6| CAN
+    LOAD -->|D5 · D12| CAN
+    AW -->|D6 · D12| CAN
     subgraph FLIGHT["Chặng bay · DEMO"]
         direction LR
         DEP(["DEPARTED"]) -->|D7| ENR(["EN_ROUTE"])
@@ -36,9 +37,10 @@ flowchart TB
     LAU -->|D7| DEP
     ARR -->|D9| RFP(["READY_FOR_PICKUP<br/><small>order STORING · có PIN</small>"])
     LAU -.->|D8| DEP
-    FLIGHT -.->|D10| FAIL(["FAILED · DELAYED"])
+    FLIGHT -->|D10| FAIL(["FAILED<br/><small>order CANCELED · drone FAULT</small>"])
     RFP -->|D11| E((("◉")))
     CAN --> E
+    FAIL --> E
 
     classDef ok fill:#d8f5dd,stroke:#2da44e,stroke-width:1.5px,color:#1f2328
     classDef demo fill:#fff1c2,stroke:#bf8700,stroke-width:1.5px,color:#1f2328
@@ -47,11 +49,10 @@ flowchart TB
     classDef term fill:#1f2328,stroke:#1f2328,color:#ffffff
     class AW,ACC,LOAD,LAU ok
     class DEP,ENR,APP,ARR,RFP demo
-    class FAIL gap
-    class CAN fin
+    class CAN,FAIL fin
     class S,E term
 
     style FLIGHT fill:#fffbeb,stroke:#bf8700,stroke-dasharray:4 3,color:#7d5a00
 
-    linkStyle 12,13 stroke:#8c959f,stroke-width:1.5px
+    linkStyle 12 stroke:#8c959f,stroke-width:1.5px
     linkStyle 7,8,9,10,11 stroke:#bf8700,stroke-width:2.5px,color:#bf8700

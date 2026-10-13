@@ -2,12 +2,46 @@
 
 Mỗi thay đổi ở repo docs thêm **một dòng** vào ngày tương ứng (mới nhất ở trên). Ghi mã gap/SEC/ADR nếu có.
 
+## 2026-10-13
+
+- F4.09 · F4.10 (backend #68): trợ lý trả lời theo đơn hàng thật của người hỏi, hiểu tiếng Việt không dấu — flow-4 thêm 2 hạng mục (L4 giữ 100 %), F4-G10 thêm việc ghi dữ liệu đơn vào chính sách quyền riêng tư, ghi chú hạn mức Voyage; architecture: assistant-service gọi order-service/locker-service.
+- F4.01 · F4.08: thêm `01-overview/tom-tat-luong-nghiep-vu.md` (19 luồng, từng bước ai làm gì) và nạp vào kho tri thức cho KTV/admin; flow-4 § 4 ghi lần nạp lại 13/10 (11 tài liệu).
+- F2-G03 · F2.06 (mobile #67): người gửi chia sẻ mã lấy hàng cho người nhận từ app trong lúc chưa có SMS — flow-2 F2.06 thêm bằng chứng, F2-G03 ghi cách tạm thời. Firebase chuyển sang project `lockr-drone-delivery` (§ 11c, STATUS § 4 mục 3; mobile #64–#66, iot #17).
+- F2-G04 · F2.03 (PR mở, chưa merge: backend #64, #65, iot #16, frontend #46, mobile #62): chỉ còn thanh toán SePay (VietQR), gỡ MoMo/VNPay — `architecture.md` (+ sơ đồ `architecture`), `admin-reporting-api.md` (VNPAY/MOMO/VNPAY_TOPUP thành giá trị cũ, `bankTransfer`), `business-settings.md` (`allowedItems`, `enabled-methods` mặc định `SEPAY`), flow-2 F2.03 đổi tên hạng mục + bằng chứng (verdict giữ PARTIAL, không đổi %), F2-G04 bỏ việc VNPay IPN / CASH kiosk, flow-1 thêm mục 2026-10-13; `cau-hinh-dich-vu-ngoai.md` § 10 SePay thay VNPay/MoMo, § 11c cấu hình Firebase cho đăng nhập SĐT; `chay-he-thong-cuc-bo.md`, `release-deploy.md` bỏ `VNPAY_*`/`MOMO_*`. STATUS: backend #59, #61, #62, mobile #56, iot #15 đã merge nhưng chờ backend #64 mới deploy được; thêm dòng đợt này, nút thắt CI đỏ, việc chủ dự án sau deploy (§ 4).
+
+## 2026-10-09
+
+- F1-G04 · F1-G06 (đã đẩy lên nhánh, chưa merge `main`): rà soát rule nghiệp vụ đơn drone — báo chuyến bay thất bại, giữ hồ sơ nhiệm vụ khi huỷ, ba hạn tự huỷ (chưa trả tiền, chưa tiếp nhận, nợ phụ thu), khai báo kiện, người gửi xác nhận bỏ kiện, kiện chờ trả, khách từ chối phụ thu, tầm bay/số đơn mở/tạm dừng bay, cộng đúng tiền từng lần thanh toán. flow-1 thêm mục 2026-10-09; sơ đồ `drone-mission` thêm D10, D12.
+
+## 2026-10-07
+
+- F1-G04 (local, chưa merge): đơn drone bị huỷ theo luồng hoàn tiền mới của backend #45 — `REFUND_PENDING` chờ admin chuyển khoản thay cho "hoàn về ví"; flow-1 thêm đoạn 2026-10-07. Không đổi %.
+
 ## 2026-10-06
 
 - F2-G09: bảng điều khiển kỹ thuật `/service` trên Pi ([iot#12](https://github.com/LockR-Tech/iot/pull/12)) — mở từng ô với thời gian kích tuỳ chọn, sơ đồ 40 chân theo cấu hình đang chạy, chạy/chỉnh tốc độ trục nắp (vòng/giây, xung, tăng tốc, số vòng), chỉ nhận lệnh từ chính Pi qua SSH tunnel. Tủ `lockr-tu01` có **hai trục, 4 công tắc hành trình** (module 3 dây): `tu01-wiring-photos` § 6 viết lại (6.1 trục 1, 6.2 trục 2 với driver TB6600 thứ hai, GPIO9/11/7/8), § 8, § 9 (`LID_PULSE_US` 1000, `LID2_ENABLED`); guide § 3.E, § 4.3, § 5, § 6, § 7; hồ sơ Pi § 8. Không đổi verdict/%.
+- F1-G04 · F1-G06 (một phần, local, chưa merge): rà soát thanh toán đơn drone — tự hoàn khoản tiền tới sau khi đơn đã huỷ, không đánh dấu `REFUNDED` khi hoàn 0 đ, khoá đơn ở khách huỷ và sự kiện thanh toán, `nextAction`/`paymentRequired` khớp guard trả trước. flow-1 thêm mục "Cập nhật 2026-10-06" kèm các điểm còn hở. Không đổi %.
+
+## 2026-10-12
+
+- `mqtt-contract.md` lên 1.1: lệnh khởi động lại bộ điều khiển `cabinet/{lockerId}/command/restart` + kết quả, không đổi ACL (backend #61, iot #15).
+- STATUS § 3: thay 4 dòng ngày 11/10 (đã merge) bằng đợt rà soát app mobile (mobile #56, backend #61, iot #15) và PR vá đăng nhập số điện thoại (backend #59); § 5 thêm 2026-10-11. Không đổi % (đổi khi merge kèm bằng chứng).
+
+## 2026-10-11
+
+- SEC-02 · F3-G01 · F3-G05: STATUS § 2 ghi phần đã vá (backend #54) và PR còn lại (backend #55); flow-3 cập nhật gap F3-G01, F3-G05 (kiểm tài khoản ACTIVE ở gateway, tài khoản `DELETED` khi xoá người dùng — backend #56). Không đổi %.
+- STATUS § 3 thay dòng web admin bằng 4 PR đang mở (backend #55, #56, mobile #52, frontend #40); § 5 thêm 2026-10-10 web admin lên production; ghi chú deploy mobile web đỏ từ cuối tháng 9.
+
+## 2026-10-10
+
+- F4-G09: L4 lên **100 %** — RAG chạy thật trên production từ 07/10, bộ đánh giá 27/27 ở ngưỡng 35 % (F4.08 PARTIAL → DONE), F4.06 thêm bằng chứng xem nội dung tài liệu (backend #50, frontend #35); STATUS § 1 tổng 69,7 % → 71,3 %, § 5 thêm hai dòng 07/10 và 08/10.
+- Vận hành: `release-deploy.md` § 5 thêm cách sửa lỗi quyền trên VM làm deploy đỏ 05–08/10 (`/opt` cho user deploy, `~/.docker` của root, nhóm `docker`) và kiểm tra nhanh trước khi deploy.
+- Web admin (PR đang mở: backend #54, frontend #39): `admin-reporting-api.md` thêm § 6 đánh giá dịch vụ / thống kê / giờ cao điểm, giá trị `REFUND_PENDING`, `DROP_REPORTED`, `SEPAY`/`SEPAY_TOPUP`, `WITHDRAW`, dạng thật của `appliedPromotionCodes` và `orderDetails`; STATUS § 3 thêm dòng sửa lỗi web admin.
+- F1-G11 (nhánh `feature/drone-parcel-drop-incident`, chưa deploy): triển khai luồng quản lý sự cố rơi kiện drone end-to-end gồm camera/telemetry thật hoặc trạng thái unavailable, report idempotent, chặn delivered, RTL có acknowledgement, phiếu kiểm tra drone, nhiệm vụ KTV tủ thu hồi bằng ảnh/GPS, Admin verify/proposal có phiên bản, khách accept/dispute và snapshot policy bồi thường theo order. Thêm adapter + callback cho payout, redelivery và RTL; khi hạ tầng thật chưa có thì ghi `Integration Unavailable`, không trả success giả. Thêm đặc tả `drone-parcel-drop-incidents.md`, sơ đồ state machine và liên kết flow-1. Lưu ý: Backend xuất hiện commit/push `73a852f` và merge/push `fe3f1a5` từ thao tác ngoài phiên agent trong lúc chạy test; web/mobile/docs còn local.
 
 ## 2026-10-04
 
+- F1-G01 (local, chưa merge): telemetry drone thật. Thêm `01-overview/drone-telemetry-contract.md` (topic `lockr/drones/{droneId}/telemetry|status`, payload schemaVersion 1, chữ ký HMAC theo khoá từng drone, quy tắc suy chặng, biến môi trường); flow-1 thêm mục "Cập nhật 2026-10-04 (telemetry drone thật)" và sửa dòng F1-G01; `architecture.md` § 2 + § 6; STATUS § 3 thêm việc đang làm, đóng câu hỏi Q3. Verdict và % giữ nguyên, chờ bay thử.
 - Hạ tầng: production chuyển sang VM Azure mới `85.211.182.170` (Malaysia West, Ubuntu 24.04, `Standard_B2as_v2`) vì subscription cũ hết credit; chép nguyên dữ liệu 9 DB + `assistant-db`, RabbitMQ, nginx/Let's Encrypt; DNS `api.locker-drone.tech` và secret `AZURE_VM_HOST` đã trỏ sang máy mới. `architecture.md` § 3, `release-deploy.md` § 1.
 
 ## 2026-10-02

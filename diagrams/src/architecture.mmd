@@ -1,5 +1,5 @@
 %% @title Kiến trúc hệ thống Lock.R
-%% @subtitle Nguồn: <code>backend/pom.xml</code> · <code>api-gateway/…/application.yml</code> · <code>docker-compose.yml</code> · <code>.github/workflows/*</code> · <code>iot/main.py</code> — rà soát code 2026-09-13, thêm assistant-service 2026-09-21 (backend #23)
+%% @subtitle Nguồn: <code>backend/pom.xml</code> · <code>api-gateway/…/application.yml</code> · <code>docker-compose.yml</code> · <code>.github/workflows/*</code> · <code>iot/main.py</code> — rà soát code 2026-09-13, thêm assistant-service 2026-09-21 (backend #23), SePay thay VNPay · MoMo 2026-10-13 (backend #65)
 %% @orientation landscape
 %% @legend <span class="sw ok"></span>Đang chạy production
 %% @legend <span class="sw demo"></span>Sandbox / test / chưa kích hoạt
@@ -52,7 +52,7 @@ flowchart LR
     subgraph EXT["Dịch vụ ngoài"]
         direction TB
         FB["Firebase Auth<br/><small>phone · Google · Facebook</small>"]
-        VNP["VNPay · MoMo<br/><small>sandbox / test</small>"]
+        SEPAY["SePay<br/><small>VietQR · webhook</small>"]
         FCM["FCM push"]
         SMTP["SMTP email OTP"]
         LLM["Claude · Voyage AI<br/><small>trả lời · embedding</small>"]
@@ -76,7 +76,7 @@ flowchart LR
     PI --> ARD
     KIOSK --> PI
     AUTH --> FB & SMTP
-    PAY --> VNP
+    PAY --> SEPAY
     NOTI -.-> FCM
 
     classDef ok fill:#d8f5dd,stroke:#2da44e,color:#1f2328
@@ -84,6 +84,6 @@ flowchart LR
     classDef bad fill:#ffd8d3,stroke:#cf222e,stroke-width:2px,color:#1f2328
     classDef gap fill:#f6f8fa,stroke:#8c959f,stroke-dasharray:5 4,color:#57606a
     class MOB,MWEB,ADMIN,LAND,KIOSK,NGINX,EUREKA,USER,ORDER,LOCKER,PAY,NOTI,STORE,LOYAL,PG,MQ,PI,ARD,FB,SMTP ok
-    class VNP,FCM,RAG,VDB,LLM demo
+    class SEPAY,FCM,RAG,VDB,LLM demo
     class BROKER,GW,AUTH,IOTS bad
     style LAND stroke-dasharray:3 3

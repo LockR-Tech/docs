@@ -1,6 +1,6 @@
 # Kiến trúc hệ thống
 
-> Sơ đồ in A4: [diagrams/pdf/architecture.pdf](../diagrams/pdf/architecture.pdf) · nguồn [`architecture.mmd`](../diagrams/src/architecture.mmd). Rà soát code 2026-09-13; bổ sung 2026-09-21 theo backend #21 (kiosk), #22 (KTV tủ), #23 (`assistant-service`).
+> Sơ đồ in A4: [diagrams/pdf/architecture.pdf](../diagrams/pdf/architecture.pdf) · nguồn [`architecture.mmd`](../diagrams/src/architecture.mmd). Rà soát code 2026-09-13; bổ sung 2026-09-21 theo backend #21 (kiosk), #22 (KTV tủ), #23 (`assistant-service`); 2026-10-13 theo PR mở backend #65 (chỉ SePay) và mobile #62 (đăng nhập SĐT).
 
 ## 1. Repo
 
@@ -25,16 +25,18 @@ Mỗi service có database Postgres riêng, Flyway, `ddl-auto: validate`.
 | user-service | 8082 | Hồ sơ, cột vai trò, quản lý người dùng | user_profiles | Feign → auth, notification |
 | order-service | 8083 | Đơn SEND/RENTAL/DRONE, khuyến mãi, đánh giá, scheduler, dashboard, **drone simulator** | orders, order_status_history, promotions, drone_missions… | Feign → locker, user, notification · publish `order.*` · consume `order.payment.events` |
 | locker-service | 8084 | Tủ, ô, ticket (định tuyến cho KTV phụ trách tủ), bảo trì + kiểm tra định kỳ, drone, bãi đáp, ảnh ticket | lockers, locker_boxes, locker_reports, report_attachments, maintenance_schedules, drone_units, repair_logs… | Feign → iot, user · publish `locker.box.*`, `locker.report.*` (claimed/resolved/routed/assigned), `locker.schedule.due` |
-| payment-service | 8086 | Thanh toán CASH/WALLET/VNPAY/MOMO, hoàn tiền, ví | payments, refunds, wallets, wallet_transactions | Feign → order · publish `payment.*` |
+| payment-service | 8086 | Thanh toán CASH/WALLET/SEPAY (VNPay, MoMo bỏ ở [backend #65](https://github.com/LockR-Tech/backend/pull/65); giao dịch cũ vẫn đọc được), webhook SePay, hoàn tiền, ví | payments, refunds, wallets, wallet_transactions | Feign → order · publish `payment.*` |
 | notification-service | 8087 | Thông báo in-app, STOMP `/ws`, FCM | notifications, fcm_tokens | consume `notification.events` |
 | iot-service | 8088 | Cầu MQTT tới tủ, xác thực PIN/QR, mở khoá, sức khoẻ thiết bị, gán bộ điều khiển (Pi) vào tủ | device_statuses, box_hardware_status, box_access_logs, access_attempts, gateway_devices | MQTT · Feign → locker (`/internal/lockers/{id}/layout`), order |
 | store-service | 8089 | Cửa hàng, tìm gần | stores | Feign → order |
 | loyalty-service | 8092 | Điểm, tem, phần thưởng | loyalty_accounts, point_transactions | — |
-| assistant-service | 8093 | Trợ lý hỏi đáp RAG: kho tri thức, đánh chỉ mục, hỏi đáp có trích nguồn, bộ đánh giá ([L4](../02-flows/flow-4-rag-assistant.md)) | **DB riêng `assistant-db` (pgvector)**: kb_documents, kb_chunks (`vector(1024)`, HNSW cosine), assistant_conversations, assistant_messages, eval_cases | HTTPS → Anthropic (Claude), Voyage AI (embedding) · không dùng RabbitMQ/Feign |
+| assistant-service | 8093 | Trợ lý hỏi đáp RAG: kho tri thức, đánh chỉ mục, hỏi đáp có trích nguồn, bộ đánh giá ([L4](../02-flows/flow-4-rag-assistant.md)) | **DB riêng `assistant-db` (pgvector)**: kb_documents, kb_chunks (`vector(1024)`, HNSW cosine), assistant_conversations, assistant_messages, eval_cases | HTTPS → Anthropic (Claude), Voyage AI (embedding) · Feign → order-service (đơn của người hỏi), locker-service (tên tủ/ô) · không dùng RabbitMQ |
 
 **RabbitMQ** — một topic exchange `laundry.events`, hai hàng đợi có consumer: `order.payment.events` (→ order), `notification.events` (→ notification; bind `order.status.changed`, `payment.*`, `locker.report.claimed/resolved/routed/assigned`, `locker.schedule.due`, `delivery.status.changed`). Không ai tiêu thụ `order.created`, `locker.box.*`, `iot.device.status.changed`, `notification.requested`.
 
 **MQTT (iot-service)** — hợp đồng đầy đủ: [mqtt-contract.md](mqtt-contract.md) ([ADR-0008](../adr/0008-hop-dong-mqtt-backend-tu.md)). Phát `cabinet/{lockerId}/command/open` (`boxId` + `slotIndex = boxNumber − 1`, chờ `/result` theo `app.iot.unlock-wait-seconds`), `cabinet/{lockerId}/command/sync`, `iot/{mac}/command/setup|clear-setup`, `iot/{mac}/discovery/start`; nghe `cabinet/+/command/+/result`, `cabinet/+/heartbeat`, `cabinet/+/locker/+/status`, `iot/+/discovery/result`, `iot/+/setup/progress|result`. Admin gán Pi vào tủ: `GET /api/admin/iot/gateways`, `POST /api/admin/iot/gateways/{id}/assign|unassign|discover`, `DELETE /api/admin/iot/gateways/{id}`. ⚠ Broker mặc định vẫn là `broker.hivemq.com:1883` công khai (SEC-04) cho tới khi bật broker riêng (bảng dưới). Hợp đồng này có từ [backend#33](https://github.com/LockR-Tech/backend/pull/33) + [iot#9](https://github.com/LockR-Tech/iot/pull/9) (merge 2026-09-27).
+
+**MQTT (order-service — telemetry drone)** — hợp đồng: [drone-telemetry-contract.md](drone-telemetry-contract.md). Kết nối riêng, chỉ nghe `lockr/drones/+/telemetry` do Pi trên drone (`iot/drone-iot/`) gửi; bản tin ký HMAC theo khoá từng drone. Tắt mặc định (`APP_DRONE_TELEMETRY_ENABLED`); biến `DRONE_TELEMETRY_SECRET` (secret), `DRONE_MQTT_BROKER_URL`, `DRONE_MQTT_USERNAME`, `DRONE_MQTT_PASSWORD`. Không đi qua iot-service.
 
 **Gateway** (`api-gateway/src/main/resources/application.yml`): `/api/auth/**`→auth · `/api/users/**`, `/api/user/**`, `/api/media/**`→user · `/api/orders/**`, `/api/drone-technician/drone-orders/**`, `/api/admin/drone-orders/**` (ADMIN — hành trình drone), `/api/promotions/**`, `/api/admin/dashboard/**`→order · `/api/lockers/**`, `/api/boxes/**`, `/api/maintenance/**`, `/api/locker-technician/**`, `/api/drone-technician/**`, `/api/admin/drones/**`→locker · `/api/payments/**`, `/api/wallet/**`→payment · `/api/notifications/**`, `/ws/**`→notification · `/api/iot/**`, `/api/locker-technician/devices/**`→iot (khai báo trước locker-service để không bị nuốt) · `/api/stores/**`→store · `/api/loyalty/**`→loyalty · `/api/assistant/**` (mọi JWT), `/api/admin/knowledge/**` (ADMIN)→assistant. `/internal/**` luôn 403 từ ngoài.
 
@@ -56,6 +58,7 @@ Mỗi service có database Postgres riêng, Flyway, `ddl-auto: validate`.
 
 - JWT ký HS (jjwt), claim `sub`=userId, `accountId`, `roles`, `tokenUse`. Access 24h, refresh 30 ngày (lưu hash, thu hồi được). Không có `iss`.
 - Đăng nhập: email/mật khẩu, OTP email, số điện thoại, **Firebase** (phone/Google/Facebook) đổi ID token lấy JWT, kiosk quick-register. Admin: 2FA qua OTP email.
+- Đăng nhập SĐT trên app ([mobile #62](https://github.com/LockR-Tech/mobile/pull/62), PR mở): Firebase Phone Auth (chuẩn hoá +84, OTP 6 số, gửi lại sau 60 s) → `POST /api/auth/firebase`; tài khoản mới hỏi "Hoàn tất đăng ký" (họ tên bắt buộc, email tuỳ chọn) rồi lưu bằng `PUT /api/user/profile`. `POST /api/auth/phone-login` chỉ nhận Firebase ID token đã xác minh, `complete-registration` bắt buộc tempToken (backend #59). Facebook đang ẩn trên app. Cấu hình Firebase: [cau-hinh-dich-vu-ngoai § 11c](../04-engineering/cau-hinh-dich-vu-ngoai.md#11c-firebase-auth--đăng-nhập-số-điện-thoại). Còn nợ: `AuthService.firebaseLogin` chỉ khớp SĐT lưu dạng `+84…`, tài khoản lưu `0…` có thể bị tạo trùng.
 - Gateway kiểm chữ ký, gắn `X-User-Id`, `X-Account-Id`, `X-User-Roles`, RBAC theo tiền tố path. **Service không tự kiểm tra lại** ⇒ nguồn gốc các lỗ hổng SEC-02/03/05/06.
 - ⚠ **SEC-01**: secret JWT production từng hardcode trong `docker-compose.yml`. [backend #10](https://github.com/LockR-Tech/backend/pull/10) chuyển sang đọc `.env` và dừng khởi động khi thiếu, cho cả ba service xác thực JWT (gateway, auth, **notification** — service này trước đó không được truyền biến). Đóng khi đã đặt biến trên VM và merge.
 
@@ -63,14 +66,14 @@ Mỗi service có database Postgres riêng, Flyway, `ddl-auto: validate`.
 
 | Tích hợp | Tình trạng |
 |---|---|
-| VNPay | Sandbox mặc định (`DEMO`); IPN không kiểm số tiền |
-| MoMo | Endpoint test, cần khoá thật |
+| SePay (VietQR) | Cách thanh toán duy nhất cho khách từ [backend #65](https://github.com/LockR-Tech/backend/pull/65) (PR mở): ảnh VietQR + `bankTransfer` (STK, số tiền, nội dung = `referenceId`) để app mở app ngân hàng điền sẵn; chỉ webhook SePay đưa giao dịch sang `COMPLETED`. Biến `SEPAY_API_KEY`, `SEPAY_BANK_BIN`, `SEPAY_BANK_ACCOUNT_NO` bắt buộc, không có giá trị mặc định ([runbook § 10](../04-engineering/cau-hinh-dich-vu-ngoai.md#10-sepay-chuyển-khoản-vietqr)) |
+| ~~VNPay · MoMo~~ | **Đã bỏ** ở backend #65: service, endpoint return/IPN/callback, biến `VNPAY_*`/`MOMO_*`, đường công khai ở gateway. Tạo giao dịch mới ⇒ 400 `PAYMENT_METHOD_UNSUPPORTED`; giao dịch cũ vẫn đọc được |
 | Ví nội bộ | Thật (sổ cái `wallet_transactions`) |
-| Tiền mặt | Hoàn tất ngay khi chọn — chưa có xác nhận của nhân viên. App khách đã bỏ CASH (mobile #19); kiosk giữ CASH demo |
+| Tiền mặt | Hoàn tất ngay khi chọn — chưa có xác nhận của nhân viên. App khách đã bỏ CASH (mobile #19); kiosk bỏ nút CASH demo ở [iot #16](https://github.com/LockR-Tech/iot/pull/16) (PR mở). `app.payment.enabled-methods` mặc định chỉ `SEPAY` (backend #65) |
 | Email | SMTP dùng cho OTP đăng nhập (auth-service) và gửi mã mở tủ cho người nhận chưa có tài khoản (notification-service). Biến `SPRING_MAIL_*` (secret), `APP_MAIL_FROM` |
 | SMS | **Twilio** Messages API trong notification-service, gửi mã mở tủ cho người nhận chưa có tài khoản. Biến `APP_SMS_TWILIO_ACCOUNT_SID` / `AUTH_TOKEN` / `FROM_NUMBER` (secret). Thiếu bất kỳ biến nào ⇒ rơi về bản chỉ ghi log, **không gửi thật**. Hợp đồng: [receiver-pickup-code](receiver-pickup-code.md) |
 | FCM push | notification-service đã khởi tạo Firebase ([backend #10](https://github.com/LockR-Tech/backend/pull/10) — trước đó `FcmPushNotificationService` viết đủ nhưng không ai gọi `initializeApp` nên mọi lệnh push bị bỏ qua trong im lặng). Bật thật khi nạp `FIREBASE_CREDENTIALS_JSON`; trống ⇒ push tắt, các kênh khác vẫn chạy |
-| Firebase Auth | Thật (phone/Google/Facebook) |
+| Firebase Auth | Thật (phone/Google; Facebook ẩn trên app từ mobile #62). Đăng nhập SĐT cần bật Phone + gói Blaze + SHA khoá ký trên project Firebase — [runbook § 11c](../04-engineering/cau-hinh-dich-vu-ngoai.md#11c-firebase-auth--đăng-nhập-số-điện-thoại) |
 | Cấu hình nghiệp vụ (nội bộ) | Mỗi service bật `app.settings.scope` sở hữu bảng `system_settings` + `system_setting_audits`; admin sửa qua `/api/admin/settings/{scope}`, app đọc `/api/settings/{scope}/public` — [business-settings](business-settings.md) · [ADR-0005](../adr/0005-quy-tac-nghiep-vu-cau-hinh-tren-admin.md) |
 | Cloudinary (ảnh) | Client upload trực tiếp bằng chữ ký do user-service cấp; user/order/locker/store-service xác minh chữ ký phản hồi. Biến `CLOUDINARY_URL` (secret), `MEDIA_FOLDER_ROOT`. Trống ⇒ API ảnh trả 503. Hợp đồng: [media-storage](media-storage.md) · [ADR-0004](../adr/0004-anh-luu-cloudinary-upload-truc-tiep.md) |
 | Bản đồ | OpenStreetMap + OSRM công khai |
@@ -79,7 +82,7 @@ Mỗi service có database Postgres riêng, Flyway, `ddl-auto: validate`.
 
 ## 6. Realtime
 
-STOMP tại `/ws` (notification-service): `/user/queue/notifications` (mobile đăng ký), `/topic/deliveries/{orderId}/position` (live map drone — order-service phát vị trí nội suy cho đơn DEMO qua `POST /internal/deliveries/{orderId}/position`; đơn STANDARD chưa có nguồn vị trí). Web admin chỉ dùng WebSocket ở Partner portal cũ.
+STOMP tại `/ws` (notification-service): `/user/queue/notifications` (mobile đăng ký), `/topic/deliveries/{orderId}/position` (live map drone — order-service phát vị trí nội suy cho đơn DEMO qua `POST /internal/deliveries/{orderId}/position`; đơn STANDARD lấy vị trí thật từ telemetry drone khi bật — [drone-telemetry-contract](drone-telemetry-contract.md)). Web admin chỉ dùng WebSocket ở Partner portal cũ.
 
 ## 7. CI/CD
 

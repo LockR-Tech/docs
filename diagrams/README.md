@@ -9,6 +9,7 @@ Mỗi sơ đồ là **đúng một trang A4**, in được. Nguồn Mermaid tron
 | Vòng đời giao hàng drone (`deliveryStage`, mission) | [drone-mission.pdf](pdf/drone-mission.pdf) | [drone-mission.mmd](src/drone-mission.mmd) | A4 dọc | L1 |
 | Trạng thái drone (`DroneUnit.status`) | [drone-status.pdf](pdf/drone-status.pdf) | [drone-status.mmd](src/drone-status.mmd) | A4 dọc | L1, L3 |
 | Trạng thái ô tủ (`locker_boxes.status`) | [locker-cell-status.pdf](pdf/locker-cell-status.pdf) | [locker-cell-status.mmd](src/locker-cell-status.mmd) | A4 dọc | L2, L3 |
+| Sự cố rơi kiện Drone | [drone-parcel-incident.pdf](pdf/drone-parcel-incident.pdf) | [drone-parcel-incident.mmd](src/drone-parcel-incident.mmd) | A4 dọc | L1, L3 |
 
 Các sơ đồ trạng thái vẽ **hiện trạng code** và đánh dấu luôn phần **cần có để đạt 100 %** (nét đứt xám), phần **chỉ chạy ở DEMO** (vàng) và **lỗ hổng** (đỏ) — nên chúng vừa là tài liệu vừa là bản đồ việc cần làm. Khi code thay đổi, sửa `.mmd` rồi render lại.
 

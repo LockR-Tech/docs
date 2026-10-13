@@ -88,6 +88,8 @@ is not a subtype of type 'JavaScriptObject'
 
 Dùng máy ảo Android để test luồng khách.
 
+> Từ [mobile #62](https://github.com/LockR-Tech/mobile/pull/62) (PR mở 13/10): bản web chỉ khởi tạo Firebase khi đã dán cấu hình Web App vào `lib/firebase_options.dart` (`DefaultFirebaseOptions.isWebConfigured`). Chưa dán thì nút SĐT / Google bị ẩn, **đăng nhập email vẫn dùng được**; nút "Thanh toán bằng app ngân hàng" không có trên web.
+
 ## Giả lập tủ IoT
 
 Không có Raspberry Pi + Arduino thì đây là cách duy nhất chạy trọn vòng mở tủ.
@@ -176,7 +178,9 @@ Get-Content scripts\seed-local-complete.sql -Raw | docker exec -i ll-ms-postgres
 | `BOOTSTRAP_ADMIN_EMAIL` · `BOOTSTRAP_ADMIN_PASSWORD` | giá trị dev trong compose | đặt riêng trên mọi môi trường không phải máy dev |
 | `SPRING_MAIL_*` | auth: `localhost:1025`; notification: trống ⇒ tắt kênh email | gửi email thật |
 | `FIREBASE_CREDENTIALS_JSON` | trống | đăng nhập số điện thoại / Google, push |
-| `VNPAY_*` · `MOMO_*` | sandbox/demo, URL trả về mặc định `localhost:8080` | thử thanh toán thật |
+| ~~`VNPAY_*` · `MOMO_*`~~ | — | **đã bỏ** cùng VNPay/MoMo (backend #65) |
+| `SEPAY_API_KEY` · `SEPAY_BANK_BIN` · `SEPAY_BANK_ACCOUNT_NO` | **không có — bắt buộc** từ backend #65 (máy dev đặt giá trị thử bất kỳ; webhook chỉ nhận khi gửi đúng `Apikey`) | luôn phải đặt — [cau-hinh-dich-vu-ngoai § 10](cau-hinh-dich-vu-ngoai.md#10-sepay-chuyển-khoản-vietqr) |
+| `SEPAY_ACCOUNT_NAME` · `SEPAY_MERCHANT_ID` · `SEPAY_SECRET_KEY` | `LaundryLocker` · trống · trống | đổi tên tài khoản hiện cho khách / dùng cổng SePay PG |
 | `MQTT_BROKER_URL` | `tcp://broker.hivemq.com:1883` (`iot-service/…/application.yml:81`) | broker riêng (SEC-04) |
 
 ### Sửa code rồi chạy lại một service
