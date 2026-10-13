@@ -280,6 +280,9 @@ hỏi lại trạng thái đơn. Nạp ví không ghi phương thức ⇒ SePay.
 | `SEPAY_BANK_BIN` | **có** | Mã BIN ngân hàng của tài khoản nhận |
 | `SEPAY_BANK_ACCOUNT_NO` | **có** | Số tài khoản nhận |
 | `SEPAY_ACCOUNT_NAME` | không (mặc định `LaundryLocker`) | Tên chủ tài khoản, hiện cho khách |
+| `SEPAY_DRONE_BANK_BIN` | không | BIN tài khoản riêng cho đơn `DRONE_DELIVERY`; thiếu thì dùng tài khoản mặc định ở trên |
+| `SEPAY_DRONE_BANK_ACCOUNT_NO` | không | Số tài khoản riêng nhận tiền giao drone |
+| `SEPAY_DRONE_ACCOUNT_NAME` | không | Tên chủ tài khoản riêng nhận tiền giao drone |
 | `SEPAY_MERCHANT_ID` · `SEPAY_SECRET_KEY` | không | Chỉ khi dùng cổng SePay PG (trang chuyển tiếp); thiếu thì trang đó trả 503 `SEPAY_GATEWAY_NOT_CONFIGURED` |
 
 Từ backend #65, compose truyền các biến này vào `payment-service` và code **không còn giá trị mặc định**
@@ -295,6 +298,9 @@ Lấy ở SePay Dashboard → Ngân hàng → Tài khoản liên kết. Có đ�
 có ảnh VietQR và response trả thêm `bankTransfer {bankBin, accountNo, accountName, amount, transferContent}`:
 `amount` làm tròn tới đồng, `transferContent` = `referenceId` (trùng `addInfo` của ảnh QR, để webhook
 khớp đúng giao dịch). App dùng `bankTransfer` để mở app ngân hàng điền sẵn STK, số tiền, nội dung.
+Backend chọn bộ `SEPAY_DRONE_*` khi `order.type = DRONE_DELIVERY`; đơn gửi/thuê tủ và nạp ví tiếp tục
+dùng bộ `SEPAY_BANK_*`. Cả hai tài khoản phải được liên kết trong cùng SePay Dashboard thì webhook biến
+động số dư mới tự xác nhận được tiền cho cả hai luồng.
 **Cấu hình nghiệp vụ:** `app.payment.enabled-methods` mặc định `SEPAY`, chỉ nhận `CASH`, `WALLET`,
 `SEPAY` (lưu giá trị khác ⇒ 400 `SETTING_INVALID`); giá trị cũ còn `VNPAY`/`MOMO` thì khi đọc bỏ hai mục
 đó. Giá trị admin đã lưu trước đây **không tự đổi** ⇒ sau deploy vào web admin → Cấu hình nghiệp vụ →
@@ -416,7 +422,7 @@ SMS, app chưa được cấp quyền — thường do thiếu SHA).
 | Azure | `AZURE_VM_HOST` · `USER` · `SSH_KEY` · `PORT` | GitHub secrets (`backend`) | Không deploy được backend |
 | Cloudflare | `CLOUDFLARE_ACCOUNT_ID` · `API_TOKEN` | GitHub secrets (`frontend`, `mobile`) | Không deploy được web |
 | MQTT | `COMPOSE_PROFILES=mqtt` · `MQTT_IOT_SERVICE_PASSWORD` · `MQTT_BROKER_URL` · `USERNAME` · `PASSWORD` | `.env` VM + `.env` Pi | Code có broker riêng, **chưa bật** — vẫn broker công khai (SEC-04) |
-| SePay | `SEPAY_API_KEY` · `SEPAY_BANK_BIN` · `SEPAY_BANK_ACCOUNT_NO` (bắt buộc) · `SEPAY_ACCOUNT_NAME` | `.env` VM (§ 10) | Thiếu ⇒ deploy dừng ở `docker compose config`; sai khoá ⇒ webhook bị từ chối, đơn không lên `PAID` |
+| SePay | `SEPAY_API_KEY` · `SEPAY_BANK_BIN` · `SEPAY_BANK_ACCOUNT_NO` (bắt buộc) · `SEPAY_ACCOUNT_NAME` · `SEPAY_DRONE_*` (tuỳ chọn) | `.env` VM (§ 10) | Thiếu tài khoản mặc định ⇒ deploy dừng; tài khoản không liên kết SePay hoặc sai khoá ⇒ đơn không tự lên `PAID` |
 | ~~VNPay · MoMo~~ | ~~`VNPAY_*` · `MOMO_*`~~ | — | Đã bỏ (backend #65): xoá khỏi `.env` VM |
 | Firebase | `FIREBASE_CREDENTIALS_JSON` | `.env` VM | Không push notification, không xác minh được đăng nhập Firebase (SĐT / Google) |
 | Firebase Auth (SĐT) | — (Firebase Console: Phone, Blaze, SHA, Play Integrity — § 11c) | Firebase Console + `google-services.json` / `firebase_options.dart` của app | Không gửi được OTP SĐT |
