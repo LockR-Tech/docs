@@ -4,7 +4,7 @@ Mỗi thay đổi ở repo docs thêm **một dòng** vào ngày tương ứng (
 
 ## 2026-10-16
 
-- backend #77: bỏ thông báo tiếng Anh trùng lặp (`<type> event received`), nạp ví và thanh toán lỗi báo bằng tiếng Việt — STATUS § 5.
+- backend #77: bỏ thông báo tiếng Anh trùng lặp (`<type> event received`), nạp ví, thanh toán lỗi và 5 thông báo đơn hàng của order-service chuyển sang tiếng Việt — STATUS § 5.
 
 ## 2026-10-13
 
