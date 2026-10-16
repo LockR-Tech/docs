@@ -2,6 +2,10 @@
 
 Mỗi thay đổi ở repo docs thêm **một dòng** vào ngày tương ứng (mới nhất ở trên). Ghi mã gap/SEC/ADR nếu có.
 
+## 2026-10-16
+
+- backend #77: bỏ thông báo tiếng Anh trùng lặp (`<type> event received`), nạp ví, thanh toán lỗi và 5 thông báo đơn hàng của order-service chuyển sang tiếng Việt — STATUS § 5.
+
 ## 2026-10-13
 
 - F2-G03 (backend #73): SMS mã mở tủ qua eSMS.vn (hoặc Twilio), thông báo gửi/nhận hàng tiếng Việt — cau-hinh-dich-vu-ngoai § 5.
