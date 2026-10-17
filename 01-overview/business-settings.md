@@ -66,7 +66,9 @@ Mọi phản hồi bọc `ApiResponse { success, code, message, data, errors }`.
 | payment | Nạp ví · Phương thức | Nạp tối thiểu/tối đa/mặc định, mốc nạp nhanh; phương thức bật (`app.payment.enabled-methods`: chỉ nhận `CASH`, `WALLET`, `SEPAY`, mặc định `SEPAY` từ backend #65); tiền mặt tự hoàn tất |
 | iot | Mở tủ & chống dò mã | Số lần sai trước khi khoá, thời gian khoá, thời gian chờ tủ phản hồi, thời gian cửa mở |
 | auth | Xác thực | Hạn OTP, độ dài OTP, hạn token tạm (đăng ký, 2FA admin) |
-| loyalty | Hạng & phần thưởng | Điểm lên Silver/Gold/Platinum, số tem đổi thưởng, điểm đổi thưởng, số tem mỗi lần |
+| order | Mã giảm giá | Số mã giảm giá tối đa mỗi đơn (`app.order.max-vouchers-per-order`, mặc định 1, 0 = tạm ngưng mã; > 1 thì chỉ mã "dùng kèm được" mới cộng dồn). Mã có thể gắn một tủ (`promotions.locker_id`) hoặc toàn hệ thống; đơn drone xét theo tủ gửi |
+| loyalty | Hạng & phần thưởng | Điểm lên Silver/Gold/Platinum (so với **tổng điểm đã tích** `lifetime_points`, tiêu điểm không tụt hạng), số tem đổi thưởng, điểm đổi thưởng, số tem mỗi lần; số đồng cho 1 điểm khi tích (`app.loyalty.vnd-per-point`, tích khi đơn hoàn tất trên tiền khách thật sự trả) |
+| loyalty | Dùng điểm thanh toán | Bật/tắt (`app.loyalty.redeem-enabled`), giá trị 1 điểm khi dùng (`app.loyalty.redeem-vnd-per-point`, mặc định 100 đ), % tối đa của đơn sau mã giảm giá (`app.loyalty.redeem-max-percent`, mặc định 50), số điểm tối thiểu mỗi lần (`app.loyalty.redeem-min-points`, mặc định 10). Điểm trả lại khi đơn huỷ/hoàn tiền |
 | store | Tìm cửa hàng | Bán kính tìm mặc định |
 
 Không cấu hình trên admin: tập trạng thái cho phép hành động, bí mật/TTL JWT, cron và timeout kỹ thuật, giới hạn nhà cung cấp — xem ADR-0005.
