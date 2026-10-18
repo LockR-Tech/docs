@@ -2,6 +2,10 @@
 
 Mỗi thay đổi ở repo docs thêm **một dòng** vào ngày tương ứng (mới nhất ở trên). Ghi mã gap/SEC/ADR nếu có.
 
+## 2026-10-17
+
+- backend #79, frontend #52, mobile #78, iot #19 (đã merge): dùng điểm thưởng thanh toán đơn, hạng theo tổng điểm đã tích, voucher theo tủ, số mã mỗi đơn — business-settings § 4 thêm nhóm "Mã giảm giá" (order) và "Dùng điểm thanh toán" (loyalty); STATUS § 5.
+
 ## 2026-10-16
 
 - backend #77: bỏ thông báo tiếng Anh trùng lặp (`<type> event received`), nạp ví, thanh toán lỗi và 5 thông báo đơn hàng của order-service chuyển sang tiếng Việt — STATUS § 5.
