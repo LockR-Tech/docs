@@ -64,6 +64,7 @@ Mọi phản hồi bọc `ApiResponse { success, code, message, data, errors }`.
 | locker | Bảo trì & SLA | SLA, số phiếu trễ bị chặn nhận việc, bậc phạt cảnh báo/hạn chế/đình chỉ, bắt buộc ảnh nghiệm thu, giới hạn ảnh mỗi lần/mỗi phiếu |
 | locker | Ô tủ · Drone | Giữ ô RESERVED, kích thước ô hiển thị cho app; pin thấp chặn cất cánh |
 | payment | Nạp ví · Phương thức | Nạp tối thiểu/tối đa/mặc định, mốc nạp nhanh; phương thức bật (`app.payment.enabled-methods`: chỉ nhận `CASH`, `WALLET`, `SEPAY`, mặc định `SEPAY` từ backend #65); tiền mặt tự hoàn tất |
+| payment | Giả lập thanh toán (test) | Hiện nút "Giả lập thanh toán" trên màn VietQR của app và kiosk (`app.payment.simulation-enabled`, mặc định **tắt**) và danh sách user id được dùng (`app.payment.simulation-allowed-user-ids`, trống = mọi tài khoản). Bấm ⇒ `POST /api/payments/simulate` ghi nhận như webhook SePay (đủ hoặc một phần, mô tả `[Giả lập]`, mã giao dịch `SIMULATED-…`) — **chỉ bật khi test**, giao dịch giả lập vẫn tính như thật |
 | iot | Mở tủ & chống dò mã | Số lần sai trước khi khoá, thời gian khoá, thời gian chờ tủ phản hồi, thời gian cửa mở |
 | auth | Xác thực | Hạn OTP, độ dài OTP, hạn token tạm (đăng ký, 2FA admin) |
 | order | Mã giảm giá | Số mã giảm giá tối đa mỗi đơn (`app.order.max-vouchers-per-order`, mặc định 1, 0 = tạm ngưng mã; > 1 thì chỉ mã "dùng kèm được" mới cộng dồn). Mã có thể gắn một tủ (`promotions.locker_id`) hoặc toàn hệ thống; đơn drone xét theo tủ gửi |
