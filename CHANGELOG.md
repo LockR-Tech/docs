@@ -2,6 +2,10 @@
 
 Mỗi thay đổi ở repo docs thêm **một dòng** vào ngày tương ứng (mới nhất ở trên). Ghi mã gap/SEC/ADR nếu có.
 
+## 2026-10-19
+
+- F2-G12 (backend, mobile, frontend `fix/f2-g12-doi-soat-tien`): đối soát tiền đơn tủ — ghi đúng số tiền nhận, hoàn tiền khi huỷ đơn đã trả, ví trả nhiều lần, phí ở quá giờ thuê, giá theo ô thật, giới hạn hoàn tiền + thu hồi điểm; flow-2 thêm gap F2-G12, architecture thêm hàng đợi `loyalty.order.events`/`payment.refunded`, business-settings thêm `app.order.rental-overtime-rate-percent`.
+
 ## 2026-10-17
 
 - backend #79, frontend #52, mobile #78, iot #19 (đã merge): dùng điểm thưởng thanh toán đơn, hạng theo tổng điểm đã tích, voucher theo tủ, số mã mỗi đơn — business-settings § 4 thêm nhóm "Mã giảm giá" (order) và "Dùng điểm thanh toán" (loyalty); STATUS § 5.
