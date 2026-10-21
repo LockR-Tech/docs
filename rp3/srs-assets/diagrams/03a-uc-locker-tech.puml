@@ -1,0 +1,42 @@
+@startuml
+!pragma layout smetana
+skinparam dpi 150
+skinparam defaultFontName Arial
+skinparam defaultFontSize 12
+skinparam shadowing false
+skinparam usecase {
+  BackgroundColor #FFF8F5
+  BorderColor #C0504D
+}
+skinparam actor {
+  BackgroundColor #FFF3E0
+  BorderColor #E65100
+}
+left to right direction
+actor "Locker Technician" as LT
+actor "Locker controller\n(Raspberry Pi)" as PI
+rectangle "Locker maintenance" {
+  usecase "UC35 Start / end shift" as UC35
+  usecase "UC28 Claim & handle ticket" as UC28
+  usecase "UC29 Resolve ticket\n(relocate / hand over / seal / fix / lock)" as UC29
+  usecase "UC30 Extend SLA / return ticket" as UC30
+  usecase "UC31 Perform periodic inspection" as UC31
+  usecase "UC32 Emergency open box" as UC32
+  usecase "UC33 Manage IoT devices" as UC33
+  usecase "UC34 Recover dropped drone parcel" as UC34
+  usecase "UC44 Execute open / restart command" as UC44
+  usecase "UC43 Send heartbeat & door state" as UC43
+}
+LT --> UC35
+LT --> UC28
+LT --> UC30
+LT --> UC31
+LT --> UC32
+LT --> UC33
+LT --> UC34
+UC28 ..> UC29 : <<include>>
+UC32 ..> UC44 : <<include>>
+UC33 ..> UC44 : <<include>>
+PI --> UC43
+PI --> UC44
+@enduml

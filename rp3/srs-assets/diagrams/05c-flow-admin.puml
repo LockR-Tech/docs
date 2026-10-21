@@ -1,0 +1,96 @@
+@startuml
+!pragma layout smetana
+skinparam dpi 150
+skinparam defaultFontName Arial
+skinparam defaultFontSize 11
+skinparam shadowing false
+skinparam ArrowColor #555555
+skinparam rectangle {
+  BackgroundColor #FFFFFF
+  BorderColor #C0504D
+  RoundCorner 6
+}
+skinparam usecase {
+  BackgroundColor #FFF3E0
+  BorderColor #E65100
+}
+left to right direction
+legend right
+  |= Shape |= Meaning |
+  | <back:#FFFFFF> rectangle </back> | screen |
+  | <back:#FFE8E1> filled rectangle </back> | screen with tabs |
+  | <back:#FFF3E0> oval </back> | pop-up / bottom sheet |
+endlegend
+rectangle "Login" as LG
+usecase "2FA OTP" as OTP
+rectangle "Dashboard" as DB
+rectangle "Users" as US
+rectangle "User Details" as UD
+usecase "Create Staff" as CU
+rectangle "Stores" as ST
+rectangle "Store Details" as SD
+rectangle "Lockers" as LK
+rectangle "Locker Layout\n[Box map | Controller | Logs]" as LL #FFE8E1
+usecase "Box Settings / QR" as BS
+rectangle "Drones" as DR
+rectangle "Drone Details\n[Info | Device | IoT logs]" as DD #FFE8E1
+rectangle "Drone Logs" as DLG
+rectangle "Drone Orders" as DO
+rectangle "Drone Order Details" as DOD
+rectangle "Drone Incidents" as DI
+rectangle "Incident Details" as IDT
+rectangle "Orders" as OR
+rectangle "Order Details" as ODT
+rectangle "Payments\n[Transactions | Wallet | Stats]" as PM #FFE8E1
+rectangle "Refunds & Withdrawals" as RF
+usecase "Approve / Reject\n(receipt)" as AR
+rectangle "Revenue" as RV
+rectangle "Promotions" as PR
+rectangle "Loyalty" as LY
+rectangle "Maintenance\n[Tickets | Schedules]" as MT #FFE8E1
+rectangle "Technicians" as TC
+rectangle "Technician Details" as TCD
+rectangle "Feedback" as FB
+rectangle "Feedback Details" as FBD
+rectangle "Notifications" as NT
+rectangle "Services" as SV
+rectangle "Business Settings" as BSG
+rectangle "Scheduler" as SC
+rectangle "Knowledge Base\n[Documents | Conversations |\nEvaluation]" as KB #FFE8E1
+
+LG --> OTP
+OTP --> DB
+DB --> US
+US --> UD
+US --> CU
+DB --> ST
+ST --> SD
+DB --> LK
+LK --> LL
+LL --> BS
+DB --> DR
+DR --> DD
+DR --> DLG
+DB --> DO
+DO --> DOD
+DB --> DI
+DI --> IDT
+DB --> OR
+OR --> ODT
+DB --> PM
+DB --> RF
+RF --> AR
+DB --> RV
+DB --> PR
+DB --> LY
+DB --> MT
+MT --> TC
+TC --> TCD
+DB --> FB
+FB --> FBD
+DB --> NT
+DB --> SV
+DB --> BSG
+DB --> SC
+DB --> KB
+@enduml

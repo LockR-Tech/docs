@@ -1,0 +1,56 @@
+@startuml
+!pragma layout smetana
+skinparam dpi 150
+skinparam defaultFontName Arial
+skinparam defaultFontSize 12
+skinparam shadowing false
+skinparam usecase {
+  BackgroundColor #FFF8F5
+  BorderColor #C0504D
+}
+skinparam actor {
+  BackgroundColor #FFF3E0
+  BorderColor #E65100
+}
+left to right direction
+
+actor Administrator as ADM
+actor "System scheduler" as SCH
+
+rectangle "Lock.R - Administration (web)" {
+  usecase "UC45 Log in with 2FA (email OTP)" as UC45
+  usecase "UC46 View dashboard & revenue" as UC46
+  usecase "UC47 Manage users & staff" as UC47
+  usecase "UC48 Manage stores" as UC48
+  usecase "UC49 Manage lockers, boxes\n& controllers" as UC49
+  usecase "UC50 Manage drones & devices" as UC50
+  usecase "UC51 Monitor orders & drone orders" as UC51
+  usecase "UC52 Process refunds & withdrawals" as UC52
+  usecase "UC53 Handle drone parcel incidents" as UC53
+  usecase "UC54 Manage tickets & inspection schedules" as UC54
+  usecase "UC55 Manage promotions & loyalty" as UC55
+  usecase "UC56 Reply to feedback" as UC56
+  usecase "UC57 Send notifications" as UC57
+  usecase "UC58 Configure business settings" as UC58
+  usecase "UC59 Manage knowledge base" as UC59
+  usecase "UC60 Run scheduled jobs" as UC60
+}
+
+ADM --> UC45
+ADM --> UC46
+ADM --> UC47
+ADM --> UC48
+ADM --> UC49
+ADM --> UC50
+ADM --> UC51
+ADM --> UC52
+ADM --> UC53
+ADM --> UC54
+ADM --> UC55
+ADM --> UC56
+ADM --> UC57
+ADM --> UC58
+ADM --> UC59
+ADM --> UC60
+SCH --> UC60
+@enduml

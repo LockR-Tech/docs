@@ -1,0 +1,101 @@
+@startuml
+!include erd-style.iuml
+entity "user_profiles" as UP {
+  *id <<PK>>
+  (user-service)
+}
+package "order_db" {
+entity "orders" as OR {
+  *id <<PK>>
+  --
+  order_code, type
+  user_id, receiver_user_id
+  receiver_phone / name / email
+  locker_id, reserved_box_id
+  status, payment_status
+  total_price, paid_amount
+  pin_code, qr_token
+  pickup_deadline
+}
+entity "order_status_history" as OSH {
+  *id <<PK>>
+  order_id <<FK>>
+  old_status, new_status
+  changed_by_user_id, note
+}
+entity "order_ratings" as ORA {
+  *id <<PK>>
+  order_id <<FK>>
+  rating, comment, admin_reply
+}
+entity "order_complaints" as OC {
+  *id <<PK>>
+  order_id <<FK>>
+  type, description, status
+}
+entity "promotions" as PR {
+  *id <<PK>>
+  code, discount_type, discount_value
+  locker_id, start_at, end_at
+  total_usage_limit, per_user_limit
+}
+entity "promotion_claims" as PC {
+  *id <<PK>>
+  promotion_id <<FK>>
+  user_id, status
+}
+entity "promotion_usages" as PU {
+  *id <<PK>>
+  promotion_id <<FK>>
+  order_id <<FK>>
+  discount_applied
+}
+}
+package "payment_db" {
+entity "payments" as PM {
+  *id <<PK>>
+  order_id, user_id
+  amount, method, status
+  reference_id, content, qr
+}
+entity "refunds" as RF {
+  *id <<PK>>
+  payment_id <<FK>>
+  order_id, amount, status, reason
+  bank_name, account_number
+  proof_image_url
+}
+entity "wallets" as WL {
+  *id <<PK>>
+  user_id, balance, currency
+}
+entity "wallet_transactions" as WT {
+  *id <<PK>>
+  wallet_id <<FK>>
+  type, amount, balance_after
+}
+entity "withdrawal_requests" as WR {
+  *id <<PK>>
+  user_id, amount, status
+  bank_name, account_number
+}
+entity "user_bank_accounts" as UBA {
+  *id <<PK>>
+  user_id, bank_name
+  account_number, account_holder_name
+}
+}
+OR ||--o{ OSH
+OR ||--o| ORA
+OR ||--o{ OC
+PR ||--o{ PC
+PR ||--o{ PU
+OR ||--o{ PU
+PM ||--o{ RF
+WL ||--o{ WT
+UP ||..o{ OR
+OR ||..o{ PM
+UP ||..o| WL
+UP ||..o{ WR
+UP ||..o{ UBA
+@enduml

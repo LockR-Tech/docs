@@ -1,0 +1,50 @@
+@startuml
+!pragma layout smetana
+skinparam dpi 150
+skinparam defaultFontName Arial
+skinparam defaultFontSize 11
+skinparam shadowing false
+skinparam ArrowColor #555555
+skinparam rectangle {
+  BackgroundColor #FFFFFF
+  BorderColor #C0504D
+  RoundCorner 6
+}
+skinparam usecase {
+  BackgroundColor #FFF3E0
+  BorderColor #E65100
+}
+legend right
+  |= Shape |= Meaning |
+  | <back:#FFFFFF> rectangle </back> | screen |
+  | <back:#FFE8E1> filled rectangle </back> | screen with tabs |
+  | <back:#FFF3E0> oval </back> | pop-up / bottom sheet |
+endlegend
+rectangle "Kiosk Home\n[Open locker / Pick up | Send / Rent]" as KH #FFE8E1
+rectangle "Enter PIN / Scan QR" as PIN
+usecase "Overdue fee\nVietQR" as OF
+rectangle "Box Opened\n(take parcel)" as BO
+rectangle "Login\n[Email OTP | QR from app |\nQuick register]" as LG #FFE8E1
+rectangle "Choose Box\n(real layout)" as CB
+rectangle "Hours, Voucher\n& Order Summary" as HV
+rectangle "VietQR Payment" as PAY
+rectangle "Box Opened\n(drop items)" as BD
+usecase "Confirm Dropped" as CD
+rectangle "Enter Rental / Send Code" as RC
+usecase "Continue rental /\nEnd rental" as CE
+rectangle "Technician Service Panel\n(/service on Pi)" as SP
+
+KH --> PIN
+PIN --> OF
+OF --> BO
+PIN --> BO
+KH --> LG
+LG --> CB
+CB --> HV
+HV --> PAY
+PAY --> BD
+BD --> CD
+KH --> RC
+RC --> BD
+RC --> CE
+@enduml

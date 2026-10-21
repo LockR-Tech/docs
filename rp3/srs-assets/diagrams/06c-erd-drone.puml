@@ -1,0 +1,120 @@
+@startuml
+!include erd-style.iuml
+package "locker_db" {
+entity "drone_units" as DU {
+  *id <<PK>>
+  --
+  locker_id
+  code, status, battery_percent
+  fault_reason
+  assigned_technician_id, active
+}
+entity "drone_devices" as DD {
+  *id <<PK>>
+  drone_id <<FK>>
+  mac_address, firmware_version
+  mavlink_status, flight_mode
+  battery_percent, camera_stream_url
+  last_seen_at
+}
+entity "drone_iot_logs" as DIL {
+  *id <<PK>>
+  drone_id <<FK>>
+  component, event_type, result
+  order_id, message
+}
+entity "drone_maintenance_logs" as DML {
+  *id <<PK>>
+  drone_unit_id <<FK>>
+  actor_user_id, note
+}
+}
+package "order_db" {
+entity "orders (DRONE_DELIVERY)" as OR {
+  *id <<PK>>
+  --
+  order_code, user_id
+  source_locker_id, source_box_id
+  destination_locker_id, receive_box_id
+  parcel_weight_grams, declared_value
+  status, payment_status
+  delivery_stage, fulfillment_mode
+}
+entity "drone_missions" as DM {
+  *id <<PK>>
+  --
+  order_id <<FK>>
+  drone_unit_id, drone_code
+  source_locker_id, destination_locker_id
+  status, payload_weight_grams
+  seal_code, loaded_by_user_id
+  battery_percent_at_launch
+  landed_at, deposited_at
+  end_reason, failed_stage
+}
+entity "drone_pickups" as DP {
+  *id <<PK>>
+  order_id <<FK>>
+  technician_id, status
+  pickup_code, pickup_photo_url
+  failure_reason
+}
+entity "drone_pickup_offers" as DPO {
+  *id <<PK>>
+  pickup_id <<FK>>
+  technician_id, status
+  distance_meters
+}
+entity "drone_parcel_incidents" as DPI {
+  *id <<PK>>
+  --
+  incident_code
+  order_id <<FK>>
+  mission_id <<FK>>
+  drone_unit_id, reason, status
+  recovery_status, compensation_status
+  drop_latitude, drop_longitude
+  recovery_assigned_to_user_id
+}
+entity "drone_incident_evidence" as DIE {
+  *id <<PK>>
+  incident_id <<FK>>
+  stage, secure_url
+  latitude, longitude
+}
+entity "drone_incident_resolution_proposals" as DIRP {
+  *id <<PK>>
+  incident_id <<FK>>
+  resolution_type, redelivery_offered
+  compensation_amount, status
+}
+entity "drone_incident_timeline" as DIT {
+  *id <<PK>>
+  incident_id <<FK>>
+  event_type, from_status, to_status
+}
+entity "drone_locker_comm_logs" as DLC {
+  *id <<PK>>
+  order_id, drone_id, locker_id
+  mqtt_topic, event_type
+  direction, ack_status
+}
+entity "drone_technician_presence" as DTP {
+  *user_id <<PK>>
+  on_duty, latitude, longitude
+}
+}
+DU ||--o| DD
+DU ||--o{ DIL
+DU ||--o{ DML
+OR ||--o| DM
+OR ||--o| DP
+DP ||--o{ DPO
+OR ||--o{ DPI
+DM ||--o{ DPI
+DPI ||--o{ DIE
+DPI ||--o{ DIRP
+DPI ||--o{ DIT
+DU ||..o{ DM
+OR ||..o{ DLC
+@enduml

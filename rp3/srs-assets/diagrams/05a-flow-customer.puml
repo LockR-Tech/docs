@@ -1,0 +1,108 @@
+@startuml
+!pragma layout smetana
+skinparam dpi 150
+skinparam defaultFontName Arial
+skinparam defaultFontSize 11
+skinparam shadowing false
+skinparam ArrowColor #555555
+skinparam rectangle {
+  BackgroundColor #FFFFFF
+  BorderColor #C0504D
+  RoundCorner 6
+}
+skinparam usecase {
+  BackgroundColor #FFF3E0
+  BorderColor #E65100
+}
+legend right
+  |= Shape |= Meaning |
+  | <back:#FFFFFF> rectangle </back> | screen |
+  | <back:#FFE8E1> filled rectangle </back> | screen with tabs |
+  | <back:#FFF3E0> oval </back> | pop-up / bottom sheet |
+endlegend
+rectangle "Splash" as S
+rectangle "Onboarding" as ON
+usecase "Login / Register\n(bottom sheet)" as LG
+rectangle "OTP" as OTP
+rectangle "Forgot Password" as FP
+rectangle "Home\n[Home | Lockers | Orders | AI | Profile]" as H #FFE8E1
+rectangle "Stores" as ST
+rectangle "Store Details" as SD
+rectangle "Store Lockers\n(box map)" as SL
+rectangle "Locker Map" as LM
+rectangle "Send Parcel" as SP
+rectangle "Rent Locker" as RL
+usecase "VietQR Payment\n(sheet)" as PAY
+rectangle "My Orders" as MO
+rectangle "Order Details" as OD
+usecase "Delegate Pickup" as DEL
+rectangle "Drone Booking" as DB
+rectangle "Pickup Location\nPicker" as PLP
+rectangle "Drone Tracking" as DTR
+rectangle "Drone Live Map" as DLM
+rectangle "QR Scan" as QR
+usecase "Confirm kiosk login" as KQ
+rectangle "Notifications" as NO
+rectangle "AI Assistant" as AS
+rectangle "Assistant History" as AH
+rectangle "Profile" as PR
+rectangle "Edit Profile / Security" as EP
+rectangle "Refund Bank Account" as BA
+rectangle "Refund Requests" as RR
+rectangle "Loyalty" as LO
+rectangle "Promotions / My Vouchers" as PV
+rectangle "Transactions" as TR
+rectangle "Top-up" as TU
+rectangle "Withdraw" as WD
+rectangle "Withdrawal Requests" as WR
+rectangle "My Delegations" as MD
+rectangle "Authorized Opening" as AO
+rectangle "Create Report" as CR
+rectangle "My Reports" as MR
+rectangle "Incoming Order Details" as IO
+
+S --> ON
+ON --> LG
+LG --> OTP
+LG --> FP
+OTP --> H
+LG --> H
+H --> ST
+ST --> SD
+SD --> SL
+H --> LM
+H --> SP
+H --> RL
+SL --> SP
+SP --> PAY
+RL --> PAY
+PAY --> MO
+H --> MO
+MO --> OD
+OD --> DEL
+OD --> CR
+MO --> IO
+H --> DB
+DB --> PLP
+DB --> PAY
+PAY --> DTR
+DTR --> DLM
+H --> QR
+QR --> KQ
+H --> NO
+H --> AS
+AS --> AH
+H --> PR
+PR --> EP
+PR --> BA
+PR --> RR
+PR --> LO
+PR --> PV
+PR --> TR
+TR --> TU
+TR --> WD
+WD --> WR
+PR --> MD
+MD --> AO
+PR --> MR
+@enduml

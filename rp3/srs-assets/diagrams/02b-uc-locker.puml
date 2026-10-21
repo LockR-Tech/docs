@@ -1,0 +1,44 @@
+@startuml
+!pragma layout smetana
+skinparam dpi 150
+skinparam defaultFontName Arial
+skinparam defaultFontSize 12
+skinparam shadowing false
+skinparam usecase {
+  BackgroundColor #FFF8F5
+  BorderColor #C0504D
+}
+skinparam actor {
+  BackgroundColor #FFF3E0
+  BorderColor #E65100
+}
+left to right direction
+actor Customer
+actor Receiver
+rectangle "Locker send & rental" {
+  usecase "UC07 Send parcel via locker" as UC07
+  usecase "UC09 Drop parcel into box" as UC09
+  usecase "UC10 Share / change pickup code" as UC10
+  usecase "UC11 Delegate pickup" as UC11
+  usecase "UC12 Rent locker by hours" as UC12
+  usecase "UC13 Extend / end rental" as UC13
+  usecase "UC08 Pay order (VietQR)" as UC08
+  usecase "UC21 Use voucher / loyalty points" as UC21
+  usecase "UC14 Pay overdue fee" as UC14
+  usecase "UC26 Pick up parcel\n(kiosk PIN / QR / BLE)" as UC26
+  usecase "UC27 View incoming orders" as UC27
+}
+Customer --> UC07
+Customer --> UC09
+Customer --> UC10
+Customer --> UC11
+Customer --> UC12
+Customer --> UC13
+Receiver --> UC26
+Receiver --> UC27
+UC07 ..> UC08 : <<include>>
+UC12 ..> UC08 : <<include>>
+UC13 ..> UC08 : <<include>>
+UC21 ..> UC08 : <<extend>>
+UC14 ..> UC26 : <<extend>>
+@enduml

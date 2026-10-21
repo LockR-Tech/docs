@@ -1,0 +1,39 @@
+@startuml
+!pragma layout smetana
+skinparam dpi 150
+skinparam defaultFontName Arial
+skinparam defaultFontSize 12
+skinparam shadowing false
+skinparam usecase {
+  BackgroundColor #FFF8F5
+  BorderColor #C0504D
+}
+skinparam actor {
+  BackgroundColor #FFF3E0
+  BorderColor #E65100
+}
+left to right direction
+actor Guest
+actor Customer
+actor Receiver
+rectangle "Account & common" {
+  usecase "UC01 Register account" as UC01
+  usecase "UC02 Log in" as UC02
+  usecase "UC03 Reset password" as UC03
+  usecase "UC06 Find lockers / stores" as UC06
+  usecase "UC04 Manage profile" as UC04
+  usecase "UC05 Log in to kiosk by QR" as UC05
+  usecase "UC25 View notifications" as UC25
+  usecase "UC24 Ask AI assistant" as UC24
+}
+Guest --> UC01
+Guest --> UC02
+Guest --> UC03
+Guest --> UC06
+Customer --> UC04
+Customer --> UC05
+Customer --> UC25
+Customer --> UC24
+Receiver --> UC25
+Customer -up-|> Guest
+@enduml

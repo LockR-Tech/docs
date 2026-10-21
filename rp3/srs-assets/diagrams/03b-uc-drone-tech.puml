@@ -1,0 +1,38 @@
+@startuml
+!pragma layout smetana
+skinparam dpi 150
+skinparam defaultFontName Arial
+skinparam defaultFontSize 12
+skinparam shadowing false
+skinparam usecase {
+  BackgroundColor #FFF8F5
+  BorderColor #C0504D
+}
+skinparam actor {
+  BackgroundColor #FFF3E0
+  BorderColor #E65100
+}
+left to right direction
+actor "Drone Technician" as DT
+rectangle "Drone operation" {
+  usecase "UC35 Start / end shift" as UC35
+  usecase "UC36 Accept drone order" as UC36
+  usecase "UC37 Pick up parcel at home" as UC37
+  usecase "UC38 Confirm loading" as UC38
+  usecase "UC39 Launch drone /\nconfirm flight stage" as UC39
+  usecase "UC40 Cancel order /\nreport failed flight" as UC40
+  usecase "UC41 Report parcel drop" as UC41
+  usecase "UC42 Manage drone fleet status" as UC42
+  usecase "UC31 Perform periodic inspection" as UC31
+}
+DT --> UC35
+DT --> UC36
+DT --> UC37
+DT --> UC38
+DT --> UC39
+DT --> UC40
+DT --> UC41
+DT --> UC42
+DT --> UC31
+UC40 ..> UC42 : <<include>>
+@enduml
