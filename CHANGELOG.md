@@ -4,6 +4,7 @@ Mỗi thay đổi ở repo docs thêm **một dòng** vào ngày tương ứng (
 
 ## 2026-10-22
 
+- Sự cố order-service 22/10 (backend `fix/order-service-sap-va-kiem-deploy`): STATUS § 6 thêm Q4; release-deploy § 6 thêm kiểm đủ 10 service và cách xử lý khi một service trả 503 bằng workflow VM ops (không cần SSH).
 - SEC-03 · SEC-05 · SEC-06 · SEC-09 (backend `sec/sec-03-05-06-khoa-api-don-iot`, iot `sec/sec-05-go-api-don-khong-dung`): gỡ API đơn không kiểm quyền, đọc đơn theo chủ/người nhận, báo hỏng ô và trạng thái IoT chỉ KTV tủ/ADMIN, WebSocket topic chung chỉ ADMIN, đóng actuator `gateway` — STATUS § 2 thêm SEC-09, flow-3 F3-G01, sơ đồ `order-status` (O11/O12 theo bảng chuyển trạng thái admin) và `locker-cell-status` (C6).
 
 ## 2026-10-19
