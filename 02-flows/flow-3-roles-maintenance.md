@@ -48,12 +48,12 @@ V = xem · T = kích hoạt chuyển trạng thái. **Chữ đậm = lỗ hổng
 | Thực thể | CUSTOMER | LOCKER_TECHNICIAN | DRONE_TECHNICIAN | ADMIN |
 |---|---|---|---|---|
 | Tủ (ACTIVE/MAINTENANCE) | V (GET công khai) | V; T → MAINTENANCE bằng báo cáo chặn tủ | V | T; gán KTV phụ trách |
-| Ô tủ | V; **T → FAULT với mọi ô** | T clear-fault (ô FAULT, qua phiếu nếu có) / out-of-service / cleaning / return / force-open | ✗ 403 | T, kể cả chuỗi tuỳ ý (`updateBoxStatus`) |
+| Ô tủ | V; T → FAULT ô của đơn mình (`report-box-fault`) | T clear-fault (ô FAULT, qua phiếu nếu có) / out-of-service / cleaning / return / force-open | ✗ 403 | T, kể cả chuỗi tuỳ ý (`updateBoxStatus`) |
 | Ticket OPEN/IN_PROGRESS/RESOLVED | V của mình; tạo (không được chặn tủ) | T claim; resolve/log **chỉ khi được giao** | ✗ 403 | T giao/thu hồi (kiểm vai trò) + resolve |
 | Lịch kiểm tra định kỳ | — | V; T hoàn tất **chỉ lịch được giao** | V; T hoàn tất lịch drone được giao | T tạo/sửa/giao (`PUT /api/maintenance/schedules/**` chỉ ADMIN) |
 | Drone | — | ✗ 403 | T sau khi claim | V; T trạng thái/pin qua route admin, không cần claim; sửa/ngừng bị chặn khi `RESERVED`/`IN_FLIGHT` |
 | Bãi đáp OK/FAULT/MAINTENANCE | V | T | ✗ 403 | T |
-| Thiết bị IoT | **T giả trạng thái qua `/api/iot/device-status`** | T override/restart | ✗ | V |
+| Thiết bị IoT | ✗ 403 (`/api/iot/device-status` · `/box-status` chỉ KTV tủ/ADMIN từ 22/10) | T override/restart | ✗ | V |
 | Đơn drone (stage) | V của mình | — | T accept/launch/cancel | T |
 | Vai trò người dùng | **T tự cấp ADMIN qua `PUT /api/users/{id}`** | — | — | T (API, không UI) |
 
@@ -67,7 +67,7 @@ V = xem · T = kích hoạt chuyển trạng thái. **Chữ đậm = lỗ hổng
 
 | ID | Việc | Ở đâu | Mục checklist |
 |---|---|---|---|
-| **F3-G01** | **Vá phân quyền**: `/api/users*` chỉ cho chính mình, bỏ `roles/status` khỏi request không phải admin; `PATCH /api/orders/{id}/status` chỉ ADMIN; notification chỉ của mình; service tự kiểm `X-User-Roles` + chủ sở hữu (locker, iot, order) — SEC-02/03/05/06. **2026-10-11:** bỏ `roles/status` (backend #54, đã deploy); `/api/users*` chỉ chính chủ hoặc ADMIN ([backend #55](https://github.com/LockR-Tech/backend/pull/55), chưa merge) | `user-service/…/UserController.java`, `order-service/…/OrderController.java:75`, `notification-service/…/NotificationController.java:105`, `JwtGatewayFilter.java` | F3.02 |
+| **F3-G01** | **Vá phân quyền**: `/api/users*` chỉ cho chính mình, bỏ `roles/status` khỏi request không phải admin; `PATCH /api/orders/{id}/status` chỉ ADMIN; notification chỉ của mình; service tự kiểm `X-User-Roles` + chủ sở hữu (locker, iot, order) — SEC-02/03/05/06. **2026-10-22 (nhánh `sec/sec-03-05-06-khoa-api-don-iot`, chưa PR):** gỡ `PATCH /api/orders/{id}/status`, `POST /api/orders/{id}/checkout`, `POST /api/orders`, `GET /api/orders`, `GET /api/orders/{pin,code,access}/…`; đọc đơn kiểm chủ/người nhận/ADMIN; báo hỏng ô + đẩy trạng thái IoT chỉ KTV tủ/ADMIN; WebSocket topic chung chỉ ADMIN. **2026-10-11:** bỏ `roles/status` (backend #54, đã deploy); `/api/users*` chỉ chính chủ hoặc ADMIN ([backend #55](https://github.com/LockR-Tech/backend/pull/55), chưa merge) | `user-service/…/UserController.java`, `order-service/…/OrderController.java:75`, `notification-service/…/NotificationController.java:105`, `JwtGatewayFilter.java` | F3.02 |
 | **F3-G02** | **Nhất quán ticket ↔ tài sản**: ~~`clearFault` đi qua phiếu; resolve kiểm người được giao, trả ô (về trạng thái trước khi hỏng)/bãi đáp/tủ; chống trùng báo hỏng ô~~ **đã làm** (backend #22). Còn: trả drone khi đóng phiếu drone; bỏ `updateBoxStatus`; bảng chuyển trạng thái drone | `locker-service/…/LockerService.java` | F3.06, F3.08 |
 | **F3-G03** | **IoT tự đối soát**: timeout heartbeat → OFFLINE; tiêu thụ `iot.device.status.changed` + kết quả FAILED/JAMMED → `/internal/boxes/{id}/fault`; map tên tủ → lockerId, slotIndex → boxId | `iot-service/…/IotService.java` + `@Scheduled`, `LockerMqttService.java:94-111`, `iot/services/heartbeat_service.py:120` | F3.07, F3.09 |
 | **F3-G04** | Cảnh báo lỗi tới ~~LOCKER_TECHNICIAN~~ (**đã làm**: phiếu mới, giao việc, lịch tới hạn — backend #22) / ADMIN (thiết bị offline) + audit log đổi vai trò / trạng thái / ô | `notification-service/…/config/RabbitConfig.java`, bảng audit mới | F3.10 |
