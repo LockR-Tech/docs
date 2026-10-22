@@ -95,7 +95,19 @@ curl -fsS -o /dev/null -w '%{http_code}\n' https://api.locker-drone.tech/api/loc
 curl -s  -o /dev/null -w '%{http_code}\n' https://api.locker-drone.tech/api/admin/users     # 401
 curl -fsS -o /dev/null -w '%{http_code}\n' https://admin.locker-drone.tech                  # 200
 curl -fsS -o /dev/null -w '%{http_code}\n' https://locker-drone.tech                        # 200
+# Mỗi service nghiệp vụ một lần (đường công khai qua gateway): 503 = service không còn instance trong Eureka
+for s in auth user order locker payment notification iot store loyalty assistant; do
+  printf '%-22s ' "$s-service"; curl -s -o /dev/null -w '%{http_code}\n' "https://api.locker-drone.tech/v3/api-docs/$s-service"
+done
 ```
+
+Có service trả 503 (lần 22/10: order-service) — **không cần SSH**: tab Actions của repo backend → **VM ops** → Run workflow trên `main`:
+
+1. `status` — trạng thái mọi container (`OOMKilled`, `ExitCode`, số lần restart) và RAM của VM.
+2. `diagnose` + tên service — 60 dòng lỗi gần nhất (đã che email, chuỗi ≥ 6 chữ số, token). Đọc nguyên nhân trước khi restart.
+3. `restart` + tên service — khởi động lại và chờ đăng ký lại Eureka.
+
+Workflow này phải có trên `main` mới chạy được. Khi chưa có: **Deploy to Azure VM** → Run workflow trên `main` — build lại jar nên mọi container được tạo lại (mất kết nối vài phút); service không lên được thì deploy đỏ, tự rollback, và log Actions in lỗi của service đó. Người có SSH: `docker compose logs --tail=300 <service>` và `docker compose restart <service>` trong `/opt/laundry-locker-microservices`. Từ nhánh `fix/order-service-sap-va-kiem-deploy`, JVM hết heap thì tự thoát (`-XX:+ExitOnOutOfMemoryError`) để Docker dựng lại, và workflow kiểm đủ 10 service này.
 
 Sau đó thử tay luồng bị ảnh hưởng (đăng nhập, tạo đơn, mở tủ bằng giả lập).
 

@@ -1,5 +1,5 @@
 %% @title Trạng thái Ô tủ — locker_boxes.status
-%% @subtitle Nguồn: <code>locker-service/…/model/LockerBox.java</code> · <code>LockerService.java</code> · <code>iot-service/…/IotService.java</code> — Luồng 2 &amp; 3 — rà soát 2026-09-13, cập nhật 2026-09-21 theo backend #22
+%% @subtitle Nguồn: <code>locker-service/…/model/LockerBox.java</code> · <code>LockerService.java</code> · <code>iot-service/…/IotService.java</code> — Luồng 2 &amp; 3 — rà soát 2026-09-13, cập nhật 2026-10-22 (báo hỏng ô chỉ KTV tủ · ADMIN · chủ đơn)
 %% @orientation portrait
 %% @legend <span class="sw ok"></span>Vòng đời thuê/gửi
 %% @legend <span class="sw bad"></span>Lỗi / bảo trì
@@ -9,7 +9,7 @@
 %% @row C3 | AVAILABLE · RESERVED → OCCUPIED | <code>occupyBox</code> khi đơn được xác nhận bỏ hàng (app hoặc kiosk) | chủ đơn · người gửi tại tủ | lỗi bị nuốt (best-effort); drone gửi hàng <b>không</b> set OCCUPIED
 %% @row ~C4 | RESERVED → OCCUPIED · OCCUPIED → AVAILABLE | cảm biến cửa / kết quả mở tủ từ phần cứng | iot-service | CHƯA CÓ: trạng thái phần cứng được lưu nhưng không điều khiển vòng đời ô/đơn
 %% @row C5 | OCCUPIED → AVAILABLE | <code>releaseBox</code> khi đơn COMPLETED · EXPIRED · CANCELED | hệ thống | ô đang FAULT / OUT_OF_SERVICE / CLEANING thì giữ nguyên; ô FAULT thì quên trạng thái đơn đã nhớ (sửa xong về AVAILABLE)
-%% @row xC6 | mọi → FAULT | <code>POST /api/boxes/{id}/fault</code> | <b>mọi JWT, mọi ô</b> | nhớ trạng thái trước khi hỏng (<code>pre_fault_status</code>); ô đã có phiếu mở ⇒ gộp vào phiếu đó; phiếu định tuyến cho KTV phụ trách tủ. Vẫn chưa kiểm người báo có liên quan tới ô (SEC-06)
+%% @row C6 | mọi → FAULT | <code>POST /api/boxes/{id}/fault</code> · <code>POST /api/orders/{id}/report-box-fault</code> | LOCKER_TECHNICIAN · ADMIN · chủ đơn (ô của đơn mình) | nhớ trạng thái trước khi hỏng (<code>pre_fault_status</code>); ô đã có phiếu mở ⇒ gộp vào phiếu đó; phiếu định tuyến cho KTV phụ trách tủ. Từ 22/10 khách không báo thẳng ô bất kỳ nữa (SEC-06)
 %% @row ~C7 | mọi → FAULT | mở tủ FAILED/JAMMED · heartbeat mất | iot-service | CHƯA CÓ tự động báo hỏng — hiện chỉ ghi access log
 %% @row C8 | FAULT → trạng thái trước khi hỏng | hoàn tất phiếu (<code>resolve</code>, KTV hoặc admin) | KTV được giao · ADMIN | về AVAILABLE / RESERVED / OCCUPIED như lúc báo hỏng; còn phiếu mở khác của ô thì giữ FAULT
 %% @row C9 | FAULT → trạng thái trước khi hỏng | <code>…/clear-fault</code> | LOCKER_TECHNICIAN · ADMIN | chỉ từ FAULT (409 <code>BOX_NOT_FAULT</code>); ô có phiếu mở ⇒ đi qua hoàn tất phiếu (chỉ người được giao, áp luật ảnh nghiệm thu)
@@ -44,4 +44,3 @@ flowchart TB
     class S term
 
     linkStyle 5,9 stroke:#8c959f,stroke-width:1.5px
-    linkStyle 7,8 stroke:#cf222e,stroke-width:2px,color:#cf222e
