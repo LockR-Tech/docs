@@ -2,6 +2,11 @@
 
 Mỗi thay đổi ở repo docs thêm **một dòng** vào ngày tương ứng (mới nhất ở trên). Ghi mã gap/SEC/ADR nếu có.
 
+## 2026-10-23
+
+- F3-panel (iot, backend, frontend, docs): bảng điều khiển tủ trên admin web — mở ô, điều khiển nắp/thanh trượt (mở/đóng/về gốc/dừng, chạy N vòng, chỉnh tốc độ), xem trạng thái; lệnh MQTT `cabinet/{id}/command/{lid|lid-jog|lid-tune|panel}` (mqtt-contract § 2.1) qua `/api/locker-technician/cabinet/**` (ADMIN + KTV tủ).
+- fix(order): @Autowired cho DroneWeatherService — hết crash-loop 503 trên production (backend #96).
+
 ## 2026-10-22
 
 - Sự cố order-service 22/10 (backend `fix/order-service-sap-va-kiem-deploy`): STATUS § 6 thêm Q4; release-deploy § 6 thêm kiểm đủ 10 service và cách xử lý khi một service trả 503 bằng workflow VM ops (không cần SSH).

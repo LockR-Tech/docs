@@ -54,6 +54,20 @@ Pi đổi `slotIndex` ra chân phần cứng: `GPIO_RELAY_PINS[slotIndex]` và `
 - Pi gửi kết quả (§ 2.2) **rồi mới** thoát tiến trình với mã 75; systemd chạy lại `lockr-controller` (unit hiện dùng `Restart=on-failure`, mã khác 0 nên vẫn được chạy lại). Chạy lại xong Pi kết nối broker, gửi heartbeat/discovery như lúc khởi động.
 - Lệnh chạy cùng hàng đợi với lệnh phần cứng: lệnh mở ô đang dở xong trước. Lệnh trùng (QoS 1 giao lại) chỉ được trả lời, không thoát lần nữa. `action` khác `RESTART` ⇒ `FAILED`, không thoát.
 
+**Điều khiển nắp/thanh trượt** (bảng điều khiển tủ trên admin web — ADMIN + KTV tủ)
+
+```json
+// cabinet/{lockerId}/command/lid      { "commandId": "…", "axis": 1, "action": "open|close|home|stop" }
+// cabinet/{lockerId}/command/lid-jog  { "commandId": "…", "axis": 1, "revolutions": 2, "direction": "open|close" }
+// cabinet/{lockerId}/command/lid-tune { "commandId": "…", "axis": 1, "changes": { "rps": 1.5, "pulse_us": 1000, "steps_per_rev": 400 } }
+// cabinet/{lockerId}/command/panel    { "commandId": "…" }
+```
+
+- Gửi khi ADMIN/KTV tủ bấm nút trên trang `/admin/cabinet-control` (`iot-service` `/api/locker-technician/cabinet/{lockerId}/…`). KTV chỉ điều khiển tủ mình phụ trách; ADMIN mọi tủ.
+- Pi trả `cabinet/{lockerId}/command/{lid|lid-jog|lid-tune|panel}/result` cùng `commandId`. **Lệnh chạy nắp (lid, lid-jog) trả `ACCEPTED` ngay** (không chờ động cơ quay xong) — trang web poll `panel` mỗi 4 giây để xem trạng thái; `lid-tune` trả `SUCCESS` kèm `config`; `panel` trả `SUCCESS` kèm `lids` (mỗi trục: `axis`, `enabled`, `status`). Lỗi ⇒ `FAILED` kèm `errorCode` (`AXIS_DISABLED`, `BAD_ACTION`, `LID_BUSY`, `TOO_MANY_REVS`, `TUNE_REJECTED`, …) + `errorMessage`.
+- `axis` 1 = trục nắp thứ nhất, 2 = trục thứ hai (chỉ khi `LID2_ENABLED=true`). Mở ô dùng lại lệnh `open` ở trên.
+- Không cần đổi ACL: Pi đã đọc `cabinet/{lockerId}/command/#` và ghi `cabinet/{lockerId}/command/+/result`; `iot-service` đã subscribe `cabinet/+/command/+/result`.
+
 ### 2.2 Tủ → backend
 
 **Kết quả mở** — `cabinet/{lockerId}/command/open/result` (QoS 1)
