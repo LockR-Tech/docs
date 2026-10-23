@@ -2,6 +2,11 @@
 
 Mỗi thay đổi ở repo docs thêm **một dòng** vào ngày tương ứng (mới nhất ở trên). Ghi mã gap/SEC/ADR nếu có.
 
+## 2026-10-24
+
+- F3.07 · F3.08 (backend, mobile, frontend `feat/f3-g02-o-cho-ktv-kiem-tra`): khách báo ô ⇒ trạng thái mới `PENDING_CHECK` (chờ KTV kiểm tra), KTV từ chối phiếu (`REJECTED`) kèm phản hồi; sơ đồ `locker-cell-status` thêm C13–C15; flow-3 F3.07; business setting mới `app.maintenance.pending-check-hold-hours`.
+- F3.07 · F3.08 (backend, mobile `feat/f3-g02-o-cho-ktv-kiem-tra`): sửa lỗi test tay luồng thuê tủ + sự cố ô — đơn đã chuyển ô không bị khoá lại, gộp phiếu báo trùng ở màn tủ, cấm chuyển vào ô drone, giờ phiếu phía khách đúng múi giờ; STATUS § 3 thêm dòng.
+
 ## 2026-10-23
 
 - F3-panel (iot, backend, frontend, docs): bảng điều khiển tủ trên admin web — mở ô, điều khiển nắp/thanh trượt (mở/đóng/về gốc/dừng, chạy N vòng, chỉnh tốc độ), xem trạng thái; lệnh MQTT `cabinet/{id}/command/{lid|lid-jog|lid-tune|panel}` (mqtt-contract § 2.1) qua `/api/locker-technician/cabinet/**` (ADMIN + KTV tủ).

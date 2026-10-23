@@ -1,5 +1,5 @@
 %% @title Trạng thái Ô tủ — locker_boxes.status
-%% @subtitle Nguồn: <code>locker-service/…/model/LockerBox.java</code> · <code>LockerService.java</code> · <code>iot-service/…/IotService.java</code> — Luồng 2 &amp; 3 — rà soát 2026-09-13, cập nhật 2026-10-22 (báo hỏng ô chỉ KTV tủ · ADMIN · chủ đơn)
+%% @subtitle Nguồn: <code>locker-service/…/model/LockerBox.java</code> · <code>LockerService.java</code> · <code>iot-service/…/IotService.java</code> — Luồng 2 &amp; 3 — rà soát 2026-09-13, cập nhật 2026-10-24 (khách báo ⇒ PENDING_CHECK chờ KTV kiểm tra; KTV xác nhận ⇒ FAULT hoặc từ chối phiếu)
 %% @orientation portrait
 %% @legend <span class="sw ok"></span>Vòng đời thuê/gửi
 %% @legend <span class="sw bad"></span>Lỗi / bảo trì
@@ -9,9 +9,12 @@
 %% @row C3 | AVAILABLE · RESERVED → OCCUPIED | <code>occupyBox</code> khi đơn được xác nhận bỏ hàng (app hoặc kiosk) | chủ đơn · người gửi tại tủ | lỗi bị nuốt (best-effort); drone gửi hàng <b>không</b> set OCCUPIED
 %% @row ~C4 | RESERVED → OCCUPIED · OCCUPIED → AVAILABLE | cảm biến cửa / kết quả mở tủ từ phần cứng | iot-service | CHƯA CÓ: trạng thái phần cứng được lưu nhưng không điều khiển vòng đời ô/đơn
 %% @row C5 | OCCUPIED → AVAILABLE | <code>releaseBox</code> khi đơn COMPLETED · EXPIRED · CANCELED | hệ thống | ô đang FAULT / OUT_OF_SERVICE / CLEANING thì giữ nguyên; ô FAULT thì quên trạng thái đơn đã nhớ (sửa xong về AVAILABLE)
-%% @row C6 | mọi → FAULT | <code>POST /api/boxes/{id}/fault</code> · <code>POST /api/orders/{id}/report-box-fault</code> | LOCKER_TECHNICIAN · ADMIN · chủ đơn (ô của đơn mình) | nhớ trạng thái trước khi hỏng (<code>pre_fault_status</code>); ô đã có phiếu mở ⇒ gộp vào phiếu đó; phiếu định tuyến cho KTV phụ trách tủ. Từ 22/10 khách không báo thẳng ô bất kỳ nữa (SEC-06)
+%% @row C6 | mọi → FAULT | <code>…/boxes/{id}/fault</code> · kiểm tra định kỳ · tủ báo kẹt | KTV tủ · ADMIN · hệ thống | nhớ <code>pre_fault_status</code>; gộp phiếu mở; đơn trong ô bị khoá mở bằng mã, phí dừng từ lúc báo
+%% @row C13 | → PENDING_CHECK | khách báo qua đơn / màn tủ | khách | không cấp đơn mới; chủ đồ vẫn mở bằng mã, phí dừng từ lúc báo; người khác báo thì đơn không bị đụng
+%% @row C14 | PENDING_CHECK → FAULT | KTV khoá ô khi xử lý · KTV/admin báo hỏng | KTV · ADMIN | đơn trong ô bị khoá mở bằng mã
+%% @row C15 | PENDING_CHECK → trước khi báo | KTV từ chối phiếu (<code>…/reject</code>, REJECTED) · sửa tại chỗ · quá <code>pending-check-hold-hours</code> | KTV · ADMIN · hệ thống | đơn lấy đồ được, bù thời gian chờ; tự gỡ thì phiếu vẫn mở
 %% @row ~C7 | mọi → FAULT | mở tủ FAILED/JAMMED · heartbeat mất | iot-service | CHƯA CÓ tự động báo hỏng — hiện chỉ ghi access log
-%% @row C8 | FAULT → trạng thái trước khi hỏng | hoàn tất phiếu (<code>resolve</code>, KTV hoặc admin) | KTV được giao · ADMIN | về AVAILABLE / RESERVED / OCCUPIED như lúc báo hỏng; còn phiếu mở khác của ô thì giữ FAULT
+%% @row C8 | FAULT · PENDING_CHECK → trạng thái trước khi hỏng | hoàn tất phiếu (<code>resolve</code>, KTV hoặc admin) | KTV được giao · ADMIN | về AVAILABLE / RESERVED / OCCUPIED như lúc báo hỏng; còn phiếu mở khác của ô thì giữ nguyên
 %% @row C9 | FAULT → trạng thái trước khi hỏng | <code>…/clear-fault</code> | LOCKER_TECHNICIAN · ADMIN | chỉ từ FAULT (409 <code>BOX_NOT_FAULT</code>); ô có phiếu mở ⇒ đi qua hoàn tất phiếu (chỉ người được giao, áp luật ảnh nghiệm thu)
 %% @row C10 | AVAILABLE → OUT_OF_SERVICE · CLEANING | <code>…/out-of-service</code> · <code>…/cleaning</code> | LOCKER_TECHNICIAN · ADMIN | cấm khi RESERVED/OCCUPIED và khi FAULT (409 <code>BOX_IN_FAULT</code>)
 %% @row C11 | OUT_OF_SERVICE · CLEANING → AVAILABLE | <code>…/return-to-service</code> | LOCKER_TECHNICIAN · ADMIN | không đồng bộ trạng thái xuống tủ
@@ -28,6 +31,11 @@ flowchart TB
     OCC -->|C5| AV
     AV -->|C6| FAULT(["FAULT<br/><small>hỏng</small>"])
     OCC -->|C6| FAULT
+    AV -->|C13| PEND(["PENDING_CHECK<br/><small>chờ KTV kiểm tra</small>"])
+    OCC -->|C13| PEND
+    PEND -->|C14| FAULT
+    PEND -->|C15| AV
+    PEND -->|C15| OCC
     OCC -.->|C7| FAULT
     FAULT -->|C8 · C9| AV
     FAULT -->|C8 · C9| OCC
@@ -40,7 +48,7 @@ flowchart TB
     classDef bad fill:#ffd8d3,stroke:#cf222e,stroke-width:1.5px,color:#1f2328
     classDef term fill:#1f2328,stroke:#1f2328,color:#ffffff
     class AV,RES,OCC ok
-    class FAULT,OOS,CLEAN bad
+    class FAULT,OOS,CLEAN,PEND bad
     class S term
 
-    linkStyle 5,9 stroke:#8c959f,stroke-width:1.5px
+    linkStyle 5,14 stroke:#8c959f,stroke-width:1.5px
