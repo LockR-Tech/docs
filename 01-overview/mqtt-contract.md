@@ -33,7 +33,7 @@ Pi đổi `slotIndex` ra chân phần cứng: `GPIO_RELAY_PINS[slotIndex]` và `
 - `timeout`: số giây cửa được phép mở, lấy từ `app.iot.door-open-timeout-seconds`. Pi hiện chưa dùng.
 - `box_id`: bản sao của `boxId` cho giả lập cũ; sẽ bỏ ở phiên bản 2.
 - Nếu iot-service không tra được `boxNumber` thì payload **không có** `slotIndex`. Khi đó Pi tra `boxId` trong sơ đồ đã setup (§ 3); không tra được thì trả `FAILED / UNKNOWN_SLOT`.
-- `lid` (tuỳ chọn, mặc định không có): `true` ⇒ Pi **trượt nắp trên nóc tủ** (trục `lidAxis`, mặc định 1) thay vì kích relay cửa trước của ô. Chỉ luồng drone thả hàng gửi cờ này (order-service, cả `open` lẫn `close`). Mở ô của khách, KTV, admin **không** có cờ ⇒ luôn kích relay, kể cả ô drone (khách lấy hàng bằng cửa trước). Nắp còn bị `LID_BYPASS_PHYSICAL_MOTION` (`.env` Pi, mặc định `true`) chặn: khi bật, Pi chỉ báo `SUCCESS` mà không quay động cơ.
+- `lid` (tuỳ chọn, mặc định không có): `true` ⇒ Pi **trượt nắp trên nóc tủ** thay vì kích relay cửa trước của ô. Trục: `lidAxis` nếu lệnh ghi rõ; không thì theo ô qua `LID1_BOXES` / `LID2_BOXES` trong `.env` Pi (số ô in trên cửa, ví dụ CAB-TU01 `LID1_BOXES=3`); ô không thuộc trục nào ⇒ `FAILED / NO_LID`, Pi **không** kích relay thay vào. Cả hai biến trống ⇒ mọi ô dùng trục 1. `panel` trả thêm `boxes` cho mỗi trục. Chỉ luồng drone thả hàng gửi cờ này (order-service, cả `open` lẫn `close`). Mở ô của khách, KTV, admin **không** có cờ ⇒ luôn kích relay, kể cả ô drone (khách lấy hàng bằng cửa trước). Nắp còn bị `LID_BYPASS_PHYSICAL_MOTION` (`.env` Pi, mặc định `true`) chặn: khi bật, Pi chỉ báo `SUCCESS` mà không quay động cơ.
 
 **Đồng bộ trạng thái ô** — `cabinet/{lockerId}/command/sync` (không cần phản hồi)
 
@@ -90,6 +90,7 @@ Pi đổi `slotIndex` ra chân phần cứng: `GPIO_RELAY_PINS[slotIndex]` và `
 | `JAMMED` | Relay chạy nhưng cảm biến vẫn thấy cửa đóng (kẹt cửa, hoặc cảm biến chưa nối — khi đó đặt `REQUIRE_DOOR_SENSOR=false`) |
 | `UNKNOWN_SLOT` | Không có `slotIndex` và không tra được `boxId` trong sơ đồ |
 | `INVALID_SLOT` | `slotIndex` vượt số ô phần cứng |
+| `NO_LID` | Lệnh có `lid: true` nhưng ô không nằm dưới nắp trục nào (`LID1_BOXES` / `LID2_BOXES`) |
 | `UNKNOWN_SLAVE`, `GPIO_NOT_STARTED` | Cấu hình GPIO sai hoặc chưa khởi động (`HARDWARE_BACKEND=gpio`) |
 | `TIMEOUT`, `SERIAL_ERROR` | Arduino không trả lời hoặc lỗi cổng RS485 (`HARDWARE_BACKEND=rs485`) |
 | `HW_ERROR` | Lỗi phần cứng khác; chi tiết nằm ở `errorMessage` |
