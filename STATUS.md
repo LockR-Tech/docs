@@ -4,7 +4,7 @@
 
 | | |
 |---|---|
-| **Cập nhật lần cuối** | 2026-10-22 |
+| **Cập nhật lần cuối** | 2026-10-24 |
 | **Người cập nhật** | Claude Code — 2026-10-22: vá SEC-03/05/06 và SEC-09 mới (actuator gateway) trên nhánh backend `sec/sec-03-05-06-khoa-api-don-iot`, **chưa PR** (§ 2, § 3). Trước đó, 2026-10-13: chỉ còn thanh toán **SePay (chuyển khoản VietQR)** — gỡ MoMo/VNPay ở backend, kiosk, web admin, app — và **đăng nhập SĐT chạy thật** trên app: [backend #64](https://github.com/LockR-Tech/backend/pull/64) (sửa CI/deploy đỏ), [backend #65](https://github.com/LockR-Tech/backend/pull/65), [iot #16](https://github.com/LockR-Tech/iot/pull/16), [frontend #46](https://github.com/LockR-Tech/frontend/pull/46), [mobile #62](https://github.com/LockR-Tech/mobile/pull/62), **PR mở, chưa merge**. Các PR ngày 12/10 (backend #59, #61, #62, mobile #56, iot #15) **đã merge** nhưng backend **chưa lên production**: CI/deploy backend đỏ từ 12/10 cho tới khi merge #64. |
 | **Tổng tiến độ 4 luồng** | **71,3 %** |
 

@@ -4,6 +4,7 @@ Mỗi thay đổi ở repo docs thêm **một dòng** vào ngày tương ứng (
 
 ## 2026-10-24
 
+- Loyalty (backend, mobile, frontend `feat/doi-diem-lay-voucher`): đổi điểm lấy voucher (`promotions.points_cost`, order V33; tab "Đổi điểm" trong "Ưu đãi của tôi"), chi tiết đơn hiện voucher / điểm đã dùng / điểm được cộng; chuyển sang 1 điểm = 1 đ, tích 10 % (loyalty V5 nhân điểm cũ ×100). business-settings § 6 dòng mã giảm giá và loyalty; STATUS § 3 thêm dòng.
 - F3-G11 (backend, frontend, mobile, iot `feat/f3-g11-mo-o-bluetooth`): thử mở ô qua Bluetooth do admin cấp quyền — hợp đồng mới [ble-open-contract](01-overview/ble-open-contract.md); architecture thêm bảng iot V8 và đường công khai `/api/iot/ble/public-key`; flow-3 thêm gap F3-G11 (công cụ thử, không đổi checklist); STATUS § 3 thêm dòng.
 - F1-G12 (iot, frontend `feat/f1-g12-nap-truc-theo-o`): nắp trượt gắn theo ô — `LID1_BOXES` / `LID2_BOXES` trong `.env` Pi; lệnh drone `lid: true` cho ô không có nắp ⇒ `NO_LID` thay vì mở nhầm nắp trục 1. CAB-TU01: **trục 1 nằm trên ô 3** (tu01-wiring-photos § 6, § 9); trang "Điều khiển tủ" hiện "Trục nắp 1 · trên ô 3"; mqtt-contract § 2.1, § 2.2.
 - F3-panel (iot, backend, frontend `feat/f3-panel-nhat-ky-dieu-khien-tu`): nhật ký điều khiển ở cuối trang "Điều khiển tủ" — lệnh từ web (ghi cả `TIMEOUT` khi tủ mất mạng) và mọi lần tủ kích relay / chạy nắp (kèm số vòng thật); Pi lưu vào thẻ nhớ trước rồi gửi `cabinet/{id}/event/control` khi có mạng nên không mất log. Bảng mới `iot_schema.cabinet_control_logs` (Flyway V7); mqtt-contract lên 1.3 (§ 2.2, § 4).
