@@ -6,7 +6,7 @@ Nguồn sự thật cho mọi topic và payload giữa **iot-service** (backend)
 - iot: `tests/test_mqtt_contract.py` ([iot#9](https://github.com/LockR-Tech/iot/pull/9))
 - giao diện gán thiết bị: [frontend#22](https://github.com/LockR-Tech/frontend/pull/22)
 
-Phiên bản hợp đồng: **1.1** (2026-10-12) — thêm lệnh khởi động lại bộ điều khiển (§ 2.1, § 2.2). Bản 1: 2026-09-27.
+Phiên bản hợp đồng: **1.2** (2026-10-24) — cờ `lid` trên lệnh mở/đóng ô (§ 2.1). Bản 1.1 (2026-10-12): lệnh khởi động lại bộ điều khiển (§ 2.1, § 2.2). Bản 1: 2026-09-27.
 
 ## 1. Định danh
 
@@ -33,6 +33,7 @@ Pi đổi `slotIndex` ra chân phần cứng: `GPIO_RELAY_PINS[slotIndex]` và `
 - `timeout`: số giây cửa được phép mở, lấy từ `app.iot.door-open-timeout-seconds`. Pi hiện chưa dùng.
 - `box_id`: bản sao của `boxId` cho giả lập cũ; sẽ bỏ ở phiên bản 2.
 - Nếu iot-service không tra được `boxNumber` thì payload **không có** `slotIndex`. Khi đó Pi tra `boxId` trong sơ đồ đã setup (§ 3); không tra được thì trả `FAILED / UNKNOWN_SLOT`.
+- `lid` (tuỳ chọn, mặc định không có): `true` ⇒ Pi **trượt nắp trên nóc tủ** (trục `lidAxis`, mặc định 1) thay vì kích relay cửa trước của ô. Chỉ luồng drone thả hàng gửi cờ này (order-service, cả `open` lẫn `close`). Mở ô của khách, KTV, admin **không** có cờ ⇒ luôn kích relay, kể cả ô drone (khách lấy hàng bằng cửa trước). Nắp còn bị `LID_BYPASS_PHYSICAL_MOTION` (`.env` Pi, mặc định `true`) chặn: khi bật, Pi chỉ báo `SUCCESS` mà không quay động cơ.
 
 **Đồng bộ trạng thái ô** — `cabinet/{lockerId}/command/sync` (không cần phản hồi)
 
