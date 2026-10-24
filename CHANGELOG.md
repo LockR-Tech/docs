@@ -4,6 +4,7 @@ Mỗi thay đổi ở repo docs thêm **một dòng** vào ngày tương ứng (
 
 ## 2026-10-24
 
+- F1-G12 (iot, frontend `feat/f1-g12-nap-truc-theo-o`): nắp trượt gắn theo ô — `LID1_BOXES` / `LID2_BOXES` trong `.env` Pi; lệnh drone `lid: true` cho ô không có nắp ⇒ `NO_LID` thay vì mở nhầm nắp trục 1. CAB-TU01: **trục 1 nằm trên ô 3** (tu01-wiring-photos § 6, § 9); trang "Điều khiển tủ" hiện "Trục nắp 1 · trên ô 3"; mqtt-contract § 2.1, § 2.2.
 - F3-panel (iot, backend, frontend `feat/f3-panel-nhat-ky-dieu-khien-tu`): nhật ký điều khiển ở cuối trang "Điều khiển tủ" — lệnh từ web (ghi cả `TIMEOUT` khi tủ mất mạng) và mọi lần tủ kích relay / chạy nắp (kèm số vòng thật); Pi lưu vào thẻ nhớ trước rồi gửi `cabinet/{id}/event/control` khi có mạng nên không mất log. Bảng mới `iot_schema.cabinet_control_logs` (Flyway V7); mqtt-contract lên 1.3 (§ 2.2, § 4).
 - F3-panel (iot, backend `fix/f3-panel-mo-o-kich-relay`): mở ô trên admin web kích relay thật — trước đây tủ có một nắp trượt thì Pi đẩy **mọi** lệnh `open`/`close` sang nắp (và nắp đang bypass) nên cửa không mở. Giờ chỉ lệnh có `lid: true` (luồng drone) mới đi nắp; mqtt-contract lên 1.2 (§ 2.1).
 - F3.07 · F3.08 (backend, mobile, frontend `feat/f3-g02-o-cho-ktv-kiem-tra`): khách báo ô ⇒ trạng thái mới `PENDING_CHECK` (chờ KTV kiểm tra), KTV từ chối phiếu (`REJECTED`) kèm phản hồi; sơ đồ `locker-cell-status` thêm C13–C15; flow-3 F3.07; business setting mới `app.maintenance.pending-check-hold-hours`.

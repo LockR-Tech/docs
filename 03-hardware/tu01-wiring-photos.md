@@ -138,7 +138,7 @@ Người làm tủ chưa nêu chân cho nắp trượt. GPIO21 (mặc định c�
 
 ## 6. Hai trục nắp trượt và 4 công tắc hành trình
 
-Tủ có **hai trục** (hai nắp trên hai ô DRONE), mỗi trục một động cơ Nema 17 + vít me và **hai công tắc** ở hai đầu ray. Công tắc là **module 3 dây** (bo đen nhỏ, cần gạt, LED, giắc `VCC`/`GND`/`SIG`), không phải công tắc 2 cọc `NO`/`COM`. Dây đỏ `VCC` chỉ được vào **3,3 V**: chân `SIG` mang đúng điện áp cấp vào `VCC`.
+Tủ có **hai trục** (hai nắp trên hai ô DRONE), mỗi trục một động cơ Nema 17 + vít me và **hai công tắc** ở hai đầu ray. **Trục 1 nằm trên ô 3** (chủ tủ chốt 2026-10-24; khai báo `LID1_BOXES=3`, § 9); trục 2 dành cho ô DRONE còn lại (ô 2), chưa nối. Công tắc là **module 3 dây** (bo đen nhỏ, cần gạt, LED, giắc `VCC`/`GND`/`SIG`), không phải công tắc 2 cọc `NO`/`COM`. Dây đỏ `VCC` chỉ được vào **3,3 V**: chân `SIG` mang đúng điện áp cấp vào `VCC`.
 
 ### 6.1 Trục 1 — driver có sẵn trong tủ
 
@@ -195,7 +195,10 @@ LID_PUL_PIN=18
 LID_DIR_PIN=27
 LID_HOME_PIN=17
 LID_END_PIN=10
+LID1_BOXES=3
 ```
+
+`LID1_BOXES=3` (2026-10-24): lệnh drone thả hàng vào ô 3 trượt nắp trục 1; drone vào ô 2 bị báo `NO_LID` cho tới khi trục 2 nối xong và thêm `LID2_BOXES=2`. Nút "Mở ô" của khách/KTV/admin vẫn kích relay cửa trước.
 
 Từ 2026-10-06 (iot#12) `LID_PULSE_US` mặc định 1000 µs — xung 20 µs cũ chỉ làm động cơ rung. Trục 2 nối xong thì thêm `LID2_ENABLED=true` (chân mặc định GPIO9/11/7/8 như § 6.2). Tốc độ, xung, số vòng chỉnh trên bảng điều khiển kỹ thuật `/service` và lưu ở `~/iot/config/lid_tuning.json`, không cần sửa `.env`.
 
