@@ -6,7 +6,7 @@ Nguồn sự thật cho mọi topic và payload giữa **iot-service** (backend)
 - iot: `tests/test_mqtt_contract.py` ([iot#9](https://github.com/LockR-Tech/iot/pull/9))
 - giao diện gán thiết bị: [frontend#22](https://github.com/LockR-Tech/frontend/pull/22)
 
-Phiên bản hợp đồng: **1.2** (2026-10-24) — cờ `lid` trên lệnh mở/đóng ô (§ 2.1). Bản 1.1 (2026-10-12): lệnh khởi động lại bộ điều khiển (§ 2.1, § 2.2). Bản 1: 2026-09-27.
+Phiên bản hợp đồng: **1.3** (2026-10-24) — nhật ký điều khiển `cabinet/{lockerId}/event/control` (§ 2.2, § 4). Bản 1.2 (2026-10-24): cờ `lid` trên lệnh mở/đóng ô (§ 2.1). Bản 1.1 (2026-10-12): lệnh khởi động lại bộ điều khiển (§ 2.1, § 2.2). Bản 1: 2026-09-27.
 
 ## 1. Định danh
 
@@ -128,6 +128,20 @@ Backend ghi `device_statuses` với `deviceId` = `macAddress` (nếu thiếu th�
 - Backend khớp bằng `commandId`, chờ tối đa `app.iot.unlock-wait-seconds` (như lệnh mở); hết giờ ⇒ REST trả `status: TIMEOUT`. REST trả `data: {accepted, status: ACCEPTED|TIMEOUT|FAILED, message, deviceId, lockerId}`; mỗi lần ghi một dòng `box_access_logs` (`boxId` 0, `credentialType` MASTER, `result` RESTART_ACCEPTED | RESTART_TIMEOUT | RESTART_FAILED).
 - Backend đã subscribe `cabinet/+/command/+/result` nên không cần subscription mới. Pi bản cũ không trả lời ⇒ backend báo TIMEOUT.
 
+**Nhật ký điều khiển** — `cabinet/{lockerId}/event/control` (QoS 1). Pi gửi sau **mỗi lần kích relay** và **mỗi lượt chạy nắp kết thúc**, bất kể lệnh từ đâu (backend, kiosk, bảng `/service` trên Pi).
+
+```json
+{ "eventId": "3f2a…", "action": "LID_CLOSE", "status": "STOPPED", "axis": 1, "revolutions": 42.5,
+  "message": "về phía đóng, dừng giữa chừng", "occurredAt": "2026-10-24T08:40:47+00:00" }
+{ "eventId": "8c1d…", "action": "BOX_OPEN", "status": "OK", "slotIndex": 3, "boxId": 41,
+  "message": "Kích relay ô 4 trong 3000 ms (lệnh từ hệ thống)", "occurredAt": "…" }
+```
+
+- `action` ∈ `BOX_OPEN | BOX_TEST | LID_OPEN | LID_CLOSE | LID_HOME | LID_JOG`; `status` ∈ `OK | STOPPED | FAILED`. Trường không có giá trị thì bỏ hẳn.
+- **Không mất khi tủ mất mạng:** Pi ghi sự kiện vào `config/control_log_outbox.jsonl` (`CONTROL_LOG_FILE`, fsync) **trước**, rồi mới gửi theo thứ tự; chỉ xoá dòng khi broker xác nhận (PUBACK). Mất mạng hoặc Pi khởi động lại thì gửi tiếp khi có mạng. File giữ tối đa 5000 dòng (bỏ dòng cũ nhất).
+- Có thể tới **muộn hoặc lặp**: backend giữ `occurredAt` làm giờ xảy ra (đồng hồ Pi lệch về tương lai quá 5 phút thì lấy giờ nhận) và bỏ trùng theo `eventId` (cột `UNIQUE`). `slotIndex` ⇒ `boxNumber = slotIndex + 1`.
+- iot-service lưu vào `cabinet_control_logs` (source `CABINET`), cùng bảng với lệnh admin/KTV gửi từ trang "Điều khiển tủ" (source `WEB`, ghi ngay kể cả khi `TIMEOUT`; lệnh `panel` không ghi vì trang hỏi 4 giây một lần). Đọc: `GET /api/locker-technician/cabinet/{lockerId}/logs?limit=100` (tối đa 200, mới nhất trước, cùng phân quyền với điều khiển tủ).
+
 ## 3. Cấp phát — `iot/{mac}/…`
 
 Trình tự: Pi khởi động → báo discovery → admin gán Pi vào tủ trên web → backend gửi setup → Pi mở thử từng ô (tuỳ chọn) → báo kết quả → lưu `lockerId` và sơ đồ ô → subscribe `cabinet/{lockerId}/command/#`.
@@ -193,7 +207,7 @@ File mật khẩu của Mosquitto cấm dấu `:` trong tên, nên tên đăng n
 | Ai | Đọc | Ghi |
 |---|---|---|
 | `iot-service` | `cabinet/#`, `iot/#` | `cabinet/#`, `iot/#` |
-| Pi `2CCF67DBC5C3` gắn tủ `{lockerId}` | `cabinet/{lockerId}/command/#`, `iot/{MAC}/command/#`, `iot/{MAC}/discovery/start` | `cabinet/{lockerId}/command/+/result`, `cabinet/{lockerId}/locker/+/status`, `cabinet/{lockerId}/heartbeat`, `iot/{MAC}/discovery/result`, `iot/{MAC}/setup/#` |
+| Pi `2CCF67DBC5C3` gắn tủ `{lockerId}` | `cabinet/{lockerId}/command/#`, `iot/{MAC}/command/#`, `iot/{MAC}/discovery/start` | `cabinet/{lockerId}/command/+/result`, `cabinet/{lockerId}/locker/+/status`, `cabinet/{lockerId}/heartbeat`, `cabinet/{lockerId}/event/control`, `iot/{MAC}/discovery/result`, `iot/{MAC}/setup/#` |
 | Tài khoản không phải MAC (giả lập) | `cabinet/{lockerId}/command/#` | `cabinet/{lockerId}/command/+/result`, `…/locker/+/status`, `…/heartbeat` |
 
 Thiết bị **không** ghi được `…/command/open` và không nhận lệnh của tủ khác. Mosquitto vẫn trả SUBACK thành công khi subscribe ngoài quyền nhưng không giao tin — muốn kiểm quyền thì xem tin có tới hay không. `lockerId` = `*` cho quyền mọi tủ, chỉ dùng cho giả lập `simulate_demo_cabinet.py` (nó nghe `cabinet/+/command/open`).
