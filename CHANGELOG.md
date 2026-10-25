@@ -2,6 +2,10 @@
 
 Mỗi thay đổi ở repo docs thêm **một dòng** vào ngày tương ứng (mới nhất ở trên). Ghi mã gap/SEC/ADR nếu có.
 
+## 2026-10-25
+
+- SRS (docs `docs/srs-drawio-diagrams`): bộ sơ đồ draw.io cho báo cáo SRS trong [rp3/srs-assets/drawio/](rp3/srs-assets/drawio/) — context, use case, screen flow (khách hàng, KTV tủ, KTV drone, admin web), ERD khái niệm, ERD logic 4 trang + 1 trang tổng đủ mọi cột; ký hiệu `|` / `o|` theo FK NOT NULL / nullable thật; script sinh lại trong `_generator/`.
+
 ## 2026-10-24
 
 - Loyalty (backend, mobile, frontend `feat/doi-diem-lay-voucher`): đổi điểm lấy voucher (`promotions.points_cost`, order V33; tab "Đổi điểm" trong "Ưu đãi của tôi"), chi tiết đơn hiện voucher / điểm đã dùng / điểm được cộng; chuyển sang 1 điểm = 1 đ, tích 10 % (loyalty V5 nhân điểm cũ ×100). business-settings § 6 dòng mã giảm giá và loyalty; STATUS § 3 thêm dòng.
