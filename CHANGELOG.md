@@ -4,6 +4,7 @@ Mỗi thay đổi ở repo docs thêm **một dòng** vào ngày tương ứng (
 
 ## 2026-10-26
 
+- Realtime màn khách hàng (docs `docs/realtime-man-khach-hang`): `architecture.md` ghi 3 sự kiện mới (`wallet.updated`, `loyalty.points.changed`, `catalog.changed`), kênh `/user/queue/events` và topic `/topic/public/catalog`; STATUS § 3 thêm dòng việc. Đợt 2–3: ghi `maintenance.changed`, `admin.data.changed`, `iot.device.status.changed` (giờ notification-service tiêu thụ), topic `/topic/staff/maintenance` (KTV + ADMIN), `/topic/admin/changes` (ADMIN) và cầu nối realtime của web admin; bỏ câu cũ "web admin chỉ dùng WebSocket ở Partner portal".
 - SRS (docs `docs/srs-report3-hoan-thien`): hoàn thiện `rp3/Report3_Software Requirement Specification_LockR.docx` theo bố cục báo cáo mẫu — sơ đồ draw.io mới, ảnh chụp mobile thật cho khách hàng / KTV tủ / KTV drone, mô tả chức năng theo từng màn hình, bảng entity đủ 61 bảng; ảnh admin web và kiosk bổ sung sau. Sửa ảnh ERD logic 1/4 và 2/4 bị xuất nhầm trang và lỗi xuất song song trong `_generator/dio.py`.
 
 ## 2026-10-25
