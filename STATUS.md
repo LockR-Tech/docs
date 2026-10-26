@@ -4,7 +4,7 @@
 
 | | |
 |---|---|
-| **Cập nhật lần cuối** | 2026-10-24 |
+| **Cập nhật lần cuối** | 2026-10-26 — Vi: đồng bộ Git và kiểm tra build; kết quả trong handoff 26/10, không tính lại % nghiệp vụ toàn hệ thống |
 | **Người cập nhật** | Claude Code — 2026-10-22: vá SEC-03/05/06 và SEC-09 mới (actuator gateway) trên nhánh backend `sec/sec-03-05-06-khoa-api-don-iot`, **chưa PR** (§ 2, § 3). Trước đó, 2026-10-13: chỉ còn thanh toán **SePay (chuyển khoản VietQR)** — gỡ MoMo/VNPay ở backend, kiosk, web admin, app — và **đăng nhập SĐT chạy thật** trên app: [backend #64](https://github.com/LockR-Tech/backend/pull/64) (sửa CI/deploy đỏ), [backend #65](https://github.com/LockR-Tech/backend/pull/65), [iot #16](https://github.com/LockR-Tech/iot/pull/16), [frontend #46](https://github.com/LockR-Tech/frontend/pull/46), [mobile #62](https://github.com/LockR-Tech/mobile/pull/62), **PR mở, chưa merge**. Các PR ngày 12/10 (backend #59, #61, #62, mobile #56, iot #15) **đã merge** nhưng backend **chưa lên production**: CI/deploy backend đỏ từ 12/10 cho tới khi merge #64. |
 | **Tổng tiến độ 4 luồng** | **71,3 %** |
 
@@ -54,6 +54,7 @@ Mọi con số bên dưới đúng với các commit này. Trước khi tin STAT
 
 | Việc | Gap | Người/nhánh | Trạng thái |
 |---|---|---|---|
+| Đồng bộ đủ code local/stash/worktree với GitHub, kiểm tra build và author commit mới | F1-G01 · F1-G16 · F2-G09 | Vi · nhánh sync 26/10 ở mobile/frontend/iot/docs | Xem [bàn giao đồng bộ](handoff/2026-10-26-code-sync.md); conflict docs đã giải quyết, backend/mobile/web/kiosk build qua; controller 121, drone 28, mobile 720 test qua. Đẩy nhánh riêng để review, chưa merge/deploy. |
 | Poster drone trên trang chủ mobile | F1 | Codex · `feat/f1-home-drone-poster` | Local: dùng poster PNG do người dùng cung cấp thay banner chào; chạm poster mở chọn tủ nhận/đặt đơn drone; bỏ thẻ drone bên dưới. Chưa push/deploy. |
 | Tách tài khoản nhận SePay: đơn drone dùng bộ `SEPAY_DRONE_*`, đơn gửi/thuê tủ và nạp ví giữ tài khoản locker | F1-G11 | Codex · `feat/f1-drone-sepay-account` (backend/docs) | Code và test xong local; backend 352 test qua (29 integration test cần Docker được skip); chờ push/PR/merge/deploy và liên kết tài khoản drone trong SePay Dashboard |
 | Sửa chọn địa chỉ lấy hàng drone: ưu tiên kết quả TP.HCM, hiện tọa độ ghim để tránh địa chỉ và pin lệch, nói rõ bán kính nhà → tủ gửi khác tầm bay giữa hai tủ | F1-G12 | Codex · `fix/f1-g12-pickup-location-search` (mobile) | Đã sửa local; 5 bài widget test và 1 test geocoder qua, `flutter analyze` sạch; chưa commit/merge/deploy |

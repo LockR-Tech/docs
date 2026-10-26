@@ -1,5 +1,9 @@
 # Changelog
 
+## 2026-10-26
+
+- F1-G01 · F1-G16 · F2-G09: đồng bộ code từ stash/worktree, giải quyết merge docs cũ và giữ nguyên lịch sử tác giả; bổ sung hợp đồng kết quả nắp drone, biến cấu hình xác nhận cảm biến/nhớ commandId, và [bàn giao kiểm tra build](handoff/2026-10-26-code-sync.md).
+
 ## 2026-10-24
 
 - F1 (mobile, local): thay banner chào trang chủ bằng poster giao hàng bằng drone do người dùng cung cấp; chạm poster mở luồng chọn tủ nhận/đặt đơn; bỏ thẻ gửi drone riêng bên dưới.
