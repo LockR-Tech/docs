@@ -1,5 +1,7 @@
 # Kiến trúc hệ thống
 
+> Đồng bộ local 26/10/2026: controller bổ sung `LID_REQUIRE_LIMIT_SWITCH` và `DRONE_LID_COMMAND_MEMORY_S`; kênh MQTT nắp trả ACK `ACCEPTED` trước kết quả cuối, có `lidConfirmation`. Chi tiết và các tham số ArUco/retry của drone nằm trong [MQTT contract](mqtt-contract.md#bổ-sung-nắp-drone--đồng-bộ-26102026) và `iot/drone-iot/README.md`. Không thêm service hay topic mới trong đợt này.
+
 > Sơ đồ in A4: [diagrams/pdf/architecture.pdf](../diagrams/pdf/architecture.pdf) · nguồn [`architecture.mmd`](../diagrams/src/architecture.mmd). Rà soát code 2026-09-13; bổ sung 2026-09-21 theo backend #21 (kiosk), #22 (KTV tủ), #23 (`assistant-service`); 2026-10-13 theo PR mở backend #65 (chỉ SePay) và mobile #62 (đăng nhập SĐT).
 
 ## 1. Repo

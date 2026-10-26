@@ -1,5 +1,15 @@
 # Hợp đồng MQTT — backend ↔ tủ
 
+## Bổ sung nắp drone — đồng bộ 26/10/2026
+
+Lệnh `cabinet/{lockerId}/command/open|close` có `lid: true` được controller trả `ACCEPTED` + `hwState: MOVING` khi đã nhận; chỉ kết quả cuối `SUCCESS`/`FAILED` mới kết thúc lệnh. `lidConfirmation` phân biệt `LIMIT_SWITCH` (cảm biến), `STEP_COUNT` (đủ bước nhưng chưa được cảm biến xác nhận) và `BYPASS` (giả lập, không chạy motor). Client phải phân biệt các mức xác nhận; nhãn giai đoạn nhả hàng thử nghiệm phải ghi rõ giả lập.
+
+Controller nhớ `(lockerId, action, commandId)` để lệnh MQTT gửi lại không chạy motor lần hai, mà gửi lại kết quả. Lệnh mở có `expiresAt` đã qua/không đọc được bị từ chối; ô không thuộc trục nắp cấu hình trả `NO_LID`, không kích relay cửa trước để thay thế.
+
+Biến trên Pi: `DRONE_LID_COMMAND_MEMORY_S=3600` là thời gian nhớ lệnh trong tiến trình; khởi động lại tiến trình làm mất bộ nhớ chống trùng. `LID_REQUIRE_LIMIT_SWITCH=false` giữ tương thích chế độ theo số bước; bật `true` thì chạy hết bước mà không chạm công tắc trả `FAILED/LIMIT_NOT_REACHED`. Cấu hình trục vẫn dùng `LID1_BOXES`/`LID2_BOXES`.
+
+Drone Pi dùng `TARGET_REQUEST`/`DELIVERY_TARGET` để lấy mục tiêu từ backend; chỉ gửi `MARKER_DETECTED` khi đúng ID/từ điển ArUco và đủ số frame/thời gian ổn định. Tham số camera/retry và contract đã mô tả trong `iot/drone-iot/README.md`; module nhận diện không điều khiển drone đáp hay nhả hàng.
+
 Nguồn sự thật cho mọi topic và payload giữa **iot-service** (backend) và **bộ điều khiển tủ** (Pi chạy `iot/main.py`, hoặc `iot/simulate_demo_cabinet.py`). Lý do chọn: [ADR-0008](../adr/0008-hop-dong-mqtt-backend-tu.md). Đổi bất kỳ thứ gì ở đây ⇒ sửa **cả hai phía** và contract test ở cả hai repo:
 
 - backend: `iot-service/src/test/java/…/iot/service/LockerMqttServiceTest.java`, `GatewayProvisioningServiceTest.java` ([backend#33](https://github.com/LockR-Tech/backend/pull/33))
