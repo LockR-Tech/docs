@@ -1,0 +1,71 @@
+@startuml
+!pragma layout smetana
+skinparam dpi 150
+skinparam defaultFontName Arial
+skinparam defaultFontSize 11
+skinparam shadowing false
+skinparam ArrowColor #555555
+skinparam rectangle {
+  BackgroundColor #FFFFFF
+  BorderColor #C0504D
+  RoundCorner 6
+}
+skinparam usecase {
+  BackgroundColor #FFF3E0
+  BorderColor #E65100
+}
+legend right
+  |= Shape |= Meaning |
+  | <back:#FFFFFF> rectangle </back> | screen |
+  | <back:#FFE8E1> filled rectangle </back> | screen with tabs |
+  | <back:#FFF3E0> oval </back> | pop-up / bottom sheet |
+endlegend
+usecase "Login\n(bottom sheet)" as LG
+rectangle "Locker Technician Home\n[Incidents | My Tasks | Locker Check |\nPeriodic | IoT Devices]" as LTH #FFE8E1
+usecase "Ticket Details\n(claim, log, photos)" as TD
+usecase "Resolve Ticket\n(relocate / hand over /\nseal / fix / lock)" as RS
+usecase "Extend SLA /\nReturn Ticket" as SLA
+usecase "Inspection Checklist" as IC
+usecase "Emergency Open\n(reason)" as EO
+usecase "Restart Controller" as RC
+rectangle "Parcel Recovery Queue" as PRQ
+rectangle "Directions" as DIR
+rectangle "Technician Profile" as TP
+rectangle "Drone Technician Home\n[Dispatch | My Tasks | Fleet |\nIncidents | Periodic | Flight Tools]" as DTH #FFE8E1
+usecase "Accept Order\n(choose drone)" as AC
+usecase "Home Pickup\n(parcel photo)" as HP
+usecase "Loading Confirmation\n(weight, seal, checklist)" as LC
+usecase "Launch / Advance Stage" as LA
+usecase "Cancel / Report\nFailed Flight" as FF
+usecase "Report Parcel Drop" as PD
+usecase "Change Drone Status\n/ Battery" as CS
+rectangle "Drone Tracking" as DTR
+rectangle "Flight Data" as FD
+rectangle "Mission Planner" as MP
+rectangle "Notifications" as NO
+
+LG --> LTH
+LG --> DTH
+LTH --> TD
+TD --> RS
+TD --> SLA
+LTH --> IC
+LTH --> EO
+LTH --> RC
+LTH --> PRQ
+PRQ --> DIR
+LTH --> TP
+LTH --> NO
+DTH --> AC
+DTH --> HP
+AC --> LC
+LC --> LA
+LA --> DTR
+DTH --> FF
+DTR --> PD
+DTH --> CS
+DTH --> FD
+FD --> MP
+DTH --> NO
+DTH --> TP
+@enduml

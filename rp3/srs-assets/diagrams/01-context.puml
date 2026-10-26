@@ -1,0 +1,53 @@
+@startuml
+!pragma layout smetana
+skinparam dpi 150
+skinparam defaultFontName Arial
+skinparam defaultFontSize 12
+skinparam shadowing false
+skinparam rectangle {
+  BackgroundColor #FFFFFF
+  BorderColor #555555
+}
+skinparam actor {
+  BackgroundColor #FFF3E0
+  BorderColor #E65100
+}
+left to right direction
+
+actor "Customer\n(sender / renter)" as CUS
+actor "Receiver" as REC
+actor "Locker\nTechnician" as LT
+actor "Drone\nTechnician" as DT
+actor "Administrator" as ADM
+
+rectangle "<b>Lock.R System</b>\n\nMobile app · Mobile web\nAdmin web · Kiosk\nBackend microservices" as SYS #FFE8E1
+
+rectangle "Smart Locker\n(Raspberry Pi + relays,\nsensors, kiosk screen)" as LOCKER #E3F2FD
+rectangle "Drone\n(Pi + Pixhawk,\ncamera)" as DRONE #E3F2FD
+rectangle "SePay\n(VietQR bank transfer)" as SEPAY #F1F8E9
+rectangle "Firebase\n(Auth, Cloud Messaging)" as FB #F1F8E9
+rectangle "Email (SMTP)\nSMS (eSMS / Twilio)" as MSG #F1F8E9
+rectangle "Cloudinary\n(image storage)" as CLD #F1F8E9
+rectangle "Anthropic Claude\nVoyage AI" as AI #F1F8E9
+rectangle "OpenStreetMap / OSRM\n(maps, directions)" as MAP #F1F8E9
+
+CUS --> SYS : orders, payments,\nreports, questions
+SYS --> CUS : PIN / QR, order status,\nnotifications, answers
+REC --> SYS : PIN / QR at kiosk
+SYS --> REC : pickup code (SMS / email / app)
+LT --> SYS : tickets, inspections,\nemergency open
+DT --> SYS : dispatch, loading,\nlaunch, fleet status
+ADM --> SYS : configuration, users,\nlockers, drones, refunds
+
+SYS --> LOCKER : open / restart commands (MQTT)
+LOCKER --> SYS : heartbeat, door state,\naccess results
+SYS --> DRONE : mission
+DRONE --> SYS : signed telemetry,\ncamera stream (MQTT)
+SYS --> SEPAY : VietQR request
+SEPAY --> SYS : payment webhook
+SYS --> FB : verify ID token,\npush notification
+SYS --> MSG : OTP, pickup code
+SYS --> CLD : signed upload
+SYS --> AI : embeddings, answer\nwith citations
+SYS --> MAP : map tiles, routes
+@enduml

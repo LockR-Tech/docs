@@ -6,6 +6,48 @@
 
 Mỗi thay đổi ở repo docs thêm **một dòng** vào ngày tương ứng (mới nhất ở trên). Ghi mã gap/SEC/ADR nếu có.
 
+## 2026-10-26
+
+- SRS (docs `docs/srs-report3-hoan-thien`): hoàn thiện `rp3/Report3_Software Requirement Specification_LockR.docx` theo bố cục báo cáo mẫu — sơ đồ draw.io mới, ảnh chụp mobile thật cho khách hàng / KTV tủ / KTV drone, mô tả chức năng theo từng màn hình, bảng entity đủ 61 bảng; ảnh admin web và kiosk bổ sung sau. Sửa ảnh ERD logic 1/4 và 2/4 bị xuất nhầm trang và lỗi xuất song song trong `_generator/dio.py`.
+
+## 2026-10-25
+
+- SRS (docs `docs/srs-drawio-diagrams`): bộ sơ đồ draw.io cho báo cáo SRS trong [rp3/srs-assets/drawio/](rp3/srs-assets/drawio/) — context, use case, screen flow (khách hàng, KTV tủ, KTV drone, admin web), ERD khái niệm, ERD logic 4 trang + 1 trang tổng đủ mọi cột; ký hiệu `|` / `o|` theo FK NOT NULL / nullable thật; script sinh lại trong `_generator/`.
+
+## 2026-10-24
+
+- Loyalty (backend, mobile, frontend `feat/doi-diem-lay-voucher`): đổi điểm lấy voucher (`promotions.points_cost`, order V33; tab "Đổi điểm" trong "Ưu đãi của tôi"), chi tiết đơn hiện voucher / điểm đã dùng / điểm được cộng; chuyển sang 1 điểm = 1 đ, tích 10 % (loyalty V5 nhân điểm cũ ×100). business-settings § 6 dòng mã giảm giá và loyalty; STATUS § 3 thêm dòng.
+- F3-G11 (backend, frontend, mobile, iot `feat/f3-g11-mo-o-bluetooth`): thử mở ô qua Bluetooth do admin cấp quyền — hợp đồng mới [ble-open-contract](01-overview/ble-open-contract.md); architecture thêm bảng iot V8 và đường công khai `/api/iot/ble/public-key`; flow-3 thêm gap F3-G11 (công cụ thử, không đổi checklist); STATUS § 3 thêm dòng.
+- F1-G12 (iot, frontend `feat/f1-g12-nap-truc-theo-o`): nắp trượt gắn theo ô — `LID1_BOXES` / `LID2_BOXES` trong `.env` Pi; lệnh drone `lid: true` cho ô không có nắp ⇒ `NO_LID` thay vì mở nhầm nắp trục 1. CAB-TU01: **trục 1 nằm trên ô 3** (tu01-wiring-photos § 6, § 9); trang "Điều khiển tủ" hiện "Trục nắp 1 · trên ô 3"; mqtt-contract § 2.1, § 2.2.
+- F3-panel (iot, backend, frontend `feat/f3-panel-nhat-ky-dieu-khien-tu`): nhật ký điều khiển ở cuối trang "Điều khiển tủ" — lệnh từ web (ghi cả `TIMEOUT` khi tủ mất mạng) và mọi lần tủ kích relay / chạy nắp (kèm số vòng thật); Pi lưu vào thẻ nhớ trước rồi gửi `cabinet/{id}/event/control` khi có mạng nên không mất log. Bảng mới `iot_schema.cabinet_control_logs` (Flyway V7); mqtt-contract lên 1.3 (§ 2.2, § 4).
+- F3-panel (iot, backend `fix/f3-panel-mo-o-kich-relay`): mở ô trên admin web kích relay thật — trước đây tủ có một nắp trượt thì Pi đẩy **mọi** lệnh `open`/`close` sang nắp (và nắp đang bypass) nên cửa không mở. Giờ chỉ lệnh có `lid: true` (luồng drone) mới đi nắp; mqtt-contract lên 1.2 (§ 2.1).
+- F3.07 · F3.08 (backend, mobile, frontend `feat/f3-g02-o-cho-ktv-kiem-tra`): khách báo ô ⇒ trạng thái mới `PENDING_CHECK` (chờ KTV kiểm tra), KTV từ chối phiếu (`REJECTED`) kèm phản hồi; sơ đồ `locker-cell-status` thêm C13–C15; flow-3 F3.07; business setting mới `app.maintenance.pending-check-hold-hours`.
+- F3.07 · F3.08 (backend, mobile `feat/f3-g02-o-cho-ktv-kiem-tra`): sửa lỗi test tay luồng thuê tủ + sự cố ô — đơn đã chuyển ô không bị khoá lại, gộp phiếu báo trùng ở màn tủ, cấm chuyển vào ô drone, giờ phiếu phía khách đúng múi giờ; STATUS § 3 thêm dòng.
+
+## 2026-10-23
+
+- F3-panel (iot, backend, frontend, docs): bảng điều khiển tủ trên admin web — mở ô, điều khiển nắp/thanh trượt (mở/đóng/về gốc/dừng, chạy N vòng, chỉnh tốc độ), xem trạng thái; lệnh MQTT `cabinet/{id}/command/{lid|lid-jog|lid-tune|panel}` (mqtt-contract § 2.1) qua `/api/locker-technician/cabinet/**` (ADMIN + KTV tủ).
+- fix(order): @Autowired cho DroneWeatherService — hết crash-loop 503 trên production (backend #96).
+
+## 2026-10-22
+
+- Sự cố order-service 22/10 (backend `fix/order-service-sap-va-kiem-deploy`): STATUS § 6 thêm Q4; release-deploy § 6 thêm kiểm đủ 10 service và cách xử lý khi một service trả 503 bằng workflow VM ops (không cần SSH).
+- SEC-03 · SEC-05 · SEC-06 · SEC-09 (backend `sec/sec-03-05-06-khoa-api-don-iot`, iot `sec/sec-05-go-api-don-khong-dung`): gỡ API đơn không kiểm quyền, đọc đơn theo chủ/người nhận, báo hỏng ô và trạng thái IoT chỉ KTV tủ/ADMIN, WebSocket topic chung chỉ ADMIN, đóng actuator `gateway` — STATUS § 2 thêm SEC-09, flow-3 F3-G01, sơ đồ `order-status` (O11/O12 theo bảng chuyển trạng thái admin) và `locker-cell-status` (C6).
+
+## 2026-10-19
+
+- F2-G04 (backend, mobile, iot `feat/f2-g04-gia-lap-thanh-toan`): nút giả lập thanh toán VietQR khi test, admin bật/tắt — business-settings thêm nhóm "Giả lập thanh toán (test)".
+
+- F2-G12 (backend, mobile, frontend `fix/f2-g12-doi-soat-tien`): đối soát tiền đơn tủ — ghi đúng số tiền nhận, hoàn tiền khi huỷ đơn đã trả, ví trả nhiều lần, phí ở quá giờ thuê, giá theo ô thật, giới hạn hoàn tiền + thu hồi điểm; flow-2 thêm gap F2-G12, architecture thêm hàng đợi `loyalty.order.events`/`payment.refunded`, business-settings thêm `app.order.rental-overtime-rate-percent`.
+
+## 2026-10-17
+
+- backend #79, frontend #52, mobile #78, iot #19 (đã merge): dùng điểm thưởng thanh toán đơn, hạng theo tổng điểm đã tích, voucher theo tủ, số mã mỗi đơn — business-settings § 4 thêm nhóm "Mã giảm giá" (order) và "Dùng điểm thanh toán" (loyalty); STATUS § 5.
+
+## 2026-10-16
+
+- backend #77: bỏ thông báo tiếng Anh trùng lặp (`<type> event received`), nạp ví, thanh toán lỗi và 5 thông báo đơn hàng của order-service chuyển sang tiếng Việt — STATUS § 5.
+
 ## 2026-10-13
 
 - F1-G11: tách tài khoản nhận SePay theo loại đơn — `DRONE_DELIVERY` dùng bộ `SEPAY_DRONE_*`; đơn gửi/thuê tủ và nạp ví giữ `SEPAY_BANK_*`; bổ sung yêu cầu liên kết cả hai tài khoản trong SePay Dashboard để webhook tự xác nhận.

@@ -1,0 +1,63 @@
+@startuml
+!include erd-style.iuml
+package "auth_db / user_db" {
+entity "auth_accounts" as AA {
+  *id <<PK>>
+  --
+  user_id
+  email, phone_number
+  password_hash, auth_provider
+  status, last_login_at
+}
+entity "refresh_tokens" as RT {
+  *id <<PK>>
+  account_id <<FK>>
+  token_hash, expires_at, revoked
+}
+entity "email_otps" as OTP {
+  *id <<PK>>
+  email, otp_hash, purpose
+  expires_at, used
+}
+entity "social_identities" as SI {
+  *id <<PK>>
+  account_id <<FK>>
+  provider, provider_user_id
+}
+entity "user_profiles" as UP {
+  *id <<PK>>
+  --
+  email, phone_number
+  first_name, last_name
+  image_url, status, roles
+}
+}
+package "loyalty_db / notification_db" {
+entity "loyalty_accounts" as LA {
+  *id <<PK>>
+  user_id, points
+  lifetime_points, tier
+}
+entity "point_transactions" as PT {
+  *id <<PK>>
+  user_id, order_id
+  points, type
+}
+entity "notifications" as NT {
+  *id <<PK>>
+  user_id, title, message
+  type, reference_id, is_read
+}
+entity "fcm_tokens" as FT {
+  *id <<PK>>
+  user_id, token, device_type
+}
+}
+AA ||--o{ RT
+AA ||--o{ SI
+AA ||..|| UP
+UP ||..o| LA
+LA ||..o{ PT
+UP ||..o{ NT
+UP ||..o{ FT
+@enduml

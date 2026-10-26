@@ -6,7 +6,7 @@ Nguồn sự thật cho mọi topic và payload giữa **iot-service** (backend)
 - iot: `tests/test_mqtt_contract.py` ([iot#9](https://github.com/LockR-Tech/iot/pull/9))
 - giao diện gán thiết bị: [frontend#22](https://github.com/LockR-Tech/frontend/pull/22)
 
-Phiên bản hợp đồng: **1.1** (2026-10-12) — thêm lệnh khởi động lại bộ điều khiển (§ 2.1, § 2.2). Bản 1: 2026-09-27.
+Phiên bản hợp đồng: **1.3** (2026-10-24) — nhật ký điều khiển `cabinet/{lockerId}/event/control` (§ 2.2, § 4). Bản 1.2 (2026-10-24): cờ `lid` trên lệnh mở/đóng ô (§ 2.1). Bản 1.1 (2026-10-12): lệnh khởi động lại bộ điều khiển (§ 2.1, § 2.2). Bản 1: 2026-09-27.
 
 ## 1. Định danh
 
@@ -33,6 +33,7 @@ Pi đổi `slotIndex` ra chân phần cứng: `GPIO_RELAY_PINS[slotIndex]` và `
 - `timeout`: số giây cửa được phép mở, lấy từ `app.iot.door-open-timeout-seconds`. Pi hiện chưa dùng.
 - `box_id`: bản sao của `boxId` cho giả lập cũ; sẽ bỏ ở phiên bản 2.
 - Nếu iot-service không tra được `boxNumber` thì payload **không có** `slotIndex`. Khi đó Pi tra `boxId` trong sơ đồ đã setup (§ 3); không tra được thì trả `FAILED / UNKNOWN_SLOT`.
+- `lid` (tuỳ chọn, mặc định không có): `true` ⇒ Pi **trượt nắp trên nóc tủ** thay vì kích relay cửa trước của ô. Trục: `lidAxis` nếu lệnh ghi rõ; không thì theo ô qua `LID1_BOXES` / `LID2_BOXES` trong `.env` Pi (số ô in trên cửa, ví dụ CAB-TU01 `LID1_BOXES=3`); ô không thuộc trục nào ⇒ `FAILED / NO_LID`, Pi **không** kích relay thay vào. Cả hai biến trống ⇒ mọi ô dùng trục 1. `panel` trả thêm `boxes` cho mỗi trục. Chỉ luồng drone thả hàng gửi cờ này (order-service, cả `open` lẫn `close`). Mở ô của khách, KTV, admin **không** có cờ ⇒ luôn kích relay, kể cả ô drone (khách lấy hàng bằng cửa trước). Nắp còn bị `LID_BYPASS_PHYSICAL_MOTION` (`.env` Pi, mặc định `true`) chặn: khi bật, Pi chỉ báo `SUCCESS` mà không quay động cơ.
 
 **Đồng bộ trạng thái ô** — `cabinet/{lockerId}/command/sync` (không cần phản hồi)
 
@@ -53,6 +54,20 @@ Pi đổi `slotIndex` ra chân phần cứng: `GPIO_RELAY_PINS[slotIndex]` và `
 - Gửi khi KTV bấm "Khởi động lại" (`POST /api/locker-technician/devices/{id}/restart`). Chỉ khởi động lại tiến trình `lockr-controller`, **không** reboot máy.
 - Pi gửi kết quả (§ 2.2) **rồi mới** thoát tiến trình với mã 75; systemd chạy lại `lockr-controller` (unit hiện dùng `Restart=on-failure`, mã khác 0 nên vẫn được chạy lại). Chạy lại xong Pi kết nối broker, gửi heartbeat/discovery như lúc khởi động.
 - Lệnh chạy cùng hàng đợi với lệnh phần cứng: lệnh mở ô đang dở xong trước. Lệnh trùng (QoS 1 giao lại) chỉ được trả lời, không thoát lần nữa. `action` khác `RESTART` ⇒ `FAILED`, không thoát.
+
+**Điều khiển nắp/thanh trượt** (bảng điều khiển tủ trên admin web — ADMIN + KTV tủ)
+
+```json
+// cabinet/{lockerId}/command/lid      { "commandId": "…", "axis": 1, "action": "open|close|home|stop" }
+// cabinet/{lockerId}/command/lid-jog  { "commandId": "…", "axis": 1, "revolutions": 2, "direction": "open|close" }
+// cabinet/{lockerId}/command/lid-tune { "commandId": "…", "axis": 1, "changes": { "rps": 1.5, "pulse_us": 1000, "steps_per_rev": 400 } }
+// cabinet/{lockerId}/command/panel    { "commandId": "…" }
+```
+
+- Gửi khi ADMIN/KTV tủ bấm nút trên trang `/admin/cabinet-control` (`iot-service` `/api/locker-technician/cabinet/{lockerId}/…`). KTV chỉ điều khiển tủ mình phụ trách; ADMIN mọi tủ.
+- Pi trả `cabinet/{lockerId}/command/{lid|lid-jog|lid-tune|panel}/result` cùng `commandId`. **Lệnh chạy nắp (lid, lid-jog) trả `ACCEPTED` ngay** (không chờ động cơ quay xong) — trang web poll `panel` mỗi 4 giây để xem trạng thái; `lid-tune` trả `SUCCESS` kèm `config`; `panel` trả `SUCCESS` kèm `lids` (mỗi trục: `axis`, `enabled`, `status`). Lỗi ⇒ `FAILED` kèm `errorCode` (`AXIS_DISABLED`, `BAD_ACTION`, `LID_BUSY`, `TOO_MANY_REVS`, `TUNE_REJECTED`, …) + `errorMessage`.
+- `axis` 1 = trục nắp thứ nhất, 2 = trục thứ hai (chỉ khi `LID2_ENABLED=true`). Mở ô dùng lại lệnh `open` ở trên.
+- Không cần đổi ACL: Pi đã đọc `cabinet/{lockerId}/command/#` và ghi `cabinet/{lockerId}/command/+/result`; `iot-service` đã subscribe `cabinet/+/command/+/result`.
 
 ### 2.2 Tủ → backend
 
@@ -75,6 +90,7 @@ Pi đổi `slotIndex` ra chân phần cứng: `GPIO_RELAY_PINS[slotIndex]` và `
 | `JAMMED` | Relay chạy nhưng cảm biến vẫn thấy cửa đóng (kẹt cửa, hoặc cảm biến chưa nối — khi đó đặt `REQUIRE_DOOR_SENSOR=false`) |
 | `UNKNOWN_SLOT` | Không có `slotIndex` và không tra được `boxId` trong sơ đồ |
 | `INVALID_SLOT` | `slotIndex` vượt số ô phần cứng |
+| `NO_LID` | Lệnh có `lid: true` nhưng ô không nằm dưới nắp trục nào (`LID1_BOXES` / `LID2_BOXES`) |
 | `UNKNOWN_SLAVE`, `GPIO_NOT_STARTED` | Cấu hình GPIO sai hoặc chưa khởi động (`HARDWARE_BACKEND=gpio`) |
 | `TIMEOUT`, `SERIAL_ERROR` | Arduino không trả lời hoặc lỗi cổng RS485 (`HARDWARE_BACKEND=rs485`) |
 | `HW_ERROR` | Lỗi phần cứng khác; chi tiết nằm ở `errorMessage` |
@@ -112,6 +128,20 @@ Backend ghi `device_statuses` với `deviceId` = `macAddress` (nếu thiếu th�
 - `status` ∈ `ACCEPTED | FAILED`; `FAILED` kèm `errorMessage`. Pi chờ broker xác nhận kết quả tối đa 5 giây rồi vẫn thoát.
 - Backend khớp bằng `commandId`, chờ tối đa `app.iot.unlock-wait-seconds` (như lệnh mở); hết giờ ⇒ REST trả `status: TIMEOUT`. REST trả `data: {accepted, status: ACCEPTED|TIMEOUT|FAILED, message, deviceId, lockerId}`; mỗi lần ghi một dòng `box_access_logs` (`boxId` 0, `credentialType` MASTER, `result` RESTART_ACCEPTED | RESTART_TIMEOUT | RESTART_FAILED).
 - Backend đã subscribe `cabinet/+/command/+/result` nên không cần subscription mới. Pi bản cũ không trả lời ⇒ backend báo TIMEOUT.
+
+**Nhật ký điều khiển** — `cabinet/{lockerId}/event/control` (QoS 1). Pi gửi sau **mỗi lần kích relay** và **mỗi lượt chạy nắp kết thúc**, bất kể lệnh từ đâu (backend, kiosk, bảng `/service` trên Pi).
+
+```json
+{ "eventId": "3f2a…", "action": "LID_CLOSE", "status": "STOPPED", "axis": 1, "revolutions": 42.5,
+  "message": "về phía đóng, dừng giữa chừng", "occurredAt": "2026-10-24T08:40:47+00:00" }
+{ "eventId": "8c1d…", "action": "BOX_OPEN", "status": "OK", "slotIndex": 3, "boxId": 41,
+  "message": "Kích relay ô 4 trong 3000 ms (lệnh từ hệ thống)", "occurredAt": "…" }
+```
+
+- `action` ∈ `BOX_OPEN | BOX_TEST | LID_OPEN | LID_CLOSE | LID_HOME | LID_JOG`; `status` ∈ `OK | STOPPED | FAILED`. Trường không có giá trị thì bỏ hẳn.
+- **Không mất khi tủ mất mạng:** Pi ghi sự kiện vào `config/control_log_outbox.jsonl` (`CONTROL_LOG_FILE`, fsync) **trước**, rồi mới gửi theo thứ tự; chỉ xoá dòng khi broker xác nhận (PUBACK). Mất mạng hoặc Pi khởi động lại thì gửi tiếp khi có mạng. File giữ tối đa 5000 dòng (bỏ dòng cũ nhất).
+- Có thể tới **muộn hoặc lặp**: backend giữ `occurredAt` làm giờ xảy ra (đồng hồ Pi lệch về tương lai quá 5 phút thì lấy giờ nhận) và bỏ trùng theo `eventId` (cột `UNIQUE`). `slotIndex` ⇒ `boxNumber = slotIndex + 1`.
+- iot-service lưu vào `cabinet_control_logs` (source `CABINET`), cùng bảng với lệnh admin/KTV gửi từ trang "Điều khiển tủ" (source `WEB`, ghi ngay kể cả khi `TIMEOUT`; lệnh `panel` không ghi vì trang hỏi 4 giây một lần). Đọc: `GET /api/locker-technician/cabinet/{lockerId}/logs?limit=100` (tối đa 200, mới nhất trước, cùng phân quyền với điều khiển tủ).
 
 ## 3. Cấp phát — `iot/{mac}/…`
 
@@ -178,7 +208,7 @@ File mật khẩu của Mosquitto cấm dấu `:` trong tên, nên tên đăng n
 | Ai | Đọc | Ghi |
 |---|---|---|
 | `iot-service` | `cabinet/#`, `iot/#` | `cabinet/#`, `iot/#` |
-| Pi `2CCF67DBC5C3` gắn tủ `{lockerId}` | `cabinet/{lockerId}/command/#`, `iot/{MAC}/command/#`, `iot/{MAC}/discovery/start` | `cabinet/{lockerId}/command/+/result`, `cabinet/{lockerId}/locker/+/status`, `cabinet/{lockerId}/heartbeat`, `iot/{MAC}/discovery/result`, `iot/{MAC}/setup/#` |
+| Pi `2CCF67DBC5C3` gắn tủ `{lockerId}` | `cabinet/{lockerId}/command/#`, `iot/{MAC}/command/#`, `iot/{MAC}/discovery/start` | `cabinet/{lockerId}/command/+/result`, `cabinet/{lockerId}/locker/+/status`, `cabinet/{lockerId}/heartbeat`, `cabinet/{lockerId}/event/control`, `iot/{MAC}/discovery/result`, `iot/{MAC}/setup/#` |
 | Tài khoản không phải MAC (giả lập) | `cabinet/{lockerId}/command/#` | `cabinet/{lockerId}/command/+/result`, `…/locker/+/status`, `…/heartbeat` |
 
 Thiết bị **không** ghi được `…/command/open` và không nhận lệnh của tủ khác. Mosquitto vẫn trả SUBACK thành công khi subscribe ngoài quyền nhưng không giao tin — muốn kiểm quyền thì xem tin có tới hay không. `lockerId` = `*` cho quyền mọi tủ, chỉ dùng cho giả lập `simulate_demo_cabinet.py` (nó nghe `cabinet/+/command/open`).

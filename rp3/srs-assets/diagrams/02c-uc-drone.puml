@@ -1,0 +1,39 @@
+@startuml
+!pragma layout smetana
+skinparam dpi 150
+skinparam defaultFontName Arial
+skinparam defaultFontSize 12
+skinparam shadowing false
+skinparam usecase {
+  BackgroundColor #FFF8F5
+  BorderColor #C0504D
+}
+skinparam actor {
+  BackgroundColor #FFF3E0
+  BorderColor #E65100
+}
+left to right direction
+actor Customer
+rectangle "Drone delivery, wallet & support" {
+  usecase "UC15 Book drone delivery" as UC15
+  usecase "UC16 Book drone home pickup" as UC16
+  usecase "UC17 Track drone delivery" as UC17
+  usecase "UC18 Cancel order" as UC18
+  usecase "UC19 Request refund" as UC19
+  usecase "UC20 Top up / withdraw wallet" as UC20
+  usecase "UC22 Report locker incident" as UC22
+  usecase "UC23 Rate order / send complaint" as UC23
+  usecase "UC08 Pay order (VietQR)" as UC08
+}
+Customer --> UC15
+Customer --> UC16
+Customer --> UC17
+Customer --> UC18
+Customer --> UC19
+Customer --> UC20
+Customer --> UC22
+Customer --> UC23
+UC15 ..> UC08 : <<include>>
+UC16 ..> UC08 : <<include>>
+UC20 ..> UC08 : <<include>>
+@enduml

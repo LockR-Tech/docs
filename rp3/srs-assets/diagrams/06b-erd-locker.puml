@@ -1,0 +1,121 @@
+@startuml
+!include erd-style.iuml
+package "store_db" {
+entity "stores" as ST {
+  *id <<PK>>
+  name, address
+  latitude, longitude, status
+}
+}
+package "locker_db" {
+entity "lockers" as LK {
+  *id <<PK>>
+  --
+  store_id
+  code, name, status
+  address, latitude, longitude
+  landing_pad, landing_pad_status
+  assigned_technician_id
+}
+entity "locker_boxes" as BX {
+  *id <<PK>>
+  --
+  locker_id <<FK>>
+  box_number, size, cell_type
+  row_index, col_index
+  status, pre_fault_status
+  reserved_until, fault_reason
+}
+entity "locker_reports" as RP {
+  *id <<PK>>
+  --
+  locker_id <<FK>>
+  box_id <<FK>>
+  user_id, order_id, drone_unit_id
+  title, description, category
+  ticket_type, status
+  assigned_to_user_id
+  sla_due_at, sla_extension_count
+  blocks_locker
+}
+entity "repair_logs" as RL {
+  *id <<PK>>
+  report_id <<FK>>
+  actor_user_id, note
+}
+entity "report_attachments" as RA {
+  *id <<PK>>
+  report_id <<FK>>
+  repair_log_id <<FK>>
+  stage, secure_url
+  latitude, longitude
+}
+entity "locker_report_ratings" as RR {
+  *id <<PK>>
+  report_id <<FK>>
+  user_id, rating, comment
+}
+entity "maintenance_schedules" as MS {
+  *id <<PK>>
+  locker_id, drone_unit_id
+  assigned_technician_id
+  checklist, interval_days
+  next_due_at, last_result
+}
+entity "maintenance_inspection_logs" as MIL {
+  *id <<PK>>
+  schedule_id <<FK>>
+  technician_id, status
+  checklist_results, photo_urls
+  created_report_id
+}
+entity "technician_presences" as TP {
+  *user_id <<PK>>
+  technician_type, on_duty
+  latitude, longitude
+  shift_started_at
+}
+}
+package "iot_db" {
+entity "gateway_devices" as GD {
+  *id <<PK>>
+  mac_address, hardware
+  firmware_version, locker_id
+  setup_status, last_seen_at
+}
+entity "device_statuses" as DS {
+  *id <<PK>>
+  device_id, locker_id
+  status, last_seen_at
+}
+entity "box_hardware_status" as BHS {
+  *box_id <<PK>>
+  locker_id, hw_state
+}
+entity "box_access_logs" as BAL {
+  *id <<PK>>
+  box_id, locker_id, order_id
+  actor_user_id
+  credential_type, result
+}
+entity "access_attempts" as AT {
+  *box_id <<PK>>
+  failed_count, locked_until
+}
+}
+ST ||..o{ LK
+LK ||--o{ BX
+LK ||--o{ RP
+BX ||--o{ RP
+RP ||--o{ RL
+RP ||--o{ RA
+RL ||--o{ RA
+RP ||--o| RR
+LK ||--o{ MS
+MS ||--o{ MIL
+LK ||..o| GD
+LK ||..o{ DS
+BX ||..o| BHS
+BX ||..o{ BAL
+BX ||..o| AT
+@enduml

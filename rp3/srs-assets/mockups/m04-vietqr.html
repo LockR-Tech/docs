@@ -1,0 +1,71 @@
+<!doctype html><html><head><meta charset='utf-8'><style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Arial,Helvetica,sans-serif;background:#ECEFF1;font-size:13px;color:#263238}
+.phone{width:360px;height:740px;margin:20px;border:10px solid #263238;border-radius:34px;background:#fff;overflow:hidden;position:relative}
+.status{height:22px;background:#fff;font-size:10px;color:#607D8B;padding:4px 16px;display:flex;justify-content:space-between}
+.appbar{height:48px;background:#D84315;color:#fff;display:flex;align-items:center;padding:0 14px;font-weight:bold;font-size:15px;gap:10px}
+.appbar .back{font-size:18px}
+.body{padding:12px 14px;height:calc(100% - 70px);overflow:hidden}
+.body.nav{height:calc(100% - 126px)}
+.lbl{font-size:11px;color:#607D8B;margin:8px 0 3px}
+.in{border:1px solid #B0BEC5;border-radius:8px;padding:8px 10px;color:#90A4AE;background:#FAFAFA}
+.in.v{color:#263238}
+.sel:after{content:" \25BE";float:right}
+.btn{background:#D84315;color:#fff;border-radius:10px;padding:10px;text-align:center;font-weight:bold;margin-top:10px}
+.btn2{border:1.5px solid #D84315;color:#D84315;border-radius:10px;padding:9px;text-align:center;font-weight:bold;margin-top:8px}
+.btn3{background:#ECEFF1;color:#455A64;border-radius:10px;padding:9px;text-align:center;margin-top:8px}
+.card{border:1px solid #CFD8DC;border-radius:10px;padding:9px 10px;margin:8px 0;background:#fff}
+.card b{display:block;margin-bottom:3px}
+.muted{color:#78909C;font-size:11px}
+.row{display:flex;gap:8px;align-items:center}
+.row>*{flex:1}
+.chip{display:inline-block;border:1px solid #B0BEC5;border-radius:14px;padding:4px 10px;margin:3px 4px 3px 0;font-size:11px}
+.chip.on{background:#FBE9E7;border-color:#D84315;color:#D84315;font-weight:bold}
+.tabs{display:flex;border-bottom:1px solid #CFD8DC;margin:-12px -14px 8px}
+.tabs div{flex:1;text-align:center;padding:9px 2px;font-size:11px;color:#607D8B}
+.tabs .on{color:#D84315;border-bottom:3px solid #D84315;font-weight:bold}
+.grid{display:grid;gap:5px;margin:6px 0}
+.cell{border:1px solid #90A4AE;border-radius:5px;height:34px;display:flex;align-items:center;justify-content:center;font-size:11px}
+.free{background:#E8F5E9}.res{background:#FFF8E1}.occ{background:#ECEFF1;color:#90A4AE}.fault{background:#FFEBEE}.sel2{background:#D84315;color:#fff;border-color:#D84315}
+.bnav{position:absolute;bottom:0;left:0;right:0;height:56px;border-top:1px solid #CFD8DC;display:flex;background:#fff}
+.bnav div{flex:1;text-align:center;font-size:10px;color:#78909C;padding-top:8px}
+.bnav .on{color:#D84315;font-weight:bold}
+.ico{display:block;width:20px;height:20px;border-radius:5px;background:#CFD8DC;margin:0 auto 3px}
+.bnav .on .ico{background:#D84315}
+.qr{width:150px;height:150px;margin:8px auto;background:repeating-linear-gradient(45deg,#263238 0 6px,#fff 6px 12px),#fff;border:6px solid #fff;outline:1px solid #B0BEC5}
+.sheet{position:absolute;left:0;right:0;bottom:0;background:#fff;border-radius:18px 18px 0 0;box-shadow:0 -4px 18px rgba(0,0,0,.25);padding:14px}
+.dim{position:absolute;inset:70px 0 0 0;background:rgba(0,0,0,.35)}
+.handle{width:40px;height:4px;background:#CFD8DC;border-radius:2px;margin:0 auto 10px}
+.tl{border-left:2px solid #CFD8DC;margin-left:6px;padding-left:12px}
+.tl div{position:relative;margin:7px 0}
+.tl div:before{content:"";position:absolute;left:-18px;top:2px;width:10px;height:10px;border-radius:50%;background:#CFD8DC}
+.tl .done:before{background:#2E7D32}.tl .now:before{background:#D84315}
+.map{height:120px;border-radius:10px;background:linear-gradient(135deg,#E3F2FD,#E8F5E9);position:relative;border:1px solid #CFD8DC}
+.badge{display:inline-block;border-radius:10px;padding:1px 8px;font-size:10px;font-weight:bold}
+.b-o{background:#FFF3E0;color:#E65100}.b-g{background:#E8F5E9;color:#2E7D32}.b-r{background:#FFEBEE;color:#C62828}.b-b{background:#E3F2FD;color:#1565C0}
+.stat{border-radius:10px;background:#FBE9E7;padding:8px;text-align:center}
+.stat b{font-size:18px;color:#D84315;display:block}
+.bubble{border-radius:12px;padding:8px 10px;margin:6px 0;max-width:85%}
+.me{background:#D84315;color:#fff;margin-left:auto}
+.bot{background:#ECEFF1}
+.cite{font-size:10px;color:#1565C0;margin-top:4px}
+/* browser */
+.browser{width:1180px;height:700px;margin:20px;border:1px solid #90A4AE;border-radius:8px;background:#fff;overflow:hidden}
+.bbar{height:30px;background:#CFD8DC;display:flex;align-items:center;padding:0 10px;gap:6px}
+.bbar i{width:10px;height:10px;border-radius:50%;background:#fff;display:inline-block}
+.bbar .url{flex:1;background:#fff;border-radius:4px;height:18px;font-size:11px;color:#607D8B;padding:2px 8px;margin-left:10px}
+.wrap{display:flex;height:670px}
+.side{width:210px;background:#263238;color:#B0BEC5;padding:12px 0;font-size:12px}
+.side .logo{color:#fff;font-weight:bold;font-size:16px;padding:0 16px 12px}
+.side div.it{padding:7px 16px}
+.side .on{background:#D84315;color:#fff}
+.main{flex:1;padding:16px 20px;overflow:hidden}
+.main h2{font-size:18px;margin-bottom:10px}
+table{border-collapse:collapse;width:100%;font-size:12px;margin-top:8px}
+th{background:#FBE9E7;text-align:left;padding:7px;border:1px solid #E0E0E0}
+td{padding:6px 7px;border:1px solid #E0E0E0}
+.toolbar{display:flex;gap:8px;align-items:center}
+.toolbar .in{flex:none;width:220px}
+.kiosk{width:1024px;height:600px;margin:20px;border:14px solid #212121;border-radius:12px;background:#FFF8F5;overflow:hidden;position:relative}
+.key{border:1px solid #B0BEC5;border-radius:8px;background:#fff;height:56px;display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:bold}
+</style></head><body style='width:400px;height:780px'><div class='phone'><div class='status'><span>9:41</span><span>LTE 100%</span></div><div class='appbar'><span class=back>&#8592;</span>Gửi hàng qua tủ</div><div class='body '><div class='card'><b>ORD-20261021-0042</b><span class='muted'>Đơn đã tạo — ô đang được giữ</span></div></div><div class='dim'></div><div class='sheet' style='height:580px'><div class='handle'></div><div class='muted' style='text-align:center'>LOCK.R • THANH TOÁN</div><div style='text-align:center;font-size:22px;font-weight:bold;color:#D84315;margin:6px 0'>15.000 đ</div><div class='qr'></div><div class='card'><div class='row'><span class='muted'>Ngân hàng</span><b style='text-align:right'>MB Bank</b></div><div class='row'><span class='muted'>Số tài khoản</span><b style='text-align:right'>0123456789</b></div><div class='row'><span class='muted'>Nội dung</span><b style='text-align:right'>ORD20261021 0042</b></div></div><div class='muted' style='text-align:center'>Đang chờ xác nhận chuyển khoản…</div><div class='btn'>Thanh toán bằng app ngân hàng</div><div class='btn3'>Ở lại thanh toán sau</div></div></div></body></html>
