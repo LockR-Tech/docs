@@ -1,5 +1,7 @@
 # L1 — Giao hàng bằng drone → mã PIN → nhận hàng
 
+> Trang chủ mobile (local 24/10/2026): poster `assets/images/poster_drone_delivery.png` thay banner chào và thẻ drone riêng. Chạm poster gọi `showDroneLockerPicker` để chọn tủ nhận rồi mở `drone_booking`; không đổi nghiệp vụ đặt đơn (`mobile/lib/features/home/presentation/pages/home_page.dart`, nhánh `feat/f1-home-drone-poster`).
+
 > Sự cố rơi kiện trong chuyến bay được đặc tả riêng tại [Drone Parcel Drop Incident](../01-overview/drone-parcel-drop-incidents.md). Luồng này dừng order/mission ở `DROP_REPORTED`, tạo phiếu kiểm tra drone + nhiệm vụ thu hồi kiện và chỉ tiếp tục giao lại sau khi evidence, Hub handover và phương án khách hàng đều hợp lệ.
 
 | Tiến độ | Rà soát | Sơ đồ |
@@ -152,3 +154,5 @@ Còn hở sau rà soát này: xác nhận bỏ kiện và trả kiện là bấm
 | **F1-G09** | Người nhận khác người đặt; PIN trong push hoặc SMS | `CreateDroneDeliveryOrderRequest.java`, luồng thay simulator | F1.07 |
 | **F1-G10** | Web admin: ~~màn hình đơn drone + mission~~ **đã làm (local, chưa merge)** — `/admin/drone-orders`, gateway thêm route `/api/admin/drone-orders/**` → order-service; ~~sửa đổi trạng thái drone (claim hoặc route admin)~~ đã làm ở backend #24 | `FE/pages/Admin/drones/`, `FE/types/admin/enums.ts`, `LS/controller/LockerController.java` | F1.03 |
 | **F1-G11** | Xoá luồng cũ `DroneDeliveryRequest` và mock `DroneDeliveryStore` / `drone_tracking_page.dart` | `LS/service/DroneDeliveryService.java`, `DroneDeliveryController.java`, `M/features/drone_delivery/data/` | — (dọn nợ) |
+| **F1-G12** | Tìm điểm lấy hàng ưu tiên kết quả trong vùng TP.HCM; hiển thị tọa độ từng kết quả và nhắc kiểm tra ghim. Phân biệt lỗi nhà → tủ gửi với quãng đường bay tủ gửi → tủ nhận | `M/features/drone_delivery/infrastructure/services/pickup_geocoder.dart`, `M/features/drone_delivery/presentation/pages/pickup_location_picker_page.dart`, `M/features/locker_ops/data/locker_ops_service.dart` | Đã sửa local trên `fix/f1-g12-pickup-location-search`; widget/geocoder tests và `flutter analyze` qua |
+| **F1-G13** | Khôi phục email mốc drone tới người gửi/người nhận; HTML responsive nhận diện Lock.R, logo nhúng CID, nội dung có thông tin đơn và escape dữ liệu. Điều tra lỗi gửi qua log production (`No fallback available`), tăng timeout/ngưỡng circuit riêng cho notification-service và log đầy đủ exception ở order-service | `OS/service/DroneDeliveryMailer.java`, `OS/service/DroneDeliveryEmailTemplate.java`, `order-service/application.yml`, `NS/channel/GuestEmailSender.java`, `NS/channel/LockREmailTemplate.java` | Đã sửa local trên `feat/f1-g13-branded-drone-email`; test template/MIME đã viết, chưa chạy do Maven chưa có trên máy; cần deploy và xác minh gửi thật |

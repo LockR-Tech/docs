@@ -1,10 +1,16 @@
 # Changelog
 
+## 2026-10-24
+
+- F1 (mobile, local): thay banner chào trang chủ bằng poster giao hàng bằng drone do người dùng cung cấp; chạm poster mở luồng chọn tủ nhận/đặt đơn; bỏ thẻ gửi drone riêng bên dưới.
+
 Mỗi thay đổi ở repo docs thêm **một dòng** vào ngày tương ứng (mới nhất ở trên). Ghi mã gap/SEC/ADR nếu có.
 
 ## 2026-10-13
 
 - F1-G11: tách tài khoản nhận SePay theo loại đơn — `DRONE_DELIVERY` dùng bộ `SEPAY_DRONE_*`; đơn gửi/thuê tủ và nạp ví giữ `SEPAY_BANK_*`; bổ sung yêu cầu liên kết cả hai tài khoản trong SePay Dashboard để webhook tự xác nhận.
+- F2-G03 (backend #73): SMS mã mở tủ qua eSMS.vn (hoặc Twilio), thông báo gửi/nhận hàng tiếng Việt — cau-hinh-dich-vu-ngoai § 5.
+- F2-G06 (backend #71, mobile #69): trang chi tiết đơn hàng chờ nhận / ủy quyền (người gửi, người nhận, tủ & ô, kiện hàng, mốc thời gian, drone, sự cố) và bổ sung chi tiết "Đơn của tôi" — flow-2 F2-G06.
 - F4.09 · F4.10 (backend #68): trợ lý trả lời theo đơn hàng thật của người hỏi, hiểu tiếng Việt không dấu — flow-4 thêm 2 hạng mục (L4 giữ 100 %), F4-G10 thêm việc ghi dữ liệu đơn vào chính sách quyền riêng tư, ghi chú hạn mức Voyage; architecture: assistant-service gọi order-service/locker-service.
 - F4.01 · F4.08: thêm `01-overview/tom-tat-luong-nghiep-vu.md` (19 luồng, từng bước ai làm gì) và nạp vào kho tri thức cho KTV/admin; flow-4 § 4 ghi lần nạp lại 13/10 (11 tài liệu).
 - F2-G03 · F2.06 (mobile #67): người gửi chia sẻ mã lấy hàng cho người nhận từ app trong lúc chưa có SMS — flow-2 F2.06 thêm bằng chứng, F2-G03 ghi cách tạm thời. Firebase chuyển sang project `lockr-drone-delivery` (§ 11c, STATUS § 4 mục 3; mobile #64–#66, iot #17).
