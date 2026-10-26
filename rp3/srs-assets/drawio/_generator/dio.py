@@ -63,9 +63,13 @@ def render(drawio_path, png_path, bounds, scale=1.5, margin=30):
 <body><div class="mxgraph" style="width:{w}px" data-mxgraph="{html.escape(json.dumps(cfg), quote=True)}"></div>
 <script>window.DRAWIO_BASE_URL='https://app.diagrams.net';</script>
 <script src="file:///{HERE.replace(os.sep, '/')}/viewer-static.min.js"></script></body></html>"""
-    hp = os.path.join(HERE, "_render.html")
+    # one page per diagram: parallel renders must not overwrite each other's page
+    hp = os.path.join(HERE, "_render_" + os.path.splitext(os.path.basename(png_path))[0] + ".html")
     open(hp, "w", encoding="utf-8").write(page)
-    subprocess.run([CHROME, "--headless=new", "--disable-gpu", "--hide-scrollbars", "--allow-file-access-from-files",
-                    f"--force-device-scale-factor={scale}", f"--window-size={w},{h}", "--virtual-time-budget=20000",
-                    f"--screenshot={png_path}", "file:///" + hp.replace(os.sep, "/")],
-                   check=True, capture_output=True, timeout=180)
+    try:
+        subprocess.run([CHROME, "--headless=new", "--disable-gpu", "--hide-scrollbars", "--allow-file-access-from-files",
+                        f"--force-device-scale-factor={scale}", f"--window-size={w},{h}", "--virtual-time-budget=20000",
+                        f"--screenshot={png_path}", "file:///" + hp.replace(os.sep, "/")],
+                       check=True, capture_output=True, timeout=180)
+    finally:
+        os.remove(hp)

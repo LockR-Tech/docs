@@ -2,6 +2,10 @@
 
 Mỗi thay đổi ở repo docs thêm **một dòng** vào ngày tương ứng (mới nhất ở trên). Ghi mã gap/SEC/ADR nếu có.
 
+## 2026-10-26
+
+- SRS (docs `docs/srs-report3-hoan-thien`): hoàn thiện `rp3/Report3_Software Requirement Specification_LockR.docx` theo bố cục báo cáo mẫu — sơ đồ draw.io mới, ảnh chụp mobile thật cho khách hàng / KTV tủ / KTV drone, mô tả chức năng theo từng màn hình, bảng entity đủ 61 bảng; ảnh admin web và kiosk bổ sung sau. Sửa ảnh ERD logic 1/4 và 2/4 bị xuất nhầm trang và lỗi xuất song song trong `_generator/dio.py`.
+
 ## 2026-10-25
 
 - SRS (docs `docs/srs-drawio-diagrams`): bộ sơ đồ draw.io cho báo cáo SRS trong [rp3/srs-assets/drawio/](rp3/srs-assets/drawio/) — context, use case, screen flow (khách hàng, KTV tủ, KTV drone, admin web), ERD khái niệm, ERD logic 4 trang + 1 trang tổng đủ mọi cột; ký hiệu `|` / `o|` theo FK NOT NULL / nullable thật; script sinh lại trong `_generator/`.
