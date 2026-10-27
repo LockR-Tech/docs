@@ -2,3 +2,8 @@ node_modules/
 diagrams/.build/
 .DS_Store
 Thumbs.db
+
+# Báo cáo mẫu của nhóm khác (chỉ để tham khảo, không đưa lên repo công khai)
+rp3/Copy of *.docx
+# File khoá tạm của Word khi đang mở tài liệu
+~$*
