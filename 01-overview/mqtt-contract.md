@@ -6,7 +6,7 @@ Nguồn sự thật cho mọi topic và payload giữa **iot-service** (backend)
 - iot: `tests/test_mqtt_contract.py` ([iot#9](https://github.com/LockR-Tech/iot/pull/9))
 - giao diện gán thiết bị: [frontend#22](https://github.com/LockR-Tech/frontend/pull/22)
 
-Phiên bản hợp đồng: **1.3** (2026-10-24) — nhật ký điều khiển `cabinet/{lockerId}/event/control` (§ 2.2, § 4). Bản 1.2 (2026-10-24): cờ `lid` trên lệnh mở/đóng ô (§ 2.1). Bản 1.1 (2026-10-12): lệnh khởi động lại bộ điều khiển (§ 2.1, § 2.2). Bản 1: 2026-09-27.
+Phiên bản hợp đồng: **1.4** (2026-10-27) — lệnh cấu hình phần cứng `cabinet/{lockerId}/command/hw-config`, `panel.hardware` (§ 2.1). Bản 1.3 (2026-10-24): nhật ký điều khiển `cabinet/{lockerId}/event/control` (§ 2.2, § 4). Bản 1.2 (2026-10-24): cờ `lid` trên lệnh mở/đóng ô (§ 2.1). Bản 1.1 (2026-10-12): lệnh khởi động lại bộ điều khiển (§ 2.1, § 2.2). Bản 1: 2026-09-27.
 
 ## 1. Định danh
 
@@ -68,6 +68,25 @@ Pi đổi `slotIndex` ra chân phần cứng: `GPIO_RELAY_PINS[slotIndex]` và `
 - Pi trả `cabinet/{lockerId}/command/{lid|lid-jog|lid-tune|panel}/result` cùng `commandId`. **Lệnh chạy nắp (lid, lid-jog) trả `ACCEPTED` ngay** (không chờ động cơ quay xong) — trang web poll `panel` mỗi 4 giây để xem trạng thái; `lid-tune` trả `SUCCESS` kèm `config`; `panel` trả `SUCCESS` kèm `lids` (mỗi trục: `axis`, `enabled`, `status`). Lỗi ⇒ `FAILED` kèm `errorCode` (`AXIS_DISABLED`, `BAD_ACTION`, `LID_BUSY`, `TOO_MANY_REVS`, `TUNE_REJECTED`, …) + `errorMessage`.
 - `axis` 1 = trục nắp thứ nhất, 2 = trục thứ hai (chỉ khi `LID2_ENABLED=true`). Mở ô dùng lại lệnh `open` ở trên.
 - Không cần đổi ACL: Pi đã đọc `cabinet/{lockerId}/command/#` và ghi `cabinet/{lockerId}/command/+/result`; `iot-service` đã subscribe `cabinet/+/command/+/result`.
+
+**Cấu hình phần cứng** — `cabinet/{lockerId}/command/hw-config` (ADMIN bấm "Áp dụng xuống tủ" ở tab *Cấu hình phần cứng* của trang Điều khiển tủ)
+
+```json
+{ "commandId": "…", "config": {
+  "relayPins": [5, 6, 13, 19, 26, 22, 23], "relayActiveHigh": true, "unlockMs": 1000,
+  "doorPins": [4, 12, 16, 20, 21, 24, 25], "doorClosedLow": true, "requireDoorSensor": false,
+  "lidBypassPhysicalMotion": false,
+  "lids": [
+    { "axis": 1, "enabled": true,  "pulPin": 18, "dirPin": 27, "homePin": 17, "endPin": 10, "openDirHigh": true, "limitActiveLow": true, "boxes": [3] },
+    { "axis": 2, "enabled": false, "pulPin": 9,  "dirPin": 11, "homePin": 7,  "endPin": 8,  "openDirHigh": true, "limitActiveLow": true, "boxes": [2] } ] } }
+```
+
+- Chân là số **GPIO (BCM)**; phần tử thứ *i* của `relayPins` / `doorPins` là ô *i+1*. Ánh xạ sang `.env`: `GPIO_RELAY_PINS`, `GPIO_RELAY_ACTIVE_HIGH`, `UNLOCK_PULSE_MS`, `GPIO_DOOR_PINS`, `GPIO_DOOR_CLOSED_LOW`, `REQUIRE_DOOR_SENSOR`, `LID_BYPASS_PHYSICAL_MOTION`, `LID_*` / `LID2_*` (`ENABLED`, `PUL_PIN`, `DIR_PIN`, `HOME_PIN`, `END_PIN`, `OPEN_DIR_HIGH`, `LIMIT_ACTIVE_LOW`), `LID1_BOXES` / `LID2_BOXES`.
+- Luật hợp lệ (giống nhau ở `iot/config/hardware_config.py` và `iot-service` `HardwareConfigValidator`): chỉ GPIO2–27; mỗi chân một việc (relay, cảm biến, chân của trục **đang bật**); số chân relay = số chân cảm biến (1–16); `unlockMs` 100–10000; ô dưới nắp có trong tủ và không thuộc cả hai trục.
+- Pi kiểm tra ⇒ ghi `config/hardware_config.json` (bản trước giữ ở `.bak`) ⇒ đổi `open_dir_high`/`limit_active_low` trong `lid_tuning.json` theo ⇒ nếu đổi chân relay thì chạy `sudo -n python3 scripts/boot_relay_pins.py <chân>` để sửa dòng `gpio=…=op,dl` trong `config.txt` và `ExecStopPost` của `lockr-controller` ⇒ trả `cabinet/{lockerId}/command/hw-config/result` `{commandId, status: ACCEPTED, config, warnings[]}` (chờ broker xác nhận) ⇒ thoát mã 75 để systemd chạy lại. Lúc khởi động, `config/settings.py` đè file này lên `.env`; file hỏng hoặc sai luật ⇒ bỏ cả file, chạy theo `.env`.
+- Sai luật ⇒ `FAILED` `errorCode: INVALID_CONFIG` kèm `errors[]`, không đổi gì. Không cập nhật được dòng an toàn lúc khởi động ⇒ vẫn `ACCEPTED`, kèm cảnh báo trong `warnings`.
+- `panel` trả thêm `hardware` = cấu hình đang chạy (cùng định dạng) để trang so với bản đã lưu.
+- iot-service lưu cấu hình theo tủ ở `iot_schema.cabinet_hardware_configs` (Flyway V9; kèm `wiring` = sơ đồ đấu dây chỉ để tra cứu). API: `GET` / `PUT /api/locker-technician/cabinet/{lockerId}/hardware`, `POST …/hardware/apply` — xem: ADMIN và KTV phụ trách tủ; lưu và áp dụng: **chỉ ADMIN**. Tủ chưa lưu ⇒ trả mẫu TU01 (`defaultTemplate: true`). Mỗi lần áp dụng ghi một dòng nhật ký `HW_CONFIG` (§ 2.2).
 
 ### 2.2 Tủ → backend
 
