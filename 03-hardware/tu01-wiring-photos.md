@@ -202,6 +202,8 @@ Công tắc chọn điện áp phải ở **220 V**. Không vặn biến trở `
 
 **Từ 2026-10-27, sửa bản đồ chân ngay trên Pi** (bảng `/service` → tab **Cấu hình**: sửa rồi Lưu, không cần admin web hay Internet) **hoặc trên admin web** (Điều khiển tủ → tab *Cấu hình phần cứng*, chỉ ADMIN): chọn chân cho relay, cảm biến, hai trục nắp rồi Lưu → Áp dụng xuống tủ; Pi lưu `config/hardware_config.json` (đè `.env`), tự cập nhật dòng `gpio=` và `ExecStopPost` khi đổi chân relay, rồi khởi động lại bộ điều khiển. Tab cũng có bảng *Sơ đồ đấu dây* (mẫu sẵn theo tài liệu này) để ghi chép khi lần dây. Hợp đồng: [mqtt-contract § 2.1](../01-overview/mqtt-contract.md). `.env` bên dưới vẫn là giá trị dùng khi chưa áp dụng cấu hình nào từ web.
 
+Tab **Cấu hình** trên Pi còn có mục **Kết nối máy chủ** (mã tủ, broker/cổng/TLS/tài khoản/mật khẩu MQTT, địa chỉ backend) và **Nâng cao** (GPIO hay RS485, thời gian chờ cửa, mức xung PUL/DIR, Bluetooth) — lưu chung nút Lưu vào khoá `system` của `hardware_config.json`, đè `.env`, đổi thì bộ điều khiển khởi động lại; mật khẩu không hiện lại trên trang (để trống = giữ nguyên). Các mục này chỉ sửa trên Pi, admin web không đẩy xuống. Khung **Wi-Fi** ở cuối tab: xem/quét/thêm/xoá mạng, đặt ưu tiên; *Chuyển ngay* thử mạng mới khoảng 1 phút, không có IP hoặc không tới được gateway thì tự quay về mạng cũ.
+
 Bản đồ chân của người làm tủ khác mặc định trong `iot/config/settings.py`, nên `~/iot/.env` của Pi `lockr-tu01` đặt (đã áp dụng 2026-10-01, `main.py` báo `System is READY`):
 
 ```
