@@ -168,7 +168,7 @@ Phần mềm: trục 2 bật bằng `LID2_ENABLED=true` (§ 9); chân mặc đ�
 
 ### 6.3 Bảng đấu dây thực tế (chủ tủ ghi tay, 2026-10-27)
 
-Tên dây là nhãn dán trên từng sợi. Bảng đầy đủ nằm sẵn trong tab **Cấu hình** của bảng `/service` trên Pi và tab *Cấu hình phần cứng* trên admin (sửa, thêm, xoá, đổi thứ tự được).
+Tên dây là nhãn dán trên từng sợi. Bảng đầy đủ nằm sẵn trong tab **Cấu hình** của bảng `/service` trên Pi (*Bảng đấu nối*: mỗi dây có chân Pi và vai trò — relay ô N, cảm biến ô N, nguồn relay DC+, mát relay DC−, mát cảm biến, PUL+/DIR+/PUL−/DIR−, công tắc…; vai trò bắt buộc đúng loại chân; dòng tín hiệu đổi chân là đổi cấu hình chạy) và tab *Cấu hình phần cứng* trên admin. Sửa, thêm, xoá, đổi thứ tự được.
 
 | Nhóm | Chân Pi → nơi nối (tên dây) |
 |---|---|
