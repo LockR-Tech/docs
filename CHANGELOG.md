@@ -2,6 +2,10 @@
 
 Mỗi thay đổi ở repo docs thêm **một dòng** vào ngày tương ứng (mới nhất ở trên). Ghi mã gap/SEC/ADR nếu có.
 
+## 2026-10-27
+
+- Report 2 (docs `docs/report2-ke-hoach-du-an`): viết lại `rp2/Report2_Project_Management_Plan.docx` theo bố cục phần II của báo cáo mẫu — WBS theo giai đoạn (251 man-days), mục tiêu theo số lỗi từng giai đoạn kiểm thử, 18 rủi ro, quy trình Agile sprint 1 tuần, kế hoạch đào tạo, 9 sản phẩm bàn giao theo tuần, bảng phân công D/R/S/I có 2 giảng viên hướng dẫn, kế hoạch giao tiếp, quản lý cấu hình. `.gitignore` bỏ qua file báo cáo mẫu của nhóm khác (`rp3/Copy of *.docx`) và file khoá tạm của Word (`~$*`).
+
 ## 2026-10-26
 
 - SRS (docs `docs/srs-anh-admin-kiosk`): chèn ảnh chụp thật admin web (3.6.1–3.6.11) và kiosk (3.5.1–3.5.2) vào `rp3/Report3_Software Requirement Specification_LockR.docx`, thêm ảnh thử mở ô qua Bluetooth (3.2.34) và thay ảnh điểm thưởng theo quy tắc tích 10 % (3.2.28); ảnh gốc trong `rp3/srs-assets/admin-web/`, `kiosk/`, `mobile-customer/c33*` (email, SĐT, số tài khoản, mã VietQR đã che). Sửa mô tả cho khớp màn hình: kiosk nhận hàng chỉ có ô nhập mã + 'Mở khóa' và báo nộp phí quá hạn trên app (không có VietQR), kiosk đăng nhập thêm tab số điện thoại, nút 'Gán vào tủ' / 'Cho tài khoản thử', tab 'Yêu cầu rút tiền' ở trang Thanh toán, nút 'Khôi phục mặc định'. 3.4.1 vẫn chờ ảnh (KTV drone chưa nhận được việc).
