@@ -2,6 +2,10 @@
 
 Mỗi thay đổi ở repo docs thêm **một dòng** vào ngày tương ứng (mới nhất ở trên). Ghi mã gap/SEC/ADR nếu có.
 
+## 2026-10-24
+
+- F2-G09: thêm bàn giao [Bluetooth tủ CAB-TU01](handoff/2026-10-24-bluetooth-tu-cab-tu01.md) — Pi phát BLE nhưng quảng bá không có tên `LOCKR_CAB-TU01` nên app/web không nhận ra tủ; nguyên nhân, thay đổi chưa commit ở iot/frontend, việc còn lại. Không đổi %.
+
 ## 2026-10-09
 
 - F1-G04 · F1-G06 (đã đẩy lên nhánh, chưa merge `main`): rà soát rule nghiệp vụ đơn drone — báo chuyến bay thất bại, giữ hồ sơ nhiệm vụ khi huỷ, ba hạn tự huỷ (chưa trả tiền, chưa tiếp nhận, nợ phụ thu), khai báo kiện, người gửi xác nhận bỏ kiện, kiện chờ trả, khách từ chối phụ thu, tầm bay/số đơn mở/tạm dừng bay, cộng đúng tiền từng lần thanh toán. flow-1 thêm mục 2026-10-09; sơ đồ `drone-mission` thêm D10, D12.
