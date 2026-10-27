@@ -4,6 +4,7 @@ Mỗi thay đổi ở repo docs thêm **một dòng** vào ngày tương ứng (
 
 ## 2026-10-27
 
+- F3-panel (iot, backend, frontend `feat/f3-panel-cau-hinh-tren-pi`): tab **Cấu hình** trên bảng `/service` của Pi — sửa bản đồ chân và sơ đồ đấu dây (thêm, xoá, sửa, đổi thứ tự) rồi Lưu ngay trên Pi, không cần admin web; bảng đấu dây mẫu theo bảng tay của chủ tủ (có tên dây). tu01-wiring-photos § 6.3 (bảng thực tế, driver 2), § 8 hết câu hỏi 4–5; mqtt-contract § 2.1.
 - F3-panel (iot, backend, frontend `feat/f3-panel-cau-hinh-phan-cung-tu`): tab *Cấu hình phần cứng* trên trang Điều khiển tủ — sửa bản đồ chân (relay, cảm biến cửa, hai trục nắp, nắp trên ô nào, mức kích, thời gian kích) và sơ đồ đấu dây ngay trên admin, Lưu → Áp dụng ⇒ lệnh MQTT `hw-config`, Pi lưu `config/hardware_config.json` đè `.env` rồi khởi động lại, không cần sửa code; so với cấu hình đang chạy (`panel.hardware`). Chỉ ADMIN sửa/áp dụng. Bảng mới `iot_schema.cabinet_hardware_configs` (Flyway V9); mqtt-contract lên 1.4 (§ 2.1); tu01-wiring-photos § 9.
 - Report 2 (docs `docs/report2-ke-hoach-du-an`): viết lại `rp2/Report2_Project_Management_Plan.docx` theo bố cục phần II của báo cáo mẫu — WBS theo giai đoạn (251 man-days), mục tiêu theo số lỗi từng giai đoạn kiểm thử, 18 rủi ro, quy trình Agile sprint 1 tuần, kế hoạch đào tạo, 9 sản phẩm bàn giao theo tuần, bảng phân công D/R/S/I có 2 giảng viên hướng dẫn, kế hoạch giao tiếp, quản lý cấu hình. `.gitignore` bỏ qua file báo cáo mẫu của nhóm khác (`rp3/Copy of *.docx`) và file khoá tạm của Word (`~$*`).
 
