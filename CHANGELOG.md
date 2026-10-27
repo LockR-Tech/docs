@@ -4,6 +4,7 @@ Mỗi thay đổi ở repo docs thêm **một dòng** vào ngày tương ứng (
 
 ## 2026-10-27
 
+- Kiosk (iot `fix/kiosk-o-nhap-ma-mo-o`): handoff 2026-10-26 § 5.2 và § 5.5a — màn nhập mã có nút 'Thử lại' và giữ mã khi chưa tra được (`ORDER_LOOKUP_UNAVAILABLE` / mất mạng), bàn phím ảo dạng số; xoá `PinScreen` không màn nào dẫn tới.
 - F3-panel (iot, backend, frontend `feat/f3-panel-cau-hinh-phan-cung-tu`): tab *Cấu hình phần cứng* trên trang Điều khiển tủ — sửa bản đồ chân (relay, cảm biến cửa, hai trục nắp, nắp trên ô nào, mức kích, thời gian kích) và sơ đồ đấu dây ngay trên admin, Lưu → Áp dụng ⇒ lệnh MQTT `hw-config`, Pi lưu `config/hardware_config.json` đè `.env` rồi khởi động lại, không cần sửa code; so với cấu hình đang chạy (`panel.hardware`). Chỉ ADMIN sửa/áp dụng. Bảng mới `iot_schema.cabinet_hardware_configs` (Flyway V9); mqtt-contract lên 1.4 (§ 2.1); tu01-wiring-photos § 9.
 - Report 2 (docs `docs/report2-ke-hoach-du-an`): viết lại `rp2/Report2_Project_Management_Plan.docx` theo bố cục phần II của báo cáo mẫu — WBS theo giai đoạn (251 man-days), mục tiêu theo số lỗi từng giai đoạn kiểm thử, 18 rủi ro, quy trình Agile sprint 1 tuần, kế hoạch đào tạo, 9 sản phẩm bàn giao theo tuần, bảng phân công D/R/S/I có 2 giảng viên hướng dẫn, kế hoạch giao tiếp, quản lý cấu hình. `.gitignore` bỏ qua file báo cáo mẫu của nhóm khác (`rp3/Copy of *.docx`) và file khoá tạm của Word (`~$*`).
 
