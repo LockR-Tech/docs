@@ -85,7 +85,7 @@ Chỉ áp dụng cho mission đang bay của đơn **STANDARD** có `drone_code 
 | APPROACHING → ARRIVED | `landedState = ON_GROUND` và cách tủ nhận ≤ `arrival-radius-m` (30 m) |
 | ARRIVED → hàng vào ô | **không tự động** — điều phối viên xác nhận (`POST …/advance`); telemetry không biết kiện đã vào ô |
 
-Tuyến ngắn thì ngưỡng co theo chiều dài tuyến. Tủ thiếu toạ độ hoặc GPS chưa khoá ⇒ chỉ chặng cất cánh tự đẩy; điều phối viên vẫn xác nhận tay được mọi chặng khi mất tín hiệu. Mỗi lần đẩy ghi nhật ký hành trình "Telemetry drone {mã}: …".
+Ba ngưỡng khoảng cách là quy tắc nghiệp vụ admin chỉnh ở nhóm "Kết nối tủ & định vị drone" (`app.drone.telemetry.*`, mặc định như bảng). Tuyến ngắn thì ngưỡng co theo chiều dài tuyến. Tủ thiếu toạ độ hoặc GPS chưa khoá ⇒ chỉ chặng cất cánh tự đẩy; điều phối viên vẫn xác nhận tay được mọi chặng khi mất tín hiệu. Mỗi lần đẩy ghi nhật ký hành trình "Telemetry drone {mã}: …".
 
 Ngoài ra: vị trí thật phát lên STOMP tối đa 1 lần/giây (ETA = quãng còn lại ÷ tốc độ đo được); pin thật đồng bộ về `drone_units.battery_percent` khi đổi, tối đa 30 giây/lần; read model trả `liveTracking` để app chỉ mời xem bản đồ khi có tín hiệu.
 
