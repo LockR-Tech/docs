@@ -2,6 +2,10 @@
 
 Mỗi thay đổi ở repo docs thêm **một dòng** vào ngày tương ứng (mới nhất ở trên). Ghi mã gap/SEC/ADR nếu có.
 
+## 2026-10-28
+
+- F1-G13 (backend, frontend `feat/f1-g13-dieu-khien-bay-thoi-tiet`, mobile `feat/f1-g13-rut-tien-toi-thieu`): điều khiển bay theo thời tiết — ngưỡng thời tiết lên admin (thêm lượng mưa tối đa, mã mưa/dông, khoảng dự báo, chặn khi thiếu dữ liệu), dừng bay từng trạm, lịch sử chặn bay, trang admin `/admin/flight-control`; luật viết cứng khác lên admin (pin quay về, mời lại KTV, lệnh nắp, telemetry, rút tiền tối thiểu, QR kiosk, 2FA admin, mã BLE, vị trí KTV). Ghi vào flow-1 (cập nhật 2026-10-28, gap F1-G13), architecture (route gateway), drone-telemetry-contract, tom-tat-luong-nghiep-vu, STATUS § 3.
+
 ## 2026-10-27
 
 - F3-panel (iot, backend, frontend `feat/f3-panel-cau-hinh-tren-pi`): tab **Cấu hình** trên bảng `/service` của Pi — sửa bản đồ chân và sơ đồ đấu dây (thêm, xoá, sửa, đổi thứ tự) rồi Lưu ngay trên Pi, không cần admin web; bảng đấu dây mẫu theo bảng tay của chủ tủ (có tên dây). Thêm mục Kết nối máy chủ (mã tủ, MQTT, backend), Nâng cao (GPIO/RS485, chờ cửa, mức xung, Bluetooth) và Wi-Fi (thêm/xoá/ưu tiên, chuyển ngay có tự quay về). tu01-wiring-photos § 6.3 (bảng thực tế, driver 2), § 8 hết câu hỏi 4–5, § 9; pi-lockr-tu01 (mạng); mqtt-contract § 2.1.
