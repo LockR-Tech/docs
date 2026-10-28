@@ -89,7 +89,7 @@ Ngoại lệ:
 4. **KTV drone** (app, tab Điều phối) — "Tiếp nhận": chọn drone rảnh, đủ pin ở tủ gửi → nhiệm vụ được tạo. Quá hạn không ai nhận → tự huỷ + hoàn tiền.
 5. **KTV drone** — "Xác nhận nạp": cân kiện thực tế, mã niêm phong do hệ thống cấp, tick 3 mục kiểm tra.
    - Cân lệch quá 50 g so với khai báo → hệ thống tính lại phí → **khách** "Trả thêm phí chênh" hoặc "Không đồng ý" (huỷ, hoàn tiền, trả kiện).
-6. **KTV drone** — "Phóng" (trong khung giờ bay, không bị admin tạm dừng bay).
+6. **KTV drone** — "Phóng" (trong khung giờ bay, thời tiết dưới ngưỡng, không bị admin tạm dừng bay toàn hệ thống hay ở trạm cất cánh / tủ nhận).
 7. **Hệ thống** — chặng bay: Đang cất cánh → Đã rời trạm → Đang bay → Sắp tới → Đã đến. Đơn **DEMO** tự chạy chặng; đơn **thật** đi theo telemetry của drone hoặc KTV xác nhận từng chặng. **Khách** theo dõi timeline + bản đồ.
 8. **Hệ thống** — kiện vào ô drone ở tủ nhận → `READY_FOR_PICKUP`, gửi PIN cho người nhận (email / app).
 9. **Người nhận** — mở ô bằng PIN tại kiosk → lấy hàng → **khách** xác nhận "Tôi đã lấy đồ — hoàn tất" trên app → đơn `COMPLETED`.
@@ -203,5 +203,6 @@ Phụ:
 ## 19. Cấu hình và job định kỳ (admin)
 
 1. **Admin** (web, Cấu hình nghiệp vụ) — giá dịch vụ, phương thức thanh toán, hạn lấy / thời gian ân hạn, giới hạn drone (tầm bay, khung giờ, tạm dừng bay), số lần gia hạn SLA… → áp dụng ngay.
+   - **Admin** (web, **Thời tiết & bay** `/admin/flight-control`) — xem thời tiết từng trạm, tạm dừng bay toàn hệ thống hoặc **từng trạm** (lý do, ghi chú, giờ tự mở lại), chỉnh ngưỡng thời tiết (gió, gió giật, tầm nhìn, lượng mưa, mưa/dông, khoảng dự báo), xem **lịch sử chặn bay** (đơn nào bị chặn vì thời tiết hoặc lệnh dừng, ở bước nào, lúc nào) và nhật ký dừng trạm. *(mới)*
 2. **Hệ thống** (job định kỳ, admin có thể "Chạy ngay") — tự huỷ đơn chưa thanh toán, nhắc lấy hàng, chuyển hàng quá hạn ra kho / nhả ô, đối soát ô.
 3. **Admin** — dashboard: doanh thu, đơn theo trạng thái, giờ cao điểm, tăng trưởng người dùng, top địa điểm.

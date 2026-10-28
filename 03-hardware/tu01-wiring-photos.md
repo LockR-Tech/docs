@@ -166,6 +166,20 @@ Khoang điện chỉ có một TB6600 (trục 1); một driver không chạy đ�
 
 Phần mềm: trục 2 bật bằng `LID2_ENABLED=true` (§ 9); chân mặc định trong code khớp bảng trên. Hướng dẫn có hình: bước 5B của trang hướng dẫn nối dây (bản 2, 2026-10-06).
 
+### 6.3 Bảng đấu dây thực tế (chủ tủ ghi tay, 2026-10-27)
+
+Tên dây là nhãn dán trên từng sợi. Bảng đầy đủ nằm sẵn trong tab **Cấu hình** của bảng `/service` trên Pi (*Bảng đấu nối*: mỗi dây có chân Pi và vai trò — relay ô N, cảm biến ô N, nguồn relay DC+, mát relay DC−, mát cảm biến, PUL+/DIR+/PUL−/DIR−, công tắc…; vai trò bắt buộc đúng loại chân; dòng tín hiệu đổi chân là đổi cấu hình chạy) và tab *Cấu hình phần cứng* trên admin. Sửa, thêm, xoá, đổi thứ tự được.
+
+| Nhóm | Chân Pi → nơi nối (tên dây) |
+|---|---|
+| Relay | 6 → `DC−` (XD1N3) · 2 → `DC+` (Đ1N3) · 29, 31, 33, 35, 37, 15, 16 → `IN1`…`IN7` (C3N3, XĐ1N3, C5N3, C6N3, C1N3, C2N3, C4N3) |
+| Domino 1 | 25 → cọc 1 GND (V2) · 7, 32, 36, 38, 40, 18 → cọc 2, 4, 6, 8, 10, 12 (V3, V1, V6, V5, V4, C1N1) — cửa ô 1–6 |
+| Domino 2 | 1 → cọc 4 `PUL+` (XL6) · 17 → cọc 6 `DIR+` (ĐN) · 12 → cọc 5 `PUL−` (XL1) · 13 → cọc 7 `DIR−` (XL4) · 22 → cọc 11 cửa ô 7 (XL2) · 30 → cọc 12 GND ô 7 (XL3) |
+
+Không có dây nào cho công tắc hành trình ⇒ GPIO17 (chân 11) đang trống; phần mềm nên dời "công tắc gốc trục 1" khỏi GPIO17 (ví dụ GPIO9) trước khi dùng chân 11 cho trục 2.
+
+**Driver 2 (nắp trục 2) theo người làm tủ:** `PUL−` → chân 11 (GPIO17), `DIR−` → chân 3 (GPIO2), `PUL+` và `DIR+` → cọc 4 domino 2 (3,3 V, chung với driver 1), `VCC`/`GND` → `+V`/`−V` nguồn tổ ong, động cơ xanh lá `A+`, đen `A−`, xanh dương `B+`, đỏ `B−`. Nối xong bật trục 2 ở tab Cấu hình (PUL GPIO17, DIR GPIO2, nằm trên ô 2) thay cho chân GPIO9/11 ở § 6.2.
+
 ## 7. Nguồn tổ ong
 
 ![Nguồn tổ ong: nhãn chọn 110/220 V và hàng cọc ra](img/tu01/07-nguon.jpg)
@@ -179,14 +193,16 @@ Công tắc chọn điện áp phải ở **220 V**. Không vặn biến trở `
 | 1 | Jumper đang ở H hay L, và K1/K2 có kêu lúc Pi khởi động không (GPIO5, GPIO6 bị kéo lên) | Đọc chữ in cạnh jumper; bước kiểm ở § 3. K1/K2 vẫn nháy lúc bật nguồn (dù đã có dòng `gpio=` ở § 9) ⇒ mắc điện trở 10 kΩ từ `IN1`, `IN2` xuống GND, hoặc hỏi người làm tủ jumper đặt mức nào |
 | 2 | Cặp nào trên domino 1 thuộc ô nào; dây nâu thứ bảy ở đâu | Thông mạch khi đóng mở từng cửa (§ 4); hỏi người làm tủ |
 | 3 | Dây tín hiệu khoá có phải tiếp điểm khô | Đo điện áp so với `−V` (§ 4) |
-| 4 | Cọc 4 hay cọc 7 của domino 2 là `PUL+` | Thông mạch từ vít driver (§ 5) |
-| 5 | Cặp dây vàng ở cọc 11–12 của domino 2 là gì | Thông mạch khi đóng mở cửa hoặc bấm công tắc (§ 5) |
+| 4 | Cọc 4 hay cọc 7 của domino 2 là `PUL+` | **Đã rõ 2026-10-27:** cọc 4 = `PUL+` (chân 1, 3,3 V), cọc 7 = `DIR−` (chân 13) — § 6.3 |
+| 5 | Cặp dây vàng ở cọc 11–12 của domino 2 là gì | **Đã rõ 2026-10-27:** cảm biến cửa ô 7 — cọc 11 → chân 22 (GPIO25), cọc 12 → chân 30 (GND) — § 6.3 |
 | 6 | Dây bốn công tắc hành trình về tới đâu; trục nào nằm trên ô nào | Lần dây từ hai ray nắp (§ 6); dán nhãn |
 | 7 | Đã có driver TB6600 thứ hai cho trục 2 chưa | Nhìn trong tủ (§ 6.2) |
 
 ## 9. Cấu hình trên Pi cho bản đồ chân này
 
-**Từ 2026-10-27, sửa bản đồ chân trên admin web** (Điều khiển tủ → tab *Cấu hình phần cứng*, chỉ ADMIN): chọn chân cho relay, cảm biến, hai trục nắp rồi Lưu → Áp dụng xuống tủ; Pi lưu `config/hardware_config.json` (đè `.env`), tự cập nhật dòng `gpio=` và `ExecStopPost` khi đổi chân relay, rồi khởi động lại bộ điều khiển. Tab cũng có bảng *Sơ đồ đấu dây* (mẫu sẵn theo tài liệu này) để ghi chép khi lần dây. Hợp đồng: [mqtt-contract § 2.1](../01-overview/mqtt-contract.md). `.env` bên dưới vẫn là giá trị dùng khi chưa áp dụng cấu hình nào từ web.
+**Từ 2026-10-27, sửa bản đồ chân ngay trên Pi** (bảng `/service` → tab **Cấu hình**: sửa rồi Lưu, không cần admin web hay Internet) **hoặc trên admin web** (Điều khiển tủ → tab *Cấu hình phần cứng*, chỉ ADMIN): chọn chân cho relay, cảm biến, hai trục nắp rồi Lưu → Áp dụng xuống tủ; Pi lưu `config/hardware_config.json` (đè `.env`), tự cập nhật dòng `gpio=` và `ExecStopPost` khi đổi chân relay, rồi khởi động lại bộ điều khiển. Tab cũng có bảng *Sơ đồ đấu dây* (mẫu sẵn theo tài liệu này) để ghi chép khi lần dây. Hợp đồng: [mqtt-contract § 2.1](../01-overview/mqtt-contract.md). `.env` bên dưới vẫn là giá trị dùng khi chưa áp dụng cấu hình nào từ web.
+
+Tab **Cấu hình** trên Pi còn có mục **Kết nối máy chủ** (mã tủ, broker/cổng/TLS/tài khoản/mật khẩu MQTT, địa chỉ backend) và **Nâng cao** (GPIO hay RS485, thời gian chờ cửa, mức xung PUL/DIR, Bluetooth) — lưu chung nút Lưu vào khoá `system` của `hardware_config.json`, đè `.env`, đổi thì bộ điều khiển khởi động lại; mật khẩu không hiện lại trên trang (để trống = giữ nguyên). Các mục này chỉ sửa trên Pi, admin web không đẩy xuống. Khung **Wi-Fi** ở cuối tab: xem/quét/thêm/xoá mạng, đặt ưu tiên; *Chuyển ngay* thử mạng mới khoảng 1 phút, không có IP hoặc không tới được gateway thì tự quay về mạng cũ.
 
 Bản đồ chân của người làm tủ khác mặc định trong `iot/config/settings.py`, nên `~/iot/.env` của Pi `lockr-tu01` đặt (đã áp dụng 2026-10-01, `main.py` báo `System is READY`):
 

@@ -30,7 +30,7 @@ Kiểm 2026-09-27 21:12 sau khi dựng lại trên thẻ: khởi động lại �
 | User | `lockr`, `sudo` không hỏi mật khẩu |
 | Mật khẩu user, mật khẩu PostgreSQL, Wi-Fi | **Lưu ngoài git** — hỏi chủ dự án (giữ nguyên khi dựng lại trên thẻ) |
 | SSH không mật khẩu | Khoá của laptop người dựng (cloud-init `ssh_authorized_keys`) |
-| Mạng | Wi-Fi, IP DHCP. Tủ chuyển chỗ 2026-10-01: đã thêm Wi-Fi của chỗ mới (hồ sơ NetworkManager, ưu tiên tự kết nối 10; tên mạng và mật khẩu **lưu ngoài git**). Hồ sơ Wi-Fi cũ giữ lại làm dự phòng: phát một điểm truy cập trùng tên và mật khẩu cũ từ laptop hoặc điện thoại là Pi bắt được. Thêm mạng khác: `sudo nmcli device wifi connect "<tên>" password "<mật khẩu>"`. Tủ thật cần mạng riêng (LAN hoặc router 4G) |
+| Mạng | Wi-Fi, IP DHCP. Tủ chuyển chỗ 2026-10-01: đã thêm Wi-Fi của chỗ mới (hồ sơ NetworkManager, ưu tiên tự kết nối 10; tên mạng và mật khẩu **lưu ngoài git**). Hồ sơ Wi-Fi cũ giữ lại làm dự phòng: phát một điểm truy cập trùng tên và mật khẩu cũ từ laptop hoặc điện thoại là Pi bắt được. Thêm mạng khác: bảng `/service` → tab **Cấu hình** → **Wi-Fi** (lưu mạng không làm rớt mạng đang dùng; *Chuyển ngay* tự quay về mạng cũ nếu mạng mới không vào được), hoặc `sudo nmcli device wifi connect "<tên>" password "<mật khẩu>"`. Tủ thật cần mạng riêng (LAN hoặc router 4G) |
 | MAC `wlan0` / `eth0` | `2C:CF:67:DB:C5:C3` (ghim làm `MAC_ADDRESS`) / `2C:CF:67:DB:C5:C2` |
 
 ## 3. Phần cứng
