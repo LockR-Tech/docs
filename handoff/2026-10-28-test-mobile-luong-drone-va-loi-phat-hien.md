@@ -253,3 +253,83 @@ Trước khi test, TU01 **không còn ô DRONE trống**: #2 bị đơn kẹt 8P
 - Thời tiết xấu thật trên server (chỉ giả lập phía app bằng proxy); kiểm thời tiết khi drone đang bay.
 - Hết hạn 24 h lấy hàng / phí quá giờ, phụ thu bị khách từ chối, KTV "Không lấy được" / "Giao không hoàn tất".
 - Luồng trên web admin (chỉ gọi API tương ứng).
+
+## 10. Sửa lỗi sau test (28/10, nhánh `fix/f1-loi-sau-test-drone-mobile`, chưa commit)
+
+Sửa trên backend, mobile, frontend cùng tên nhánh, tạo từ `main` mới nhất (đã có g13: dừng bay theo trạm, lịch sử chặn bay, trang `/admin/flight-control`). Chưa kiểm lại trên điện thoại sau khi sửa.
+
+### 10.1 Rút lại (không phải lỗi)
+
+| Mục | Lý do |
+|---|---|
+| § 4.1 #10 trần bồi thường | `compensationCap = 0` nghĩa là **không giới hạn**, không phải trần 0đ |
+| § 4.1 #11 hai đơn giữ ô 800058 | Dữ liệu seed, không do luồng đặt đơn |
+| Thiếu phiếu kiểm tra sau "Báo chuyến bay thất bại" (§ 4.2) | Phiếu RPT-38 có tạo, giao cho KTV phụ trách drone (id 6) nên KTV khác không thấy |
+| "Mô phỏng RPi" | Chỉ ở bản debug |
+| § 4.1 #8 báo rơi kiện 409 | Server chặn đúng; chỉ app nuốt lỗi — đã sửa phần app |
+
+### 10.2 Đã sửa
+
+**Backend**
+
+| Lỗi | Sửa |
+|---|---|
+| § 4.1 #2 đơn giao lại mồ côi | Đơn giao lại về `AWAITING_DISPATCH`, không tự giữ drone / tạo mission — đi lại luồng điều phối bình thường (`OrderIncidentRedeliveryGateway`) |
+| Khách chấp nhận phương án không giao lại | Đóng đơn `CANCELED`, nhả ô, ghi lịch sử (`DroneParcelIncidentService`) |
+| § 4.1 #3 admin đăng nhập mobile không OTP | Mọi đường đăng nhập một bước (mật khẩu, Firebase, SĐT, OTP email, kiosk) từ chối tài khoản ADMIN: `403 ADMIN_AUTH_2FA_REQUIRED` |
+| § 4.1 #7 xác nhận lấy hàng ở xa | Chặn khi vị trí KTV cũ (`DRONE_PICKUP_LOCATION_STALE`) hoặc xa điểm lấy hơn ngưỡng (`DRONE_PICKUP_TOO_FAR`); cấu hình `app.order.drone-pickup-confirm-max-distance-meters` (mặc định 300 m, 0 = tắt) |
+| § 4.1 #9 giao thu hồi cho KTV bị hạn chế SLA | Bỏ KTV đang hạn chế khỏi danh sách chọn (`LockerService`) |
+| § 4.1 #12 tắt ArUco làm đơn "giao xong" giả | Bộ giả lập không đẩy chặng khi đơn có phiên giao ArUco đang dở hoặc drone thật đang gửi telemetry |
+| H6 drone cầm tay bỏ qua bước KTV | Thêm cờ `app.drone.demo.indoor-handheld-enabled` (mặc định tắt) |
+| H2 đơn kẹt ARRIVED khi mở nắp thất bại | Đơn bị gắn sự cố "Tủ nhận chưa mở được nắp trượt", báo KTV / admin / khách |
+| H3 thông báo sai "mất kết nối" | Tách 3 trường hợp: tủ báo mở nhưng không xác nhận phần cứng (`LID_UNVERIFIED`), tủ nhận lệnh mà không trả kết quả, tủ không phản hồi |
+| W1 thời tiết xấu tự nhiên không gắn sự cố đơn đã trả | Đơn chưa cất cánh gặp tuyến `UNSAFE` bị gắn sự cố `WEATHER_UNSAFE` (ghi lịch sử chặn bay) |
+| W2 không kiểm thời tiết khi đang bay | Drone đang bay mà tuyến chuyển xấu: gắn cảnh báo `WEATHER_UNSAFE` "Drone đang bay — …", báo KTV / admin / khách; không tự đóng đơn |
+| Gap g13: không tự dừng trạm theo dự báo | Job 5 phút (`DroneStationWeatherGuard`): dự báo tại trạm `UNSAFE` ⇒ tự dừng trạm (lý do Thời tiết, người thao tác = hệ thống); trời tốt ⇒ tự mở lại. Không đụng lệnh dừng do admin tạo; không phản ứng khi thiếu dữ liệu thời tiết. Cấu hình `app.drone.weather.auto-station-pause` (mặc định bật) |
+| Gap g13: trễ ~1 phút sau khi dừng / mở trạm | Soát chặn ngay sau khi admin dừng / mở trạm, không đợi lượt quét mỗi phút |
+| Gap g13: thiếu tổng hợp theo trạm | API `GET /api/admin/drone-flight-control/blocks/summary/stations?hours=24` |
+| Câu "Không thể **đặt** chuyến bay" khi phóng | Câu chung "Thời tiết không cho phép bay: …" |
+| Lý do huỷ thô "Weather" trong nhật ký | "Huỷ trước khi bay: Thời tiết xấu" |
+| "Invalid credentials", "OTP is invalid…", `faultReason` trộn Anh–Việt, "Customer completed pickup" | Việt hoá |
+| IoT: kết quả lệnh do iot-service tự gửi bị xử lý hai lần | Bỏ qua kết quả của lệnh nội bộ và trạng thái `ACCEPTED` trung gian (`LockerMqttService`) |
+
+**Mobile**
+
+| Lỗi | Sửa |
+|---|---|
+| § 4.1 #1 crash thu hồi kiện | Dispose controller sau khi sheet đóng hẳn |
+| § 4.1 #4 phụ thu sai | App tính như server: `phí(cân thật) − phí(khai báo) − phụ thu đã thu` |
+| § 4.1 #5 chuyển khoản thiếu | Sheet SePay theo dõi số còn thiếu và hiện banner |
+| § 4.1 #8 lỗi báo rơi kiện bị nuốt | Lỗi hiện ngay trong hộp thoại |
+| Thu hồi kiện: chọn ảnh thư viện, gửi thiếu ảnh không báo, pill mã thô | Chỉ chụp camera; lỗi ngay trong form; nhãn tiếng Việt |
+| Bàn giao Hub một chạm; "Admin sẽ xác minh…" sau khi đã xác minh | Hộp xác nhận; banner đúng theo trạng thái |
+| Tab "Thu hồi kiện" khuất | Banner ở tab đầu khi còn nhiệm vụ, chạm để mở tab |
+| Gap g13: Nhận / Phóng không bị khoá sẵn | Màn điều phối KTV nhớ thời tiết + lệnh dừng từng trạm (làm mới mỗi phút), khoá "Tiếp nhận" / "Phóng" và ghi lý do trên thẻ khi trạm cất cánh hoặc tủ nhận không bay được |
+| Danh sách thời tiết các tủ xếp theo tên | Trạm không bay được lên đầu; dùng cờ `safe` của server |
+| Hộp lý do chọn sẵn "Thời tiết xấu" | Không chọn sẵn (chỉ chọn sẵn lý do đang chặn đơn); bắt chọn; lỗi ngay trong hộp thoại |
+| Lấy hàng nhập sai mã mất ảnh / dấu kiểm | Gửi server ngay trong hộp thoại; sai mã thì hộp vẫn mở, giữ nguyên; lỗi gắn đúng ô; ảnh đã tải không tải lại |
+| Mở ô Bluetooth: quyền bị chặn / BT tắt | Báo đúng lý do; quyền bị chặn hẳn có nút "Mở Cài đặt"; BT tắt thì Android hỏi bật |
+| Polling layout 20 s (§ 4.4) | Chỉ tải định kỳ khi socket rớt |
+| "Service Unavailable", 403 có mã nghiệp vụ bị thay bằng câu chung | Câu HTTP tiếng Anh → câu tiếng Việt; 403 có mã thì hiện lời server (vd. admin phải đăng nhập web) |
+| Nhãn "FAILED" xanh lá | "Giao không thành công", màu đỏ; thêm nhãn `PICKUP_ASSIGNED` / `PICKED_UP` |
+| Đơn rơi kiện "dừng trước khi cất cánh", "Chưa ghi nhận yêu cầu hoàn tiền" | Câu riêng cho đơn đóng sau khi đã bay, tiền theo phương án sự cố |
+| Đơn chưa trả "đang tìm KTV" | "Đơn chưa thanh toán. Thanh toán xong hệ thống mới bắt đầu tìm KTV…" |
+| "Phí giao drone" sau trừ điểm | Phí gốc, từng khoản giảm (mã, điểm), số tiền thanh toán |
+| Ca KTV "đang bận" ngay trên lời mời | "Có N lời mời đang chờ bạn trả lời" (kèm "điều phối viên giao trực tiếp" khi chưa vào ca) |
+| Header "Quay lại" không tác dụng | Chỉ hiện khi chính trang được mở chồng; sheet / hộp thoại không còn làm nhầm |
+| Sheet quyền vị trí hiện lại sau khi đã cấp | Tự đóng khi quyền đã có (kiểm mỗi giây và khi app quay lại) |
+| Tràn 29 px / 13 px (§ 4.3) | Danh sách gợi ý co theo bàn phím; pill xuống dòng |
+| Nhãn lý do `WEATHER_UNSAFE`, `STATION_SUSPENDED`, nhãn sự cố giao lại / bồi thường | Bổ sung |
+
+**Web admin**: thẻ trạm ở `/admin/flight-control` hiện số lần chặn bay 24 giờ, đánh dấu "Hệ thống tự dừng theo dự báo", trạm không bay được lên đầu.
+
+### 10.3 Kiểm tra
+
+- Backend: auth-service 61, order-service 439 — toàn bộ pass; 37 test Postgres bỏ qua vì máy không có Docker. Test mới: `DroneStationWeatherGuardTest` (3), `DroneDeliveryBlockStationTest` (4, có ca đang bay), `AuthServiceAdminAccessTest`, `DroneDeliverySimulatorTest`, `DroneLockerCommunicationServiceTest`.
+- Mobile: `flutter analyze` các file đã sửa; test `drone_delivery_stage_test`, `sepay_payment_controller_test` cập nhật.
+
+### 10.4 Còn lại
+
+- **Phần cứng (không sửa bằng code)**: Pi tủ TU01 chạy firmware cũ — code iot trên `main` đã gửi `lidConfirmation` (`LIMIT_SWITCH` / `STEP_COUNT` / `BYPASS`), cần cập nhật code trên Pi, kiểm `LID_BYPASS_PHYSICAL_MOTION` và dây motor nắp. Pi drone cũng cần cập nhật (H4). Admin đưa DRONE-S550-07 khỏi `FAULT`.
+- Dọn dữ liệu test (§ 2, § 4.1 #13).
+- Chưa làm: lời mời đang có sự cố vẫn cho "Nhận lấy hàng"; khách chọn tủ nhận chưa thấy thời tiết trong dropdown (báo giá đã chặn trước khi bấm đặt); chuỗi thô còn lại ở § 4.3 (giờ "PM", "₫"/"đ", "1.7 km"); form đặt đơn báo lỗi từng cái; cỡ chữ lớn (§ 4.3); H5, H7, H8; một số cấu hình vẫn nằm trong code / env (gap g13).
