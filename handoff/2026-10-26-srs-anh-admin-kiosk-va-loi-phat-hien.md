@@ -87,6 +87,7 @@ Mục lục, List of Figures / Tables và Record of Changes đã được cập 
           cancel-running-future: true
   ```
   Sau deploy, thử tay: gõ sai mã hơn 10 lần trên kiosk rồi nhập một PIN đúng ⇒ ô vẫn mở.
+- **Phía kiosk** (iot `fix/kiosk-o-nhap-ma-mo-o`, chờ duyệt): gặp `ORDER_LOOKUP_UNAVAILABLE` hoặc lỗi mạng thì giữ nguyên mã, nút đổi thành 'Thử lại', thông báo màu xanh. Trước đây kiosk báo đỏ như mã sai và xoá mã sau 2 s.
 
 ### 5.3 Màn "Thử mở ô qua Bluetooth" hiện nhãn thô `OUT_OF_SERVICE`
 
@@ -120,7 +121,7 @@ Mục lục, List of Figures / Tables và Record of Changes đã được cập 
 
 | # | Vấn đề | Đề xuất |
 |---|---|---|
-| a | `PinScreen` (bàn phím nhập số ô + PIN, `KioskScreen.jsx:1633`) không còn được nối từ màn nào; nút 'Mở Tủ / Nhận Đồ' đi thẳng `StaffScreen` | Xoá code chết, hoặc nối lại nếu muốn có bàn phím cảm ứng cho màn 7" |
+| a | `PinScreen` (bàn phím nhập số ô + PIN, `KioskScreen.jsx:1633`) không còn được nối từ màn nào; nút 'Mở Tủ / Nhận Đồ' đi thẳng `StaffScreen` | **Đã sửa, chờ duyệt** (iot `fix/kiosk-o-nhap-ma-mo-o`): xoá `PinScreen`; ô nhập của `StaffScreen` đặt `inputMode="numeric"` nên bàn phím ảo hiện dạng số (khách chỉ tự gõ PIN 6 số, mã `LLQR…` do máy quét gõ) |
 | b | Kiosk không thu phụ phí quá hạn; khách phải mở app để trả | Nếu muốn đúng mô tả cũ: hiện VietQR phụ phí ngay trên kiosk (dùng lại `PaymentScreen`) khi `reasonCode = OVERTIME_FEE_UNPAID` |
 | c | Kiosk chạy local báo `[firebase] Chưa cấu hình Firebase Web app — đăng nhập bằng số điện thoại sẽ không dùng được` | Kiểm tra `VITE_FIREBASE_*` trong `ui/.env.local` của Pi production; nếu thiếu thì tab 'Số điện thoại' không dùng được |
 | d | Đặt drone trên app giờ chỉ còn "KTV đến lấy kiện tại nhà" | Cập nhật lại mô tả 3.2.x (đặt drone) nếu còn nhắc gửi tại tủ |
