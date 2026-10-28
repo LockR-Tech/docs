@@ -2,6 +2,10 @@
 
 Mỗi thay đổi ở repo docs thêm **một dòng** vào ngày tương ứng (mới nhất ở trên). Ghi mã gap/SEC/ADR nếu có.
 
+## 2026-10-29
+
+- Giao diện mobile trên máy thật (docs + mobile `fix/ui-scale-may-that`): STATUS § 3 thêm dòng việc — thu nhỏ đều giao diện trên máy hẹp hơn 411dp, giới hạn cỡ chữ hệ thống 1.1×, đóng gói font Roboto, sửa hàng chữ/card tràn ở màn khách hàng, KTV tủ, KTV drone.
+
 ## 2026-10-28
 
 - F1-G13 (backend, frontend `feat/f1-g13-dieu-khien-bay-thoi-tiet`, mobile `feat/f1-g13-rut-tien-toi-thieu`): điều khiển bay theo thời tiết — ngưỡng thời tiết lên admin (thêm lượng mưa tối đa, mã mưa/dông, khoảng dự báo, chặn khi thiếu dữ liệu), dừng bay từng trạm, lịch sử chặn bay, trang admin `/admin/flight-control`; luật viết cứng khác lên admin (pin quay về, mời lại KTV, lệnh nắp, telemetry, rút tiền tối thiểu, QR kiosk, 2FA admin, mã BLE, vị trí KTV). Ghi vào flow-1 (cập nhật 2026-10-28, gap F1-G13), architecture (route gateway), drone-telemetry-contract, tom-tat-luong-nghiep-vu, STATUS § 3.
