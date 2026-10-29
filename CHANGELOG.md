@@ -4,11 +4,8 @@ Mỗi thay đổi ở repo docs thêm **một dòng** vào ngày tương ứng (
 
 ## 2026-10-29
 
-<<<<<<< Updated upstream
 - Giao diện mobile trên máy thật (docs + mobile `fix/ui-scale-may-that`): STATUS § 3 thêm dòng việc — thu nhỏ đều giao diện trên máy hẹp hơn 411dp, giới hạn cỡ chữ hệ thống 1.1×, đóng gói font Roboto, sửa hàng chữ/card tràn ở màn khách hàng, KTV tủ, KTV drone.
-=======
 - Handoff [2026-10-29-test-mobile-luong-drone-unhappy-case](handoff/2026-10-29-test-mobile-luong-drone-unhappy-case.md) (F1-G11, F1-G13, F1-G04): test trên điện thoại thật (production) Happy case + thời tiết, hủy trước khi phóng, giao không hoàn tất, 4 phương án rơi kiện và rule tủ nhận ≥ 200 m — trạng thái đơn khớp giữa khách/KTV/admin; lỗi chính: sự cố có bồi thường kẹt `PROCESSING` sau khi đã chi, "hoàn phí giao" không thực hiện, lý do phiếu bồi thường sai tỷ lệ, thỏa thuận riêng kẹt vĩnh viễn, rule 200 m đo tủ bay → tủ nhận thay vì nơi gửi → tủ nhận, mời KTV vị trí cũ ngoài bán kính, đăng xuất không tắt ca; chưa sửa code.
->>>>>>> Stashed changes
 
 ## 2026-10-28
 
