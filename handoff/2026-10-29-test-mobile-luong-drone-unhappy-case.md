@@ -4,7 +4,7 @@ Người làm: Kimnha01 (cùng Claude Code). Thời gian test: 29/10/2026 09:49 
 Mốc code đã rà: backend `main` @ `ea21d56` lúc bắt đầu, `9297c4d` lúc kết thúc (đã có rule 200 m), mobile `main` @ `b36fc3b` (app `1.0.0+2`), frontend `main` @ `e2f42bb`.
 Môi trường: production `https://api.locker-drone.tech`, điện thoại OPPO CPH2473 (Android, 720×1612). Chế độ thử nghiệm ArUco **tắt** (không test).
 
-Báo cáo này chỉ ghi nhận lỗi, **chưa sửa code**. Mức độ: 🔴 nghiêm trọng (sai tiền, kẹt đơn/sự cố, sai nghiệp vụ) · 🟠 sai logic / hiển thị sai · 🟡 UI.
+Báo cáo ghi nhận lỗi; phần đã sửa (local, **chưa commit/deploy**) ở § 8. Mức độ: 🔴 nghiêm trọng (sai tiền, kẹt đơn/sự cố, sai nghiệp vụ) · 🟠 sai logic / hiển thị sai · 🟡 UI.
 
 Tài khoản: khách `minhanh.tran@gmail.com`, KTV drone `ktvdronedemo2@gmail.com` (Long Hoàng), KTV kiosk `kiosk1@gmail.com`, admin `binhtntse182370@fpt.edu.vn`. Khách, KTV drone, KTV kiosk thao tác trên app điện thoại; các bước admin gọi đúng API mà web admin dùng (web admin trên màn điện thoại quá chật để thao tác bảng).
 
@@ -134,3 +134,32 @@ Trên điện thoại:
 5. Điều phối KTV: bỏ KTV vị trí cũ / ngoài bán kính khỏi lời mời; đăng xuất phải tắt ca (§ 3 #8, #9).
 6. Drone: hủy/thất bại với lý do "Drone lỗi" ⇒ FAULT + tạo phiếu kiểm tra; ghi nhật ký và báo khách khi đổi tủ bay (§ 3 #7, #10).
 7. Sửa câu chữ luồng cũ (ô gửi, "dừng trước khi cất cánh", "bỏ vào tủ gửi") và nút "Đặt lại đơn" cho đơn drone (§ 4).
+
+## 8. Đã sửa — nhánh `fix/f1-g11-sua-loi-test-drone-2910` (backend, mobile, frontend, docs)
+
+Local, **chưa commit / PR / deploy**. Test: order-service 451 test (0 lỗi, 37 bỏ qua cần Postgres), payment-service 99, mobile `flutter test` 749 (gồm 4 test mới), `flutter analyze` không thêm cảnh báo ở file đã sửa, web admin `tsc -b` sạch + ESLint 0 lỗi. **Chưa thử lại trên điện thoại / production.**
+
+| # § 3 | Trạng thái | Đã sửa thế nào | Vị trí |
+|---|---|---|---|
+| 1 | ✅ | Admin duyệt / từ chối phiếu `RF-CMP-…` ⇒ payment-service gọi `POST /internal/drone-incidents/{mã}/compensation` (PAID / PAYMENT_FAILED). Sự cố tự RESOLVED khi không còn giao lại / chi trả dở (hàm chung `resolveIfSettled`), kiện → `COMPENSATED` | `payment-service/…/client/DroneIncidentClient.java`, `PaymentService` (`notifyIncidentCompensation`), `order-service/…/DroneParcelIncidentService.java` |
+| 2 | ✅ | `refundShippingFee` ⇒ phí giao hoàn bằng phiếu hoàn đơn thường riêng; phiếu bồi thường không còn đổi `paymentStatus` đơn (bỏ khỏi `orderRefundStatus`, `refundableAmount`, kiểm "đã hoàn" của `refundOrder`) | `PaymentService.createCompensationRefund`, `orderRefundStatus` |
+| 3 | ✅ | Lý do do order-service dựng: phương án, tình trạng kiện (hư hại nhẹ/nặng, thất lạc), số tiền + **tỷ lệ thực** trên giá trị khai báo, hoàn phí giao, lý do vượt mức, nội dung thoả thuận; định dạng `150.000đ`. Phiếu hoàn đơn huỷ nêu lý do (giao không hoàn tất: … / huỷ trước khi bay: … + ghi chú) | `PaymentIncidentCompensationGateway.compensationReason`, `DroneRefundService.refundReason` |
+| 4 | ✅ | Phương án có `resolutionNote` (Flyway order **V35**), bắt buộc với thỏa thuận riêng (`RESOLUTION_NOTE_REQUIRED`; web admin cũ gửi qua `overrideReason` vẫn dùng được); khách thấy "Nội dung: …"; đồng ý mà không còn việc ⇒ RESOLVED | `DroneParcelIncidentService.propose/customerRespond`, `V35__incident_proposal_note.sql`, app `customer_drone_incident_card.dart`, web `drone-incidents/detail.tsx` |
+| 5 | ✅ | Đơn giao lại COMPLETED ⇒ sau commit đóng phần giao lại của sự cố (`onRedeliveryOrderCompleted`, giao dịch riêng), kiện → `REDELIVERED`; nút admin "hoàn tất giao lại" vẫn còn | `OrderService.transition`, `DroneParcelIncidentService` |
+| 6 | ✅ | Nơi gửi → tủ nhận dưới `drone-min-route-meters` ⇒ `DRONE_ROUTE_TOO_SHORT` ngay ("Tủ nhận chỉ cách điểm lấy hàng N m…"), không tìm tủ bay xa hơn. App hiện câu này ở mục "Lộ trình và phí". Chưa làm mờ tủ dưới 200 m trong danh sách chọn tủ | `DroneSourceLockerSelector.select` |
+| 7 | ✅ một phần | Huỷ trước khi bay lý do "Drone lỗi" ⇒ drone `RESERVED → FAULT` (locker-service tự mở phiếu lỗi); báo thất bại chọn "Drone lỗi" ⇒ lưu `DRONE_FAULT`. Đường thất bại khi bay vốn đã tạo phiếu lỗi tự động — phiếu không hiện ở tab Sự cố của KTV phụ trách: chưa kiểm | `DroneOrderMaintenanceService.cancel`, app `maintenance_home_page.dart` |
+| 8 | ✅ | Chỉ mời KTV trong `drone-max-pickup-meters`; KTV vị trí mới vừa bỏ lời mời thì chờ hết thời gian chờ, không rơi về KTV vị trí cũ | `DronePickupService.offerNext` |
+| 9 | ✅ | Đăng xuất KTV tủ / KTV drone tắt ca trên server trước (ca KTV + ca nhận việc lấy hàng) | app `technician_session.dart` (`endTechnicianShiftQuietly`), `maintenance_home_page.dart`, `technician_profile_page.dart` |
+| 10 | ❌ không phải lỗi | Rà lại: #142 được chọn tủ bay S5.02 **ngay lúc đặt** (tủ demo khi đó không còn drone dùng được); form đặt đơn hiện "Tủ bay do hệ thống chọn". Đổi tủ bay giữa chừng (`reselectSource`) đã có nhật ký + báo KTV | — |
+| 11 | chưa sửa | Dữ liệu: ORD-SND-0009 giữ box 12. Cần đối soát dữ liệu, không sửa code | — |
+| 12 | chưa sửa | Giữ mốc chặn đầu tiên khi lý do đổi có thể là chủ ý (tính tổng thời gian bị chặn) — cần chủ dự án quyết | `DroneDeliveryBlockService.review` |
+
+UI (§ 4) đã sửa:
+- Khách: thẻ đầu trang theo ngữ cảnh — "Đơn drone đã đóng" (đơn đóng sau khi đã bay), "Chờ thanh toán", "Sẵn sàng phóng" (mission `READY_TO_LAUNCH`); câu chặng chờ điều phối thành "Sau khi thanh toán, hệ thống tìm…"; câu chặng rơi kiện không còn "sẽ gửi phương án"; mốc "Kiện đã được bỏ vào tủ gửi" → "Kỹ thuật viên đã nhận kiện tại nơi gửi" (backend `OrderDetailViews`) và "KTV nhận kiện lúc" (app); ẩn "Đặt lại đơn" cho đơn drone; "Tôi đã lấy đồ — hoàn tất" hỏi xác nhận; bỏ lặp "giao lại miễn phí"; "Tình trạng kiện" kèm mức hư hại; nhãn "Thỏa thuận riêng"; ẩn nút "Chỉ đường tới drone tại tủ bay" với khách; hộp huỷ bỏ câu "ô drone ở hai tủ".
+- KTV drone: hộp xác nhận lấy hàng tự lấy GPS rồi thử lại khi `DRONE_PICKUP_LOCATION_STALE`, giữ mã/ảnh/dấu kiểm; bấm chữ để tick; hộp "Huỷ trước khi bay" nói rõ hoàn tiền + trả kiện; thẻ trả kiện ghi "giao không hoàn tất" khi chưa cất cánh; hộp trả kiện bỏ câu "Ô gửi còn giữ"; nhãn "Tủ nhận khách đã chọn"; hộp báo rơi kiện nói rõ vị trí ước theo tuyến bay.
+- KTV tủ: banner và tab "Thu hồi kiện" đếm theo `recoveryStatus` (bỏ nhiệm vụ đã đóng / đã xác minh không tìm thấy).
+- Web admin: "Phiên bản" đọc `version` (trước hiện `undefined`); hiện "Nội dung gửi khách".
+
+Chưa làm: làm mờ tủ dưới 200 m / trạm tạm dừng trong danh sách chọn tủ, form tự tính lại khi trạm mở lại, các mục chập chờn (danh sách KTV rỗng, "Lỗi kết nối máy chủ"), sheet KTV tủ tự làm mới sau admin xác minh, ảnh báo rơi kiện vào phiếu kiểm tra, admin web responsive, dữ liệu kẹt § 6.
+
+**Thứ tự deploy:** backend (order-service có Flyway **V35** + payment-service) trước — app/web cũ vẫn chạy (`resolutionNote` tuỳ chọn, payment còn nhận tham số `percentage`); rồi mobile và web admin. Sau khi deploy: 3 sự cố DPI-136, DPI-141, DPI-142 đang kẹt không tự đóng (callback chỉ chạy cho phiếu duyệt sau deploy) — cần xử lý tay.

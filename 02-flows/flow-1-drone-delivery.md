@@ -147,6 +147,17 @@ Còn hở sau rà soát này: xác nhận bỏ kiện và trả kiện là bấm
 - Cùng đợt, các ngưỡng drone khác lên admin: pin tối thiểu để ra lệnh quay về khi rơi kiện (`drone-return-min-battery-percent`, 15 %), không mời lại KTV vừa từ chối (`drone-pickup-reoffer-cooldown-minutes`, 10 phút), thời gian chờ / số lần gửi lại lệnh nắp và ngưỡng coi tủ mất kết nối (`app.drone.delivery.*`), bán kính đã rời / tiếp cận / đã tới (`app.drone.telemetry.*`).
 - Không đổi verdict / %. Còn hở: chưa tự dừng trạm theo dự báo (admin vẫn bấm tay), lịch sử chặn chưa có báo cáo tổng hợp theo trạm / theo ngày, trang chưa có thời tiết dự báo theo giờ cho cả ngày.
 
+### Cập nhật 2026-10-29 (sửa lỗi test tay trên điện thoại) — nhánh `fix/f1-g11-sua-loi-test-drone-2910`, chưa commit
+
+Theo [handoff 2026-10-29](../handoff/2026-10-29-test-mobile-luong-drone-unhappy-case.md) § 8. Có unit test, chưa thử lại trên máy thật; verdict § 2 giữ nguyên.
+
+- **Tủ nhận sát nơi gửi** (dưới `drone-min-route-meters`, 200 m) ⇒ từ chối đặt đơn `DRONE_ROUTE_TOO_SHORT`; trước đây hệ thống chọn tủ bay xa hơn để quãng bay "đủ" — `OS/service/DroneSourceLockerSelector.java`.
+- **Mời KTV lấy hàng** chỉ trong `drone-max-pickup-meters`; không rơi về KTV vị trí cũ khi KTV vị trí mới vừa bỏ lời mời — `OS/service/DronePickupService.java` (`offerNext`). App: đăng xuất KTV tắt ca trên server — `M/features/locker_ops/presentation/utils/technician_session.dart`.
+- **Huỷ trước khi bay vì "Drone lỗi"** ⇒ drone `RESERVED → FAULT` (kèm phiếu lỗi) thay vì về IDLE — `OS/service/DroneOrderMaintenanceService.java` (`cancel`).
+- **Phiếu hoàn đơn huỷ** nêu lý do (giao không hoàn tất / huỷ trước khi bay + ghi chú) — `OS/service/DroneRefundService.java` (`refundReason`).
+- **Sự cố rơi kiện** đóng được ở mọi phương án (chi trả xong qua callback payment, giao lại xong, thoả thuận riêng không còn việc), phương án có nội dung gửi khách (V35), lý do phiếu bồi thường đúng tỷ lệ, hoàn phí giao thật — [drone-parcel-drop-incidents](../01-overview/drone-parcel-drop-incidents.md).
+- App: thẻ đầu trang theo ngữ cảnh (đơn đóng sau khi đã bay, chờ thanh toán, sẵn sàng phóng), bỏ "Đặt lại đơn" ở đơn drone, hỏi xác nhận "Tôi đã lấy đồ", KTV tự cập nhật GPS khi xác nhận lấy hàng bị chặn vì vị trí cũ.
+
 ## 4. Gap để đạt 100 %
 
 | ID | Việc | Ở đâu | Mục checklist |

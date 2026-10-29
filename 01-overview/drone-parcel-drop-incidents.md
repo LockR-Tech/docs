@@ -16,7 +16,7 @@ Không dùng `order_complaints` vì bảng đó không biểu diễn được st
 4. `locker-service` tạo idempotent phiếu `DRONE_INSPECTION`, ưu tiên KTV Drone đang phụ trách. Đồng thời chọn KTV tủ active của kiosk gần GPS rơi nhất, sau đó dùng workload để phá hòa; tọa độ kiosk chỉ là vùng trách nhiệm, không được ghi là vị trí live của KTV.
 5. KTV tủ nhận việc, bắt đầu tìm, chụp ảnh thật + GPS + tình trạng và submit. Admin verify. Kiện tìm thấy phải xác nhận về Hub/kho trước khi giao lại.
 6. Admin tạo proposal phiên bản mới. Khách accept hoặc request review; lịch sử proposal cũ không bị ghi đè.
-7. Payment payout và lệnh RTL chỉ được đánh dấu thành công khi adapter thật xác nhận. Khi chưa có payout API, incident giữ `PAYMENT_PENDING`.
+7. Lệnh RTL chỉ được đánh dấu thành công khi adapter thật xác nhận. Bồi thường: khách đồng ý (và admin duyệt khi `incident-approval-required`) ⇒ payment-service tạo phiếu chi `RF-CMP-<mã sự cố>-…` (`PROCESSING`); admin duyệt / từ chối phiếu ở trang Hoàn tiền ⇒ payment-service gọi callback `PAID` / `PAYMENT_FAILED`. Sự cố tự `RESOLVED` khi không còn phần giao lại hay chi trả nào dở (cả thỏa thuận riêng không có việc qua hệ thống); đơn giao lại hoàn tất ⇒ phần giao lại tự `COMPLETED` (cập nhật 2026-10-29, [handoff](../handoff/2026-10-29-test-mobile-luong-drone-unhappy-case.md) § 8).
 
 ## 3. State transitions
 
@@ -47,7 +47,7 @@ Sơ đồ: [drone-parcel-incident.mmd](../diagrams/src/drone-parcel-incident.mmd
 - `GET /api/admin/drone-incidents/{id}`
 - `POST /api/admin/drone-incidents/{id}/recovery/assign`
 - `POST /api/admin/drone-incidents/{id}/recovery/verify`
-- `POST /api/admin/drone-incidents/{id}/proposals`
+- `POST /api/admin/drone-incidents/{id}/proposals` — `resolutionType`, `redeliveryOffered`, `compensationAmount`, `refundShippingFee`, `overrideReason`, `resolutionNote` (nội dung gửi khách, bắt buộc với `MANUAL_RESOLUTION`; thiếu thì lấy `overrideReason`).
 - `POST /api/admin/drone-incidents/{id}/compensation/approve` (cũng dùng để retry an toàn; payout key idempotent theo incident/proposal).
 
 ### KTV tủ
@@ -64,7 +64,7 @@ Sơ đồ: [drone-parcel-incident.mmd](../diagrams/src/drone-parcel-incident.mmd
 - `GET /api/orders/drone-incidents/{id}`
 - `POST /api/orders/drone-incidents/{id}/response` với `ACCEPT/REQUEST_REVIEW`.
 - `POST /internal/drone-incidents/{incidentCode}/return-flight` dành cho adapter backend/IoT; transition được validate.
-- `POST /internal/drone-incidents/{incidentCode}/compensation` dành cho callback payout thật; chỉ nhận `PAID/PAYMENT_FAILED` sau trạng thái `PROCESSING`.
+- `POST /internal/drone-incidents/{incidentCode}/compensation` — payment-service gọi khi admin duyệt (`PAID`) / từ chối (`PAYMENT_FAILED`) phiếu `RF-CMP-…`; chỉ nhận sau trạng thái `PROCESSING`.
 
 ## 5. Cấu hình policy
 
@@ -74,8 +74,8 @@ Các key scope `ORDER`: `app.order.incident-policy-enabled`, `app.order.incident
 
 - Camera chỉ live khi cấu hình `app.drone.camera.stream-url-template` trỏ tới HLS gateway có quyền truy cập phù hợp. Không có gateway thì web/mobile hiện `UNAVAILABLE`.
 - `DroneReturnCommandGateway` có fallback `Unavailable`; callback đã có hợp đồng nhưng cần adapter MAVLink/MQTT triển khai tại môi trường có phần cứng và xác thực service-to-service.
-- Payment service hiện có refund order nhưng chưa có beneficiary compensation payout. `IncidentCompensationGateway` và callback đã định nghĩa; fallback ghi `COMPENSATION_INTEGRATION_UNAVAILABLE` và giữ `PAYMENT_PENDING`, không trả success giả.
-- Hệ thống hiện chưa có API tạo delivery attempt liên kết. `IncidentRedeliveryGateway` giữ redelivery ở `ACCEPTED` và ghi `REDELIVERY_INTEGRATION_UNAVAILABLE` cho tới khi có adapter thật; không tạo order giả.
+- Chi bồi thường là phiếu chuyển khoản tay của admin (`POST /internal/payments/orders/{id}/compensation-refund`), không có cổng chi tự động. Lý do phiếu do order-service dựng: phương án, tình trạng kiện, số tiền và tỷ lệ thực trên giá trị khai báo. Phiếu `RF-CMP-…` không tính là hoàn tiền đơn (không đổi `paymentStatus`); `refundShippingFee` ⇒ thêm một phiếu hoàn phí giao thường. Gọi payment lỗi ⇒ `PAYMENT_PENDING`, admin bấm duyệt lại.
+- Giao lại tạo đơn drone mới 0đ (`OrderIncidentRedeliveryGateway`), nguồn là tủ bay của đơn cũ, không có bước lấy hàng tận nhà; adapter lỗi ⇒ giữ `ACCEPTED` + `REDELIVERY_INTEGRATION_UNAVAILABLE`.
 - Tọa độ live của KTV chưa có trong user/location service; routing dùng kiosk active gần nhất như vùng trách nhiệm và ghi rõ giới hạn này.
 
 ## 7. Chạy local và kiểm thử

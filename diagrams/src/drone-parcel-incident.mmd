@@ -1,10 +1,11 @@
 %% @title Sự cố rơi kiện Drone
-%% @subtitle Nguồn: order-service/DroneParcelIncidentService · triển khai local 2026-10-10
+%% @subtitle Nguồn: order-service/DroneParcelIncidentService · cập nhật 2026-10-29
 %% @orientation portrait
 %% @legend <span class="sw ok"></span>Transition đã validate ở backend
 %% @legend <span class="sw gap"></span>Tích hợp vật lý/payment còn cần adapter thật
 %% @note Return flight là state machine độc lập: gọi API không được coi là drone đã về Hub.
-%% @note Compensation accepted giữ PAYMENT_PENDING tới khi payment adapter xác nhận thành công.
+%% @note Chi bồi thường: phiếu RF-CMP ở PROCESSING; admin duyệt / từ chối phiếu ⇒ payment-service báo PAID / PAYMENT_FAILED.
+%% @note RESOLVED tự động khi không còn giao lại hay chi trả dở — kể cả thoả thuận riêng không có việc qua hệ thống.
 stateDiagram-v2
     [*] --> REPORTED: report + evidence snapshot
     REPORTED --> INVESTIGATING: delivery stopped
@@ -15,7 +16,7 @@ stateDiagram-v2
     AWAITING_CUSTOMER_RESPONSE --> RESOLUTION_IN_PROGRESS: customer accepts
     AWAITING_CUSTOMER_RESPONSE --> DISPUTED: customer requests review
     DISPUTED --> AWAITING_CUSTOMER_RESPONSE: new proposal version
-    RESOLUTION_IN_PROGRESS --> RESOLVED: redelivery/payment confirmed
+    RESOLUTION_IN_PROGRESS --> RESOLVED: redelivery order completed + payout PAID (or nothing left)
     RESOLVED --> CLOSED: all linked work closed
 
     state "Return flight (independent physical acknowledgement)" as ReturnFlight {
