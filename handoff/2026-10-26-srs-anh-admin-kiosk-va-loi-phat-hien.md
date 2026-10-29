@@ -12,7 +12,7 @@ Người làm: binhtntse182370 (cùng Claude Code). Mốc code đã rà: backend
 | Ảnh 3.4.1 Dispatch & Home Pickup | **Chưa làm** — xem § 6 | |
 | Lỗi kiosk nhập sai mã báo "Hệ thống đang bận"; TimeLimiter 1 s ở 6 service còn lại | Đã sửa, **chờ duyệt** — § 5.1–5.2 | [backend#111](https://github.com/LockR-Tech/backend/pull/111) |
 | Nhãn `OUT_OF_SERVICE` thô ở màn Bluetooth | Đã sửa, **chờ duyệt** — § 5.3 | [mobile#101](https://github.com/LockR-Tech/mobile/pull/101) |
-| DRONE-05 kẹt `IN_FLIGHT`, KTV drone bị coi là "bận" | Chưa sửa — § 5.4 | |
+| DRONE-05 kẹt `IN_FLIGHT`, KTV drone bị coi là "bận" | Đã sửa, **chưa PR** — § 5.4 | backend `fix/ktv-drone-ban-sai-va-drone-ket-bay` |
 
 ## 2. Ảnh đã chèn vào `rp3/Report3_Software Requirement Specification_LockR.docx`
 
@@ -116,6 +116,11 @@ Mục lục, List of Figures / Tables và Record of Changes đã được cập 
   - **Dữ liệu:** đóng nhiệm vụ của `ORD-DRN-0021` và đưa DRONE-05 về `IDLE` qua trang admin (chi tiết drone) hoặc migration sửa seed.
   - **Code:** khi đơn drone vào trạng thái kết thúc (`COMPLETED` / `CANCELED` / `EXPIRED`) thì đóng nhiệm vụ và trả drone. Thêm việc đối soát định kỳ (giống đối soát ô tủ mỗi giờ) để dọn nhiệm vụ mồ côi.
   - **Sản phẩm:** quyết định KTV có đơn `DROP_REPORTED` có bị chặn nhận việc mới hay không. Nếu có, hiện lý do trên công tắc (vd "đang xử lý sự cố DPI-113") thay cho câu chung chung.
+- **Đã kiểm trên production (29/10):** cả hai KTV drone `KTVdrone@gmail.com` và `se180211nguyenquocbaohuy@gmail.com` đang trong ca, `busy: true`, tab Điều phối 0 đơn. Nguyên nhân là khả năng 2: mỗi người còn một nhiệm vụ `DROP_REPORTED` trên đơn `AWAITING_DISPATCH` (Vi KTV: `ORD-20261024-RLC58R` / DPI-111; KTV kia: `ORD-20261024-8P2CM8` / DPI-113). Cả hai sự cố đã giao thu hồi cho KTV tủ khác. Nhiệm vụ `LAUNCHING` của `ORD-DRN-0021` không làm KTV bận (`busy()` đã bỏ qua đơn kết thúc) nhưng giữ DRONE-05 ở `IN_FLIGHT`.
+- **Đã sửa (backend `fix/ktv-drone-ban-sai-va-drone-ket-bay`, chưa PR):**
+  - **Sản phẩm:** KTV có đơn `DROP_REPORTED` **không** bị chặn nhận việc mới. Báo rơi kiện đã đóng nhiệm vụ (`endedAt`) và chuyển drone sang `FAULT`; việc thu hồi đi qua sự cố. `DronePickupService.ACTIVE_MISSION` bỏ `DROP_REPORTED`.
+  - **Code:** `DroneMissionReconciler` (cron `app.order.drone-mission-reconcile-cron`, mặc định phút 40 mỗi giờ) đóng nhiệm vụ còn mở mà đơn đã rời `AWAITING_DISPATCH` (`CANCELED` + ghi chú) và trả drone: chưa phóng `RESERVED → IDLE`; đã phóng, kiện đã vào tủ (`STORING`/`COMPLETED`/`EXPIRED`) `IN_FLIGHT → IDLE`; đã phóng mà đơn huỷ `IN_FLIGHT → FAULT`. Drone đang thuộc nhiệm vụ khác còn chạy thì giữ nguyên.
+  - **Dữ liệu:** không cần migration. Sau khi deploy, hai KTV hết "bận" ngay; DRONE-05 về `IDLE` ở lượt đối soát đầu tiên.
 
 ### 5.5 Khác (nhỏ)
 
