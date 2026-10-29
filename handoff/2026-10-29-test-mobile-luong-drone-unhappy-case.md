@@ -137,7 +137,7 @@ Trên điện thoại:
 
 ## 8. Đã sửa — nhánh `fix/f1-g11-sua-loi-test-drone-2910` (backend, mobile, frontend, docs)
 
-Local, **chưa commit / PR / deploy**. Test: order-service 451 test (0 lỗi, 37 bỏ qua cần Postgres), payment-service 99, mobile `flutter test` 749 (gồm 4 test mới), `flutter analyze` không thêm cảnh báo ở file đã sửa, web admin `tsc -b` sạch + ESLint 0 lỗi. **Chưa thử lại trên điện thoại / production.**
+Local, **chưa commit / PR / deploy**. Test: order-service 457 test (0 lỗi, 6 bỏ qua; đã chạy cả test Postgres/Testcontainers), payment-service 99, mobile `flutter test` 749 (gồm 4 test mới), `flutter analyze` không thêm cảnh báo ở file đã sửa, web admin `tsc -b` sạch + ESLint 0 lỗi. **Chưa thử lại trên điện thoại / production.**
 
 | # § 3 | Trạng thái | Đã sửa thế nào | Vị trí |
 |---|---|---|---|
@@ -148,7 +148,7 @@ Local, **chưa commit / PR / deploy**. Test: order-service 451 test (0 lỗi, 37
 | 5 | ✅ | Đơn giao lại COMPLETED ⇒ sau commit đóng phần giao lại của sự cố (`onRedeliveryOrderCompleted`, giao dịch riêng), kiện → `REDELIVERED`; nút admin "hoàn tất giao lại" vẫn còn | `OrderService.transition`, `DroneParcelIncidentService` |
 | 6 | ✅ | Nơi gửi → tủ nhận dưới `drone-min-route-meters` ⇒ `DRONE_ROUTE_TOO_SHORT` ngay ("Tủ nhận chỉ cách điểm lấy hàng N m…"), không tìm tủ bay xa hơn. App hiện câu này ở mục "Lộ trình và phí". Chưa làm mờ tủ dưới 200 m trong danh sách chọn tủ | `DroneSourceLockerSelector.select` |
 | 7 | ✅ một phần | Huỷ trước khi bay lý do "Drone lỗi" ⇒ drone `RESERVED → FAULT` (locker-service tự mở phiếu lỗi); báo thất bại chọn "Drone lỗi" ⇒ lưu `DRONE_FAULT`. Đường thất bại khi bay vốn đã tạo phiếu lỗi tự động — phiếu không hiện ở tab Sự cố của KTV phụ trách: chưa kiểm | `DroneOrderMaintenanceService.cancel`, app `maintenance_home_page.dart` |
-| 8 | ✅ | Chỉ mời KTV trong `drone-max-pickup-meters`; KTV vị trí mới vừa bỏ lời mời thì chờ hết thời gian chờ, không rơi về KTV vị trí cũ | `DronePickupService.offerNext` |
+| 8 | ✅ | Chỉ mời KTV trong `drone-max-pickup-meters`; KTV vị trí mới vừa bỏ lời mời thì chờ hết thời gian chờ, không rơi về KTV vị trí cũ. KTV ra ca được đặt `onDuty = false` trước khi trả lời mời đang treo, để người vừa ra ca không chặn việc mời dự phòng | `DronePickupService.offerNext` |
 | 9 | ✅ | Đăng xuất KTV tủ / KTV drone tắt ca trên server trước (ca KTV + ca nhận việc lấy hàng) | app `technician_session.dart` (`endTechnicianShiftQuietly`), `maintenance_home_page.dart`, `technician_profile_page.dart` |
 | 10 | ❌ không phải lỗi | Rà lại: #142 được chọn tủ bay S5.02 **ngay lúc đặt** (tủ demo khi đó không còn drone dùng được); form đặt đơn hiện "Tủ bay do hệ thống chọn". Đổi tủ bay giữa chừng (`reselectSource`) đã có nhật ký + báo KTV | — |
 | 11 | chưa sửa | Dữ liệu: ORD-SND-0009 giữ box 12. Cần đối soát dữ liệu, không sửa code | — |
@@ -163,3 +163,5 @@ UI (§ 4) đã sửa:
 Chưa làm: làm mờ tủ dưới 200 m / trạm tạm dừng trong danh sách chọn tủ, form tự tính lại khi trạm mở lại, các mục chập chờn (danh sách KTV rỗng, "Lỗi kết nối máy chủ"), sheet KTV tủ tự làm mới sau admin xác minh, ảnh báo rơi kiện vào phiếu kiểm tra, admin web responsive, dữ liệu kẹt § 6.
 
 **Thứ tự deploy:** backend (order-service có Flyway **V35** + payment-service) trước — app/web cũ vẫn chạy (`resolutionNote` tuỳ chọn, payment còn nhận tham số `percentage`); rồi mobile và web admin. Sau khi deploy: 3 sự cố DPI-136, DPI-141, DPI-142 đang kẹt không tự đóng (callback chỉ chạy cho phiếu duyệt sau deploy) — cần xử lý tay.
+
+**Test lại sau deploy:** xem [2026-10-29-retest-admin-roi-kien-sau-sua](2026-10-29-retest-admin-roi-kien-sau-sua.md) — #1, #2, #3 đã chạy đúng trên production; #4, #5 chưa kiểm xong.
