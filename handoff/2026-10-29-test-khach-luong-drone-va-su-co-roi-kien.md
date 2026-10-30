@@ -142,3 +142,5 @@ Không có đơn rác nào được tạo. Server kiểm lại thời tiết khi
 - [ ] Chưa test bước cuối: drone thả kiện vào ô, email mã mở ô tới `nqbhuy2004nt@gmail.com`, người nhận mở ô bằng PIN, đơn hoàn tất.
 - [ ] Chưa test nhánh "Yêu cầu xem xét" (khách từ chối phương án lần 1).
 - [ ] Câu hỏi: khách chưa lưu tài khoản ngân hàng thì phiếu bồi thường chuyển tiền về đâu?
+
+**Đã sửa (30/10):** xem [2026-10-30-sua-loi-retest-roi-kien](2026-10-30-sua-loi-retest-roi-kien.md) — bảng đối chiếu từng mục, local chưa deploy.

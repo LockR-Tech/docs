@@ -158,6 +158,17 @@ Theo [handoff 2026-10-29](../handoff/2026-10-29-test-mobile-luong-drone-unhappy-
 - **Sự cố rơi kiện** đóng được ở mọi phương án (chi trả xong qua callback payment, giao lại xong, thoả thuận riêng không còn việc), phương án có nội dung gửi khách (V35), lý do phiếu bồi thường đúng tỷ lệ, hoàn phí giao thật — [drone-parcel-drop-incidents](../01-overview/drone-parcel-drop-incidents.md).
 - App: thẻ đầu trang theo ngữ cảnh (đơn đóng sau khi đã bay, chờ thanh toán, sẵn sàng phóng), bỏ "Đặt lại đơn" ở đơn drone, hỏi xác nhận "Tôi đã lấy đồ", KTV tự cập nhật GPS khi xác nhận lấy hàng bị chặn vì vị trí cũ.
 
+### Cập nhật 2026-10-30 (sửa lỗi 4 báo cáo test lại rơi kiện + thư sự cố) — nhánh `fix/f1-g11-sua-loi-retest-roi-kien-2910`, chưa commit
+
+Theo [handoff 2026-10-30](../handoff/2026-10-30-sua-loi-retest-roi-kien.md). Có test, chưa thử lại trên máy thật; verdict § 2 giữ nguyên.
+
+- **Thư sự cố:** sau thư "đơn đang trên đường", mọi sự cố đều có thư — báo rơi kiện, đơn tạm dừng / tiếp tục khi drone đã phóng, gửi phương án, khách đồng ý (giao lại bằng đơn nào / không giao) — `OS/service/DroneDeliveryMailer.java`.
+- **Giao lại:** bay từ tủ đang giữ kiện nếu là trạm bay; ô nhận chuyển hẳn sang đơn mới; đơn giao lại không bị job tự đóng — `OrderIncidentRedeliveryGateway`, `DroneDeliveryBlockService`, `DroneOrderTimeoutSweeper`.
+- **Drone quay về:** báo rơi không còn đẩy cả sự cố sang "Cần can thiệp"; admin xác nhận drone đã về (`POST /api/admin/drone-incidents/{id}/return-flight/confirm`).
+- **Điều phối:** lượt mời lấy hàng thứ 2 không ai nhận ⇒ báo admin; phiếu kiểm tra drone chỉ tự giao cho KTV đang trong ca.
+- **API:** thiếu header bắt buộc trả 400 (`common-lib` `GlobalExceptionHandler`); `OrderResponse.dronePickupCode`; SĐT người gửi / người nhận phải là số Việt Nam.
+- **Web admin / app:** gỡ dữ liệu mẫu (sự cố, phiếu bảo trì, nhiệm vụ thu hồi), modal phiếu bồi thường, khoá form phương án, nhãn tiếng Việt; app khách / KTV drone / KTV tủ sửa câu chữ và tự làm mới.
+
 ## 4. Gap để đạt 100 %
 
 | ID | Việc | Ở đâu | Mục checklist |

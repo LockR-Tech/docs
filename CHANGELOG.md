@@ -2,6 +2,10 @@
 
 Mỗi thay đổi ở repo docs thêm **một dòng** vào ngày tương ứng (mới nhất ở trên). Ghi mã gap/SEC/ADR nếu có.
 
+## 2026-10-30
+
+- F1-G11 · F1-G04 (backend, mobile, frontend, docs `fix/f1-g11-sua-loi-retest-roi-kien-2910`): handoff [2026-10-30-sua-loi-retest-roi-kien](handoff/2026-10-30-sua-loi-retest-roi-kien.md) — sửa lỗi của 4 báo cáo test lại rơi kiện 29/10 và thêm thư báo sự cố cho khách; drone-parcel-drop-incidents (thư, xác nhận drone về trạm, giao lại từ nơi giữ kiện, phiếu kiểm tra chỉ giao người trong ca), flow-1 (cập nhật 2026-10-30), sơ đồ drone-parcel-incident (báo rơi luôn `INVESTIGATING`, admin xác nhận drone về), STATUS § 3; trỏ từ 4 handoff 29/10.
+
 ## 2026-10-29
 
 - Handoff [2026-10-29-test-khach-luong-drone-va-su-co-roi-kien](handoff/2026-10-29-test-khach-luong-drone-va-su-co-roi-kien.md) (F1-G11, F1-G13): test vai khách trên production — happy case tới lúc phóng, 27 unhappy case (form + gọi thẳng API, 25 đạt), rơi kiện → giao lại + bồi thường 2.400đ đã chuyển tiền; 24 lỗi (3 🔴: thiếu `Idempotency-Key` trả 500, chi tiết đơn thiếu mã lấy hàng cho KTV, đơn giao lại có thể tự đóng khi trạm dừng vì thời tiết).

@@ -75,3 +75,5 @@ Phần đã xác nhận sửa đúng trên production ở § 2. Lỗi mới ở 
 4. Cảnh báo admin khi đơn lấy hàng tận nhà quá N lượt mời hoặc quá X phút chưa có KTV nhận (§ 3 #4).
 5. Sửa `detail.tsx:655` dùng `formatCompensationRate`; sửa màu chữ sheet nhiệm vụ thu hồi; nhãn thẻ theo `parcelCondition`; sheet tự làm mới sau admin xác minh (§ 4).
 6. Chạy nốt case "Chỉ bồi thường" và "Thỏa thuận riêng", kiểm lại "hoàn phí giao" (`refundShippingFee = true`).
+
+**Đã sửa (30/10):** xem [2026-10-30-sua-loi-retest-roi-kien](2026-10-30-sua-loi-retest-roi-kien.md) — bảng đối chiếu từng mục, local chưa deploy.

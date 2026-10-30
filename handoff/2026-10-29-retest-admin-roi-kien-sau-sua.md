@@ -85,3 +85,5 @@ Lỗi đã biết, vẫn còn: sự cố mẫu giả `INC-2026-DROP-001/002` (OR
 1. Theo dõi đơn #144 tới `COMPLETED` ⇒ kiểm sự cố DPI-143 tự `RESOLVED`, kiện `REDELIVERED` (bản sửa § 8 #5).
 2. Test 2 case còn lại: "Chỉ bồi thường" (có tick hoàn phí giao — kiểm phiếu phí riêng) và "Thỏa thuận riêng" (kiểm `resolutionNote` hiện cho khách, tự `RESOLVED`).
 3. Sửa § 4 #2 (🔴) trước, rồi #3, #4, #9, #11.
+
+**Đã sửa (30/10):** xem [2026-10-30-sua-loi-retest-roi-kien](2026-10-30-sua-loi-retest-roi-kien.md) — bảng đối chiếu từng mục, local chưa deploy.

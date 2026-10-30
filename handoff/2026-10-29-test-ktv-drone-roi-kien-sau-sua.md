@@ -69,3 +69,5 @@ Chưa kiểm được (chưa tới bước): § 3 #5 giao lại tự đóng sự
 - Nếu đã nới thời tiết: `app.drone.weather.block-precipitation-codes` → **true**, `app.drone.weather.max-precipitation-mm` → **0**.
 
 Dữ liệu tạo/đổi: RPT-33 (KTV tủ) đã RESOLVED; đơn #143 (sự cố DPI-143), đơn giao lại #144 đang chờ trạm mở lại; phiếu chi bồi thường 2.400đ đã duyệt; RPT-44 đang treo ở tài khoản demo (§ 3 #3).
+
+**Đã sửa (30/10):** xem [2026-10-30-sua-loi-retest-roi-kien](2026-10-30-sua-loi-retest-roi-kien.md) — bảng đối chiếu từng mục, local chưa deploy.

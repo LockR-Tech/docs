@@ -12,8 +12,8 @@ Không dùng `order_complaints` vì bảng đó không biểu diễn được st
 
 1. Admin hoặc KTV Drone đang phụ trách mở Journey Detail. API camera trả HLS thật và telemetry; thiếu gateway thì trả `UNAVAILABLE`, không sinh stream giả.
 2. `Report Dropped Parcel` cần `Idempotency-Key`, mission đang bay và đúng actor. Backend khóa order, tạo một incident duy nhất cho order/mission, lưu telemetry/GPS/evidence rồi chuyển mission/order sang `DROP_REPORTED` để không thể đi tiếp tới delivered.
-3. Drone chuyển `IN_FLIGHT → FAULT`. RTL chỉ được yêu cầu khi autopilot online, drone airborne, pin ≥ 15% và telemetry còn live. Kết quả gọi adapter không đồng nghĩa drone đã về; callback phần cứng cập nhật lần lượt `COMMAND_ACCEPTED → RETURNING → COMPLETED`.
-4. `locker-service` tạo idempotent phiếu `DRONE_INSPECTION`, ưu tiên KTV Drone đang phụ trách. Đồng thời chọn KTV tủ active của kiosk gần GPS rơi nhất, sau đó dùng workload để phá hòa; tọa độ kiosk chỉ là vùng trách nhiệm, không được ghi là vị trí live của KTV.
+3. Drone chuyển `IN_FLIGHT → FAULT`. RTL chỉ được yêu cầu khi autopilot online, drone airborne, pin ≥ 15% và telemetry còn live. Kết quả gọi adapter không đồng nghĩa drone đã về; callback phần cứng cập nhật lần lượt `COMMAND_ACCEPTED → RETURNING → COMPLETED`. Không gửi được RTL (DEMO, telemetry cũ) ⇒ chỉ `returnFlightStatus = MANUAL_INTERVENTION_REQUIRED`, sự cố vẫn `INVESTIGATING`; đội bay đưa drone về rồi admin bấm "Xác nhận drone đã về trạm" ⇒ `COMPLETED` (cập nhật 2026-10-30, [handoff](../handoff/2026-10-30-sua-loi-retest-roi-kien.md)).
+4. `locker-service` tạo idempotent phiếu `DRONE_INSPECTION`, tự giao cho KTV Drone phụ trách drone chỉ khi người đó **đang trong ca**; không thì phiếu `OPEN` và báo cả đội drone. Đồng thời chọn KTV tủ active của kiosk gần GPS rơi nhất, sau đó dùng workload để phá hòa; tọa độ kiosk chỉ là vùng trách nhiệm, không được ghi là vị trí live của KTV.
 5. KTV tủ nhận việc, bắt đầu tìm, chụp ảnh thật + GPS + tình trạng và submit. Admin verify. Kiện tìm thấy phải xác nhận về Hub/kho trước khi giao lại.
 6. Admin tạo proposal phiên bản mới. Khách accept hoặc request review; lịch sử proposal cũ không bị ghi đè.
 7. Lệnh RTL chỉ được đánh dấu thành công khi adapter thật xác nhận. Bồi thường: khách đồng ý (và admin duyệt khi `incident-approval-required`) ⇒ payment-service tạo phiếu chi `RF-CMP-<mã sự cố>-…` (`PROCESSING`); admin duyệt / từ chối phiếu ở trang Hoàn tiền ⇒ payment-service gọi callback `PAID` / `PAYMENT_FAILED`. Sự cố tự `RESOLVED` khi không còn phần giao lại hay chi trả nào dở (cả thỏa thuận riêng không có việc qua hệ thống); đơn giao lại hoàn tất ⇒ phần giao lại tự `COMPLETED` (cập nhật 2026-10-29, [handoff](../handoff/2026-10-29-test-mobile-luong-drone-unhappy-case.md) § 8).
@@ -22,9 +22,9 @@ Không dùng `order_complaints` vì bảng đó không biểu diễn được st
 
 | Máy trạng thái | Chuyển hợp lệ chính | Actor / điều kiện |
 |---|---|---|
-| Incident | `REPORTED → INVESTIGATING/MANUAL_INTERVENTION_REQUIRED → RECOVERY_IN_PROGRESS → AWAITING_ADMIN_REVIEW → AWAITING_CUSTOMER_RESPONSE → RESOLUTION_IN_PROGRESS/DISPUTED → RESOLVED → CLOSED` | Reporter/Admin; recovery assignee; Admin; customer |
+| Incident | `REPORTED → INVESTIGATING → RECOVERY_IN_PROGRESS → AWAITING_ADMIN_REVIEW → AWAITING_CUSTOMER_RESPONSE → RESOLUTION_IN_PROGRESS/DISPUTED → RESOLVED → CLOSED` | Reporter/Admin; recovery assignee; Admin; customer |
 | Recovery | `OPEN/AWAITING_ASSIGNMENT → ASSIGNED → ACCEPTED → SEARCHING → SUBMITTED → VERIFIED → CLOSED` | Admin assign; đúng KTV tủ; Admin verify; found parcel về Hub |
-| Return flight | `RETURN_REQUESTED → COMMAND_ACCEPTED → RETURNING → COMPLETED`; mọi chặng có thể sang `FAILED/MANUAL_INTERVENTION_REQUIRED` | Callback adapter/phần cứng, không phải UI tự xác nhận |
+| Return flight | `RETURN_REQUESTED → COMMAND_ACCEPTED → RETURNING → COMPLETED`; mọi chặng có thể sang `FAILED/MANUAL_INTERVENTION_REQUIRED`; `FAILED/MANUAL_INTERVENTION_REQUIRED → COMPLETED` khi admin xác nhận drone đã về | Callback adapter/phần cứng; admin xác nhận tay khi không điều khiển được từ xa |
 | Parcel | `DROP_REPORTED → RECOVERY_PENDING → FOUND/DAMAGED/LOST → RETURNED_TO_HUB → REDELIVERY_PENDING/COMPENSATED` | Evidence + verify + phương án đã chấp nhận |
 | Resolution | Proposal `AWAITING_CUSTOMER_ACCEPTANCE → ACCEPTED/DISPUTED`; dispute tạo proposal version mới | Khách của order; policy cho phép dispute |
 
@@ -49,6 +49,8 @@ Sơ đồ: [drone-parcel-incident.mmd](../diagrams/src/drone-parcel-incident.mmd
 - `POST /api/admin/drone-incidents/{id}/recovery/verify`
 - `POST /api/admin/drone-incidents/{id}/proposals` — `resolutionType`, `redeliveryOffered`, `compensationAmount`, `refundShippingFee`, `overrideReason`, `resolutionNote` (nội dung gửi khách, bắt buộc với `MANUAL_RESOLUTION`; thiếu thì lấy `overrideReason`).
 - `POST /api/admin/drone-incidents/{id}/compensation/approve` (cũng dùng để retry an toàn; payout key idempotent theo incident/proposal).
+- `POST /api/admin/drone-incidents/{id}/return-flight/confirm` — body tuỳ chọn `{ "note" }`; đóng bước drone quay về (`COMPLETED`), timeline `RETURN_FLIGHT_CONFIRMED`.
+- `POST /api/admin/drone-incidents/{id}/redelivery/complete` — chỉ còn để gỡ sự cố cũ: từ chối `REDELIVERY_ORDER_NOT_COMPLETED` khi đơn giao lại chưa `COMPLETED` (bình thường phần giao lại tự đóng khi đơn giao lại hoàn tất).
 
 ### KTV tủ
 
@@ -75,7 +77,8 @@ Các key scope `ORDER`: `app.order.incident-policy-enabled`, `app.order.incident
 - Camera chỉ live khi cấu hình `app.drone.camera.stream-url-template` trỏ tới HLS gateway có quyền truy cập phù hợp. Không có gateway thì web/mobile hiện `UNAVAILABLE`.
 - `DroneReturnCommandGateway` có fallback `Unavailable`; callback đã có hợp đồng nhưng cần adapter MAVLink/MQTT triển khai tại môi trường có phần cứng và xác thực service-to-service.
 - Chi bồi thường là phiếu chuyển khoản tay của admin (`POST /internal/payments/orders/{id}/compensation-refund`), không có cổng chi tự động. Lý do phiếu do order-service dựng: phương án, tình trạng kiện, số tiền và tỷ lệ thực trên giá trị khai báo. Phiếu `RF-CMP-…` không tính là hoàn tiền đơn (không đổi `paymentStatus`); `refundShippingFee` ⇒ thêm một phiếu hoàn phí giao thường. Gọi payment lỗi ⇒ `PAYMENT_PENDING`, admin bấm duyệt lại.
-- Giao lại tạo đơn drone mới 0đ (`OrderIncidentRedeliveryGateway`), nguồn là tủ bay của đơn cũ, không có bước lấy hàng tận nhà; adapter lỗi ⇒ giữ `ACCEPTED` + `REDELIVERY_INTEGRATION_UNAVAILABLE`.
+- Giao lại tạo đơn drone mới 0đ (`OrderIncidentRedeliveryGateway`), không có bước lấy hàng tận nhà. Tủ cất cánh = tủ KTV bàn giao kiện về (`recoveryLockerId`) nếu tủ đó có bãi đáp; không thì giữ tủ bay của đơn cũ và ghi `staffNote` "mang kiện từ kho tủ #… tới trạm bay tủ #… trước khi nạp". Ô nhận chuyển hẳn sang đơn giao lại (đơn cũ bỏ `reservedBoxId`). Đơn giao lại không bị job tự đóng (chặn quá hạn, quá hạn điều phối) — kiện ở kho chờ trạm mở lại. Adapter lỗi ⇒ giữ `ACCEPTED` + `REDELIVERY_INTEGRATION_UNAVAILABLE`.
+- Thư cho khách (SMTP qua notification-service, `DroneDeliveryMailer`): báo rơi kiện ⇒ người gửi, và người nhận nếu drone đã phóng; gửi phương án ⇒ người gửi; khách đồng ý ⇒ người gửi + người nhận (giao lại bằng đơn nào / không giao). Đơn bị chặn sau khi phóng (trời xấu giữa chuyến, drone lỗi giữa chuyến, nắp tủ nhận lỗi) ⇒ thư "tạm dừng" và "tiếp tục" cho cả hai. Nhật ký hành trình ghi thư đã tới ai.
 - Tọa độ live của KTV chưa có trong user/location service; routing dùng kiosk active gần nhất như vùng trách nhiệm và ghi rõ giới hạn này.
 
 ## 7. Chạy local và kiểm thử
