@@ -63,7 +63,7 @@ Mọi phản hồi bọc `ApiResponse { success, code, message, data, errors }`.
 | order | Thanh toán · Drone | Bắt buộc thanh toán trước khi bỏ hàng; drone DEMO bật/tắt, user được dùng, thời gian mỗi chặng; pin tối thiểu nhận đơn; khối lượng kiện mặc định, tải tối đa, khối lượng cơ bản, nấc khối lượng, các mức khách chọn, sai số cân cho phép |
 | locker | Bảo trì & SLA | SLA, số phiếu trễ bị chặn nhận việc, bậc phạt cảnh báo/hạn chế/đình chỉ, bắt buộc ảnh nghiệm thu, giới hạn ảnh mỗi lần/mỗi phiếu |
 | locker | Ô tủ · Drone | Giữ ô RESERVED, kích thước ô hiển thị cho app; pin thấp chặn cất cánh |
-| payment | Nạp ví · Phương thức | Nạp tối thiểu/tối đa/mặc định, mốc nạp nhanh; phương thức bật (`app.payment.enabled-methods`: chỉ nhận `CASH`, `WALLET`, `SEPAY`, mặc định `SEPAY` từ backend #65); tiền mặt tự hoàn tất |
+| payment | Nạp ví · Phương thức | Nạp tối thiểu/tối đa/mặc định, mốc nạp nhanh (app khách không còn đọc từ 2026-10-31 — ví đã gỡ khỏi app); phương thức bật (`app.payment.enabled-methods`: chỉ nhận `CASH`, `WALLET`, `SEPAY`, mặc định `SEPAY` từ backend #65); tiền mặt tự hoàn tất |
 | payment | Giả lập thanh toán (test) | Hiện nút "Giả lập thanh toán" trên màn VietQR của app và kiosk (`app.payment.simulation-enabled`, mặc định **tắt**) và danh sách user id được dùng (`app.payment.simulation-allowed-user-ids`, trống = mọi tài khoản). Bấm ⇒ `POST /api/payments/simulate` ghi nhận như webhook SePay (đủ hoặc một phần, mô tả `[Giả lập]`, mã giao dịch `SIMULATED-…`) — **chỉ bật khi test**, giao dịch giả lập vẫn tính như thật |
 | iot | Mở tủ & chống dò mã | Số lần sai trước khi khoá, thời gian khoá, thời gian chờ tủ phản hồi, thời gian cửa mở |
 | auth | Xác thực | Hạn OTP, độ dài OTP, hạn token tạm (đăng ký, 2FA admin) |

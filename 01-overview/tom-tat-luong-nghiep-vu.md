@@ -168,6 +168,8 @@ Phụ:
 
 ## 14. Ví
 
+> **Từ 2026-10-31 app khách không còn ví** ([mobile `refactor/go-vi-khoi-app`](https://github.com/LockR-Tech/mobile/tree/refactor/go-vi-khoi-app)): gỡ nạp ví, rút tiền, "Yêu cầu rút tiền", số dư ví và gói dịch vụ (vốn chỉ trả bằng ví). Mọi khoản trả qua SePay; hoàn tiền về số tài khoản ngân hàng (không qua ví). "Lịch sử giao dịch" vẫn còn — liệt kê khoản thanh toán SePay của đơn, giao dịch ví cũ chỉ hiện khi đã có. Backend và web admin **giữ nguyên** API ví (admin vẫn duyệt / từ chối yêu cầu rút cũ, điều chỉnh ví). Luồng dưới đây chỉ còn là lịch sử.
+
 **Nạp tiền**
 1. **Khách** — "Nạp ví": chọn số tiền, chuyển khoản VietQR/SePay → chuyển khoản / thanh toán.
 2. **Hệ thống** — nhận xác nhận từ cổng thanh toán (webhook) → cộng ví. App chỉ báo "thành công" khi thấy tiền đã vào *(mới)*.
