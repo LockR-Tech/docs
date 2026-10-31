@@ -113,6 +113,24 @@ Người gửi chỉ chủ động chuyển mã nếu biết là cần.
 Tin nhắn kèm **tên và địa chỉ tủ** (tra qua `/internal/lockers/batch`; tra hỏng thì rơi về
 `tủ #id`) và hạn lấy hàng **đổi sang giờ Việt Nam** — container chạy UTC.
 
+## 7a. Các lần gửi email cho người nhận đơn gửi hàng (từ 2026-10-31)
+
+Đơn `SEND` bắt buộc có email người nhận (backend #122, `RECEIVER_EMAIL_REQUIRED`). Người nhận
+nhận tối đa **4 thư tự động** + thư người gửi bấm gửi lại. Thư tự động đều tôn trọng
+`app.order.receiver-notify-email` và gửi **sau commit** (đơn rollback không sinh thư).
+
+| # | Khi nào | Tiêu đề | Có mã mở tủ? | Code |
+|---|---|---|---|---|
+| 1 | Đơn **thanh toán xong** (chưa bỏ hàng): `payment.completed`, hoặc đơn 0đ ngay lúc tạo | *Bạn sắp nhận kiện hàng {mã} qua tủ Lock.R* | **Không** — PIN lúc này là mã bỏ hàng của người gửi | `OrderPaymentEventListener` / `OrderService.createSend` → `notifyReceiverOrderPaid` |
+| 2 | Người gửi bỏ hàng (`INITIALIZED → STORING`) | *Mã mở tủ Lock.R cho đơn {mã}* | Có + hạn lấy | `notifyParcelReadyForReceiver` (§ 7) |
+| 3 | Người gửi **đổi PIN** khi hàng đang trong tủ (`STORING`/`RETURNED`, chưa ủy quyền) | *Mã mở tủ mới cho đơn {mã}* | Có (mã mới) | `OrderService.resetPin` |
+| 4 | Đơn **đã thanh toán** mà huỷ trước khi bỏ hàng (khách huỷ, tự huỷ vì không bỏ hàng, báo lỗi ô, admin huỷ). Đơn chưa trả tiền huỷ im lặng — người nhận chưa từng được báo | *Đơn {mã} gửi cho bạn đã bị hủy* | Không | `OrderService.transition` → `receiverOrderCanceledEmailBody` |
+| — | Người gửi bấm **"Gửi lại thông tin cho người nhận"** ở chi tiết đơn (sửa được email; nút ẩn khi đơn chưa trả tiền) | như #1 nếu chưa bỏ hàng, như #2 nếu đã vào tủ; chưa trả tiền ⇒ chỉ lưu email (`RECEIVER_EMAIL_SAVED`) | theo trạng thái | `POST /api/orders/{id}/receiver-email`, giới hạn 1 lần/60 s/đơn |
+
+Không gửi email khi đơn hoàn tất (người nhận tự lấy) và khi quá hạn (nhắc quá hạn hiện chỉ trong app).
+Người nhận / người lấy hộ có tài khoản tự gửi lại cho mình qua
+`POST /api/orders/incoming/{id}/email` (`ReceiverOrderMailService`).
+
 ## 8. Trường mới trên đơn
 
 `POST /api/orders/send` nhận `receiverEmail`. Từ 2026-10-31 ([backend #122](https://github.com/LockR-Tech/backend/pull/122)) trường này
@@ -121,20 +139,17 @@ Tin nhắn kèm **tên và địa chỉ tủ** (tra qua `/internal/lockers/batch
 `V12__receiver_email.sql`) vì đơn cũ không có email; "Đặt lại" một đơn gửi cũ như thế trả
 `RECEIVER_EMAIL_REQUIRED` kèm lời nhắc tạo đơn gửi mới.
 
-`OrderResponse` **chưa** trả thông tin người nhận — phần này vẫn nằm trong gap F2-G03.
-
 ## 9. Gửi lại mã / thông tin đơn qua email
 
 | Endpoint | Ai gọi | Việc |
 |---|---|---|
-| `POST /api/orders/{id}/receiver-email` `{email?}` | Người gửi (chủ đơn SEND, chưa uỷ quyền), đơn `INITIALIZED`/`STORING`/`RETURNED` | Có `email` ⇒ lưu làm email người nhận. Hàng đã trong ô ⇒ gửi lại mã mở tủ (`RECEIVER_EMAIL_SENT`); chưa bỏ hàng ⇒ chỉ lưu (`RECEIVER_EMAIL_SAVED`), mã đi khi xác nhận bỏ hàng như § 7 |
+| `POST /api/orders/{id}/receiver-email` `{email?}` | Người gửi (chủ đơn SEND, chưa uỷ quyền), đơn `INITIALIZED`/`STORING`/`RETURNED` | Có `email` ⇒ lưu làm email người nhận. Hàng đã trong ô ⇒ gửi lại mã mở tủ (`RECEIVER_EMAIL_SENT`); đã thanh toán, chưa bỏ hàng ⇒ gửi lại thư báo có đơn, không mã (`RECEIVER_EMAIL_SENT`); chưa thanh toán ⇒ chỉ lưu (`RECEIVER_EMAIL_SAVED`, `sentAt` null) — người nhận được báo khi đơn được thanh toán (§ 7a) |
 | `POST /api/orders/incoming/{id}/email`, `/api/orders/delegated-to-me/{id}/email` | Người nhận / người lấy hộ có tài khoản | Gửi thông tin đơn tới **email tài khoản** người gọi; kèm mã mở tủ khi hàng đã trong ô. Trả email đã che (`mi***@…`) |
 
 Mỗi đơn tối đa **1 lần/phút** cho mỗi đường. Mỗi lần gửi ghi một dòng lịch sử đơn.
 
 ## 10. Việc chưa làm
 
-- `OrderResponse` trả thông tin người nhận cho app.
 - Uỷ quyền lấy hộ (`delegate`) hiện vẫn chỉ báo chủ đơn, chưa dùng kênh này.
 - Đổi nhà cung cấp SMS: thêm một bản cài `SmsSender` và một nhánh trong `SmsChannelConfig`,
   không phải sửa nghiệp vụ.
