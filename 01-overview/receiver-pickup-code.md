@@ -113,18 +113,31 @@ Người gửi chỉ chủ động chuyển mã nếu biết là cần.
 Tin nhắn kèm **tên và địa chỉ tủ** (tra qua `/internal/lockers/batch`; tra hỏng thì rơi về
 `tủ #id`) và hạn lấy hàng **đổi sang giờ Việt Nam** — container chạy UTC.
 
+## 7a. Các lần gửi email cho người nhận đơn gửi hàng (từ 2026-10-31)
+
+Đơn `SEND` bắt buộc có email người nhận (backend #122, `RECEIVER_EMAIL_REQUIRED`). Người nhận
+nhận tối đa **4 thư tự động** + thư người gửi bấm gửi lại. Thư tự động đều tôn trọng
+`app.order.receiver-notify-email` và gửi **sau commit** (đơn rollback không sinh thư).
+
+| # | Khi nào | Tiêu đề | Có mã mở tủ? | Code |
+|---|---|---|---|---|
+| 1 | Tạo đơn (`POST /api/orders/send`) | *Bạn sắp nhận kiện hàng {mã} qua tủ Lock.R* | **Không** — PIN lúc này là mã bỏ hàng của người gửi | `OrderService.createSend` → `receiverOrderCreatedEmailBody` |
+| 2 | Người gửi bỏ hàng (`INITIALIZED → STORING`) | *Mã mở tủ Lock.R cho đơn {mã}* | Có + hạn lấy | `notifyParcelReadyForReceiver` (§ 7) |
+| 3 | Người gửi **đổi PIN** khi hàng đang trong tủ (`STORING`/`RETURNED`, chưa ủy quyền) | *Mã mở tủ mới cho đơn {mã}* | Có (mã mới) | `OrderService.resetPin` |
+| 4 | Đơn **huỷ trước khi bỏ hàng** (khách huỷ, tự huỷ chưa trả / chưa bỏ hàng, báo lỗi ô, admin huỷ) | *Đơn {mã} gửi cho bạn đã bị hủy* | Không | `OrderService.transition` → `receiverOrderCanceledEmailBody` |
+| — | Người gửi bấm **"Gửi lại thông tin cho người nhận"** ở chi tiết đơn (sửa được email) | như #1 nếu chưa bỏ hàng, như #2 nếu đã vào tủ | theo trạng thái | `POST /api/orders/{id}/receiver-email`, giới hạn 1 lần/60 s/đơn |
+
+Không gửi email khi đơn hoàn tất (người nhận tự lấy) và khi quá hạn (nhắc quá hạn hiện chỉ trong app).
+Người nhận / người lấy hộ có tài khoản tự gửi lại cho mình qua
+`POST /api/orders/incoming/{id}/email` (`ReceiverOrderMailService`).
+
 ## 8. Trường mới trên đơn
 
-`POST /api/orders/send` nhận thêm `receiverEmail` (tuỳ chọn, kiểm định dạng email).
-Cột `orders.receiver_email` cho phép NULL (migration `V12__receiver_email.sql`) nên
-đơn cũ và client cũ không bị ảnh hưởng.
-
-`OrderResponse` **chưa** trả thông tin người nhận — phần này vẫn nằm trong gap F2-G03.
+`POST /api/orders/send` nhận `receiverEmail` — **bắt buộc** từ backend #122 (đơn cũ vẫn NULL).
+Cột `orders.receiver_email` cho phép NULL (migration `V12__receiver_email.sql`).
 
 ## 9. Việc chưa làm
 
-- `OrderResponse` trả thông tin người nhận cho app.
-- Gửi lại mã khi người nhận báo không nhận được.
 - Uỷ quyền lấy hộ (`delegate`) hiện vẫn chỉ báo chủ đơn, chưa dùng kênh này.
 - Đổi nhà cung cấp SMS: thêm một bản cài `SmsSender` và một nhánh trong `SmsChannelConfig`,
   không phải sửa nghiệp vụ.
