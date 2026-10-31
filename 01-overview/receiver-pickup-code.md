@@ -115,16 +115,26 @@ Tin nhắn kèm **tên và địa chỉ tủ** (tra qua `/internal/lockers/batch
 
 ## 8. Trường mới trên đơn
 
-`POST /api/orders/send` nhận thêm `receiverEmail` (tuỳ chọn, kiểm định dạng email).
-Cột `orders.receiver_email` cho phép NULL (migration `V12__receiver_email.sql`) nên
-đơn cũ và client cũ không bị ảnh hưởng.
+`POST /api/orders/send` nhận `receiverEmail`. Từ 2026-10-31 ([backend #122](https://github.com/LockR-Tech/backend/pull/122)) trường này
+**bắt buộc** và phải đúng dạng email: thiếu ⇒ 400 `RECEIVER_EMAIL_REQUIRED`, sai dạng ⇒ 400
+`RECEIVER_EMAIL_INVALID`. Cột `orders.receiver_email` vẫn cho phép NULL (migration
+`V12__receiver_email.sql`) vì đơn cũ không có email; "Đặt lại" một đơn gửi cũ như thế trả
+`RECEIVER_EMAIL_REQUIRED` kèm lời nhắc tạo đơn gửi mới.
 
 `OrderResponse` **chưa** trả thông tin người nhận — phần này vẫn nằm trong gap F2-G03.
 
-## 9. Việc chưa làm
+## 9. Gửi lại mã / thông tin đơn qua email
+
+| Endpoint | Ai gọi | Việc |
+|---|---|---|
+| `POST /api/orders/{id}/receiver-email` `{email?}` | Người gửi (chủ đơn SEND, chưa uỷ quyền), đơn `INITIALIZED`/`STORING`/`RETURNED` | Có `email` ⇒ lưu làm email người nhận. Hàng đã trong ô ⇒ gửi lại mã mở tủ (`RECEIVER_EMAIL_SENT`); chưa bỏ hàng ⇒ chỉ lưu (`RECEIVER_EMAIL_SAVED`), mã đi khi xác nhận bỏ hàng như § 7 |
+| `POST /api/orders/incoming/{id}/email`, `/api/orders/delegated-to-me/{id}/email` | Người nhận / người lấy hộ có tài khoản | Gửi thông tin đơn tới **email tài khoản** người gọi; kèm mã mở tủ khi hàng đã trong ô. Trả email đã che (`mi***@…`) |
+
+Mỗi đơn tối đa **1 lần/phút** cho mỗi đường. Mỗi lần gửi ghi một dòng lịch sử đơn.
+
+## 10. Việc chưa làm
 
 - `OrderResponse` trả thông tin người nhận cho app.
-- Gửi lại mã khi người nhận báo không nhận được.
 - Uỷ quyền lấy hộ (`delegate`) hiện vẫn chỉ báo chủ đơn, chưa dùng kênh này.
 - Đổi nhà cung cấp SMS: thêm một bản cài `SmsSender` và một nhánh trong `SmsChannelConfig`,
   không phải sửa nghiệp vụ.
