@@ -4,6 +4,7 @@ Mỗi thay đổi ở repo docs thêm **một dòng** vào ngày tương ứng (
 
 ## 2026-10-31
 
+- F1-G07 · F1-G10 (backend [#124](https://github.com/LockR-Tech/backend/pull/124), frontend [#82](https://github.com/LockR-Tech/frontend/pull/82), mobile [#110](https://github.com/LockR-Tech/mobile/pull/110)): STATUS § 5; flow-1 F1-G07 ghi toạ độ từng mốc hành trình drone (`order_status_history` thêm `latitude`, `longitude`, `location_source` — order-service `V37`) và chi tiết đơn web admin khớp app khách.
 - Gỡ ví khỏi app khách (mobile, docs `refactor/go-vi-khoi-app`): tom-tat-luong-nghiep-vu § 14 ghi ví đã gỡ, business-settings (app không còn đọc cấu hình nạp/rút), STATUS § 3.
 - F2-G03 (backend, mobile, docs `feat/f2-g03-thu-nguoi-nhan-gui-hang`): receiver-pickup-code § 7a — bảng các lần gửi email cho người nhận đơn gửi hàng (thanh toán xong, bỏ hàng, đổi PIN, huỷ đơn đã trả tiền trước bỏ hàng, gửi lại thủ công); § 8 email người nhận bắt buộc; flow-2 F2-G03 và STATUS § 3.
 - F2-G03 · F2-G06 (backend [#122](https://github.com/LockR-Tech/backend/pull/122), mobile [#107](https://github.com/LockR-Tech/mobile/pull/107), docs `docs/f2-g03-email-nguoi-nhan-va-dieu-khoan`): email người nhận bắt buộc + gửi lại mã/thông tin đơn qua email, đồng ý Điều khoản dịch vụ (user-service `V6`), nhắc bổ sung hồ sơ, nút quay lại, phóng to bản đồ drone — STATUS § 5, flow-2 (F2-G03), receiver-pickup-code (§ 8, § 9 mới).
