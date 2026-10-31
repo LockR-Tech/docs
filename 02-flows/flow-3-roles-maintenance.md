@@ -78,3 +78,18 @@ V = xem · T = kích hoạt chuyển trạng thái. **Chữ đậm = lỗ hổng
 | **F3-G09** | Dọn UI chết + role guard mobile: enum vai trò web, Partner portal, `BoxSettingModal` ghi `MAINTENANCE`, `LockerCard.tsx:50`; route legacy `features/maintenance/*` | `frontend/fe/src/…`, `mobile/lib/core/routing/app_router.dart` | F3.01, F3.04 |
 | **F3-G10** | Một enum `Role` dùng chung trong `common-lib`, validate ở auth + user-service | `backend/common-lib` | F3.01 |
 | **F3-G11** | Thử mở ô qua Bluetooth: admin cho từng tài khoản khách thử trên từng tủ (trang chi tiết tủ), app có nút ở Hồ sơ, chọn ô bất kỳ, Pi kiểm mã Ed25519 rồi kích relay — [ble-open-contract](../01-overview/ble-open-contract.md). Công cụ thử phần cứng, không tính vào checklist | `backend/iot-service/…/BleTestService.java`, `iot/services/ble_gatt_service.py`, `mobile/lib/features/locker_ops/presentation/pages/ble_test_page.dart`, `frontend/fe/src/pages/Admin/lockers/components/BluetoothTestPanel.tsx` | — |
+
+## 7. Xoá mềm ở trang admin
+
+Quyết định: [ADR-0009](../adr/0009-xoa-mem-co-ly-do-o-trang-admin.md). Không thêm hạng mục checklist nên % giữ nguyên. Frontend đã merge ([#83](https://github.com/LockR-Tech/frontend/pull/83)), backend còn ở nhánh `feat/admin-xoa-mem-co-ly-do`.
+
+| Đối tượng | Điều kiện từ chối | Bằng chứng |
+|---|---|---|
+| Tủ, một hoặc nhiều | Có ô đang chứa hàng hoặc giữ chỗ; còn drone đang hoạt động ở trạm; xoá hàng loạt không chọn tủ nào | `backend/locker-service/…/service/LockerService.java:300,340` |
+| Ô tủ | Ô đang chứa hàng hoặc giữ chỗ | `LockerService.java:497` |
+| Drone (nhả bộ điều khiển, gỡ KTV) | Drone đang giữ chỗ hoặc đang bay | `LockerService.java:3130` · `frontend/fe/src/pages/Admin/drones/index.tsx:284` |
+| Người dùng | Tự xoá chính mình | `backend/user-service/…/controller/UserController.java:499` · `frontend/fe/src/pages/Admin/users/index.tsx:40` |
+
+Mọi trường hợp đều trả `DELETE_REASON_REQUIRED` khi thiếu lý do. Hộp nhập lý do dùng chung: `frontend/fe/src/components/shared/data-table/DeleteReasonDialog.tsx:32`.
+
+Phân biệt với ma trận vai trò ở § 4: chỉ ADMIN gọi được các API này (`/api/admin/**`).

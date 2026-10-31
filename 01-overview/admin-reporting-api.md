@@ -2,6 +2,7 @@
 
 Backend branch: `feat/admin-orders-payments-revenue` (LockR-Tech/backend). Nothing here changes an
 existing mobile or web endpoint. Every change only adds fields or endpoints.
+Exception: section 8 makes a reason mandatory on admin delete endpoints.
 
 ---
 
@@ -89,6 +90,7 @@ The legacy `GET /api/admin/orders?status&type` (plain list, no paging) is **unch
 | `paymentStatus` | multi | `UNPAID`, `PAID`, `REFUNDED` |
 | `from`, `to` | date/datetime | on `createdAt`, §0.3 |
 | `userId` | long | owner (customer who created the order) |
+| `receiverUserId` | long | receiver who has an account |
 | `lockerId` | long | matches `lockerId` **or** `destinationLockerId` |
 | `storeId` | long | order `storeId`, or any locker belonging to the store |
 | `q` | string | case-insensitive "contains" on `orderCode`, `receiverPhone`, `receiverName`. A number also matches the order `id` exactly. A phone number (8–15 digits) also matches orders of the customer account with exactly that phone. PIN is never searched. |
@@ -625,6 +627,44 @@ collection in the range, newest first.
   that lookup failed; `paidAllTime` is 0 when there is no payment.
 - An unknown `userId` returns 200 with zero totals, `orders: []` and null name fields.
 
+### 3.10 `GET /api/admin/revenue/entries?from=&to=&kind=`
+
+The exact payments and refunds counted by the summary cards (§3.2). Use this for card drill-downs: `GET /api/admin/payments/search` filters on `createdAt` and `/payments/refunds` on `requestedAt`, so they do not add up to the cards, which use the paid and refunded dates.
+
+| `kind` | Entries | `total` equals |
+|---|---|---|
+| `PAYMENTS` (default) | collected payments | `totalRevenue` |
+| `REFUNDS` | completed refunds | `refundAmount` |
+| `NET` | both, refunds negative | `netRevenue` |
+
+Unknown `kind` ⇒ 400 `REVENUE_ENTRY_KIND_INVALID`.
+
+```json
+{
+  "from": "2026-10-01",
+  "to": "2026-10-31",
+  "kind": "PAYMENTS",
+  "total": 3608700,
+  "orderCount": 210,
+  "entries": [
+    {
+      "kind": "PAYMENTS",
+      "orderId": 7,
+      "orderCode": "ORD-7",
+      "orderType": "SEND",
+      "userId": 2,
+      "customerName": "Nguyễn An",
+      "customerPhone": "0901111111",
+      "amount": 15000,
+      "method": "SEPAY",
+      "at": "2026-10-29T03:00:00"
+    }
+  ]
+}
+```
+
+`entries` are newest first and not paged. Code: `backend/order-service/…/service/RevenueReportService.java:87`.
+
 ---
 
 ## 4. Suggested web usage
@@ -666,10 +706,61 @@ the existing `/api/admin/dashboard/**` route. Customer name/email come from user
 
 | Endpoint | Body / query | Returns |
 |---|---|---|
-| `GET /api/admin/feedback` | `page`, `size` (≤100), `minRating`, `maxRating`, `isResolved` | page of `{id, userId, userName, email, rating, comment, relatedOrderId, orderCode, orderDescription, isResolved, replied, createdAt, updatedAt}`, newest first |
+| `GET /api/admin/feedback` | `page`, `size` (≤100), `minRating`, `maxRating`, `isResolved`, `userId` | page of `{id, userId, userName, email, rating, comment, relatedOrderId, orderCode, orderDescription, isResolved, replied, createdAt, updatedAt}`, newest first |
 | `GET /api/admin/feedback/{id}` | — | `{… userEmail, userPhone, serviceType, orderAmount, adminReply, repliedAt, resolvedBy (admin name), resolvedAt …}` |
 | `PATCH` (or `PUT`) `/api/admin/feedback/{id}/status` | `{status: "RESOLVED" \| "PENDING"}` | the list item; 400 `FEEDBACK_STATUS_INVALID` otherwise |
 | `POST /api/admin/feedback/{id}/reply` | `{reply}` (≤2000) | detail; the customer gets a `FEEDBACK_REPLY` notification (best effort) |
 | `GET /api/admin/analytics/feedback?period=day\|week\|month` | — | `{averageRating, totalFeedback, ratingDistribution{"1".."5"}, feedbackToday, feedbackThisWeek, feedbackThisMonth, trends[{date, count, avgRating}], unresolvedCount}`; `trends` = 14 days / 12 weeks / 12 months (VN dates, zero-filled) |
 | `GET /api/admin/analytics/satisfaction` | — | `{overallSatisfactionScore (avg/5×100), npsScore (% 5★ − % 1–3★), positivePercentage (4–5★), negativePercentage (1–2★), mostCommonComplaint (top complaint type, 90 days), topServiceQuality, departmentScores{orderType: avg}}` |
 | `GET /api/admin/dashboard/peak-hours?from=&to=` | yyyy-MM-dd, same rules as revenue | `[{hour 0–23 (VN), orders}]`, always 24 items |
+
+---
+
+## 7. Loyalty (`/admin/loyalty`) — served by loyalty-service
+
+Each list below uses the same definitions as `GET /api/admin/loyalty/statistics`, so it adds up to the matching card.
+
+### 7.1 `GET /api/admin/loyalty/members`
+
+All accounts, most points first, not paged. Each item: `{userId, points, lifetimePoints, stamps, tier, joinedAt, transactionCount, pointsIssued, pointsRedeemed, lastTransactionAt, newThisMonth, active30Days}`. `tier`, `newThisMonth` and `active30Days` are computed by the server. Code: `backend/loyalty-service/…/service/LoyaltyService.java:496`.
+
+### 7.2 `GET /api/admin/loyalty/transactions`
+
+| Query | Type | Notes |
+|---|---|---|
+| `scope` | string | `ALL` (default), `ISSUED`, `REDEEMED`; other values ⇒ 400 `LOYALTY_SCOPE_INVALID` |
+| `from`, `to` | date | Vietnam dates; take priority over `thisMonth` |
+| `thisMonth` | boolean | default `false` |
+| `userId` | long | one member |
+| `orderType` | string | `SEND`, `RENTAL`, `DRONE_DELIVERY`, `STORAGE`; transactions without an order are excluded |
+| `page`, `size` | int | default 0 and 20, `size` ≤ 100 |
+
+Response: `{content, totalElements, totalPages, page, size, totalPoints, byType: [{type, transactions, points}], topUsers: [{userId, transactions, points}]}`. `byType` and `topUsers` (top 20) cover every match, not only the page; points are positive under `REDEEMED`.
+
+`content` items: `{id, userId, orderId, orderCode, orderType, points, type, reference, amount, createdAt}`. `points` is signed. `reference` identifies a voucher exchange. `orderCode` and `orderType` come from order-service and are null when it is down; `orderType` filtering then returns nothing. Code: `LoyaltyService.java:523`.
+
+### 7.3 `GET /api/admin/loyalty/period-summary?from=&to=`
+
+Dates follow the revenue rules (default: this month). Response: `{from, to, previousFrom, previousTo, current, previous, issuedPct, redeemedPct, netPct, transactionsPct}`. `current` and `previous` are `{issued, redeemed, net, transactions}`; the previous period has the same length. A percentage is null when the previous value is 0. Code: `LoyaltyService.java:574`.
+
+---
+
+## 8. Admin deletes — soft delete with a reason
+
+Decision: [ADR-0009](../adr/0009-xoa-mem-co-ly-do-o-trang-admin.md). A deleted record stays in the database with `deleted_at`, `deleted_by` and `deleted_reason`.
+
+A blank reason ⇒ 400 `DELETE_REASON_REQUIRED`; over 500 characters ⇒ 400 `DELETE_REASON_TOO_LONG`.
+
+| Endpoint | Reason in | Other errors |
+|---|---|---|
+| `DELETE /api/admin/users/{id}` | `?reason=` | 400 `USER_DELETE_SELF` |
+| `DELETE /api/admin/drones/{id}` | `?reason=` | 400 `DRONE_ACTIVE_MISSION` |
+| `DELETE /api/admin/lockers/{id}` | `?reason=` | 400 `LOCKER_IN_USE`, `LOCKER_HAS_DRONES` |
+| `POST /api/admin/lockers/batch-delete` | body `{lockerIds?, deleteAll?, reason}` | as above; 400 `NO_LOCKERS_SELECTED` when neither is set |
+| `DELETE /api/admin/lockers?all=true` | `?reason=` or the same body | as above |
+| `DELETE /api/admin/lockers/boxes/{boxId}` | `?reason=` | 400 `BOX_IN_USE` |
+| `DELETE /api/admin/lockers/{id}/boxes/by-number/{boxNumber}` | `?reason=` | 400 `BOX_IN_USE` |
+| `POST /api/admin/lockers/{id}/boxes/batch-delete` | body `{boxIds?, boxNumbers?, deleteAll?, reason}` | 400 `BOX_IN_USE`, `NO_BOXES_FOUND` |
+| `DELETE /api/admin/lockers/{id}/boxes/all` | `?reason=` | 400 `BOX_IN_USE` |
+
+`GET /api/admin/users/deleted` returns soft-deleted users, newest first: `[{id, email, phoneNumber, fullName, deletedAt, deletedReason}]`.

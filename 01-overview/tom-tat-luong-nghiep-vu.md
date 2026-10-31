@@ -38,7 +38,7 @@ Trạng thái đơn hay gặp: `INITIALIZED` (vừa tạo) → `AWAITING_DISPATC
 1. **Admin** — "Thêm người dùng" với vai trò KTV tủ / KTV drone → KTV đăng nhập app được ngay.
 2. **Admin** — gán KTV phụ trách tủ (sơ đồ tủ → "KTV phụ trách") hoặc drone → phiếu sự cố của tủ/drone đó gửi thẳng cho KTV này.
 3. **Admin** — khoá tài khoản → người đó mất quyền trong khoảng 30 giây, không làm mới token được.
-4. **Admin** — xoá người dùng → tài khoản đăng nhập bị vô hiệu, email/SĐT được nhả để đăng ký lại.
+4. **Admin** — xoá người dùng, bắt buộc nhập lý do → tài khoản đăng nhập bị vô hiệu, email/SĐT được nhả để đăng ký lại; hồ sơ vẫn giữ trong DB kèm lý do. Xoá được admin khác, không tự xoá chính mình *(ADR-0009, chờ merge backend)*.
 
 ---
 
@@ -91,7 +91,7 @@ Ngoại lệ:
    - Cân lệch quá 50 g so với khai báo → hệ thống tính lại phí → **khách** "Trả thêm phí chênh" hoặc "Không đồng ý" (huỷ, hoàn tiền, trả kiện).
 6. **KTV drone** — "Phóng" (trong khung giờ bay, thời tiết dưới ngưỡng, không bị admin tạm dừng bay toàn hệ thống hay ở trạm cất cánh / tủ nhận).
 7. **Hệ thống** — chặng bay: Đang cất cánh → Đã rời trạm → Đang bay → Sắp tới → Đã đến. Đơn **DEMO** tự chạy chặng; đơn **thật** đi theo telemetry của drone hoặc KTV xác nhận từng chặng. **Khách** theo dõi timeline + bản đồ.
-8. **Hệ thống** — kiện vào ô drone ở tủ nhận → `READY_FOR_PICKUP`, gửi PIN cho người nhận (email / app).
+8. **Hệ thống** — kiện vào ô drone ở tủ nhận → `READY_FOR_PICKUP`, gửi PIN cho người nhận (email / app) kèm số giờ lưu trữ và hạn lấy; app hiện cùng nội dung cho người gửi, người nhận và điều phối viên *(chờ merge)*.
 9. **Người nhận** — mở ô bằng PIN tại kiosk → lấy hàng → **khách** xác nhận "Tôi đã lấy đồ — hoàn tất" trên app → đơn `COMPLETED`.
 
 ## 7. Huỷ / thất bại → hoàn tiền
@@ -159,7 +159,7 @@ Phụ:
 
 ## 13. Đội bay drone
 
-1. **Admin** (web, Drone) — thêm drone, gán trạm (tủ), KTV phụ trách, ngừng hoạt động.
+1. **Admin** (web, Drone) — thêm drone, gán trạm (tủ), KTV phụ trách, xoá drone (bắt buộc lý do; không xoá được drone đang giữ chỗ hoặc đang bay).
 2. **KTV drone** (tab Đội bay) — "Nhận xử lý" drone → đổi trạng thái: Sẵn sàng / Đang sạc / Bảo trì / Lỗi (bắt buộc lý do → mở phiếu drone); cập nhật pin; ghi nhật ký bảo trì.
 3. **Hệ thống** — không cho về Sẵn sàng khi còn phiếu mở; drone đang bay không đặt Lỗi trực tiếp (phải báo chuyến bay thất bại) *(mới)*.
 4. **KTV drone** (tab Sự cố) — nhận phiếu drone → xử lý → nghiệm thu (ảnh sau sửa) → drone trở lại phục vụ.
