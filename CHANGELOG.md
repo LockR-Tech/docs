@@ -4,7 +4,7 @@ Mỗi thay đổi ở repo docs thêm **một dòng** vào ngày tương ứng (
 
 ## 2026-10-31
 
-- F2-G03 (backend, mobile, docs `feat/f2-g03-thu-nguoi-nhan-gui-hang`): receiver-pickup-code § 7a — bảng các lần gửi email cho người nhận đơn gửi hàng (tạo đơn, bỏ hàng, đổi PIN, huỷ trước bỏ hàng, gửi lại thủ công); § 8 email người nhận bắt buộc; flow-2 F2-G03 và STATUS § 3.
+- F2-G03 (backend, mobile, docs `feat/f2-g03-thu-nguoi-nhan-gui-hang`): receiver-pickup-code § 7a — bảng các lần gửi email cho người nhận đơn gửi hàng (thanh toán xong, bỏ hàng, đổi PIN, huỷ đơn đã trả tiền trước bỏ hàng, gửi lại thủ công); § 8 email người nhận bắt buộc; flow-2 F2-G03 và STATUS § 3.
 
 ## 2026-10-30
 

@@ -121,11 +121,11 @@ nhận tối đa **4 thư tự động** + thư người gửi bấm gửi lại
 
 | # | Khi nào | Tiêu đề | Có mã mở tủ? | Code |
 |---|---|---|---|---|
-| 1 | Tạo đơn (`POST /api/orders/send`) | *Bạn sắp nhận kiện hàng {mã} qua tủ Lock.R* | **Không** — PIN lúc này là mã bỏ hàng của người gửi | `OrderService.createSend` → `receiverOrderCreatedEmailBody` |
+| 1 | Đơn **thanh toán xong** (chưa bỏ hàng): `payment.completed`, hoặc đơn 0đ ngay lúc tạo | *Bạn sắp nhận kiện hàng {mã} qua tủ Lock.R* | **Không** — PIN lúc này là mã bỏ hàng của người gửi | `OrderPaymentEventListener` / `OrderService.createSend` → `notifyReceiverOrderPaid` |
 | 2 | Người gửi bỏ hàng (`INITIALIZED → STORING`) | *Mã mở tủ Lock.R cho đơn {mã}* | Có + hạn lấy | `notifyParcelReadyForReceiver` (§ 7) |
 | 3 | Người gửi **đổi PIN** khi hàng đang trong tủ (`STORING`/`RETURNED`, chưa ủy quyền) | *Mã mở tủ mới cho đơn {mã}* | Có (mã mới) | `OrderService.resetPin` |
-| 4 | Đơn **huỷ trước khi bỏ hàng** (khách huỷ, tự huỷ chưa trả / chưa bỏ hàng, báo lỗi ô, admin huỷ) | *Đơn {mã} gửi cho bạn đã bị hủy* | Không | `OrderService.transition` → `receiverOrderCanceledEmailBody` |
-| — | Người gửi bấm **"Gửi lại thông tin cho người nhận"** ở chi tiết đơn (sửa được email) | như #1 nếu chưa bỏ hàng, như #2 nếu đã vào tủ | theo trạng thái | `POST /api/orders/{id}/receiver-email`, giới hạn 1 lần/60 s/đơn |
+| 4 | Đơn **đã thanh toán** mà huỷ trước khi bỏ hàng (khách huỷ, tự huỷ vì không bỏ hàng, báo lỗi ô, admin huỷ). Đơn chưa trả tiền huỷ im lặng — người nhận chưa từng được báo | *Đơn {mã} gửi cho bạn đã bị hủy* | Không | `OrderService.transition` → `receiverOrderCanceledEmailBody` |
+| — | Người gửi bấm **"Gửi lại thông tin cho người nhận"** ở chi tiết đơn (sửa được email; nút ẩn khi đơn chưa trả tiền) | như #1 nếu chưa bỏ hàng, như #2 nếu đã vào tủ; chưa trả tiền ⇒ chỉ lưu email (`RECEIVER_EMAIL_SAVED`) | theo trạng thái | `POST /api/orders/{id}/receiver-email`, giới hạn 1 lần/60 s/đơn |
 
 Không gửi email khi đơn hoàn tất (người nhận tự lấy) và khi quá hạn (nhắc quá hạn hiện chỉ trong app).
 Người nhận / người lấy hộ có tài khoản tự gửi lại cho mình qua
