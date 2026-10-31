@@ -2,6 +2,10 @@
 
 Mỗi thay đổi ở repo docs thêm **một dòng** vào ngày tương ứng (mới nhất ở trên). Ghi mã gap/SEC/ADR nếu có.
 
+## 2026-10-31
+
+- F2-G03 · F2-G06 (backend [#122](https://github.com/LockR-Tech/backend/pull/122), mobile [#107](https://github.com/LockR-Tech/mobile/pull/107), docs `docs/f2-g03-email-nguoi-nhan-va-dieu-khoan`): email người nhận bắt buộc + gửi lại mã/thông tin đơn qua email, đồng ý Điều khoản dịch vụ (user-service `V6`), nhắc bổ sung hồ sơ, nút quay lại, phóng to bản đồ drone — STATUS § 5, flow-2 (F2-G03), receiver-pickup-code (§ 8, § 9 mới).
+
 ## 2026-10-30
 
 - F1-G11 · F1-G04 (backend, mobile, frontend, docs `fix/f1-g11-sua-loi-retest-roi-kien-2910`): handoff [2026-10-30-sua-loi-retest-roi-kien](handoff/2026-10-30-sua-loi-retest-roi-kien.md) — sửa lỗi của 4 báo cáo test lại rơi kiện 29/10 và thêm thư báo sự cố cho khách; drone-parcel-drop-incidents (thư, xác nhận drone về trạm, giao lại từ nơi giữ kiện, phiếu kiểm tra chỉ giao người trong ca), flow-1 (cập nhật 2026-10-30), sơ đồ drone-parcel-incident (báo rơi luôn `INVESTIGATING`, admin xác nhận drone về), STATUS § 3; trỏ từ 4 handoff 29/10.
