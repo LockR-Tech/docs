@@ -2,6 +2,11 @@
 
 Mỗi thay đổi ở repo docs thêm **một dòng** vào ngày tương ứng (mới nhất ở trên). Ghi mã gap/SEC/ADR nếu có.
 
+## 2026-11-01
+
+- ADR-0009 (backend, frontend [#83](https://github.com/LockR-Tech/frontend/pull/83), docs `feat/admin-xoa-mem-co-ly-do`): xoá mềm có lý do; admin-reporting-api thêm § 3.10, § 7, § 8 và tham số lọc mới; architecture ghi loyalty gọi order; flow-3 § 7; tom-tat-luong-nghiep-vu; STATUS § 3.
+- F1.07 (backend, mobile `feat/f1-thoi-han-luu-tru-drone`): tom-tat-luong-nghiep-vu ghi thông báo thời hạn lưu trữ đơn drone.
+
 ## 2026-10-31
 
 - F1-G07 · F1-G10 (backend [#124](https://github.com/LockR-Tech/backend/pull/124), frontend [#82](https://github.com/LockR-Tech/frontend/pull/82), mobile [#110](https://github.com/LockR-Tech/mobile/pull/110)): STATUS § 5; flow-1 F1-G07 ghi toạ độ từng mốc hành trình drone (`order_status_history` thêm `latitude`, `longitude`, `location_source` — order-service `V37`) và chi tiết đơn web admin khớp app khách.
