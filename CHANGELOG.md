@@ -2,6 +2,10 @@
 
 Mỗi thay đổi ở repo docs thêm **một dòng** vào ngày tương ứng (mới nhất ở trên). Ghi mã gap/SEC/ADR nếu có.
 
+## 2026-11-02
+
+- App khách có tiếng Anh (mobile [#112](https://github.com/LockR-Tech/mobile/pull/112), docs `docs/mobile-i18n-khach-hang`): STATUS § 3.
+
 ## 2026-11-01
 
 - ADR-0009 (backend, frontend [#83](https://github.com/LockR-Tech/frontend/pull/83), docs `feat/admin-xoa-mem-co-ly-do`): xoá mềm có lý do; admin-reporting-api thêm § 3.10, § 7, § 8 và tham số lọc mới; architecture ghi loyalty gọi order; flow-3 § 7; tom-tat-luong-nghiep-vu; STATUS § 3.
