@@ -4,7 +4,7 @@
 
 | | |
 |---|---|
-| **Cập nhật lần cuối** | 2026-11-01 |
+| **Cập nhật lần cuối** | 2026-11-02 |
 | **Người cập nhật** | Claude Code — 2026-10-22: vá SEC-03/05/06 và SEC-09 mới (actuator gateway) trên nhánh backend `sec/sec-03-05-06-khoa-api-don-iot`, **chưa PR** (§ 2, § 3). Trước đó, 2026-10-13: chỉ còn thanh toán **SePay (chuyển khoản VietQR)** — gỡ MoMo/VNPay ở backend, kiosk, web admin, app — và **đăng nhập SĐT chạy thật** trên app: [backend #64](https://github.com/LockR-Tech/backend/pull/64) (sửa CI/deploy đỏ), [backend #65](https://github.com/LockR-Tech/backend/pull/65), [iot #16](https://github.com/LockR-Tech/iot/pull/16), [frontend #46](https://github.com/LockR-Tech/frontend/pull/46), [mobile #62](https://github.com/LockR-Tech/mobile/pull/62), **PR mở, chưa merge**. Các PR ngày 12/10 (backend #59, #61, #62, mobile #56, iot #15) **đã merge** nhưng backend **chưa lên production**: CI/deploy backend đỏ từ 12/10 cho tới khi merge #64. |
 | **Tổng tiến độ 4 luồng** | **71,3 %** |
 
@@ -54,6 +54,7 @@ Mọi con số bên dưới đúng với các commit này. Trước khi tin STAT
 
 | Việc | Gap | Người/nhánh | Trạng thái |
 |---|---|---|---|
+| App khách có tiếng Anh: gen-l10n + ARB (`mobile/lib/l10n/app_vi.arb`, `app_en.arb`, ~2.600 khoá), đổi ngôn ngữ ở Hồ sơ → Ngôn ngữ hoặc nút VI \| EN ở màn đăng nhập, mặc định tiếng Việt, lưu lựa chọn trên máy. Màn KTV/admin và nội dung server tự soạn (thông báo đẩy, ghi chú KTV, điều khoản Markdown) vẫn tiếng Việt | — | binhtntse182370 + Claude Code · [mobile #112](https://github.com/LockR-Tech/mobile/pull/112) · docs `docs/mobile-i18n-khach-hang` | PR mở 02/11: 772 test, analyze không lỗi; quét bố cục 360/411dp cả 2 ngôn ngữ không tràn ở màn khách. Chưa thử trên máy thật |
 | Xoá mềm có lý do cho tủ, ô tủ, drone và người dùng; thêm xoá drone và xoá admin khác; trang tích điểm và doanh thu mở được dữ liệu sau từng con số; sắp lại trang chi tiết tủ ([ADR-0009](adr/0009-xoa-mem-co-ly-do-o-trang-admin.md)) | — | Vi · backend + frontend `feat/admin-xoa-mem-co-ly-do` | Frontend đã merge ([#83](https://github.com/LockR-Tech/frontend/pull/83), 2026-11-01); **backend chưa merge**. Tới khi backend lên: xoá vẫn là xoá thật và lý do bị bỏ qua, danh sách tích điểm và khoản doanh thu báo lỗi. 11 test Postgres đạt; giao diện thử bằng API giả lập, chưa chạy với backend thật |
 | Trang người dùng admin: thẻ thống kê, bấm dòng mở chi tiết, thông tin tài khoản và tab lịch sử hoạt động; lọc đơn theo người nhận, lọc phản hồi theo người dùng | — | Vi · backend + frontend `feat/admin-xoa-mem-co-ly-do` | Frontend đã merge ([#83](https://github.com/LockR-Tech/frontend/pull/83)); **backend chưa merge**. Chưa thử trên trình duyệt |
 | Báo thời hạn lưu trữ đơn drone: thông báo `READY_FOR_PICKUP` có số giờ và hạn lấy, app hiện thẻ thời hạn | F1.07 | Vi · backend `feat/admin-xoa-mem-co-ly-do`, mobile `feat/f1-thoi-han-luu-tru-drone` | Chờ merge. Test backend đạt, `flutter analyze` sạch; chưa chạy trên app |
