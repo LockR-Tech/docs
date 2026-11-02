@@ -4,7 +4,7 @@ Mỗi thay đổi ở repo docs thêm **một dòng** vào ngày tương ứng (
 
 ## 2026-11-02
 
-- ADR-0010 (backend `fix/i18n-noi-dung-server-tieng-anh`, mobile `fix/i18n-toast-va-noi-dung-server`): chữ server tự soạn có tiếng Anh qua `X-App-Language`, toast mới; architecture § 9; STATUS § 3, chuyển dòng tiếng Anh app khách (#112 đã merge) sang § 5.
+- ADR-0010 (backend [#126](https://github.com/LockR-Tech/backend/pull/126), mobile [#114](https://github.com/LockR-Tech/mobile/pull/114)): chữ server tự soạn có tiếng Anh qua `X-App-Language`, toast mới; architecture § 9; STATUS § 3, chuyển dòng tiếng Anh app khách (#112 đã merge) sang § 5.
 - Tiếng Anh cho màn KTV tủ (mobile [#113](https://github.com/LockR-Tech/mobile/pull/113)) và hoàn thiện tiếng Anh web admin (frontend [#85](https://github.com/LockR-Tech/frontend/pull/85)): STATUS § 5.
 - App khách có tiếng Anh (mobile [#112](https://github.com/LockR-Tech/mobile/pull/112), docs `docs/mobile-i18n-khach-hang`): STATUS § 3.
 

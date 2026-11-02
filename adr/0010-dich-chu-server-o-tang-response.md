@@ -5,7 +5,7 @@
 | **Trạng thái** | Proposed |
 | **Ngày** | 2026-11-02 |
 | **Người quyết định** | binhtntse182370 |
-| **Liên quan** | mobile [#112](https://github.com/LockR-Tech/mobile/pull/112), [#113](https://github.com/LockR-Tech/mobile/pull/113) (app có tiếng Anh) · nhánh backend `fix/i18n-noi-dung-server-tieng-anh`, mobile `fix/i18n-toast-va-noi-dung-server` |
+| **Liên quan** | mobile [#112](https://github.com/LockR-Tech/mobile/pull/112), [#113](https://github.com/LockR-Tech/mobile/pull/113) (app có tiếng Anh) · backend [#126](https://github.com/LockR-Tech/backend/pull/126), mobile [#114](https://github.com/LockR-Tech/mobile/pull/114) |
 
 ## Bối cảnh
 
