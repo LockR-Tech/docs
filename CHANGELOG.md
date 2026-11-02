@@ -2,6 +2,10 @@
 
 Mỗi thay đổi ở repo docs thêm **một dòng** vào ngày tương ứng (mới nhất ở trên). Ghi mã gap/SEC/ADR nếu có.
 
+## 2026-11-03
+
+- release-deploy § 7, § 8: khoá ký Android release (SHA-1/SHA-256, nơi giữ, khai Firebase), APK gửi người thử phải là bản release.
+
 ## 2026-11-02
 
 - F3-G11 (mobile, iot `fix/f3-g11-mo-o-ble-dien-thoai-that`): ble-open-contract § 4.1 (app quét/chọn tủ, kết nối lại, MTU, mã lỗi mới) và § 6 (tủ giả `simulate_ble_cabinet.py` để thử bằng điện thoại thật); STATUS § 3.
