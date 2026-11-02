@@ -4,6 +4,7 @@ Mỗi thay đổi ở repo docs thêm **một dòng** vào ngày tương ứng (
 
 ## 2026-11-02
 
+- Tiếng Anh cho màn KTV tủ (mobile [#113](https://github.com/LockR-Tech/mobile/pull/113)) và hoàn thiện tiếng Anh web admin (frontend [#85](https://github.com/LockR-Tech/frontend/pull/85)): STATUS § 5.
 - App khách có tiếng Anh (mobile [#112](https://github.com/LockR-Tech/mobile/pull/112), docs `docs/mobile-i18n-khach-hang`): STATUS § 3.
 
 ## 2026-11-01
