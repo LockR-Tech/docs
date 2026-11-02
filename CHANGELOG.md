@@ -4,6 +4,7 @@ Mỗi thay đổi ở repo docs thêm **một dòng** vào ngày tương ứng (
 
 ## 2026-11-03
 
+- STATUS § 3: header trang khách kiểu mới (mobile `feat/header-trang-khach-minh-hoa`), mở app nhanh (mobile `perf/khoi-dong-app-nhanh`).
 - release-deploy § 7, § 8: khoá ký Android release (SHA-1/SHA-256, nơi giữ, khai Firebase), APK gửi người thử phải là bản release.
 
 ## 2026-11-02
