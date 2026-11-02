@@ -2,7 +2,7 @@
 
 | | |
 |---|---|
-| **Trạng thái** | Proposed |
+| **Trạng thái** | Accepted — backend [#126](https://github.com/LockR-Tech/backend/pull/126), mobile [#114](https://github.com/LockR-Tech/mobile/pull/114) đã merge 2026-11-02 |
 | **Ngày** | 2026-11-02 |
 | **Người quyết định** | binhtntse182370 |
 | **Liên quan** | mobile [#112](https://github.com/LockR-Tech/mobile/pull/112), [#113](https://github.com/LockR-Tech/mobile/pull/113) (app có tiếng Anh) · backend [#126](https://github.com/LockR-Tech/backend/pull/126), mobile [#114](https://github.com/LockR-Tech/mobile/pull/114) |
@@ -40,7 +40,19 @@ App còn dò một số câu server bằng chữ tiếng Việt: tag `[ĐIỀU C
 - `EnglishResponseAdvice` (`ResponseBodyAdvice` trong `common-lib`, mọi service quét gói `common`) chỉ chạy khi request có `X-App-Language: en`. Nó dựng cây JSON của body (cả body lỗi từ `GlobalExceptionHandler`) rồi dịch mọi giá trị chuỗi. Tin RabbitMQ, lời gọi giữa các service và WebSocket không đi qua advice này, nên dữ liệu lưu trong DB không đổi.
 - Chỉ app mobile gửi header này (`AppLanguageInterceptor`). Web admin và kiosk không gửi nên không đổi gì. Không dùng `Accept-Language` vì trình duyệt tự gửi header đó theo ngôn ngữ máy.
 - Push FCM: `fcm_tokens.language` (notification **V3**) lưu theo header lúc app đăng ký token. App đổi ngôn ngữ thì đăng ký lại token. Máy chọn `en` nhận tiêu đề và nội dung đã dịch, cả trong `data`. Tin `/user/queue/notifications` dịch theo token đăng ký gần nhất của người đó.
-- Không dịch thư email/SMS, prompt và tài liệu của trợ lý, mô tả cài đặt admin. Trợ lý (Claude) đã tự trả lời theo ngôn ngữ của câu hỏi.
+- Không dịch prompt và tài liệu của trợ lý, mô tả cài đặt admin. Trợ lý (Claude) đã tự trả lời theo ngôn ngữ của câu hỏi.
+
+### Bổ sung 2026-11-02: thư và SMS gửi ngoài app
+
+- Ngôn ngữ của người dùng lưu ở `user_profiles.language` (user-service **V8**). App báo qua `PUT /api/user/language` sau khi tải hồ sơ và mỗi lần đổi ngôn ngữ. `UserSummary.language` mang giá trị này sang các service khác.
+- order-service vẫn soạn thư/SMS bằng tiếng Việt và gửi kèm `language` (`RecipientLanguage`):
+  - người đặt đơn nhận theo ngôn ngữ của tài khoản họ;
+  - người nhận có tài khoản nhận theo ngôn ngữ của chính họ;
+  - người nhận chưa có tài khoản nhận theo ngôn ngữ người đặt đơn;
+  - người bấm "gửi lại thông tin đơn" nhận theo ngôn ngữ của chính họ.
+- notification-service dịch thư khi `language = en`: tiêu đề và thư chữ trơn qua `ServerText.toEnglish`; thư HTML qua `ServerText.htmlToEnglish`, dịch từng đoạn chữ giữa các thẻ và đổi `lang`; SMS viết không dấu qua `ServerText.smsToEnglish`, khớp thẳng mẫu SMS trong bảng.
+- Chữ khách tự gõ (lời nhắn người gửi, mô tả kiện, tên, địa chỉ) giữ nguyên.
+- Mã OTP đăng nhập qua email vốn đã viết bằng tiếng Anh nên không đổi.
 
 ## Hệ quả
 
@@ -54,4 +66,4 @@ App còn dò một số câu server bằng chữ tiếng Việt: tag `[ĐIỀU C
   - Code app dò câu server phải hiểu cả hai ngôn ngữ (`mobile/lib/core/utils/server_note_keys.dart`).
 - **Việc phải làm theo sau:**
   - Nếu cần thì gắn script kiểm câu thiếu vào CI.
-  - Thư email/SMS gửi theo ngôn ngữ người nhận (cần lưu ngôn ngữ trên hồ sơ người dùng).
+  - Người nhận chưa có tài khoản không có ngôn ngữ riêng; thư cho họ đi theo ngôn ngữ người đặt đơn.
