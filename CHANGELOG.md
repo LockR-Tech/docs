@@ -2,8 +2,14 @@
 
 Mỗi thay đổi ở repo docs thêm **một dòng** vào ngày tương ứng (mới nhất ở trên). Ghi mã gap/SEC/ADR nếu có.
 
+## 2026-11-03
+
+- STATUS § 3: header trang khách kiểu mới (mobile `feat/header-trang-khach-minh-hoa`), mở app nhanh (mobile `perf/khoi-dong-app-nhanh`).
+- release-deploy § 7, § 8: khoá ký Android release (SHA-1/SHA-256, nơi giữ, khai Firebase), APK gửi người thử phải là bản release.
+
 ## 2026-11-02
 
+- F3-G11 (mobile, iot `fix/f3-g11-mo-o-ble-dien-thoai-that`): ble-open-contract § 4.1 (app quét/chọn tủ, kết nối lại, MTU, mã lỗi mới) và § 6 (tủ giả `simulate_ble_cabinet.py` để thử bằng điện thoại thật); STATUS § 3.
 - Ảnh SRS app KTV drone chụp lại (110 ảnh), handoff `2026-11-02-srs-anh-ktv-drone-va-loi`, STATUS § 3 (backend [#128](https://github.com/LockR-Tech/backend/pull/128), mobile [#116](https://github.com/LockR-Tech/mobile/pull/116)).
 - ADR-0010 bổ sung thư/SMS theo ngôn ngữ khách (user V8, `PUT /api/user/language`), chuyển Accepted; architecture § 9; STATUS § 3, đợt chữ server tiếng Anh (#126/#114) sang § 5.
 - ADR-0010 (backend [#126](https://github.com/LockR-Tech/backend/pull/126), mobile [#114](https://github.com/LockR-Tech/mobile/pull/114)): chữ server tự soạn có tiếng Anh qua `X-App-Language`, toast mới; architecture § 9; STATUS § 3, chuyển dòng tiếng Anh app khách (#112 đã merge) sang § 5.

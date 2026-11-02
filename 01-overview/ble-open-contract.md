@@ -66,9 +66,37 @@ Pi từ chối (mã lỗi gửi lại app):
 
 App chỉ nhận kết quả có đúng `nonce` của mã vừa gửi; không có thông báo sau 15 s thì đọc RESULT một lần rồi báo `TIMEOUT`.
 
+### 4.1 Phía app (điện thoại thật)
+
+Code: mobile `lib/core/services/locker_ble_open_service.dart`.
+
+- **Chọn tủ khi quét (10 s):** đúng tên `deviceName` ⇒ dừng quét ngay. Chỉ khớp một phần tên (`LockerBleService.isDeviceMatchingLocker`) hoặc chỉ có service UUID ⇒ chờ thêm 1,5 s rồi chọn: khớp chắc hơn trước, cùng mức thì RSSI mạnh hơn (tủ đang đứng trước). Mọi Pi quảng bá cùng service UUID nên không lấy bừa thiết bị đầu tiên.
+- **Không đòi bật Vị trí:** quét với `androidCheckLocationServices: false` — Android 12+ có `BLUETOOTH_SCAN neverForLocation`. Android 11 trở xuống không quét ra gì khi tắt Vị trí ⇒ báo `NOT_FOUND_LOCATION_OFF`.
+- **Kết nối:** thử tối đa 3 lần (Android hay báo GATT 133 ở lần đầu). Cần MTU ≥ 94; Android xin 512 khi kết nối, thiếu thì xin lại 247, vẫn thiếu ⇒ `MTU_TOO_SMALL`. Không thấy service ⇒ Android xoá bộ nhớ GATT (`clearGattCache`) rồi tìm lại một lần.
+- **Chờ kết quả:** bật notify RESULT; không bật được thì đọc RESULT mỗi 0,8 s. Mất kết nối sau khi đã ghi ⇒ `DISCONNECTED` (ô có thể đã mở).
+- **iOS:** quyền Bluetooth đọc từ trạng thái CoreBluetooth (`unauthorized`), không qua `permission_handler` (cần macro `PERMISSION_BLUETOOTH` trong Podfile, repo không commit Podfile).
+
+Mã lỗi phía app (ngoài mã Pi ở § 3): `NOT_FOUND`, `NOT_FOUND_LOCATION_OFF`, `CONNECT_FAILED`, `NO_SERVICE`, `MTU_TOO_SMALL`, `WRITE_FAILED`, `DISCONNECTED`, `TIMEOUT`, `BLUETOOTH_OFF`, `PERMISSION_DENIED`, `UNSUPPORTED`. Trang thử in kèm mã lỗi dưới câu báo.
+
 ## 5. Cài đặt Pi
 
 - Thư viện: `bless` + `bleak < 1` (chỉ Linux) và `cryptography` — `uv sync` sau khi pull.
 - `.env`: `BLE_GATT_ENABLED` (mặc định `true`), `BLE_PUBLIC_KEY` (base64, ghi đè khoá tải về — để thử khi chưa có backend), `BLE_PUBLIC_KEY_FILE` (mặc định `config/ble_public_key.json`, không commit). Khoá tải từ `BACKEND_API_URL` (trống ⇒ `https://api.locker-drone.tech`).
 - GATT server tự quảng bá tên `LOCKR_<mã tủ>`; chạy được thì không bật quảng bá kiểu cũ (`BleAdvertiserService`), không chạy được (không có Bluetooth, thiếu thư viện, BlueZ từ chối) thì quay về quảng bá cũ để app vẫn nhận ra tủ ở gần.
 - Tài khoản `lockr` không cần thêm nhóm: chính sách D-Bus mặc định của BlueZ trên Raspberry Pi OS cho mọi người dùng gửi tới `org.bluez`.
+
+## 6. Thử bằng điện thoại khi chưa có tủ
+
+`iot/simulate_ble_cabinet.py` chạy đúng `BleGattService` của Pi trên laptop có Bluetooth (Windows, macOS, Linux): tải khoá công khai production, kiểm chữ ký, tủ, hạn, nonce như Pi; relay giả chỉ in `MỞ Ô n`. Điện thoại dùng mã thật xin từ production, nên chạy được ở đây thì sang tủ thật cũng chạy.
+
+1. Admin web → `/admin/lockers/7` (`CAB-TU01`) → khung "Thử mở ô qua Bluetooth" → cấp cho tài khoản khách sẽ thử.
+2. Trên laptop, trong thư mục `iot` (Python ≥ 3.11, không cần `uv`):
+   ```bash
+   python -m venv .venv-ble
+   .venv-ble\Scripts\pip install "bless==0.2.6" "bleak<1" "cryptography>=43"   # Windows
+   .venv-ble\Scripts\python simulate_ble_cabinet.py --locker-id 7 --locker-code CAB-TU01 --boxes 8
+   ```
+   Bỏ `--locker-id` ⇒ nhận mã của tủ bất kỳ. `--fail-box 3` ⇒ ô 3 báo `HARDWARE_ERROR`.
+3. App: Hồ sơ → **Thử mở ô qua Bluetooth** → chọn ô → Mở. Cửa sổ laptop in mã nhận được và câu trả lời cho app.
+
+Giới hạn: Windows không cho đặt tên quảng bá (bless cần `pysetupdi`, không có trên PyPI; script thay bằng adapter rỗng) ⇒ app nhận ra tủ giả theo service UUID, chỉ bật **một** tủ giả mỗi lần. Adapter phải hỗ trợ vai peripheral (đa số adapter Intel/Realtek từ Windows 10 trở lên).

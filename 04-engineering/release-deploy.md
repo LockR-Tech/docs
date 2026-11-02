@@ -117,6 +117,7 @@ Sau đó thử tay luồng bị ảnh hưởng (đăng nhập, tạo đơn, mở
 |---|---|
 | GitHub `backend` | `AZURE_VM_HOST`, `AZURE_VM_USER`, `AZURE_VM_PORT`, `AZURE_VM_SSH_KEY` |
 | GitHub `frontend`, `mobile` | `CLOUDFLARE_ACCOUNT_ID`, `CLOUDFLARE_API_TOKEN` |
+| Máy chủ dự án, ngoài repo | Khoá ký Android release (`.jks`, alias `lockr`) + mật khẩu; `mobile/android/key.properties` (gitignore) trỏ tới nó — xem § 8 |
 | VM `/opt/laundry-locker-microservices/.env` | Cấu hình runtime backend: SMTP, SePay (tài khoản nhận VietQR), bootstrap admin, Firebase, `CLOUDINARY_URL`… (được giữ lại qua mỗi lần deploy). VNPay/MoMo đã bỏ (backend #65) — xoá `VNPAY_*`, `MOMO_*` |
 
 Luật: secret không bao giờ nằm trong repo, issue, PR, chat hay tài liệu. Lộ ⇒ **xoay ngay**, ghi vào STATUS § 2. Giá trị secret GitHub không đọc lại được — nhập mới thì lấy từ nguồn gốc (Cloudflare dashboard, `~/.ssh`, nhà cung cấp).
@@ -125,4 +126,13 @@ Luật: secret không bao giờ nằm trong repo, issue, PR, chat hay tài liệ
 
 - **Backend**: tag `vX.Y.Z` trên `main` ⇒ `backend-release.yml` tạo GitHub Release kèm artifact, SBOM, attestation. Tag không tự deploy.
 - **Mobile**: tăng `version: X.Y.Z+build` trong `pubspec.yaml` trước khi build lên store.
+- **APK/AAB Android phải là bản release** (`flutter build apk --release` / `appbundle`). Bản debug chạy chậm hơn nhiều
+  (không biên dịch AOT, nặng ~4 lần) — chỉ dùng khi đang dev, đừng gửi cho người thử.
+- **Ký bản release:** `build.gradle.kts` đọc `mobile/android/key.properties` (`storeFile`, `storePassword`, `keyAlias`,
+  `keyPassword`). Khoá release tạo 03/11/2026, SHA-1 `AE:64:8F:92:A9:F8:A8:48:A5:B7:01:C4:83:7F:5F:60:0A:5B:BB:EA`,
+  SHA-256 `40:62:F1:80:3B:E7:53:5D:56:8C:0C:AC:45:07:97:EC:C4:DA:A8:24:2A:F4:A2:25:62:B3:B2:35:E7:3B:BB:94`.
+  **Mất khoá = không cập nhật được app đã cài** (phải gỡ rồi cài lại): giữ bản sao `.jks` + mật khẩu ở nơi an toàn
+  ngoài máy dev. Khoá mới phải khai SHA trên Firebase ([cau-hinh-dich-vu-ngoai](cau-hinh-dich-vu-ngoai.md) — mục
+  "Việc còn lại khi thêm máy / khoá ký mới"), không thì đăng nhập Google và SĐT báo lỗi; email + mật khẩu vẫn chạy.
+  APK ký khoá khác (vd. debug) không cài đè được — gỡ bản cũ trước.
 - Semver: `MAJOR` phá vỡ API/hợp đồng · `MINOR` tính năng · `PATCH` sửa lỗi.
