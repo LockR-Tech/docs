@@ -107,3 +107,7 @@ Chi tiết deploy, rollback, migration: [release-deploy.md](../04-engineering/re
 | mobile | `flutter pub get` | `flutter run` (emulator + backend local: `API_BASE_URL=http://10.0.2.2:18080` rồi `dart run build_runner build --delete-conflicting-outputs`) | `flutter test` |
 | iot | `uv sync` | `docker compose -f docker-compose.postgres.yml up -d` · `SIMULATION=true LOCKER_ID=<id tủ> uv run python main.py` · `uv run python simulate_demo_cabinet.py` · kiosk `cd ui && npm run dev` | `uv run python -m unittest tests.test_mqtt_contract tests.test_gpio_hardware` (unittest, không cần Pi) |
 | docs | `npm ci` | `npm run diagrams` | `npm run diagrams:check` |
+
+## 9. Ngôn ngữ chữ server soạn
+
+App mobile gửi `X-App-Language: vi|en` ở mọi request (`mobile/lib/core/network/dio_client.dart`, `AppLanguageInterceptor`). Khi header là `en`, `EnglishResponseAdvice` trong common-lib dịch mọi chuỗi tiếng Việt trong JSON trả về, kể cả body lỗi, theo bảng `backend/common-lib/src/main/resources/i18n/server-text-en.json`. Web admin và kiosk không gửi header này nên vẫn nhận tiếng Việt như cũ. Push FCM dịch theo `fcm_tokens.language` (notification V3, lưu lúc app đăng ký token), tin `/user/queue/notifications` dịch theo token đăng ký gần nhất của người đó. Thư email/SMS chưa dịch. Thêm hoặc sửa câu tiếng Việt ở server ⇒ thêm vào bảng; kiểm câu thiếu bằng `python -I backend/scripts/i18n/server_text_missing.py`. Vì sao làm vậy: [ADR-0010](../adr/0010-dich-chu-server-o-tang-response.md).
