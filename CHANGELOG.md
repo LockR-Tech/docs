@@ -5,6 +5,7 @@ Mỗi thay đổi ở repo docs thêm **một dòng** vào ngày tương ứng (
 ## 2026-11-03
 
 - STATUS § 3: điều khoản + chính sách đồng bộ app/legal/landing (mobile [#121](https://github.com/LockR-Tech/mobile/pull/121), legal [#2](https://github.com/LockR-Tech/legal/pull/2), frontend [#87](https://github.com/LockR-Tech/frontend/pull/87)), toast chồng nhau + hiệu ứng trang chủ (mobile [#122](https://github.com/LockR-Tech/mobile/pull/122)); F4-G10 ghi phần chính sách đã viết; architecture § 1, release-deploy: trang `terms-of-service.html`.
+- F2-G09: [03-hardware/tu01-so-do-tong-quan](03-hardware/tu01-so-do-tong-quan.md) — sơ đồ tổng quan tủ `CAB-TU01` theo bản nối dây 03/11 (mặt trước tủ, sơ đồ khối, header 40 chân, mạch C1815, breadboard, driver + motor, khoá + relay; hình SVG sinh bằng `scripts/ve-so-do-tu01.py`), cấu hình phần mềm đang chạy, quãng ray đo được và việc còn lại; đánh dấu bản đồ chân cũ ở cabinet-wiring-spec § 6.1, tu01-wiring-photos, pi-lockr-tu01, controller-wiring-guide; AGENTS trỏ tới tài liệu mới.
 - STATUS § 3: header trang khách kiểu mới (mobile `feat/header-trang-khach-minh-hoa`), mở app nhanh (mobile `perf/khoi-dong-app-nhanh`).
 - release-deploy § 7, § 8: khoá ký Android release (SHA-1/SHA-256, nơi giữ, khai Firebase), APK gửi người thử phải là bản release.
 
