@@ -7,6 +7,7 @@
 | **Đối chiếu code** | `iot` tại `c843447` ([iot#8](https://github.com/LockR-Tech/iot/pull/8) — cách GPIO, `hardware/*.py`, `debug_gpio.py`) + `137d945` ([iot#9](https://github.com/LockR-Tech/iot/pull/9) — hợp đồng MQTT) · `backend` gateway CORS tại `api-gateway/src/main/resources/application.yml:186-196` |
 | **Đã dựng thử** | Pi 5 `lockr-tu01` ngày 2026-09-27, Raspberry Pi OS Trixie — hồ sơ và sự cố: [pi-lockr-tu01.md](pi-lockr-tu01.md). § 4.2–4.6 viết theo lần dựng đó |
 | **Gap** | F2-G09 (tủ thật chạy end-to-end) — [flow-2](../02-flows/flow-2-locker-send.md) |
+| **Tủ `CAB-TU01`** | Bản nối dây và cấu hình hiện tại (từ 2026-11-03): [tu01-so-do-tong-quan](tu01-so-do-tong-quan.md). Bản đồ chân ví dụ trong hướng dẫn này là mặc định của code, không phải của tủ đó |
 
 `main.py` điều khiển tủ theo một trong hai cách, chọn bằng `HARDWARE_BACKEND` trong `.env`:
 

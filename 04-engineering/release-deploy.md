@@ -8,7 +8,7 @@
 | Admin web | `https://admin.locker-drone.tech` | Cloudflare Worker `laundry-locker-frontend-1` | `LockR-Tech/frontend` → `deploy.yml` |
 | Landing | `https://locker-drone.tech` | Cloudflare Worker `laundry-locker-landing` | `LockR-Tech/frontend` → `deploy.yml` |
 | Mobile web | Worker `laundry-locker-mobile-web` | Cloudflare | `LockR-Tech/mobile` → `deploy-web.yml` |
-| Trang chính sách | `https://lockr-tech.github.io/legal/privacy-policy.html` · `data-deletion.html` | GitHub Pages | `LockR-Tech/legal` (`main`, `/`) |
+| Trang chính sách | `https://lockr-tech.github.io/legal/privacy-policy.html` · `terms-of-service.html` (+ bản `-en`) · `data-deletion.html` | GitHub Pages | `LockR-Tech/legal` (`main`, `/`) |
 | App Android/iOS | Store (build tay) | — | `LockR-Tech/mobile` |
 | Tủ vật lý | Raspberry Pi tại từng tủ | — | `LockR-Tech/iot` (cập nhật tay) |
 
