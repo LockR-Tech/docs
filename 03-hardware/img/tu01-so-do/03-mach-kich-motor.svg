@@ -1,0 +1,123 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1500" height="980" viewBox="0 0 1500 980" font-family="Segoe UI, Roboto, Helvetica, Arial, sans-serif">
+<defs><marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="context-stroke"/></marker></defs>
+<rect width="1500" height="980" fill="#ffffff"/>
+<text x="24" y="38" font-size="24" text-anchor="start" font-weight="700" fill="#1f2937">Mạch kích tín hiệu motor — GPIO 3,3 V → 1 kΩ → C1815 → opto TB6600</text>
+<text x="24" y="62" font-size="14" text-anchor="start" font-weight="400" fill="#6b7280">Mỗi tín hiệu PUL/DIR một transistor. GPIO lên CAO ⇒ transistor dẫn ⇒ kéo PUL−/DIR− xuống ⇒ opto sáng ⇒ driver nhận xung (active-high).</text>
+<rect x="40" y="150" width="230" height="380" rx="12" fill="#2e7d32" stroke="#1b5e20" stroke-width="3"/>
+<text x="155" y="182" font-size="16" text-anchor="middle" font-weight="700" fill="#fff">Raspberry Pi 5</text>
+<rect x="150" y="214" width="120" height="32" rx="6" fill="#fff" stroke="#ef6c00" stroke-width="2"/>
+<text x="210" y="235" font-size="12" text-anchor="middle" font-weight="700" fill="#ef6c00">chân 2 · 5V</text>
+<rect x="150" y="314" width="120" height="32" rx="6" fill="#fff" stroke="#1565c0" stroke-width="2"/>
+<text x="210" y="335" font-size="12" text-anchor="middle" font-weight="700" fill="#1565c0">chân 11 · GPIO17</text>
+<rect x="150" y="454" width="120" height="32" rx="6" fill="#fff" stroke="#212121" stroke-width="2"/>
+<text x="210" y="475" font-size="12" text-anchor="middle" font-weight="700" fill="#212121">chân 9 · GND</text>
+<rect x="1000" y="150" width="300" height="380" rx="12" fill="#263238" stroke="#000" stroke-width="3"/>
+<text x="1150" y="182" font-size="16" text-anchor="middle" font-weight="700" fill="#fff">Driver TB6600 #1</text>
+<rect x="1000" y="214" width="70" height="32" rx="6" fill="#fff" stroke="#ef6c00" stroke-width="2"/>
+<text x="1035" y="235" font-size="13" text-anchor="middle" font-weight="700" fill="#ef6c00">PUL+</text>
+<rect x="1000" y="314" width="70" height="32" rx="6" fill="#fff" stroke="#1565c0" stroke-width="2"/>
+<text x="1035" y="335" font-size="13" text-anchor="middle" font-weight="700" fill="#1565c0">PUL−</text>
+<rect x="1100" y="210" width="170" height="160" rx="8" fill="#37474f" stroke="#90a4ae" stroke-width="1.5" stroke-dasharray="5 4"/>
+<text x="1185" y="232" font-size="12" text-anchor="middle" font-weight="400" fill="#cfd8dc">opto bên trong</text>
+<path d="M1130,250 l0,20" fill="none" stroke="#fff" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M1120,270 l20,0 l-10,18 z" fill="#ffeb3b" stroke="#fff" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M1120,288 l20,0" fill="none" stroke="#fff" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M1130,288 l0,22" fill="none" stroke="#fff" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M1150,272 l14,-10 M1150,284 l14,-10" fill="none" stroke="#ffeb3b" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="1200" y="300" font-size="11" text-anchor="start" font-weight="400" fill="#cfd8dc">điện trở</text>
+<text x="1200" y="314" font-size="11" text-anchor="start" font-weight="400" fill="#cfd8dc">hạn dòng</text>
+<polyline points="1070,230 1130,230 1130,250" fill="none" stroke="#fff" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
+<polyline points="1070,330 1130,330 1130,310" fill="none" stroke="#fff" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="1150" y="400" font-size="12" text-anchor="middle" font-weight="400" fill="#ffcc80">Dòng chạy: 5V → PUL+ → LED opto</text>
+<text x="1150" y="418" font-size="12" text-anchor="middle" font-weight="400" fill="#ffcc80">→ PUL− → C → E → GND Pi</text>
+<text x="1150" y="450" font-size="12" text-anchor="middle" font-weight="400" fill="#cfd8dc">DIR dùng mạch y hệt:</text>
+<text x="1150" y="468" font-size="12" text-anchor="middle" font-weight="400" fill="#cfd8dc">DIR+ = 5V, DIR− ← C của T2</text>
+<polyline points="270,230 1000,230" fill="none" stroke="#ef6c00" stroke-width="3.5" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="560" y="222" font-size="13" text-anchor="middle" font-weight="600" fill="#ef6c00">5V (chân 2) → PUL+ và DIR+ của CẢ 2 driver</text>
+<line x1="270" y1="330" x2="290" y2="330" stroke="#1f2937" stroke-width="2.5" stroke-linecap="round"/>
+<path d="M290,330 l8,-10 l8,20 l8,-10 l8,20 l8,-10 l8,-10" fill="none" stroke="#1f2937" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>
+<line x1="338" y1="330" x2="520" y2="330" stroke="#1f2937" stroke-width="2.5" stroke-linecap="round"/>
+<text x="403.0" y="312" font-size="13" text-anchor="middle" font-weight="600" fill="#1f2937">R1 = 1 kΩ</text>
+<circle cx="566" cy="330" r="34" fill="#fff" stroke="#1f2937" stroke-width="2"/>
+<line x1="520" y1="330" x2="552" y2="330" stroke="#1f2937" stroke-width="2.5" stroke-linecap="round"/>
+<line x1="552" y1="308" x2="552" y2="352" stroke="#1f2937" stroke-width="4" stroke-linecap="round"/>
+<line x1="552" y1="320" x2="582" y2="298" stroke="#1f2937" stroke-width="2.5" stroke-linecap="round"/>
+<line x1="582" y1="298" x2="582" y2="280" stroke="#1f2937" stroke-width="2.5" stroke-linecap="round"/>
+<line x1="552" y1="340" x2="582" y2="362" stroke="#1f2937" stroke-width="2.5" stroke-linecap="round"/>
+<line x1="582" y1="362" x2="582" y2="380" stroke="#1f2937" stroke-width="2.5" stroke-linecap="round"/>
+<path d="M582,362 l-13,-2 l6,-9 z" fill="#1f2937" stroke="#1f2937" stroke-width="1" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="610" y="335" font-size="15" text-anchor="start" font-weight="700" fill="#1f2937">T1  C1815 (NPN)</text>
+<text x="534" y="322" font-size="12" text-anchor="middle" font-weight="700" fill="#6b7280">B</text>
+<text x="594" y="290" font-size="12" text-anchor="middle" font-weight="700" fill="#6b7280">C</text>
+<text x="594" y="378" font-size="12" text-anchor="middle" font-weight="700" fill="#6b7280">E</text>
+<polyline points="582,280 582,260 900,260 900,330 1000,330" fill="none" stroke="#1565c0" stroke-width="3.5" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="760" y="252" font-size="13" text-anchor="middle" font-weight="600" fill="#1565c0">C → ốc PUL− driver 1</text>
+<polyline points="582,380 582,470 270,470" fill="none" stroke="#212121" stroke-width="3.5" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="430" y="462" font-size="13" text-anchor="middle" font-weight="600" fill="#212121">E → cột − trái breadboard → chân 9 (GND)</text>
+<rect x="620" y="380" width="330" height="110" rx="8" fill="#fffde7" stroke="#f9a825" stroke-width="1.5"/>
+<text x="636" y="404" font-size="13" text-anchor="start" font-weight="700" fill="#1f2937">Đo DC so với GND Pi khi GPIO17 CAO:</text>
+<text x="636" y="428" font-size="13" text-anchor="start" font-weight="400" fill="#1f2937">• chân B ≈ 0,7 V</text>
+<text x="636" y="450" font-size="13" text-anchor="start" font-weight="400" fill="#1f2937">• ốc PUL− ≈ 0,1–0,2 V (transistor dẫn)</text>
+<text x="636" y="472" font-size="13" text-anchor="start" font-weight="400" fill="#6b7280">Khi GPIO17 THẤP: PUL− ≈ 5 V (opto tắt)</text>
+<text x="120" y="600" font-size="16" text-anchor="start" font-weight="700" fill="#1f2937">Chân C1815 (vỏ TO-92) — nhìn từ mặt phẳng có chữ</text>
+<rect x="160" y="630" width="120" height="70" rx="8" fill="#263238" stroke="#000" stroke-width="2"/>
+<text x="220" y="662" font-size="15" text-anchor="middle" font-weight="700" fill="#fff">C1815</text>
+<text x="220" y="682" font-size="10" text-anchor="middle" font-weight="400" fill="#b0bec5">mặt phẳng, có chữ</text>
+<line x1="180" y1="700" x2="180" y2="790" stroke="#9e9e9e" stroke-width="5" stroke-linecap="round"/>
+<text x="180" y="815" font-size="18" text-anchor="middle" font-weight="700" fill="#1f2937">E</text>
+<line x1="220" y1="700" x2="220" y2="790" stroke="#9e9e9e" stroke-width="5" stroke-linecap="round"/>
+<text x="220" y="815" font-size="18" text-anchor="middle" font-weight="700" fill="#1f2937">C</text>
+<line x1="260" y1="700" x2="260" y2="790" stroke="#9e9e9e" stroke-width="5" stroke-linecap="round"/>
+<text x="260" y="815" font-size="18" text-anchor="middle" font-weight="700" fill="#1f2937">B</text>
+<text x="350" y="670" font-size="14" text-anchor="start" font-weight="400" fill="#1f2937">Cầm transistor: MẶT PHẲNG CÓ CHỮ hướng về phía mình,</text>
+<text x="350" y="692" font-size="14" text-anchor="start" font-weight="400" fill="#1f2937">chân chĩa xuống ⇒ từ trái sang phải là  E – C – B.</text>
+<text x="350" y="714" font-size="14" text-anchor="start" font-weight="400" fill="#1f2937"></text>
+<text x="350" y="736" font-size="14" text-anchor="start" font-weight="400" fill="#1f2937">• E (emitter)  → cột − cùng bên của breadboard → GND Pi</text>
+<text x="350" y="758" font-size="14" text-anchor="start" font-weight="400" fill="#1f2937">• C (collector) → PUL− hoặc DIR− của driver</text>
+<text x="350" y="780" font-size="14" text-anchor="start" font-weight="400" fill="#1f2937">• B (base)      → điện trở 1 kΩ → GPIO của Pi</text>
+<text x="350" y="802" font-size="14" text-anchor="start" font-weight="400" fill="#1f2937"></text>
+<text x="350" y="824" font-size="14" text-anchor="start" font-weight="400" fill="#1f2937">GPIO KHÔNG BAO GIỜ nối thẳng vào driver — luôn qua điện trở + transistor.</text>
+<text x="350" y="846" font-size="14" text-anchor="start" font-weight="400" fill="#1f2937">Đề xuất khi hàn lên board: thêm 10 kΩ từ B xuống GND cho mỗi transistor</text>
+<text x="350" y="868" font-size="14" text-anchor="start" font-weight="400" fill="#1f2937">(giữ transistor tắt chắc chắn lúc Pi khởi động).</text>
+<text x="1000" y="580" font-size="16" text-anchor="start" font-weight="700" fill="#1f2937">4 kênh giống hệt nhau</text>
+<rect x="1000" y="600" width="110" height="32" rx="0" fill="#eceff1" stroke="#cbd5e1" stroke-width="1.5"/>
+<text x="1008" y="621" font-size="13" text-anchor="start" font-weight="700" fill="#1f2937">Transistor</text>
+<rect x="1110" y="600" width="130" height="32" rx="0" fill="#eceff1" stroke="#cbd5e1" stroke-width="1.5"/>
+<text x="1118" y="621" font-size="13" text-anchor="start" font-weight="700" fill="#1f2937">GPIO (chân)</text>
+<rect x="1240" y="600" width="150" height="32" rx="0" fill="#eceff1" stroke="#cbd5e1" stroke-width="1.5"/>
+<text x="1248" y="621" font-size="13" text-anchor="start" font-weight="700" fill="#1f2937">C nối vào</text>
+<rect x="1390" y="600" width="90" height="32" rx="0" fill="#eceff1" stroke="#cbd5e1" stroke-width="1.5"/>
+<text x="1398" y="621" font-size="13" text-anchor="start" font-weight="700" fill="#1f2937">E về</text>
+<rect x="1000" y="632" width="110" height="32" rx="0" fill="#fff" stroke="#cbd5e1" stroke-width="1.5"/>
+<text x="1008" y="653" font-size="13" text-anchor="start" font-weight="400" fill="#1f2937">T1</text>
+<rect x="1110" y="632" width="130" height="32" rx="0" fill="#fff" stroke="#cbd5e1" stroke-width="1.5"/>
+<text x="1118" y="653" font-size="13" text-anchor="start" font-weight="400" fill="#1f2937">GPIO17 (11)</text>
+<rect x="1240" y="632" width="150" height="32" rx="0" fill="#fff" stroke="#cbd5e1" stroke-width="1.5"/>
+<text x="1248" y="653" font-size="13" text-anchor="start" font-weight="400" fill="#1f2937">PUL− driver 1</text>
+<rect x="1390" y="632" width="90" height="32" rx="0" fill="#fff" stroke="#cbd5e1" stroke-width="1.5"/>
+<text x="1398" y="653" font-size="13" text-anchor="start" font-weight="400" fill="#1f2937">chân 9</text>
+<rect x="1000" y="664" width="110" height="32" rx="0" fill="#fff" stroke="#cbd5e1" stroke-width="1.5"/>
+<text x="1008" y="685" font-size="13" text-anchor="start" font-weight="400" fill="#1f2937">T2</text>
+<rect x="1110" y="664" width="130" height="32" rx="0" fill="#fff" stroke="#cbd5e1" stroke-width="1.5"/>
+<text x="1118" y="685" font-size="13" text-anchor="start" font-weight="400" fill="#1f2937">GPIO27 (13)</text>
+<rect x="1240" y="664" width="150" height="32" rx="0" fill="#fff" stroke="#cbd5e1" stroke-width="1.5"/>
+<text x="1248" y="685" font-size="13" text-anchor="start" font-weight="400" fill="#1f2937">DIR− driver 1</text>
+<rect x="1390" y="664" width="90" height="32" rx="0" fill="#fff" stroke="#cbd5e1" stroke-width="1.5"/>
+<text x="1398" y="685" font-size="13" text-anchor="start" font-weight="400" fill="#1f2937">chân 9</text>
+<rect x="1000" y="696" width="110" height="32" rx="0" fill="#fff" stroke="#cbd5e1" stroke-width="1.5"/>
+<text x="1008" y="717" font-size="13" text-anchor="start" font-weight="400" fill="#1f2937">T3</text>
+<rect x="1110" y="696" width="130" height="32" rx="0" fill="#fff" stroke="#cbd5e1" stroke-width="1.5"/>
+<text x="1118" y="717" font-size="13" text-anchor="start" font-weight="400" fill="#1f2937">GPIO22 (15)</text>
+<rect x="1240" y="696" width="150" height="32" rx="0" fill="#fff" stroke="#cbd5e1" stroke-width="1.5"/>
+<text x="1248" y="717" font-size="13" text-anchor="start" font-weight="400" fill="#1f2937">PUL− driver 2</text>
+<rect x="1390" y="696" width="90" height="32" rx="0" fill="#fff" stroke="#cbd5e1" stroke-width="1.5"/>
+<text x="1398" y="717" font-size="13" text-anchor="start" font-weight="400" fill="#1f2937">chân 14</text>
+<rect x="1000" y="728" width="110" height="32" rx="0" fill="#fff" stroke="#cbd5e1" stroke-width="1.5"/>
+<text x="1008" y="749" font-size="13" text-anchor="start" font-weight="400" fill="#1f2937">T4</text>
+<rect x="1110" y="728" width="130" height="32" rx="0" fill="#fff" stroke="#cbd5e1" stroke-width="1.5"/>
+<text x="1118" y="749" font-size="13" text-anchor="start" font-weight="400" fill="#1f2937">GPIO23 (16)</text>
+<rect x="1240" y="728" width="150" height="32" rx="0" fill="#fff" stroke="#cbd5e1" stroke-width="1.5"/>
+<text x="1248" y="749" font-size="13" text-anchor="start" font-weight="400" fill="#1f2937">DIR− driver 2</text>
+<rect x="1390" y="728" width="90" height="32" rx="0" fill="#fff" stroke="#cbd5e1" stroke-width="1.5"/>
+<text x="1398" y="749" font-size="13" text-anchor="start" font-weight="400" fill="#1f2937">chân 14</text>
+</svg>

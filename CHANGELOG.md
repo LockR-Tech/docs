@@ -4,6 +4,7 @@ Mỗi thay đổi ở repo docs thêm **một dòng** vào ngày tương ứng (
 
 ## 2026-11-03
 
+- F2-G09: [03-hardware/tu01-so-do-tong-quan](03-hardware/tu01-so-do-tong-quan.md) — sơ đồ tổng quan tủ `CAB-TU01` theo bản nối dây 03/11 (mặt trước tủ, sơ đồ khối, header 40 chân, mạch C1815, breadboard, driver + motor, khoá + relay; hình SVG sinh bằng `scripts/ve-so-do-tu01.py`), cấu hình phần mềm đang chạy, quãng ray đo được và việc còn lại; đánh dấu bản đồ chân cũ ở cabinet-wiring-spec § 6.1, tu01-wiring-photos, pi-lockr-tu01, controller-wiring-guide; AGENTS trỏ tới tài liệu mới.
 - STATUS § 3: header trang khách kiểu mới (mobile `feat/header-trang-khach-minh-hoa`), mở app nhanh (mobile `perf/khoi-dong-app-nhanh`).
 - release-deploy § 7, § 8: khoá ký Android release (SHA-1/SHA-256, nơi giữ, khai Firebase), APK gửi người thử phải là bản release.
 

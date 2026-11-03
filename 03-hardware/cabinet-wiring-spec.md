@@ -126,6 +126,8 @@ Vì sao chọn các chân này:
 
 ### 6.1 Tủ `lockr-tu01`: chân theo người làm tủ
 
+> **Đã thay từ 2026-11-03.** Tủ đã nối lại theo sơ đồ mới — bản đồ chân hiện tại ở [tu01-so-do-tong-quan](tu01-so-do-tong-quan.md). Mục này giữ làm lịch sử.
+
 Ngày 2026-10-01 người làm tủ gửi hướng dẫn nối dây riêng cho tủ này. Bảng ở trên là **mặc định trong code**; tủ `lockr-tu01` nối theo người làm tủ và đặt lại chân bằng `.env`. Vị trí từng cọc trên tủ: [tu01-wiring-photos.md](tu01-wiring-photos.md).
 
 | Ô | Relay | Chân relay (người làm tủ) | Dây nâu tín hiệu khoá (người làm tủ) |

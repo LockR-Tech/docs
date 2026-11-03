@@ -4,7 +4,7 @@
 |---|---|
 | **Dùng khi** | Đang đứng trước khoang điện của tủ, cần biết dây nào bắt vào cọc nào |
 | **Ảnh** | Ảnh gốc ở [`locker/`](../locker/) (toàn cảnh 2026-09-30, 12 ảnh chi tiết 2026-10-01). Ảnh có nhãn ở `img/tu01/`, sinh bằng `python scripts/annotate-tu01-photos.py` |
-| **Bản đồ chân** | **Theo hướng dẫn của người làm tủ** (nhận 2026-10-01), khác mặc định trong code — [cabinet-wiring-spec § 6.1](cabinet-wiring-spec.md#61-tủ-lockr-tu01-chân-theo-người-làm-tủ). Pi đã đặt `.env` theo bản đồ này (§ 9) |
+| **Bản đồ chân** | ⚠ **Đã thay từ 2026-11-03** — dùng [tu01-so-do-tong-quan](tu01-so-do-tong-quan.md); ảnh và mô tả cọc dưới đây vẫn đúng cho phần dây của nhà làm tủ. Trước đó: **theo hướng dẫn của người làm tủ** (nhận 2026-10-01), khác mặc định trong code — [cabinet-wiring-spec § 6.1](cabinet-wiring-spec.md#61-tủ-lockr-tu01-chân-theo-người-làm-tủ). Pi đã đặt `.env` theo bản đồ này (§ 9) |
 | **Quy trình đầy đủ** | [controller-wiring-guide § 3–5](controller-wiring-guide.md#3-thứ-tự-nối-dây) |
 | **Gap** | F2-G09 |
 

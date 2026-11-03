@@ -78,13 +78,13 @@ Ngoài các bước ở [controller-wiring-guide § 4](controller-wiring-guide.m
 
 | Mục | Giá trị |
 |---|---|
-| `~/iot/.env` | `HARDWARE_BACKEND=gpio`, `LID_ENABLED=true`, `SERIAL_PORT=AUTO` (không dùng), `MAC_ADDRESS=2C:CF:67:DB:C5:C3`, `MQTT_BROKER=broker.hivemq.com`, `BACKEND_API_URL=https://api.locker-drone.tech`, `POSTGRES_*`. Từ 2026-10-01 thêm chân theo người làm tủ ([spec § 6.1](cabinet-wiring-spec.md#61-tủ-lockr-tu01-chân-theo-người-làm-tủ)): `GPIO_RELAY_PINS=5,6,13,19,26,22,23`, `GPIO_DOOR_PINS=4,12,16,20,21,24,25`, `LID_PUL_PIN=18`, `LID_DIR_PIN=27`, `LID_HOME_PIN=17`, `LID_END_PIN=10` (bản cũ `.env.bak-20261001-pins`) |
+| `~/iot/.env` | `HARDWARE_BACKEND=gpio`, `LID_ENABLED=true`, `SERIAL_PORT=AUTO` (không dùng), `MAC_ADDRESS=2C:CF:67:DB:C5:C3`, `MQTT_BROKER=broker.hivemq.com`, `BACKEND_API_URL=https://api.locker-drone.tech`, `POSTGRES_*`. Từ 2026-10-01 thêm chân theo người làm tủ ([spec § 6.1](cabinet-wiring-spec.md#61-tủ-lockr-tu01-chân-theo-người-làm-tủ)): `GPIO_RELAY_PINS=5,6,13,19,26,22,23`, `GPIO_DOOR_PINS=4,12,16,20,21,24,25`, `LID_PUL_PIN=18`, `LID_DIR_PIN=27`, `LID_HOME_PIN=17`, `LID_END_PIN=10` (bản cũ `.env.bak-20261001-pins`). **Từ 2026-11-03 bản đồ chân nằm ở `config/hardware_config.json` (ghi đè `.env`)** — giá trị ở [tu01-so-do-tong-quan § 7](tu01-so-do-tong-quan.md#7-cấu-hình-phần-mềm-trên-pi); bản `.env` trước đó lưu `.env.bak-*-sodo1103` |
 | `~/iot/ui/.env.local` | `VITE_API_URL=` (trống), `VITE_LOCAL_API_URL=http://localhost:8000`, `VITE_LOCKER_ID=7`, `VITE_LOCKER_CODE=CAB-TU01` (trước 2026-10-01: tủ demo id 1), bộ `VITE_FIREBASE_*` |
-| `lockr-controller.service` | `ExecStopPost=/usr/bin/pinctrl set 5,6,13,19,26,22,23 op dl` — ngắt mọi relay khi dịch vụ dừng/chết; danh sách chân theo `GPIO_RELAY_PINS` (bản cũ `.service.bak-20261001`) |
+| `lockr-controller.service` | `ExecStopPost=/usr/bin/pinctrl set 5,6,13,19,26,16,20 op dl` (từ 2026-11-03; trước đó `5,6,13,19,26,22,23`) — ngắt mọi relay khi dịch vụ dừng/chết; danh sách chân theo `GPIO_RELAY_PINS` (bản cũ `.service.bak-20261001`) |
 | `/etc/sysctl.d/90-lockr-dirty-limits.conf` | `vm.dirty_background_bytes=4194304`, `vm.dirty_bytes=16777216` |
 | `~/.config/kanshi/config` | `profile kiosk { output HDMI-A-1 enable mode 1024x600 position 0,0 }` — giữ 1024×600 cả khi không đọc được EDID (sự cố 26) |
 | `~/.config/labwc/rc.xml` | `<touch deviceName="WaveShare WS170120 (USB 3-1)" mapToOutput="HDMI-A-1" mouseEmulation="no"/>` |
-| `/boot/firmware/config.txt` | thêm `gpio=5,6,13,19,26,22,23=op,dl` — chân relay ra mức thấp từ firmware; đo ở giây thứ 3 sau khi kernel khởi động cả 7 chân đã `op dl`, `main.py` tới giây 64 mới chạy (bản gốc: `config.txt.bak-20261001`) |
+| `/boot/firmware/config.txt` | thêm `gpio=5,6,13,19,26,16,20=op,dl` (từ 2026-11-03; trước đó `5,6,13,19,26,22,23`) — chân relay ra mức thấp từ firmware; đo ở giây thứ 3 sau khi kernel khởi động cả 7 chân đã `op dl`, `main.py` tới giây 64 mới chạy (bản gốc: `config.txt.bak-20261001`) |
 | `/boot/firmware/cmdline.txt` | thêm `video=HDMI-A-1:1024x600@60D` (bản gốc: `cmdline.txt.bak-20260930`) |
 | `/root/pi-setup.sh` | script đã dùng để dựng (không chứa mật khẩu) — chạy lại được; **chưa có** các bước 2026-09-30 (`kiosk.sh` mới, watchdog, `cmdline.txt`, `rc.xml`) |
 

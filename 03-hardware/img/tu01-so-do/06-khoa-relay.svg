@@ -1,0 +1,318 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1780" height="1220" viewBox="0 0 1780 1220" font-family="Segoe UI, Roboto, Helvetica, Arial, sans-serif">
+<defs><marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="context-stroke"/></marker></defs>
+<rect width="1780" height="1220" fill="#ffffff"/>
+<text x="24" y="38" font-size="24" text-anchor="start" font-weight="700" fill="#1f2937">Khoá điện từ 12 V, module relay 8 kênh và dây phản hồi</text>
+<text x="24" y="62" font-size="14" text-anchor="start" font-weight="400" fill="#6b7280">Dây to + mọi khoá → +V 12 V; dây to − khoá N → COM relay N; NO mỗi relay → −V 12 V. Không cấp điện khoá quá ~10 giây, mở từng khoá một.</text>
+<rect x="300" y="150" width="1300" height="260" rx="10" fill="#1565c0" stroke="#0d47a1" stroke-width="3"/>
+<text x="950.0" y="180" font-size="15" text-anchor="middle" font-weight="700" fill="#fff">Module relay 8 kênh 5 V — jumper chọn mức kích đặt ở H (GPIO cao ⇒ relay đóng)</text>
+<rect x="331.25" y="240" width="100" height="90" rx="6" fill="#2196f3" stroke="#0d47a1" stroke-width="1.5"/>
+<text x="381.25" y="280" font-size="18" text-anchor="middle" font-weight="700" fill="#fff">K1</text>
+<text x="381.25" y="302" font-size="10" text-anchor="middle" font-weight="400" fill="#e3f2fd">SRD-05VDC</text>
+<rect x="326.25" y="350" width="30" height="44" rx="3" fill="#0d47a1" stroke="#000" stroke-width="1.5"/>
+<circle cx="341.25" cy="372" r="9" fill="#b0bec5" stroke="#37474f" stroke-width="1.5"/>
+<text x="341.25" y="344" font-size="11" text-anchor="middle" font-weight="700" fill="#fff">NO</text>
+<rect x="366.25" y="350" width="30" height="44" rx="3" fill="#0d47a1" stroke="#000" stroke-width="1.5"/>
+<circle cx="381.25" cy="372" r="9" fill="#b0bec5" stroke="#37474f" stroke-width="1.5"/>
+<text x="381.25" y="344" font-size="11" text-anchor="middle" font-weight="700" fill="#fff">COM</text>
+<rect x="406.25" y="350" width="30" height="44" rx="3" fill="#0d47a1" stroke="#000" stroke-width="1.5"/>
+<circle cx="421.25" cy="372" r="9" fill="#b0bec5" stroke="#37474f" stroke-width="1.5"/>
+<text x="421.25" y="344" font-size="11" text-anchor="middle" font-weight="700" fill="#fff">NC</text>
+<rect x="493.75" y="240" width="100" height="90" rx="6" fill="#2196f3" stroke="#0d47a1" stroke-width="1.5"/>
+<text x="543.75" y="280" font-size="18" text-anchor="middle" font-weight="700" fill="#fff">K2</text>
+<text x="543.75" y="302" font-size="10" text-anchor="middle" font-weight="400" fill="#e3f2fd">SRD-05VDC</text>
+<rect x="488.75" y="350" width="30" height="44" rx="3" fill="#0d47a1" stroke="#000" stroke-width="1.5"/>
+<circle cx="503.75" cy="372" r="9" fill="#b0bec5" stroke="#37474f" stroke-width="1.5"/>
+<text x="503.75" y="344" font-size="11" text-anchor="middle" font-weight="700" fill="#fff">NO</text>
+<rect x="528.75" y="350" width="30" height="44" rx="3" fill="#0d47a1" stroke="#000" stroke-width="1.5"/>
+<circle cx="543.75" cy="372" r="9" fill="#b0bec5" stroke="#37474f" stroke-width="1.5"/>
+<text x="543.75" y="344" font-size="11" text-anchor="middle" font-weight="700" fill="#fff">COM</text>
+<rect x="568.75" y="350" width="30" height="44" rx="3" fill="#0d47a1" stroke="#000" stroke-width="1.5"/>
+<circle cx="583.75" cy="372" r="9" fill="#b0bec5" stroke="#37474f" stroke-width="1.5"/>
+<text x="583.75" y="344" font-size="11" text-anchor="middle" font-weight="700" fill="#fff">NC</text>
+<rect x="656.25" y="240" width="100" height="90" rx="6" fill="#2196f3" stroke="#0d47a1" stroke-width="1.5"/>
+<text x="706.25" y="280" font-size="18" text-anchor="middle" font-weight="700" fill="#fff">K3</text>
+<text x="706.25" y="302" font-size="10" text-anchor="middle" font-weight="400" fill="#e3f2fd">SRD-05VDC</text>
+<rect x="651.25" y="350" width="30" height="44" rx="3" fill="#0d47a1" stroke="#000" stroke-width="1.5"/>
+<circle cx="666.25" cy="372" r="9" fill="#b0bec5" stroke="#37474f" stroke-width="1.5"/>
+<text x="666.25" y="344" font-size="11" text-anchor="middle" font-weight="700" fill="#fff">NO</text>
+<rect x="691.25" y="350" width="30" height="44" rx="3" fill="#0d47a1" stroke="#000" stroke-width="1.5"/>
+<circle cx="706.25" cy="372" r="9" fill="#b0bec5" stroke="#37474f" stroke-width="1.5"/>
+<text x="706.25" y="344" font-size="11" text-anchor="middle" font-weight="700" fill="#fff">COM</text>
+<rect x="731.25" y="350" width="30" height="44" rx="3" fill="#0d47a1" stroke="#000" stroke-width="1.5"/>
+<circle cx="746.25" cy="372" r="9" fill="#b0bec5" stroke="#37474f" stroke-width="1.5"/>
+<text x="746.25" y="344" font-size="11" text-anchor="middle" font-weight="700" fill="#fff">NC</text>
+<rect x="818.75" y="240" width="100" height="90" rx="6" fill="#2196f3" stroke="#0d47a1" stroke-width="1.5"/>
+<text x="868.75" y="280" font-size="18" text-anchor="middle" font-weight="700" fill="#fff">K4</text>
+<text x="868.75" y="302" font-size="10" text-anchor="middle" font-weight="400" fill="#e3f2fd">SRD-05VDC</text>
+<rect x="813.75" y="350" width="30" height="44" rx="3" fill="#0d47a1" stroke="#000" stroke-width="1.5"/>
+<circle cx="828.75" cy="372" r="9" fill="#b0bec5" stroke="#37474f" stroke-width="1.5"/>
+<text x="828.75" y="344" font-size="11" text-anchor="middle" font-weight="700" fill="#fff">NO</text>
+<rect x="853.75" y="350" width="30" height="44" rx="3" fill="#0d47a1" stroke="#000" stroke-width="1.5"/>
+<circle cx="868.75" cy="372" r="9" fill="#b0bec5" stroke="#37474f" stroke-width="1.5"/>
+<text x="868.75" y="344" font-size="11" text-anchor="middle" font-weight="700" fill="#fff">COM</text>
+<rect x="893.75" y="350" width="30" height="44" rx="3" fill="#0d47a1" stroke="#000" stroke-width="1.5"/>
+<circle cx="908.75" cy="372" r="9" fill="#b0bec5" stroke="#37474f" stroke-width="1.5"/>
+<text x="908.75" y="344" font-size="11" text-anchor="middle" font-weight="700" fill="#fff">NC</text>
+<rect x="981.25" y="240" width="100" height="90" rx="6" fill="#2196f3" stroke="#0d47a1" stroke-width="1.5"/>
+<text x="1031.25" y="280" font-size="18" text-anchor="middle" font-weight="700" fill="#fff">K5</text>
+<text x="1031.25" y="302" font-size="10" text-anchor="middle" font-weight="400" fill="#e3f2fd">SRD-05VDC</text>
+<rect x="976.25" y="350" width="30" height="44" rx="3" fill="#0d47a1" stroke="#000" stroke-width="1.5"/>
+<circle cx="991.25" cy="372" r="9" fill="#b0bec5" stroke="#37474f" stroke-width="1.5"/>
+<text x="991.25" y="344" font-size="11" text-anchor="middle" font-weight="700" fill="#fff">NO</text>
+<rect x="1016.25" y="350" width="30" height="44" rx="3" fill="#0d47a1" stroke="#000" stroke-width="1.5"/>
+<circle cx="1031.25" cy="372" r="9" fill="#b0bec5" stroke="#37474f" stroke-width="1.5"/>
+<text x="1031.25" y="344" font-size="11" text-anchor="middle" font-weight="700" fill="#fff">COM</text>
+<rect x="1056.25" y="350" width="30" height="44" rx="3" fill="#0d47a1" stroke="#000" stroke-width="1.5"/>
+<circle cx="1071.25" cy="372" r="9" fill="#b0bec5" stroke="#37474f" stroke-width="1.5"/>
+<text x="1071.25" y="344" font-size="11" text-anchor="middle" font-weight="700" fill="#fff">NC</text>
+<rect x="1143.75" y="240" width="100" height="90" rx="6" fill="#2196f3" stroke="#0d47a1" stroke-width="1.5"/>
+<text x="1193.75" y="280" font-size="18" text-anchor="middle" font-weight="700" fill="#fff">K6</text>
+<text x="1193.75" y="302" font-size="10" text-anchor="middle" font-weight="400" fill="#e3f2fd">SRD-05VDC</text>
+<rect x="1138.75" y="350" width="30" height="44" rx="3" fill="#0d47a1" stroke="#000" stroke-width="1.5"/>
+<circle cx="1153.75" cy="372" r="9" fill="#b0bec5" stroke="#37474f" stroke-width="1.5"/>
+<text x="1153.75" y="344" font-size="11" text-anchor="middle" font-weight="700" fill="#fff">NO</text>
+<rect x="1178.75" y="350" width="30" height="44" rx="3" fill="#0d47a1" stroke="#000" stroke-width="1.5"/>
+<circle cx="1193.75" cy="372" r="9" fill="#b0bec5" stroke="#37474f" stroke-width="1.5"/>
+<text x="1193.75" y="344" font-size="11" text-anchor="middle" font-weight="700" fill="#fff">COM</text>
+<rect x="1218.75" y="350" width="30" height="44" rx="3" fill="#0d47a1" stroke="#000" stroke-width="1.5"/>
+<circle cx="1233.75" cy="372" r="9" fill="#b0bec5" stroke="#37474f" stroke-width="1.5"/>
+<text x="1233.75" y="344" font-size="11" text-anchor="middle" font-weight="700" fill="#fff">NC</text>
+<rect x="1306.25" y="240" width="100" height="90" rx="6" fill="#2196f3" stroke="#0d47a1" stroke-width="1.5"/>
+<text x="1356.25" y="280" font-size="18" text-anchor="middle" font-weight="700" fill="#fff">K7</text>
+<text x="1356.25" y="302" font-size="10" text-anchor="middle" font-weight="400" fill="#e3f2fd">SRD-05VDC</text>
+<rect x="1301.25" y="350" width="30" height="44" rx="3" fill="#0d47a1" stroke="#000" stroke-width="1.5"/>
+<circle cx="1316.25" cy="372" r="9" fill="#b0bec5" stroke="#37474f" stroke-width="1.5"/>
+<text x="1316.25" y="344" font-size="11" text-anchor="middle" font-weight="700" fill="#fff">NO</text>
+<rect x="1341.25" y="350" width="30" height="44" rx="3" fill="#0d47a1" stroke="#000" stroke-width="1.5"/>
+<circle cx="1356.25" cy="372" r="9" fill="#b0bec5" stroke="#37474f" stroke-width="1.5"/>
+<text x="1356.25" y="344" font-size="11" text-anchor="middle" font-weight="700" fill="#fff">COM</text>
+<rect x="1381.25" y="350" width="30" height="44" rx="3" fill="#0d47a1" stroke="#000" stroke-width="1.5"/>
+<circle cx="1396.25" cy="372" r="9" fill="#b0bec5" stroke="#37474f" stroke-width="1.5"/>
+<text x="1396.25" y="344" font-size="11" text-anchor="middle" font-weight="700" fill="#fff">NC</text>
+<rect x="1468.75" y="240" width="100" height="90" rx="6" fill="#64b5f6" stroke="#0d47a1" stroke-width="1.5"/>
+<text x="1518.75" y="280" font-size="18" text-anchor="middle" font-weight="700" fill="#fff">K8</text>
+<text x="1518.75" y="302" font-size="10" text-anchor="middle" font-weight="400" fill="#e3f2fd">SRD-05VDC</text>
+<rect x="1463.75" y="350" width="30" height="44" rx="3" fill="#0d47a1" stroke="#000" stroke-width="1.5"/>
+<circle cx="1478.75" cy="372" r="9" fill="#b0bec5" stroke="#37474f" stroke-width="1.5"/>
+<text x="1478.75" y="344" font-size="11" text-anchor="middle" font-weight="700" fill="#fff">NO</text>
+<rect x="1503.75" y="350" width="30" height="44" rx="3" fill="#0d47a1" stroke="#000" stroke-width="1.5"/>
+<circle cx="1518.75" cy="372" r="9" fill="#b0bec5" stroke="#37474f" stroke-width="1.5"/>
+<text x="1518.75" y="344" font-size="11" text-anchor="middle" font-weight="700" fill="#fff">COM</text>
+<rect x="1543.75" y="350" width="30" height="44" rx="3" fill="#0d47a1" stroke="#000" stroke-width="1.5"/>
+<circle cx="1558.75" cy="372" r="9" fill="#b0bec5" stroke="#37474f" stroke-width="1.5"/>
+<text x="1558.75" y="344" font-size="11" text-anchor="middle" font-weight="700" fill="#fff">NC</text>
+<text x="1518.75" y="220" font-size="12" text-anchor="middle" font-weight="600" fill="#bbdefb">K8 không dùng</text>
+<rect x="40" y="170" width="150" height="300" rx="8" fill="#e3f2fd" stroke="#0d47a1" stroke-width="2"/>
+<text x="115" y="194" font-size="13" text-anchor="middle" font-weight="700" fill="#1f2937">Đầu vào module</text>
+<circle cx="172" cy="212" r="7" fill="#b0bec5" stroke="#37474f" stroke-width="1.5"/>
+<text x="156" y="216" font-size="12" text-anchor="end" font-weight="700" fill="#1f2937">DC+</text>
+<circle cx="172" cy="237" r="7" fill="#b0bec5" stroke="#37474f" stroke-width="1.5"/>
+<text x="156" y="241" font-size="12" text-anchor="end" font-weight="700" fill="#1f2937">DC−</text>
+<circle cx="172" cy="262" r="7" fill="#b0bec5" stroke="#37474f" stroke-width="1.5"/>
+<text x="156" y="266" font-size="12" text-anchor="end" font-weight="700" fill="#1f2937">IN1</text>
+<circle cx="172" cy="287" r="7" fill="#b0bec5" stroke="#37474f" stroke-width="1.5"/>
+<text x="156" y="291" font-size="12" text-anchor="end" font-weight="700" fill="#1f2937">IN2</text>
+<circle cx="172" cy="312" r="7" fill="#b0bec5" stroke="#37474f" stroke-width="1.5"/>
+<text x="156" y="316" font-size="12" text-anchor="end" font-weight="700" fill="#1f2937">IN3</text>
+<circle cx="172" cy="337" r="7" fill="#b0bec5" stroke="#37474f" stroke-width="1.5"/>
+<text x="156" y="341" font-size="12" text-anchor="end" font-weight="700" fill="#1f2937">IN4</text>
+<circle cx="172" cy="362" r="7" fill="#b0bec5" stroke="#37474f" stroke-width="1.5"/>
+<text x="156" y="366" font-size="12" text-anchor="end" font-weight="700" fill="#1f2937">IN5</text>
+<circle cx="172" cy="387" r="7" fill="#b0bec5" stroke="#37474f" stroke-width="1.5"/>
+<text x="156" y="391" font-size="12" text-anchor="end" font-weight="700" fill="#1f2937">IN6</text>
+<circle cx="172" cy="412" r="7" fill="#b0bec5" stroke="#37474f" stroke-width="1.5"/>
+<text x="156" y="416" font-size="12" text-anchor="end" font-weight="700" fill="#1f2937">IN7</text>
+<circle cx="172" cy="437" r="7" fill="#b0bec5" stroke="#37474f" stroke-width="1.5"/>
+<text x="156" y="441" font-size="12" text-anchor="end" font-weight="700" fill="#1f2937">IN8</text>
+<polyline points="40,212 30,212" fill="none" stroke="#ef6c00" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>
+<polyline points="40,237 30,237" fill="none" stroke="#212121" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>
+<polyline points="40,262 30,262" fill="none" stroke="#6a1b9a" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>
+<polyline points="40,287 30,287" fill="none" stroke="#6a1b9a" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>
+<polyline points="40,312 30,312" fill="none" stroke="#6a1b9a" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>
+<polyline points="40,337 30,337" fill="none" stroke="#6a1b9a" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>
+<polyline points="40,362 30,362" fill="none" stroke="#6a1b9a" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>
+<polyline points="40,387 30,387" fill="none" stroke="#6a1b9a" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>
+<polyline points="40,412 30,412" fill="none" stroke="#6a1b9a" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="115" y="492" font-size="12" text-anchor="middle" font-weight="400" fill="#6b7280" font-style="italic">IN8 để trống</text>
+<rect x="30" y="640" width="230" height="290" rx="8" fill="#fff" stroke="#cbd5e1" stroke-width="1.5"/>
+<text x="42" y="664" font-size="13" text-anchor="start" font-weight="700" fill="#1f2937">Đầu vào ← chân Pi</text>
+<text x="42" y="690" font-size="13" text-anchor="start" font-weight="700" fill="#ef6c00">DC+</text>
+<text x="100" y="690" font-size="13" text-anchor="start" font-weight="400" fill="#ef6c00">chân 4 · 5V</text>
+<text x="42" y="716" font-size="13" text-anchor="start" font-weight="700" fill="#212121">DC−</text>
+<text x="100" y="716" font-size="13" text-anchor="start" font-weight="400" fill="#212121">chân 39 · GND</text>
+<text x="42" y="742" font-size="13" text-anchor="start" font-weight="700" fill="#6a1b9a">IN1</text>
+<text x="100" y="742" font-size="13" text-anchor="start" font-weight="400" fill="#6a1b9a">chân 29 · GPIO5</text>
+<text x="42" y="768" font-size="13" text-anchor="start" font-weight="700" fill="#6a1b9a">IN2</text>
+<text x="100" y="768" font-size="13" text-anchor="start" font-weight="400" fill="#6a1b9a">chân 31 · GPIO6</text>
+<text x="42" y="794" font-size="13" text-anchor="start" font-weight="700" fill="#6a1b9a">IN3</text>
+<text x="100" y="794" font-size="13" text-anchor="start" font-weight="400" fill="#6a1b9a">chân 33 · GPIO13</text>
+<text x="42" y="820" font-size="13" text-anchor="start" font-weight="700" fill="#6a1b9a">IN4</text>
+<text x="100" y="820" font-size="13" text-anchor="start" font-weight="400" fill="#6a1b9a">chân 35 · GPIO19</text>
+<text x="42" y="846" font-size="13" text-anchor="start" font-weight="700" fill="#6a1b9a">IN5</text>
+<text x="100" y="846" font-size="13" text-anchor="start" font-weight="400" fill="#6a1b9a">chân 37 · GPIO26</text>
+<text x="42" y="872" font-size="13" text-anchor="start" font-weight="700" fill="#6a1b9a">IN6</text>
+<text x="100" y="872" font-size="13" text-anchor="start" font-weight="400" fill="#6a1b9a">chân 36 · GPIO16</text>
+<text x="42" y="898" font-size="13" text-anchor="start" font-weight="700" fill="#6a1b9a">IN7</text>
+<text x="100" y="898" font-size="13" text-anchor="start" font-weight="400" fill="#6a1b9a">chân 38 · GPIO20</text>
+<polyline points="200,560 1700,560" fill="none" stroke="#d32f2f" stroke-width="6" stroke-linejoin="round" stroke-linecap="round"/>
+<rect x="1588.45" y="535" width="123.1" height="21" rx="4" fill="#d32f2f" stroke="#d32f2f" stroke-width="1"/>
+<text x="1650.0" y="549" font-size="13" text-anchor="middle" font-weight="600" fill="#fff">+V 12 V (nguồn)</text>
+<polyline points="200,600 1700,600" fill="none" stroke="#212121" stroke-width="6" stroke-linejoin="round" stroke-linecap="round"/>
+<rect x="1588.45" y="617" width="123.1" height="21" rx="4" fill="#212121" stroke="#212121" stroke-width="1"/>
+<text x="1650.0" y="631" font-size="13" text-anchor="middle" font-weight="600" fill="#fff">−V 12 V (nguồn)</text>
+<rect x="300" y="1080" width="1360" height="40" rx="6" fill="#fff3e0" stroke="#ef6c00" stroke-width="2"/>
+<text x="980" y="1106" font-size="13" text-anchor="middle" font-weight="700" fill="#e65100">Domino gom dây phản hồi thứ 2 của 7 khoá → chân 30 (GND) của Pi</text>
+<polyline points="300,1100 260,1100" fill="none" stroke="#212121" stroke-width="3" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#arr)"/>
+<rect x="149.76" y="1093" width="100.47999999999999" height="20" rx="4" fill="#212121" stroke="#212121" stroke-width="1"/>
+<text x="200.0" y="1106" font-size="12" text-anchor="middle" font-weight="600" fill="#fff">chân 30 · GND</text>
+<rect x="306.25" y="700" width="150" height="200" rx="10" fill="#eceff1" stroke="#455a64" stroke-width="2"/>
+<rect x="341.25" y="730" width="80" height="70" rx="6" fill="#b0bec5" stroke="#455a64" stroke-width="1.5"/>
+<line x1="349.25" y1="736" x2="349.25" y2="794" stroke="#78909c" stroke-width="2" stroke-linecap="round"/>
+<line x1="362.25" y1="736" x2="362.25" y2="794" stroke="#78909c" stroke-width="2" stroke-linecap="round"/>
+<line x1="375.25" y1="736" x2="375.25" y2="794" stroke="#78909c" stroke-width="2" stroke-linecap="round"/>
+<line x1="388.25" y1="736" x2="388.25" y2="794" stroke="#78909c" stroke-width="2" stroke-linecap="round"/>
+<line x1="401.25" y1="736" x2="401.25" y2="794" stroke="#78909c" stroke-width="2" stroke-linecap="round"/>
+<line x1="414.25" y1="736" x2="414.25" y2="794" stroke="#78909c" stroke-width="2" stroke-linecap="round"/>
+<rect x="421.25" y="755" width="26" height="20" rx="3" fill="#78909c" stroke="#455a64" stroke-width="1.5"/>
+<text x="381.25" y="828" font-size="16" text-anchor="middle" font-weight="700" fill="#1f2937">Khoá 1</text>
+<text x="381.25" y="848" font-size="12" text-anchor="middle" font-weight="400" fill="#6b7280">ô 1</text>
+<polyline points="331.25,700 331.25,560" fill="none" stroke="#d32f2f" stroke-width="4" stroke-linejoin="round" stroke-linecap="round"/>
+<circle cx="331.25" cy="560" r="5" fill="#d32f2f"/>
+<polyline points="361.25,700 361.25,470 381.25,470 381.25,394" fill="none" stroke="#5d4037" stroke-width="4" stroke-linejoin="round" stroke-linecap="round"/>
+<polyline points="341.25,394 341.25,500 301.25,500 301.25,600" fill="none" stroke="#212121" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>
+<circle cx="301.25" cy="600" r="5" fill="#212121"/>
+<polyline points="371.25,900 371.25,980" fill="none" stroke="#2e7d32" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>
+<rect x="321.59000000000003" y="989" width="99.32" height="19" rx="4" fill="#2e7d32" stroke="#2e7d32" stroke-width="1"/>
+<text x="371.25" y="1001" font-size="11" text-anchor="middle" font-weight="600" fill="#fff">chân 7 · GPIO4</text>
+<polyline points="439.25,900 439.25,1080" fill="none" stroke="#9e9e9e" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>
+<rect x="468.75" y="700" width="150" height="200" rx="10" fill="#eceff1" stroke="#455a64" stroke-width="2"/>
+<rect x="503.75" y="730" width="80" height="70" rx="6" fill="#b0bec5" stroke="#455a64" stroke-width="1.5"/>
+<line x1="511.75" y1="736" x2="511.75" y2="794" stroke="#78909c" stroke-width="2" stroke-linecap="round"/>
+<line x1="524.75" y1="736" x2="524.75" y2="794" stroke="#78909c" stroke-width="2" stroke-linecap="round"/>
+<line x1="537.75" y1="736" x2="537.75" y2="794" stroke="#78909c" stroke-width="2" stroke-linecap="round"/>
+<line x1="550.75" y1="736" x2="550.75" y2="794" stroke="#78909c" stroke-width="2" stroke-linecap="round"/>
+<line x1="563.75" y1="736" x2="563.75" y2="794" stroke="#78909c" stroke-width="2" stroke-linecap="round"/>
+<line x1="576.75" y1="736" x2="576.75" y2="794" stroke="#78909c" stroke-width="2" stroke-linecap="round"/>
+<rect x="583.75" y="755" width="26" height="20" rx="3" fill="#78909c" stroke="#455a64" stroke-width="1.5"/>
+<text x="543.75" y="828" font-size="16" text-anchor="middle" font-weight="700" fill="#1f2937">Khoá 2</text>
+<text x="543.75" y="848" font-size="12" text-anchor="middle" font-weight="400" fill="#6b7280">ô 2</text>
+<polyline points="493.75,700 493.75,560" fill="none" stroke="#d32f2f" stroke-width="4" stroke-linejoin="round" stroke-linecap="round"/>
+<circle cx="493.75" cy="560" r="5" fill="#d32f2f"/>
+<polyline points="523.75,700 523.75,470 543.75,470 543.75,394" fill="none" stroke="#5d4037" stroke-width="4" stroke-linejoin="round" stroke-linecap="round"/>
+<polyline points="503.75,394 503.75,500 463.75,500 463.75,600" fill="none" stroke="#212121" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>
+<circle cx="463.75" cy="600" r="5" fill="#212121"/>
+<polyline points="533.75,900 533.75,980" fill="none" stroke="#2e7d32" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>
+<rect x="477.71" y="989" width="112.08" height="19" rx="4" fill="#2e7d32" stroke="#2e7d32" stroke-width="1"/>
+<text x="533.75" y="1001" font-size="11" text-anchor="middle" font-weight="600" fill="#fff">chân 12 · GPIO18</text>
+<polyline points="601.75,900 601.75,1080" fill="none" stroke="#9e9e9e" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>
+<rect x="631.25" y="700" width="150" height="200" rx="10" fill="#eceff1" stroke="#455a64" stroke-width="2"/>
+<rect x="666.25" y="730" width="80" height="70" rx="6" fill="#b0bec5" stroke="#455a64" stroke-width="1.5"/>
+<line x1="674.25" y1="736" x2="674.25" y2="794" stroke="#78909c" stroke-width="2" stroke-linecap="round"/>
+<line x1="687.25" y1="736" x2="687.25" y2="794" stroke="#78909c" stroke-width="2" stroke-linecap="round"/>
+<line x1="700.25" y1="736" x2="700.25" y2="794" stroke="#78909c" stroke-width="2" stroke-linecap="round"/>
+<line x1="713.25" y1="736" x2="713.25" y2="794" stroke="#78909c" stroke-width="2" stroke-linecap="round"/>
+<line x1="726.25" y1="736" x2="726.25" y2="794" stroke="#78909c" stroke-width="2" stroke-linecap="round"/>
+<line x1="739.25" y1="736" x2="739.25" y2="794" stroke="#78909c" stroke-width="2" stroke-linecap="round"/>
+<rect x="746.25" y="755" width="26" height="20" rx="3" fill="#78909c" stroke="#455a64" stroke-width="1.5"/>
+<text x="706.25" y="828" font-size="16" text-anchor="middle" font-weight="700" fill="#1f2937">Khoá 3</text>
+<text x="706.25" y="848" font-size="12" text-anchor="middle" font-weight="400" fill="#6b7280">ô 3</text>
+<polyline points="656.25,700 656.25,560" fill="none" stroke="#d32f2f" stroke-width="4" stroke-linejoin="round" stroke-linecap="round"/>
+<circle cx="656.25" cy="560" r="5" fill="#d32f2f"/>
+<polyline points="686.25,700 686.25,470 706.25,470 706.25,394" fill="none" stroke="#5d4037" stroke-width="4" stroke-linejoin="round" stroke-linecap="round"/>
+<polyline points="666.25,394 666.25,500 626.25,500 626.25,600" fill="none" stroke="#212121" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>
+<circle cx="626.25" cy="600" r="5" fill="#212121"/>
+<polyline points="696.25,900 696.25,980" fill="none" stroke="#2e7d32" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>
+<rect x="640.21" y="989" width="112.08" height="19" rx="4" fill="#2e7d32" stroke="#2e7d32" stroke-width="1"/>
+<text x="696.25" y="1001" font-size="11" text-anchor="middle" font-weight="600" fill="#fff">chân 18 · GPIO24</text>
+<polyline points="764.25,900 764.25,1080" fill="none" stroke="#9e9e9e" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>
+<rect x="793.75" y="700" width="150" height="200" rx="10" fill="#eceff1" stroke="#455a64" stroke-width="2"/>
+<rect x="828.75" y="730" width="80" height="70" rx="6" fill="#b0bec5" stroke="#455a64" stroke-width="1.5"/>
+<line x1="836.75" y1="736" x2="836.75" y2="794" stroke="#78909c" stroke-width="2" stroke-linecap="round"/>
+<line x1="849.75" y1="736" x2="849.75" y2="794" stroke="#78909c" stroke-width="2" stroke-linecap="round"/>
+<line x1="862.75" y1="736" x2="862.75" y2="794" stroke="#78909c" stroke-width="2" stroke-linecap="round"/>
+<line x1="875.75" y1="736" x2="875.75" y2="794" stroke="#78909c" stroke-width="2" stroke-linecap="round"/>
+<line x1="888.75" y1="736" x2="888.75" y2="794" stroke="#78909c" stroke-width="2" stroke-linecap="round"/>
+<line x1="901.75" y1="736" x2="901.75" y2="794" stroke="#78909c" stroke-width="2" stroke-linecap="round"/>
+<rect x="908.75" y="755" width="26" height="20" rx="3" fill="#78909c" stroke="#455a64" stroke-width="1.5"/>
+<text x="868.75" y="828" font-size="16" text-anchor="middle" font-weight="700" fill="#1f2937">Khoá 4</text>
+<text x="868.75" y="848" font-size="12" text-anchor="middle" font-weight="400" fill="#6b7280">ô 4</text>
+<polyline points="818.75,700 818.75,560" fill="none" stroke="#d32f2f" stroke-width="4" stroke-linejoin="round" stroke-linecap="round"/>
+<circle cx="818.75" cy="560" r="5" fill="#d32f2f"/>
+<polyline points="848.75,700 848.75,470 868.75,470 868.75,394" fill="none" stroke="#5d4037" stroke-width="4" stroke-linejoin="round" stroke-linecap="round"/>
+<polyline points="828.75,394 828.75,500 788.75,500 788.75,600" fill="none" stroke="#212121" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>
+<circle cx="788.75" cy="600" r="5" fill="#212121"/>
+<polyline points="858.75,900 858.75,980" fill="none" stroke="#2e7d32" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>
+<rect x="802.71" y="989" width="112.08" height="19" rx="4" fill="#2e7d32" stroke="#2e7d32" stroke-width="1"/>
+<text x="858.75" y="1001" font-size="11" text-anchor="middle" font-weight="600" fill="#fff">chân 22 · GPIO25</text>
+<polyline points="926.75,900 926.75,1080" fill="none" stroke="#9e9e9e" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>
+<rect x="956.25" y="700" width="150" height="200" rx="10" fill="#eceff1" stroke="#455a64" stroke-width="2"/>
+<rect x="991.25" y="730" width="80" height="70" rx="6" fill="#b0bec5" stroke="#455a64" stroke-width="1.5"/>
+<line x1="999.25" y1="736" x2="999.25" y2="794" stroke="#78909c" stroke-width="2" stroke-linecap="round"/>
+<line x1="1012.25" y1="736" x2="1012.25" y2="794" stroke="#78909c" stroke-width="2" stroke-linecap="round"/>
+<line x1="1025.25" y1="736" x2="1025.25" y2="794" stroke="#78909c" stroke-width="2" stroke-linecap="round"/>
+<line x1="1038.25" y1="736" x2="1038.25" y2="794" stroke="#78909c" stroke-width="2" stroke-linecap="round"/>
+<line x1="1051.25" y1="736" x2="1051.25" y2="794" stroke="#78909c" stroke-width="2" stroke-linecap="round"/>
+<line x1="1064.25" y1="736" x2="1064.25" y2="794" stroke="#78909c" stroke-width="2" stroke-linecap="round"/>
+<rect x="1071.25" y="755" width="26" height="20" rx="3" fill="#78909c" stroke="#455a64" stroke-width="1.5"/>
+<text x="1031.25" y="828" font-size="16" text-anchor="middle" font-weight="700" fill="#1f2937">Khoá 5</text>
+<text x="1031.25" y="848" font-size="12" text-anchor="middle" font-weight="400" fill="#6b7280">ô 5</text>
+<polyline points="981.25,700 981.25,560" fill="none" stroke="#d32f2f" stroke-width="4" stroke-linejoin="round" stroke-linecap="round"/>
+<circle cx="981.25" cy="560" r="5" fill="#d32f2f"/>
+<polyline points="1011.25,700 1011.25,470 1031.25,470 1031.25,394" fill="none" stroke="#5d4037" stroke-width="4" stroke-linejoin="round" stroke-linecap="round"/>
+<polyline points="991.25,394 991.25,500 951.25,500 951.25,600" fill="none" stroke="#212121" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>
+<circle cx="951.25" cy="600" r="5" fill="#212121"/>
+<polyline points="1021.25,900 1021.25,980" fill="none" stroke="#2e7d32" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>
+<rect x="965.21" y="989" width="112.08" height="19" rx="4" fill="#2e7d32" stroke="#2e7d32" stroke-width="1"/>
+<text x="1021.25" y="1001" font-size="11" text-anchor="middle" font-weight="600" fill="#fff">chân 32 · GPIO12</text>
+<polyline points="1089.25,900 1089.25,1080" fill="none" stroke="#9e9e9e" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>
+<rect x="1118.75" y="700" width="150" height="200" rx="10" fill="#eceff1" stroke="#455a64" stroke-width="2"/>
+<rect x="1153.75" y="730" width="80" height="70" rx="6" fill="#b0bec5" stroke="#455a64" stroke-width="1.5"/>
+<line x1="1161.75" y1="736" x2="1161.75" y2="794" stroke="#78909c" stroke-width="2" stroke-linecap="round"/>
+<line x1="1174.75" y1="736" x2="1174.75" y2="794" stroke="#78909c" stroke-width="2" stroke-linecap="round"/>
+<line x1="1187.75" y1="736" x2="1187.75" y2="794" stroke="#78909c" stroke-width="2" stroke-linecap="round"/>
+<line x1="1200.75" y1="736" x2="1200.75" y2="794" stroke="#78909c" stroke-width="2" stroke-linecap="round"/>
+<line x1="1213.75" y1="736" x2="1213.75" y2="794" stroke="#78909c" stroke-width="2" stroke-linecap="round"/>
+<line x1="1226.75" y1="736" x2="1226.75" y2="794" stroke="#78909c" stroke-width="2" stroke-linecap="round"/>
+<rect x="1233.75" y="755" width="26" height="20" rx="3" fill="#78909c" stroke="#455a64" stroke-width="1.5"/>
+<text x="1193.75" y="828" font-size="16" text-anchor="middle" font-weight="700" fill="#1f2937">Khoá 6</text>
+<text x="1193.75" y="848" font-size="12" text-anchor="middle" font-weight="400" fill="#6b7280">ô 6</text>
+<polyline points="1143.75,700 1143.75,560" fill="none" stroke="#d32f2f" stroke-width="4" stroke-linejoin="round" stroke-linecap="round"/>
+<circle cx="1143.75" cy="560" r="5" fill="#d32f2f"/>
+<polyline points="1173.75,700 1173.75,470 1193.75,470 1193.75,394" fill="none" stroke="#5d4037" stroke-width="4" stroke-linejoin="round" stroke-linecap="round"/>
+<polyline points="1153.75,394 1153.75,500 1113.75,500 1113.75,600" fill="none" stroke="#212121" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>
+<circle cx="1113.75" cy="600" r="5" fill="#212121"/>
+<polyline points="1183.75,900 1183.75,980" fill="none" stroke="#2e7d32" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>
+<rect x="1127.71" y="989" width="112.08" height="19" rx="4" fill="#2e7d32" stroke="#2e7d32" stroke-width="1"/>
+<text x="1183.75" y="1001" font-size="11" text-anchor="middle" font-weight="600" fill="#fff">chân 40 · GPIO21</text>
+<polyline points="1251.75,900 1251.75,1080" fill="none" stroke="#9e9e9e" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>
+<rect x="1281.25" y="700" width="150" height="200" rx="10" fill="#eceff1" stroke="#455a64" stroke-width="2"/>
+<rect x="1316.25" y="730" width="80" height="70" rx="6" fill="#b0bec5" stroke="#455a64" stroke-width="1.5"/>
+<line x1="1324.25" y1="736" x2="1324.25" y2="794" stroke="#78909c" stroke-width="2" stroke-linecap="round"/>
+<line x1="1337.25" y1="736" x2="1337.25" y2="794" stroke="#78909c" stroke-width="2" stroke-linecap="round"/>
+<line x1="1350.25" y1="736" x2="1350.25" y2="794" stroke="#78909c" stroke-width="2" stroke-linecap="round"/>
+<line x1="1363.25" y1="736" x2="1363.25" y2="794" stroke="#78909c" stroke-width="2" stroke-linecap="round"/>
+<line x1="1376.25" y1="736" x2="1376.25" y2="794" stroke="#78909c" stroke-width="2" stroke-linecap="round"/>
+<line x1="1389.25" y1="736" x2="1389.25" y2="794" stroke="#78909c" stroke-width="2" stroke-linecap="round"/>
+<rect x="1396.25" y="755" width="26" height="20" rx="3" fill="#78909c" stroke="#455a64" stroke-width="1.5"/>
+<text x="1356.25" y="828" font-size="16" text-anchor="middle" font-weight="700" fill="#1f2937">Khoá 7</text>
+<text x="1356.25" y="848" font-size="12" text-anchor="middle" font-weight="400" fill="#6b7280">ô 7</text>
+<polyline points="1306.25,700 1306.25,560" fill="none" stroke="#d32f2f" stroke-width="4" stroke-linejoin="round" stroke-linecap="round"/>
+<circle cx="1306.25" cy="560" r="5" fill="#d32f2f"/>
+<polyline points="1336.25,700 1336.25,470 1356.25,470 1356.25,394" fill="none" stroke="#5d4037" stroke-width="4" stroke-linejoin="round" stroke-linecap="round"/>
+<polyline points="1316.25,394 1316.25,500 1276.25,500 1276.25,600" fill="none" stroke="#212121" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>
+<circle cx="1276.25" cy="600" r="5" fill="#212121"/>
+<polyline points="1346.25,900 1346.25,980" fill="none" stroke="#2e7d32" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>
+<rect x="1293.4" y="989" width="105.69999999999999" height="19" rx="4" fill="#2e7d32" stroke="#2e7d32" stroke-width="1"/>
+<text x="1346.25" y="1001" font-size="11" text-anchor="middle" font-weight="600" fill="#fff">chân 24 · GPIO8</text>
+<polyline points="1414.25,900 1414.25,1080" fill="none" stroke="#9e9e9e" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="1460" y="730" font-size="12" text-anchor="start" font-weight="400" fill="#1f2937">Màu dây trong hình:</text>
+<text x="1460" y="749" font-size="12" text-anchor="start" font-weight="400" fill="#1f2937">đỏ = dây to + khoá</text>
+<text x="1460" y="768" font-size="12" text-anchor="start" font-weight="400" fill="#1f2937">nâu = dây to − khoá → COM</text>
+<text x="1460" y="787" font-size="12" text-anchor="start" font-weight="400" fill="#1f2937">đen = NO → −V</text>
+<text x="1460" y="806" font-size="12" text-anchor="start" font-weight="400" fill="#1f2937">xanh lá = phản hồi 1 → GPIO</text>
+<text x="1460" y="825" font-size="12" text-anchor="start" font-weight="400" fill="#1f2937">xám = phản hồi 2 → domino</text>
+<text x="1460" y="844" font-size="12" text-anchor="start" font-weight="400" fill="#1f2937"></text>
+<text x="1460" y="863" font-size="12" text-anchor="start" font-weight="400" fill="#1f2937">Hai dây phản hồi không có cực.</text>
+<text x="1460" y="882" font-size="12" text-anchor="start" font-weight="400" fill="#1f2937">Cửa đóng ⇒ GPIO đọc THẤP.</text>
+<text x="1460" y="901" font-size="12" text-anchor="start" font-weight="400" fill="#1f2937">K8 / IN8 dự phòng.</text>
+</svg>
