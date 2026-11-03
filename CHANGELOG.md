@@ -4,6 +4,7 @@ Mỗi thay đổi ở repo docs thêm **một dòng** vào ngày tương ứng (
 
 ## 2026-11-04
 
+- STATUS § 5: băng chuyền sản phẩm "SEE MORE DETAILS" trên landing vuốt được (frontend [#91](https://github.com/LockR-Tech/frontend/pull/91)).
 - STATUS § 5: trang landing hiển thị tốt ở mọi cỡ màn hình (frontend [#89](https://github.com/LockR-Tech/frontend/pull/89)).
 
 ## 2026-11-03
