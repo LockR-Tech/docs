@@ -2,6 +2,10 @@
 
 Mỗi thay đổi ở repo docs thêm **một dòng** vào ngày tương ứng (mới nhất ở trên). Ghi mã gap/SEC/ADR nếu có.
 
+## 2026-11-04
+
+- STATUS § 5: trang landing hiển thị tốt ở mọi cỡ màn hình (frontend [#89](https://github.com/LockR-Tech/frontend/pull/89)).
+
 ## 2026-11-03
 
 - STATUS § 5: favicon Lock.R và tiêu đề tab cho landing, web admin (frontend [#88](https://github.com/LockR-Tech/frontend/pull/88)).
