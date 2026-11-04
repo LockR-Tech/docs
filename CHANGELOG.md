@@ -4,6 +4,7 @@ Mỗi thay đổi ở repo docs thêm **một dòng** vào ngày tương ứng (
 
 ## 2026-11-04
 
+- tu01-so-do-tong-quan § 7, § 9: luồng ArUco nắp thật (nắp drone chạy như "Mở hết/Đóng hết", Pi drone giả lập nhả hàng theo cấu hình rồi báo), vị trí bàn trượt theo đếm bước `lid_position.json`, trục 2 = 36 vòng và đảo chiều (F1-G03).
 - STATUS § 5: ảnh màu hoàn thiện White Smoke, Dark Matte trên landing to và rõ hơn (frontend [#92](https://github.com/LockR-Tech/frontend/pull/92)).
 - STATUS § 5: băng chuyền sản phẩm "SEE MORE DETAILS" trên landing vuốt được (frontend [#91](https://github.com/LockR-Tech/frontend/pull/91)).
 - STATUS § 5: trang landing hiển thị tốt ở mọi cỡ màn hình (frontend [#89](https://github.com/LockR-Tech/frontend/pull/89)).
