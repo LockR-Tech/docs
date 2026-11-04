@@ -29,7 +29,7 @@ Trạng thái đơn hay gặp: `INITIALIZED` (vừa tạo) → `AWAITING_DISPATC
 1. **Admin** — nhập email + mật khẩu → hệ thống gửi OTP 6 số qua email.
 2. **Admin** — nhập OTP (tối đa 5 lần sai) → vào web quản trị.
 
-**1c. Đăng nhập kiosk bằng QR** *(mới)*
+**1c. Đăng nhập kiosk bằng QR** — *kiosk đã bỏ lựa chọn này từ 2026-11-04 (iot `feat/kiosk-ma-mo-o-giao-dien-thue`); kiosk chỉ còn OTP qua SĐT hoặc email. API phiên QR ở auth-service và màn quét trên app vẫn còn.*
 1. **Khách** — tại kiosk chọn "Gửi đồ / Thuê tủ" → "Quét QR bằng app" → kiosk hiện mã QR (hết hạn sau 2 phút).
 2. **Khách** — trên app bấm nút QR ở trang chủ, quét mã (hoặc nhập mã tay) → xác nhận "Đăng nhập kiosk?".
 3. **Hệ thống** — kiosk nhận phiên đăng nhập, hiện tên khách, chuyển sang chọn ô. (Cách khác: OTP qua email ngay trên kiosk.)
@@ -68,9 +68,11 @@ Ngoại lệ:
 
 ## 4. Thuê ô ngay tại kiosk
 
-1. **Khách** (kiosk) — "Gửi đồ / Thuê tủ" → đăng nhập bằng email + OTP hoặc QR từ app (luồng 1c); chưa có tài khoản → "Đăng ký nhanh".
-2. **Khách** — chọn ô trên sơ đồ → chọn số giờ, mã giảm giá → "Đặt tủ".
-3. **Khách** — thanh toán chuyển khoản VietQR/SePay (kiosk tự hiện mã QR) → tủ tự mở ô → bỏ đồ → "Đã bỏ hàng xong".
+1. **Khách** (kiosk) — "Gửi đồ / Thuê tủ" → đăng nhập bằng OTP qua SĐT hoặc email; chưa có tài khoản → "Đăng ký nhanh".
+2. **Khách** — chọn ô trống trên sơ đồ → chọn thời gian "Theo giờ" (dưới 24 giờ) hoặc "Theo ngày" (như app), mã giảm giá → "Đặt tủ ngay".
+3. **Khách** — thanh toán chuyển khoản VietQR/SePay (kiosk tự hiện mã QR) → kiosk hiện **mã mở ô** kèm lời nhắc → tủ tự mở ô → bỏ đồ → "Đã bỏ hàng xong".
+   - Thuê bằng **email**: ngay khi đơn `PAID`, order-service gửi thư tới email tài khoản gồm mã đơn, mã mở ô, tủ + địa chỉ, số ô, số giờ, số tiền (cả đơn thuê từ app nếu tài khoản có email). Kiosk báo "mã đã gửi về email".
+   - Thuê bằng **SĐT** (tài khoản thường không có email ⇒ không có thư): kiosk nhắc ghi lại / chụp mã, mã xem lại ở mục Đơn tủ trên app.
 4. **Khách** — lần sau nhập mã thuê ở kiosk → "Đóng cửa, tiếp tục thuê" hoặc "Lấy hết đồ & kết thúc thuê".
 
 ## 5. Ủy quyền lấy hộ *(mới)*
