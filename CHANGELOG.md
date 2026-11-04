@@ -4,6 +4,9 @@ Mỗi thay đổi ở repo docs thêm **một dòng** vào ngày tương ứng (
 
 ## 2026-11-04
 
+- 03-hardware/tu01-cau-hinh-o-va-nap-truot.md (mới): bảng cấu hình từng ô tủ CAB-TU01 và 2 nắp trượt (chân, tốc độ, chiều mở/đóng, vị trí, cách sửa) theo cấu hình đang chạy trên Pi; tu01-so-do-tong-quan và AGENTS.md trỏ tới
+- tu01-so-do-tong-quan § 7, § 9: luồng ArUco nắp thật (nắp drone chạy như "Mở hết/Đóng hết", Pi drone giả lập nhả hàng theo cấu hình rồi báo), vị trí bàn trượt theo đếm bước `lid_position.json`, trục 2 = 36 vòng và đảo chiều (F1-G03).
+- tu01-so-do-tong-quan § 7, § 9: sửa chiều trục 1 (ô 3) về `open_dir_high = true` sau khi thử chế độ nắp ArUco thấy chạy ngược; trục 2 đổi `open_dir_high = false`, thử hạ tốc còn 0,5 vòng/s rồi đặt lại 1,79 như trục 1, ghi hiện tượng chạy chập chờn
 - STATUS § 5: ảnh màu hoàn thiện White Smoke, Dark Matte trên landing to và rõ hơn (frontend [#92](https://github.com/LockR-Tech/frontend/pull/92)).
 - STATUS § 5: băng chuyền sản phẩm "SEE MORE DETAILS" trên landing vuốt được (frontend [#91](https://github.com/LockR-Tech/frontend/pull/91)).
 - STATUS § 5: trang landing hiển thị tốt ở mọi cỡ màn hình (frontend [#89](https://github.com/LockR-Tech/frontend/pull/89)).
