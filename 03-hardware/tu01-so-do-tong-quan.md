@@ -175,9 +175,9 @@ Thông số trục (`~/iot/config/lid_tuning.json`, chỉnh ở mục trục c�
 | | Trục 1 | Trục 2 |
 |---|---|---|
 | Bước/vòng | 200 | 200 |
-| Tốc độ | **`profile: "chaydan"`** — đúng lệnh `chaydan` kỹ thuật tủ đã kiểm chứng (bản gốc của @ThuyHangcute 03/11: "cần lệnh có tăng tốc dần để tự khởi động"): 100 bước chu kỳ ≈ 10,8 ms → 100 bước ≈ 4,8 ms → chạy đều `rps = 1,79` (≈ 2,8 ms/bước), xung = nửa chu kỳ. Thời gian mỗi lệnh `pinctrl` ≈ 1,4 ms đo trên Pi 04/11. Thông số cũ 0,5 vòng/s, xung 300 µs (chưa từng được kỹ thuật kiểm chứng) làm motor kêu è è mà không quay | như trục 1 |
+| Tốc độ | **`profile: "chaydan"`** — đúng lệnh `chaydan` kỹ thuật tủ đã kiểm chứng (bản gốc của @ThuyHangcute 03/11: "cần lệnh có tăng tốc dần để tự khởi động"): 100 bước chu kỳ ≈ 10,8 ms → 100 bước ≈ 4,8 ms → chạy đều `rps = 1,79` (≈ 2,8 ms/bước), xung = nửa chu kỳ. Thời gian mỗi lệnh `pinctrl` ≈ 1,4 ms đo trên Pi 04/11. Thông số cũ 0,5 vòng/s, xung 300 µs (chưa từng được kỹ thuật kiểm chứng) làm motor kêu è è mà không quay | `chaydan` nhưng **`rps = 0,5`** (10 ms/bước, gần nấc khởi động 10,8 ms; nấc tăng tốc không bao giờ nhanh hơn `rps`): 04/11 trục 2 nặng, mất bước giữa ray ở 1,79 rồi cả 1,04 vòng/s. 36 vòng ≈ 73 giây |
 | Giới hạn một lệnh = chiều dài ray | **36 vòng** (đo quãng ray ngày 03/11) | **36 vòng** (xác nhận 04/11) |
-| Chiều | đã đảo (`open_dir_high = false`): **"đóng" = về đầu gốc**, "mở" = đi ra | đảo ngày 04/11 (`open_dir_high = false`): chiều "mở" cũ đẩy nắp che kín ô 2 |
+| Chiều | **`open_dir_high = true`** (DIR mức cao = mở). Thử luồng ArUco 04/11 với `false` thì ngược: lệnh "mở" đẩy nắp vào đầu đã đóng (đứng yên), lệnh "đóng" lại kéo nắp mở hết | **`open_dir_high = false`** (đổi 04/11 chiều tối): với `true`, lệnh "đóng" kéo nắp ô 2 ra hết |
 | Quãng ray đo được | ≈ 36 vòng | ≈ 36 vòng (36,2 khi chạy đầu này sang đầu kia) |
 
 **Luồng drone (ArUco) dùng nắp thật** — ô 3 = trục 1, ô 2 = trục 2 (`boxes` của từng trục):
@@ -208,6 +208,8 @@ curl -X POST http://127.0.0.1:8000/service/api/lids/1/jog -H 'Content-Type: appl
 curl -X POST http://127.0.0.1:8000/service/api/stop-all
 ```
 
+**Thử nắp bằng camera drone (không cần đơn)** — trang admin **Nhật ký Drone & Tủ** (`/admin/drone-logs`) → bật **Chế độ thử nắp trượt theo mã ArUco** (setting `app.drone.lid-test.enabled`, scope order). Đưa mã ArUco vào camera drone: mã #0 → nắp ô 2 (box 39), mã #1 → nắp ô 3 (box 40) của tủ #7 (`app.drone.lid-test.markers = 0:39,1:40`). Tủ mở nắp thật → báo mở xong → giữ 5 giây (`app.drone.lid-test.hold-seconds`) → đóng thật → báo đóng xong; mọi thông điệp vẫn ghi vào nhật ký. Thử lần nữa: đưa mã ra khỏi camera ≥ 2 giây rồi đưa lại. Trong lúc bật, camera không xử lý giao hàng của đơn — tắt sau khi thử.
+
 **Thử tay bằng `pinctrl`** — trước khi test phải dừng phần mềm tủ (`sudo systemctl stop lockr-controller.service`), test xong bật lại (`sudo systemctl start lockr-controller.service`).
 
 Motor — tạo lệnh có tăng tốc dần, rồi chạy `chaydan <PUL> <DIR> <số bước> <dl|dh>` (200 bước = 1 vòng; đổi `dl`/`dh` để đảo chiều):
@@ -232,8 +234,8 @@ for i in 0 1 2 3 4 5 6; do a=$(pinctrl get ${F[$i]} | grep -oE 'hi|lo' | head -1
 |---|---|
 | Phần mềm tủ | **Đã cập nhật theo sơ đồ chân mới** (§ 7) |
 | 7 khoá | Mở được, phản hồi báo đúng. **Ô 2 chập chờn**: mở riêng thì 4/4 lần nhả, mở cả loạt ngay sau ô 1 thì 0/2 — nghi cửa ô 1 tác động cơ khí lên ô 2, hoặc nguồn sụt sau lần kích khoá 1 |
-| Trục 1 | Chạy được sau khi cắm lại mạch T1; quãng ray ≈ 36 vòng; chiều đã đảo cho đúng quy ước |
-| Trục 2 | Chạy được; quãng ray 36 vòng; **04/11** đảo chiều và đặt giới hạn 36 vòng như trục 1 |
+| Trục 1 | Chạy được sau khi cắm lại mạch T1; quãng ray ≈ 36 vòng; **04/11** sửa chiều về `open_dir_high = true` sau khi thử chế độ nắp ArUco thấy ngược |
+| Trục 2 | Chạy được; quãng ray 36 vòng; **04/11** đặt giới hạn 36 vòng như trục 1; đổi `open_dir_high = false`; chạy chập chờn (có lần phát đủ xung mà motor không quay, không kêu) — nghi dây GND chung của T3/T4 (cột − phải → chân 14) |
 
 - Tìm nguyên nhân ô 2: thử mở ô 2 trước ô 1; nếu vẫn lỗi, đo 12 V tại khoá 2 khi relay đóng và đo điện trở cuộn khoá; cân nhắc tăng thời gian kích lên 2 giây.
 - Lắp công tắc hành trình ở hai đầu mỗi ray (chân dành sẵn ở § 3): hiện tủ không biết vị trí bàn trượt sau khi mất điện hoặc trượt bước.
