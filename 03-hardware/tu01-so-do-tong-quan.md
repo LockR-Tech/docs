@@ -7,6 +7,7 @@
 | **Nguồn** | Bản "Sơ đồ tổng quan Tủ Locker CAB-TU01" của nhóm (ThuyHangcute, 03/11/2026) + cấu hình đã áp và đo trên Pi cùng ngày |
 | **Hình** | `img/tu01-so-do/*.svg`, sinh bằng `python scripts/ve-so-do-tu01.py` — sửa số chân trong bảng đầu script rồi chạy lại, không sửa tay file SVG |
 | **Gap** | F2-G09 |
+| **Bảng cấu hình** | Từng ô, tốc độ và chiều mở/đóng của 2 nắp trượt: [tu01-cau-hinh-o-va-nap-truot.md](tu01-cau-hinh-o-va-nap-truot.md) |
 
 Raspberry Pi 5 điều khiển **2 trục vít me** (2 driver TB6600 kích qua transistor C1815) và **7 khoá điện từ 12 V** (module relay 8 kênh), cấp nguồn bởi **nguồn tổ ong 12 V 10 A**.
 
@@ -175,7 +176,7 @@ Thông số trục (`~/iot/config/lid_tuning.json`, chỉnh ở mục trục c�
 | | Trục 1 | Trục 2 |
 |---|---|---|
 | Bước/vòng | 200 | 200 |
-| Tốc độ | **`profile: "chaydan"`** — đúng lệnh `chaydan` kỹ thuật tủ đã kiểm chứng (bản gốc của @ThuyHangcute 03/11: "cần lệnh có tăng tốc dần để tự khởi động"): 100 bước chu kỳ ≈ 10,8 ms → 100 bước ≈ 4,8 ms → chạy đều `rps = 1,79` (≈ 2,8 ms/bước), xung = nửa chu kỳ. Thời gian mỗi lệnh `pinctrl` ≈ 1,4 ms đo trên Pi 04/11. Thông số cũ 0,5 vòng/s, xung 300 µs (chưa từng được kỹ thuật kiểm chứng) làm motor kêu è è mà không quay | `chaydan` nhưng **`rps = 0,5`** (10 ms/bước, gần nấc khởi động 10,8 ms; nấc tăng tốc không bao giờ nhanh hơn `rps`): 04/11 trục 2 nặng, mất bước giữa ray ở 1,79 rồi cả 1,04 vòng/s. 36 vòng ≈ 73 giây |
+| Tốc độ | **`profile: "chaydan"`** — đúng lệnh `chaydan` kỹ thuật tủ đã kiểm chứng (bản gốc của @ThuyHangcute 03/11: "cần lệnh có tăng tốc dần để tự khởi động"): 100 bước chu kỳ ≈ 10,8 ms → 100 bước ≈ 4,8 ms → chạy đều `rps = 1,79` (≈ 2,8 ms/bước), xung = nửa chu kỳ. Thời gian mỗi lệnh `pinctrl` ≈ 1,4 ms đo trên Pi 04/11. Thông số cũ 0,5 vòng/s, xung 300 µs (chưa từng được kỹ thuật kiểm chứng) làm motor kêu è è mà không quay | như trục 1 (`rps = 1,79`, đặt lại tối 04/11). Chiều 04/11 từng mất bước giữa ray ở 1,79 và 1,04 vòng/s, phải hạ còn 0,5; nếu lại đứng giữa ray thì hạ `rps` (nấc tăng tốc không bao giờ nhanh hơn `rps`) |
 | Giới hạn một lệnh = chiều dài ray | **36 vòng** (đo quãng ray ngày 03/11) | **36 vòng** (xác nhận 04/11) |
 | Chiều | **`open_dir_high = true`** (DIR mức cao = mở). Thử luồng ArUco 04/11 với `false` thì ngược: lệnh "mở" đẩy nắp vào đầu đã đóng (đứng yên), lệnh "đóng" lại kéo nắp mở hết | **`open_dir_high = false`** (đổi 04/11 chiều tối): với `true`, lệnh "đóng" kéo nắp ô 2 ra hết |
 | Quãng ray đo được | ≈ 36 vòng | ≈ 36 vòng (36,2 khi chạy đầu này sang đầu kia) |
@@ -183,7 +184,7 @@ Thông số trục (`~/iot/config/lid_tuning.json`, chỉnh ở mục trục c�
 **Luồng drone (ArUco) dùng nắp thật** — ô 3 = trục 1, ô 2 = trục 2 (`boxes` của từng trục):
 
 1. Camera drone thấy đúng mã ArUco của ô trong đơn → backend gửi `cabinet/7/command/open {lid: true}`.
-2. Pi tủ trả `ACCEPTED`, trượt nắp tới cuối ray (36 vòng từ gốc ≈ 75 giây; chỉ chạy phần còn thiếu theo vị trí đếm bước), rồi báo `SUCCESS` kèm `lidConfirmation: STEP_COUNT` và số vòng đã chạy. Nắp đã ở cuối ray thì không chạy motor.
+2. Pi tủ trả `ACCEPTED`, trượt nắp tới cuối ray (36 vòng từ gốc ≈ 21 giây ở 1,79 vòng/s; chỉ chạy phần còn thiếu theo vị trí đếm bước), rồi báo `SUCCESS` kèm `lidConfirmation: STEP_COUNT` và số vòng đã chạy. Nắp đã ở cuối ray thì không chạy motor.
 3. Backend gửi drone `LID_OPENED` kèm `dropSimulationSeconds` (= cấu hình admin "Thời gian giả lập drone nhả hàng") — đây là lệnh nhả hàng; Pi drone chờ đủ số giây đó rồi gửi `DROP_PHASE_COMPLETED`.
 4. Backend gửi `cabinet/7/command/close {lid: true}`, Pi tủ trượt nắp về gốc hết số vòng rồi báo đã đóng → đơn sang "Sẵn sàng lấy hàng".
 
@@ -235,7 +236,7 @@ for i in 0 1 2 3 4 5 6; do a=$(pinctrl get ${F[$i]} | grep -oE 'hi|lo' | head -1
 | Phần mềm tủ | **Đã cập nhật theo sơ đồ chân mới** (§ 7) |
 | 7 khoá | Mở được, phản hồi báo đúng. **Ô 2 chập chờn**: mở riêng thì 4/4 lần nhả, mở cả loạt ngay sau ô 1 thì 0/2 — nghi cửa ô 1 tác động cơ khí lên ô 2, hoặc nguồn sụt sau lần kích khoá 1 |
 | Trục 1 | Chạy được sau khi cắm lại mạch T1; quãng ray ≈ 36 vòng; **04/11** sửa chiều về `open_dir_high = true` sau khi thử chế độ nắp ArUco thấy ngược |
-| Trục 2 | Chạy được; quãng ray 36 vòng; **04/11** đặt giới hạn 36 vòng như trục 1; đổi `open_dir_high = false`; chạy chập chờn (có lần phát đủ xung mà motor không quay, không kêu) — nghi dây GND chung của T3/T4 (cột − phải → chân 14) |
+| Trục 2 | Chạy được; quãng ray 36 vòng; **04/11** đặt giới hạn 36 vòng như trục 1; đổi `open_dir_high = false` (chiều cũ ngược: lệnh đóng kéo nắp ra hết, các lệnh sau tì vào đầu ray nên tưởng motor không chạy); có lúc mất bước giữa ray — nếu tái diễn thì hạ `rps` (xem [bảng cấu hình § 3](tu01-cau-hinh-o-va-nap-truot.md#3-dạng-xung-chaydan)) |
 
 - Tìm nguyên nhân ô 2: thử mở ô 2 trước ô 1; nếu vẫn lỗi, đo 12 V tại khoá 2 khi relay đóng và đo điện trở cuộn khoá; cân nhắc tăng thời gian kích lên 2 giây.
 - Lắp công tắc hành trình ở hai đầu mỗi ray (chân dành sẵn ở § 3): hiện tủ không biết vị trí bàn trượt sau khi mất điện hoặc trượt bước.
