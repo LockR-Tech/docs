@@ -123,6 +123,7 @@ Khách cũng có thể **tự gửi yêu cầu hoàn tiền** cho đơn đã tha
 ## 9. Báo sự cố ô / tủ → KTV tủ xử lý
 
 1. **Khách** (app) — "Báo ô lỗi" trên đơn, hoặc "Báo sự cố" (chọn tủ, ô, tiêu đề, mô tả, ảnh) → "Gửi báo cáo".
+   - **Tại kiosk** (từ 2026-11-04): nút tròn "Báo sự cố" ở trang chủ → đăng nhập OTP SĐT/email (server cần người báo) → chạm ô trên sơ đồ hoặc "Sự cố cả tủ", chọn lý do, mô tả (không có ảnh) → "Gửi báo cáo" → kiosk hiện mã phiếu `RPT-…`. Cùng API `POST /api/lockers/{id}/report` như app; khách báo thì ô thành `PENDING_CHECK` chờ KTV kiểm tra. Trong hộp "Quản lý ô" (ô đang thuê), "Báo ô lỗi" mở màn này với ô chọn sẵn.
 2. **Hệ thống** — ô chuyển `FAULT`, mở phiếu sự cố (`OPEN`), gửi cho KTV phụ trách tủ (chưa có thì báo mọi KTV tủ); đặt hạn SLA.
 3. **KTV tủ** (tab Sự cố) — "Nhận việc" → phiếu `IN_PROGRESS`, vào "Việc của tôi". Admin cũng có thể giao / đổi KTV.
 4. **KTV tủ** — tới tủ xử lý, ghi nhật ký + ảnh tiến độ. Nếu ô còn hàng của khách, chọn một cách:
