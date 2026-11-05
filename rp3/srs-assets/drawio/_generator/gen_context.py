@@ -137,12 +137,12 @@ ring([
     ("Weather Service<br>(Open-Meteo)", 1310, 180, [("Station Coordinates", False), ("Weather Forecast", True)]),
 ], 40, top=True)
 ring([
-    ("Smart Locker<br>(Raspberry Pi + Kiosk)", 250, 185, [("Box &amp; Lid Commands (MQTT)", False), ("Heartbeats &amp; Door Events", True),
+    ("Smart Locker Controller<br>(Raspberry Pi)", 250, 185, [("Box &amp; Lid Commands", False), ("Heartbeats &amp; Door Events", True),
                                                    ("Command Results &amp; Control Logs", True), ("Bluetooth Public Key", False)]),
-    ("Drone<br>(Pi + Pixhawk + Camera<br>+ Release Servo)", 515, 180, [("Delivery Commands", False), ("Parcel Release Command", False),
+    ("Drone", 515, 180, [("Delivery Commands", False), ("Parcel Release Command", False),
                                                    ("Signed Telemetry &amp; Events", True), ("Parcel Release Result", True),
-                                                   ("Camera Stream", True)]),
-    ("Payment Gateway<br>(SePay VietQR)", 760, 170, [("Checkout Request", False), ("Payment Webhook", True)]),
+                                                   ("Camera Video", True)]),
+    ("Payment Gateway<br>(SePay VietQR)", 760, 170, [("Checkout Request", False), ("Payment Confirmation", True)]),
     ("Email Service<br>(Gmail SMTP)", 990, 170, [("OTP &amp; Pickup Code Emails", False)]),
     ("AI Engine<br>(Claude + Voyage AI)", 1215, 170, [("Question &amp; Retrieved Chunks", False), ("Embeddings &amp; Answer", True)]),
     ("Map Services<br>(OpenStreetMap, Nominatim, OSRM)", 1440, 185, [("Addresses &amp; Coordinates", False), ("Map Tiles, Locations &amp; Routes", True)]),
