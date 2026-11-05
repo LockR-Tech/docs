@@ -47,19 +47,19 @@ def side(name, x, flows, left):
 
 
 side("Customer", 40, [
-    ("Register / Sign In (Phone OTP, Google)", True), ("Account &amp; Profile Information", False),
-    ("Search Lockers &amp; Stores", True), ("Locker Map &amp; Available Boxes", False),
-    ("Create Send / Rental Order", True), ("Book Drone Delivery", True), ("VietQR Payment Information", False),
-    ("Pickup PIN / QR Code", False), ("Order &amp; Drone Tracking Status", False), ("Delegate Pickup / Change Code", True),
-    ("Report Locker Incident", True), ("Request Refund / Withdrawal", True), ("Ask AI Assistant", True),
-    ("Answers with Citations", False), ("Test Open Box via Bluetooth", True),
+    ("Login Credentials (Email, Google, Phone)", True), ("Account Profile", False),
+    ("Locker Search Criteria", True), ("Locker Map &amp; Available Boxes", False),
+    ("Send / Rental Order Details", True), ("Drone Delivery Booking", True), ("VietQR Payment Information", False),
+    ("Locker Access Code (PIN)", False), ("Order &amp; Drone Tracking Status", False), ("Pickup Delegation &amp; Code Reset", True),
+    ("Locker Incident Report", True), ("Refund Request", True), ("Assistant Question", True),
+    ("Answer with Citations", False), ("Ratings &amp; Complaints", True),
 ], left=True)
 side("Administrator", 1600, [
-    ("Sign In with 2FA (Email OTP)", True), ("Dashboard &amp; Revenue Reports", False),
-    ("Manage Users &amp; Staff Accounts", True), ("Manage Stores, Lockers &amp; Boxes", True),
-    ("Assign Controllers &amp; Technicians", True), ("Manage Drones &amp; Devices", True), ("Orders &amp; Drone Journeys", False),
-    ("Approve Refunds &amp; Withdrawals", True), ("Handle Drone Parcel Incidents", True), ("Manage Promotions &amp; Loyalty", True),
-    ("Configure Business Settings", True), ("Grant Bluetooth Test Access", True), ("Manage Knowledge Base", True),
+    ("Login Credentials &amp; Email OTP", True), ("Dashboard &amp; Revenue Reports", False),
+    ("User &amp; Staff Account Data", True), ("Store, Locker &amp; Box Data", True),
+    ("Controller &amp; Technician Assignments", True), ("Drone &amp; Device Data", True), ("Orders &amp; Drone Journeys", False),
+    ("Refund Decisions", True), ("Drone Incident Decisions", True), ("Promotion &amp; Loyalty Data", True),
+    ("Business Settings", True), ("Bluetooth Test Permissions", True), ("Knowledge Base Documents", True),
     ("Cabinet Control Logs", False), ("Feedback &amp; Complaints", False),
 ], left=False)
 
@@ -126,23 +126,25 @@ def ring(entities, y, top):
 
 
 ring([
-    ("Receiver", 300, 160, [("Enter PIN / Scan QR at Kiosk", True), ("Pickup Code (SMS / Email / App)", False), ("Incoming Orders", False)]),
-    ("Locker Technician", 560, 170, [("Claim &amp; Resolve Tickets", True), ("Submit Inspection Checklist", True),
-                                    ("Emergency Open / Restart", True), ("Assigned Tickets &amp; Schedules", False)]),
-    ("Drone Technician", 835, 170, [("Accept &amp; Load Order", True), ("Launch Drone / Advance Stage", True),
-                                   ("Update Fleet Status", True), ("Dispatch Queue &amp; Missions", False)]),
-    ("Firebase<br>(Auth &amp; Cloud Messaging)", 1110, 185, [("Verify Phone ID Token", False), ("Token Verification Result", True),
-                                                          ("Send Push Notification", False)]),
-    ("Cloudinary<br>(Image Storage)", 1370, 165, [("Signed Upload Request", False), ("Image URL", True)]),
+    ("Receiver", 305, 160, [("Pickup Code (at Kiosk)", True), ("Pickup Code Email", False), ("Incoming Order Notifications", False)]),
+    ("Locker Technician", 500, 170, [("Ticket Claims &amp; Resolutions", True), ("Inspection Checklists", True),
+                                    ("Emergency Open &amp; Restart Commands", True), ("Assigned Tickets &amp; Schedules", False)]),
+    ("Drone Technician", 700, 170, [("Order Acceptance &amp; Loading Confirmation", True), ("Launch &amp; Stage Updates", True),
+                                   ("Drone Status &amp; Battery Updates", True), ("Dispatch Queue &amp; Missions", False)]),
+    ("Firebase<br>(Auth &amp; Cloud Messaging)", 900, 185, [("Firebase ID Token", False), ("Verified Identity", True),
+                                                          ("Push Notifications", False)]),
+    ("Cloudinary<br>(Image Storage)", 1115, 165, [("Signed Image Upload", False), ("Image URL", True)]),
+    ("Weather Service<br>(Open-Meteo)", 1310, 180, [("Station Coordinates", False), ("Weather Forecast", True)]),
 ], 40, top=True)
 ring([
-    ("Smart Locker<br>(Raspberry Pi + Kiosk)", 250, 185, [("Open / Restart / Lid Commands (MQTT)", False), ("Heartbeat &amp; Door Events", True),
-                                                   ("Command Results &amp; Control Logs", True), ("Bluetooth Open Public Key", False)]),
-    ("Drone<br>(Pi + Pixhawk + Camera)", 515, 180, [("Mission Assignment", False), ("Signed Telemetry &amp; Camera Stream", True)]),
-    ("Payment Gateway<br>(SePay VietQR)", 760, 170, [("Payment Request", False), ("Payment Webhook", True)]),
-    ("Email / SMS Gateway", 990, 170, [("OTP &amp; Pickup Code Messages", False), ("Delivery Status", True)]),
+    ("Smart Locker<br>(Raspberry Pi + Kiosk)", 250, 185, [("Box &amp; Lid Commands (MQTT)", False), ("Heartbeats &amp; Door Events", True),
+                                                   ("Command Results &amp; Control Logs", True), ("Bluetooth Public Key", False)]),
+    ("Drone<br>(Pi + Pixhawk + Camera)", 515, 180, [("Delivery Commands", False), ("Signed Telemetry &amp; Events", True),
+                                                   ("Camera Stream", True)]),
+    ("Payment Gateway<br>(SePay VietQR)", 760, 170, [("Checkout Request", False), ("Payment Webhook", True)]),
+    ("Email Service<br>(Gmail SMTP)", 990, 170, [("OTP &amp; Pickup Code Emails", False)]),
     ("AI Engine<br>(Claude + Voyage AI)", 1215, 170, [("Question &amp; Retrieved Chunks", False), ("Embeddings &amp; Answer", True)]),
-    ("Map System<br>(OpenStreetMap / OSRM)", 1440, 185, [("Send Destination", False), ("Response Detail Directions", True)]),
+    ("Map Services<br>(OpenStreetMap, Nominatim, OSRM)", 1440, 185, [("Addresses &amp; Coordinates", False), ("Map Tiles, Locations &amp; Routes", True)]),
 ], CY + R + 300, top=False)
 
 # final audit over every pair of lines
