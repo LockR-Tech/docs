@@ -169,6 +169,14 @@ Theo [handoff 2026-10-30](../handoff/2026-10-30-sua-loi-retest-roi-kien.md). Có
 - **API:** thiếu header bắt buộc trả 400 (`common-lib` `GlobalExceptionHandler`); `OrderResponse.dronePickupCode`; SĐT người gửi / người nhận phải là số Việt Nam.
 - **Web admin / app:** gỡ dữ liệu mẫu (sự cố, phiếu bảo trì, nhiệm vụ thu hồi), modal phiếu bồi thường, khoá form phương án, nhãn tiếng Việt; app khách / KTV drone / KTV tủ sửa câu chữ và tự làm mới.
 
+### Cập nhật 2026-11-05 (app KTV drone: tách "Vào ca" khỏi "nhận việc lấy hàng", xác nhận nạp không đổi nút) — mobile nhánh `fix/ktv-drone-tach-ca-lay-hang-va-lam-moi-nap`, chưa commit
+
+Chỉ sửa app; backend vốn đã tách hai trạng thái (ca KTV ở locker-service `/api/maintenance/technician/presence`, nhận việc lấy hàng ở order-service `/api/drone-technician/drone-orders/presence`). Có widget test, chưa thử trên máy thật; verdict § 2 giữ nguyên.
+
+- **"Vào ca" (thẻ ca đầu trang) chỉ là trạng thái online làm việc + toạ độ** — không còn bật nhận việc lấy hàng; cập nhật GPS của thẻ ca không còn gửi sang order-service. **"Hết ca"** vẫn tắt luôn nhận việc lấy hàng (offline thì không được mời) — `M/features/locker_ops/presentation/widgets/technician_shift_card.dart`. Phiếu kiểm tra drone vẫn tự giao theo ca KTV (locker-service), không theo công tắc lấy hàng.
+- **Công tắc "nhận việc lấy hàng"** (tab Điều phối): chưa vào ca thì không bật được; chưa bật thì **không thấy lời mời** (chỉ báo "Có N lời mời đang chờ — bật nhận việc để xem và trả lời"), việc đã nhận / kiện đang cầm vẫn hiện để làm cho xong — `M/features/drone_delivery/presentation/widgets/drone_pickup_queue.dart`.
+- **Xác nhận nạp xong vẫn hiện nút "Xác nhận nạp"** tới khi tải lại trang: (1) poll so danh sách đơn theo `id` (server trả `orderId`) + chặng/trạng thái/`updatedAt` của đơn, bỏ sót `missionStatus` (`AWAITING_LOADING → READY_TO_LAUNCH`) nên coi như không đổi; (2) tải lại sau thao tác dùng chung lượt tải đang chạy, có thể đã đọc dữ liệu từ trước khi server nhận xác nhận. Sửa: so cả nội dung đơn, lượt tải sau thao tác xếp thêm một lượt mới, bỏ phản hồi poll cũ về muộn, ghép phản hồi `loading-confirmation` vào thẻ ngay — `M/features/locker_ops/presentation/pages/maintenance_home_page.dart` (`droneDeliveriesEqual`, `_load`, `_mergeDeliveryResult`).
+
 ## 4. Gap để đạt 100 %
 
 | ID | Việc | Ở đâu | Mục checklist |

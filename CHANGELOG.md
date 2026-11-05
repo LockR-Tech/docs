@@ -2,6 +2,10 @@
 
 Mỗi thay đổi ở repo docs thêm **một dòng** vào ngày tương ứng (mới nhất ở trên). Ghi mã gap/SEC/ADR nếu có.
 
+## 2026-11-05
+
+- flow-1 § cập nhật 2026-11-05 + STATUS § 3: app KTV drone tách "Vào ca" (online + toạ độ) khỏi công tắc nhận việc lấy hàng (chỉ bật mới thấy lời mời), sửa xác nhận nạp xong vẫn hiện nút "Xác nhận nạp".
+
 ## 2026-11-04
 
 - 03-hardware/tu01-cau-hinh-o-va-nap-truot.md (mới): bảng cấu hình từng ô tủ CAB-TU01 và 2 nắp trượt (chân, tốc độ, chiều mở/đóng, vị trí, cách sửa) theo cấu hình đang chạy trên Pi; tu01-so-do-tong-quan và AGENTS.md trỏ tới
