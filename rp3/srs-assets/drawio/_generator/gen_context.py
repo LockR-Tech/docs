@@ -139,7 +139,8 @@ ring([
 ring([
     ("Smart Locker<br>(Raspberry Pi + Kiosk)", 250, 185, [("Box &amp; Lid Commands (MQTT)", False), ("Heartbeats &amp; Door Events", True),
                                                    ("Command Results &amp; Control Logs", True), ("Bluetooth Public Key", False)]),
-    ("Drone<br>(Pi + Pixhawk + Camera)", 515, 180, [("Delivery Commands", False), ("Signed Telemetry &amp; Events", True),
+    ("Drone<br>(Pi + Pixhawk + Camera<br>+ Release Servo)", 515, 180, [("Delivery Commands", False), ("Parcel Release Command", False),
+                                                   ("Signed Telemetry &amp; Events", True), ("Parcel Release Result", True),
                                                    ("Camera Stream", True)]),
     ("Payment Gateway<br>(SePay VietQR)", 760, 170, [("Checkout Request", False), ("Payment Webhook", True)]),
     ("Email Service<br>(Gmail SMTP)", 990, 170, [("OTP &amp; Pickup Code Emails", False)]),
