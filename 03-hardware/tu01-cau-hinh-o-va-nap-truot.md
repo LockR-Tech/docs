@@ -95,7 +95,7 @@ Chưa có công tắc hành trình, Pi **đếm bước** để biết bàn trư
 
 | Luồng | Lệnh tới tủ | Nắp chạy |
 |---|---|---|
-| Giao hàng drone (đơn thật, chế độ "Mô phỏng & Thử nghiệm ArUco") | `cabinet/7/command/open {boxId, lid: true}` → `…/close {lid: true}` | Camera thấy đúng mã của ô trong đơn → mở hết → drone giả lập nhả hàng theo cấu hình → báo nhả xong → đóng hết |
+| Giao hàng drone (đơn thật, chế độ "Mô phỏng & Thử nghiệm ArUco") | `cabinet/7/command/open {boxId, lid: true}` → `…/close {lid: true}` | Camera thấy đúng mã của ô trong đơn → mở hết → servo drone nhả hàng (Pi drone chưa bật servo: đơn DEMO giả lập theo cấu hình) → báo nhả xong → đóng hết |
 | **Chế độ thử nắp** (`/admin/drone-logs`, không cần đơn) | như trên | Mã #0 → nắp ô 2, mã #1 → nắp ô 3: mở hết → giữ **5 giây** → đóng hết |
 | Trang **Điều khiển tủ** (`/admin/cabinet-control`) | `cabinet/7/command/lid` · `lid-jog` · `lid-tune` | Mở hết / Đóng hết / Về gốc / Dừng / Chạy N vòng / chỉnh tốc độ |
 | Bảng kỹ thuật `/service` trên Pi | gọi thẳng, không qua MQTT | như trên + đặt vị trí, đổi chiều, đổi dạng xung |
