@@ -4,7 +4,7 @@ Mỗi thay đổi ở repo docs thêm **một dòng** vào ngày tương ứng (
 
 ## 2026-11-05
 
-- rp3/srs-assets/drawio: vẽ lại activity diagram theo UML 2.5 (`06a`–`06e`, sinh bằng `_generator/gen_activity.py`): Send Parcel, Rent Locker, Book Drone Delivery (tách làn Sender / Receiver), Ask AI Assistant, Manage Knowledge Base; dùng đúng thuật ngữ hệ thống (drop-off PIN, pickup PIN, box), các service gộp thành System, bỏ làn SePay và nhánh quét QR khi không có tài khoản.
+- rp3/srs-assets/drawio: vẽ lại activity diagram theo UML 2.5, swimlane nằm ngang, không khung ngoài (`06a`–`06e`, sinh bằng `_generator/gen_activity.py`): Send Parcel, Rent Locker, Book Drone Delivery (tách làn Sender / Receiver), Ask AI Assistant, Manage Knowledge Base; dùng đúng thuật ngữ hệ thống (drop-off PIN, pickup PIN, box), các service gộp thành System, bỏ làn SePay và nhánh quét QR khi không có tài khoản.
 
 ## 2026-11-04
 
