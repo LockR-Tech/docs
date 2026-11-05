@@ -2,6 +2,10 @@
 
 Mỗi thay đổi ở repo docs thêm **một dòng** vào ngày tương ứng (mới nhất ở trên). Ghi mã gap/SEC/ADR nếu có.
 
+## 2026-11-05
+
+- rp3/srs-assets/drawio: vẽ lại activity diagram theo UML 2.5 (`06a`–`06e`, sinh bằng `_generator/gen_activity.py`): Send Parcel, Rent Locker, Book Drone Delivery (tách làn Sender / Receiver), Ask AI Assistant, Manage Knowledge Base; dùng đúng thuật ngữ hệ thống (drop-off PIN, pickup PIN, box), các service gộp thành System, bỏ làn SePay và nhánh quét QR khi không có tài khoản.
+
 ## 2026-11-04
 
 - 03-hardware/tu01-cau-hinh-o-va-nap-truot.md (mới): bảng cấu hình từng ô tủ CAB-TU01 và 2 nắp trượt (chân, tốc độ, chiều mở/đóng, vị trí, cách sửa) theo cấu hình đang chạy trên Pi; tu01-so-do-tong-quan và AGENTS.md trỏ tới

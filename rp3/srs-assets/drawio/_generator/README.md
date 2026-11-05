@@ -11,6 +11,7 @@ muốn sinh lại từ code thì chạy script tương ứng (Python 3.11+, ch�
 | `gen_cerd_portrait.py 20` | `04-conceptual-erd` |
 | `gen_lerd_portrait.py` | `05a`–`05d` logical ERD theo nghiệp vụ |
 | `gen_lerd_overview.py 40 8` | `05-logical-erd-overview` (mọi bảng, mọi cột; chạy vài phút) |
+| `gen_activity.py [tên]` | `06a`–`06e` activity diagram UML có swimlane: gửi hàng, thuê ô, giao drone, hỏi trợ lý AI, quản lý kho tri thức (mọi service, tủ, drone gộp thành làn **System**; thanh toán SePay nằm trong System) |
 
 - Dữ liệu bảng: `parse_entities.py` đọc JPA entity trong repo `backend` (đặt cạnh repo `docs`) → `entities.json`;
   bảng của assistant-service khai báo trong `erd_data.py`. `fk_nullability.py` → `fk_notnull.json` (FK có NOT NULL
