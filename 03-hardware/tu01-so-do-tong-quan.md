@@ -185,10 +185,10 @@ Thông số trục (`~/iot/config/lid_tuning.json`, chỉnh ở mục trục c�
 
 1. Camera drone thấy đúng mã ArUco của ô trong đơn → backend gửi `cabinet/7/command/open {lid: true}`.
 2. Pi tủ trả `ACCEPTED`, trượt nắp tới cuối ray (36 vòng từ gốc ≈ 21 giây ở 1,79 vòng/s; chỉ chạy phần còn thiếu theo vị trí đếm bước), rồi báo `SUCCESS` kèm `lidConfirmation: STEP_COUNT` và số vòng đã chạy. Nắp đã ở cuối ray thì không chạy motor.
-3. Backend gửi drone `LID_OPENED` kèm `dropSimulationSeconds` (= cấu hình admin "Thời gian giả lập drone nhả hàng") — đây là lệnh nhả hàng; Pi drone chờ đủ số giây đó rồi gửi `DROP_PHASE_COMPLETED`.
+3. Backend gửi drone `LID_OPENED` kèm `parcelRelease: true` — đây là lệnh nhả hàng. Pi drone quay servo MG996R mở chốt hết hành trình (180°), giữ 5 giây cho kiện rơi vào ô, đóng chốt (0°), rồi gửi `DROP_PHASE_COMPLETED` (`releaseMethod: SERVO`). Pi drone chưa bật servo (`SERVO_RELEASE_ENABLED=false`) thì đơn DEMO giả lập theo `dropSimulationSeconds` (= cấu hình admin "Thời gian giả lập drone nhả hàng") như trước. Servo lỗi sau khi thử lại thì Pi gửi `PARCEL_RELEASE_FAILED`: backend vẫn đóng nắp cho an toàn nhưng đơn **không** sang "Sẵn sàng lấy hàng" (kiện còn trên drone, KTV drone xử lý). Chi tiết: `iot/drone-iot/README.md` § Servo nhả hàng.
 4. Backend gửi `cabinet/7/command/close {lid: true}`, Pi tủ trượt nắp về gốc hết số vòng rồi báo đã đóng → đơn sang "Sẵn sàng lấy hàng".
 
-Mỗi bước chỉ chạy khi bước trước báo thành công: tủ chưa báo mở xong thì drone không nhả hàng; drone chưa báo nhả xong thì không đóng nắp; tủ chưa báo đóng xong thì đơn chưa sang "Sẵn sàng lấy hàng". Drone không báo nhả hàng sau số giây giả lập + 60 giây thì nhật ký ghi cảnh báo `DROP_REPORT_TIMEOUT` một lần, nắp vẫn mở và phiên tiếp tục chờ — KTV đóng nắp ở trang Điều khiển tủ nếu cần.
+Mỗi bước chỉ chạy khi bước trước báo thành công: tủ chưa báo mở xong thì drone không nhả hàng; drone chưa báo nhả xong (hoặc báo servo lỗi) thì không đóng nắp; tủ chưa báo đóng xong thì đơn chưa sang "Sẵn sàng lấy hàng". Drone không báo kết quả nhả hàng sau số giây giả lập + 60 giây thì nhật ký ghi cảnh báo `DROP_REPORT_TIMEOUT` một lần, nắp vẫn mở và phiên tiếp tục chờ — KTV đóng nắp ở trang Điều khiển tủ nếu cần.
 
 Vì chưa có công tắc hành trình, tủ **không biết vị trí bàn trượt** sau khi mất điện hoặc trượt bước. Lệnh "Mở hết/Đóng hết" dừng ở giới hạn số vòng, không dừng ở cuối ray — luôn có người đứng xem khi chạy nắp.
 
