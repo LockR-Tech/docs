@@ -139,8 +139,7 @@ ring([
 ring([
     ("Smart Locker Controller<br>(Raspberry Pi)", 250, 185, [("Box &amp; Lid Commands", False), ("Heartbeats &amp; Door Events", True),
                                                    ("Command Results &amp; Control Logs", True), ("Bluetooth Public Key", False)]),
-    ("Drone", 515, 180, [("Delivery Commands", False), ("Parcel Release Command", False),
-                                                   ("Signed Telemetry &amp; Events", True), ("Parcel Release Result", True),
+    ("Drone", 515, 180, [("Delivery Commands", False), ("Signed Telemetry &amp; Events", True),
                                                    ("Camera Video", True)]),
     ("Payment Gateway<br>(SePay VietQR)", 760, 170, [("Checkout Request", False), ("Payment Confirmation", True)]),
     ("Email Service<br>(Gmail SMTP)", 990, 170, [("OTP &amp; Pickup Code Emails", False)]),
