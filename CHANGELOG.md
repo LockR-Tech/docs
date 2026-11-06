@@ -2,6 +2,10 @@
 
 Mỗi thay đổi ở repo docs thêm **một dòng** vào ngày tương ứng (mới nhất ở trên). Ghi mã gap/SEC/ADR nếu có.
 
+## 2026-11-07
+
+- STATUS § 3, flow-2 F2.09, admin-reporting-api: trang admin "Đồ lưu kho" (`/admin/storage`) cho đơn quá hạn đã dời vào kho; `AdminOrderResponse.storage` (lúc vào kho, ai chuyển) và sắp xếp theo `pickupDeadline`.
+
 ## 2026-11-05
 
 - flow-1 § cập nhật 2026-11-05 + STATUS § 3: app KTV drone tách "Vào ca" (online + toạ độ) khỏi công tắc nhận việc lấy hàng (chỉ bật mới thấy lời mời), sửa xác nhận nạp xong vẫn hiện nút "Xác nhận nạp".
