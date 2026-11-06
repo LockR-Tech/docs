@@ -94,7 +94,7 @@ The legacy `GET /api/admin/orders?status&type` (plain list, no paging) is **unch
 | `lockerId` | long | matches `lockerId` **or** `destinationLockerId` |
 | `storeId` | long | order `storeId`, or any locker belonging to the store |
 | `q` | string | case-insensitive "contains" on `orderCode`, `receiverPhone`, `receiverName`. A number also matches the order `id` exactly. A phone number (8–15 digits) also matches orders of the customer account with exactly that phone. PIN is never searched. |
-| `sort` | string | `field,dir`. Fields: `createdAt` (default), `updatedAt`, `totalPrice`, `paidAt`, `completedAt`, `id`. Dir: `desc` (default) or `asc`. Ties are broken by `id desc`. When sorting desc by a nullable field, PostgreSQL puts nulls first. |
+| `sort` | string | `field,dir`. Fields: `createdAt` (default), `updatedAt`, `totalPrice`, `paidAt`, `completedAt`, `pickupDeadline`, `id`. Dir: `desc` (default) or `asc`. Ties are broken by `id desc`. When sorting desc by a nullable field, PostgreSQL puts nulls first. |
 
 Response `data`: `PageResponse<AdminOrderResponse>`. `timeline` is `null` in the list.
 
@@ -220,6 +220,10 @@ Field notes:
 - `store`: the order's `storeId` when present, otherwise the locker's store.
 - Box numbers: `sendBoxNumber`/`receiveBoxNumber`/`reservedBoxNumber`. For `EXPIRED` orders the box ids are
   cleared, so these numbers are null.
+- `storage` is set only for `EXPIRED` orders (items moved to storage after the pickup deadline):
+  `{storedAt, movedByUserId, movedByName, note}` from the latest status-history row that moved the order to
+  `EXPIRED`. `movedByUserId: null` means the overdue job moved it. Orders with no such history row fall back to
+  `storedAt = updatedAt` and null actor/note. Other statuses: `null`. The admin page `/admin/storage` lists these.
 - `fees.overtimeFee` = `extraFee`, because the overtime fee is the only thing added to `extraFee`.
   `fees.basePrice` = `totalPrice − extraFee`.
 - `payment` comes from payment-service:
