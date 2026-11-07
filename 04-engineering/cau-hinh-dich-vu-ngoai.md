@@ -410,6 +410,18 @@ Việc còn lại khi thêm máy / khoá ký mới:
    thêm lại getter `isWebConfigured`), tải APNs key lên Firebase, thêm URL scheme theo hướng dẫn Firebase.
    Hiện phần iOS của `firebase_options.dart` vẫn trỏ project khác.
 
+**Nội dung SMS OTP:** là mẫu cố định của Firebase, **không sửa được câu chữ** (kể cả gói Blaze). App và
+kiosk đặt ngôn ngữ `vi` trước khi gửi mã ([iot #42](https://github.com/LockR-Tech/iot/pull/42),
+[mobile #128](https://github.com/LockR-Tech/mobile/pull/128)) nên SMS ra tiếng Việt; tên ứng dụng trong tin lấy
+từ **Project settings → General → Public-facing name** — đặt `Lock.R`. Muốn đúng từng chữ (vd "Mã xác nhận
+Lock.R của bạn là: …") phải tự gửi OTP qua nhà cung cấp SMS (eSMS — cần brandname đăng ký với nhà mạng), không
+dùng Firebase Phone Auth.
+
+**OTP SMS trên web (kiosk) báo `auth/invalid-app-credential` (07/11):** server Firebase từ chối mã reCAPTCHA v2
+hợp lệ (mã giả thì báo `CAPTCHA_CHECK_FAILED`, khác). Cách xử lý: Authentication → Settings → reCAPTCHA → bật
+cho **Phone authentication** (Audit), cho phép reCAPTCHA Enterprise API — SDK tự chuyển sang Enterprise, không
+sửa code.
+
 Đăng nhập Facebook đang ẩn (`FeatureFlags.facebookLoginEnabled = false`), không cần cấu hình.
 
 **Kiểm tra:** bản Android ký bằng khoá đã khai SHA → Đăng nhập → SĐT → nhận OTP 6 số → vào app; lần đầu
