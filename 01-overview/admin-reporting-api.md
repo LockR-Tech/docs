@@ -258,6 +258,7 @@ Field notes:
 ```
 `status` is required (non-blank). `staffId` is optional: send the admin's user id so the timeline shows who changed it.
 `receiveBoxId` is optional. `CANCELED`/`COMPLETED` release the boxes.
+An `EXPIRED` order (items in storage) cannot be closed here: `400 ORDER_IN_STORAGE_HANDOVER_REQUIRED` — use § 1.5.
 Response `data` = legacy `OrderResponse` (code `ORDER_STATUS_UPDATED`). A missing status gives `400 VALIDATION_ERROR`.
 
 ### 1.5 Hand over stored items at the counter (NEW)
@@ -286,6 +287,9 @@ The web page `/admin/storage` uses this instead of `PUT /status` COMPLETED. The 
 - The record is stored in `order_schema.storage_handovers` (V41). The status-history note summarises it
   (recipient, `***` + last 4 digits, amount collected, note).
 Response `data` = legacy `OrderResponse` (code `ORDER_STORAGE_HANDED_OVER`).
+This is the only way an `EXPIRED` order becomes `COMPLETED`: the customer endpoints `PUT /api/orders/{id}/complete`
+and `POST /api/orders/{id}/pickup-storage` answer `400 ORDER_IN_STORAGE_PICKUP_AT_COUNTER` for it. The customer can
+still pay the remaining fee in the app (then `outstandingAmount` is 0 and the dialog asks for no collection).
 
 ---
 
