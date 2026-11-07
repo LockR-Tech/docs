@@ -4,6 +4,7 @@ Mỗi thay đổi ở repo docs thêm **một dòng** vào ngày tương ứng (
 
 ## 2026-11-07
 
+- STATUS § 5 + 03-hardware/pi-lockr-tu01 (việc còn mở): kiosk ẩn ô chọn tủ, chỉ hiện khi chạy thử `?chonTu=1` (iot [#45](https://github.com/LockR-Tech/iot/pull/45), F2-G09).
 - STATUS § 5: kiosk vẽ sơ đồ ô như tủ thật — thân tủ, cửa ô có đèn báo trạng thái, tấm màn hình, dải bãi đáp drone (iot [#44](https://github.com/LockR-Tech/iot/pull/44), F2-G09).
 - STATUS § 3, flow-2 F2.09, admin-reporting-api § 1.4–1.5, diagrams/order-status O11–O12: đơn EXPIRED (đồ ở kho) chỉ đóng bằng trao trả tại quầy — khách `complete`/`pickup-storage` và admin `PUT /status` bị chặn; app khách chỉ trả phí rồi được báo tới quầy nhận.
 - STATUS § 3, flow-2 F2.09, admin-reporting-api § 1.5, media-storage: trao đồ lưu kho tại quầy bắt buộc đối chiếu 4 số cuối SĐT người nhận, ảnh xác minh (`STORAGE_HANDOVER`) và khai đã thu khi khách còn nợ — `POST /api/admin/orders/{id}/storage-handover`, biên bản `storage_handovers`.
