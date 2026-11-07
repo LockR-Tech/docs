@@ -224,6 +224,9 @@ Field notes:
   `{storedAt, movedByUserId, movedByName, note}` from the latest status-history row that moved the order to
   `EXPIRED`. `movedByUserId: null` means the overdue job moved it. Orders with no such history row fall back to
   `storedAt = updatedAt` and null actor/note. Other statuses: `null`. The admin page `/admin/storage` lists these.
+- `handover` is set only on `/detail` of an order closed through `POST /storage-handover` (§ 1.5):
+  `{handedOverAt, handedOverByUserId, handedOverByName, recipientType, recipientName, recipientPhone, photoUrl,
+  collectedAmount, collectionMethod, note}`. List responses and other orders: `null`.
 - `fees.overtimeFee` = `extraFee`, because the overtime fee is the only thing added to `extraFee`.
   `fees.basePrice` = `totalPrice − extraFee`.
 - `payment` comes from payment-service:
@@ -256,6 +259,33 @@ Field notes:
 `status` is required (non-blank). `staffId` is optional: send the admin's user id so the timeline shows who changed it.
 `receiveBoxId` is optional. `CANCELED`/`COMPLETED` release the boxes.
 Response `data` = legacy `OrderResponse` (code `ORDER_STATUS_UPDATED`). A missing status gives `400 VALIDATION_ERROR`.
+
+### 1.5 Hand over stored items at the counter (NEW)
+`POST /api/admin/orders/{id}/storage-handover` — closes an `EXPIRED` order (items in storage) as `COMPLETED`.
+The web page `/admin/storage` uses this instead of `PUT /status` COMPLETED. The actor is the admin in the JWT.
+```json
+{
+  "recipientType": "RECEIVER",
+  "phoneLast4": "4321",
+  "recipientName": null, "recipientPhone": null,
+  "photo": { "publicId": "...", "version": 1, "signature": "...", "format": "jpg", "bytes": 120000, "width": 1280, "height": 960 },
+  "collectedAmount": 30000, "collectionMethod": "CASH",
+  "note": null
+}
+```
+- `recipientType` `SENDER` | `RECEIVER` | `DELEGATE`: `phoneLast4` must match a phone of that party
+  (sender: account phone or `senderPhone`; receiver: `receiverPhone` or receiver account; delegate: `delegatePhone`).
+- `recipientType` `OTHER`: `recipientName`, `recipientPhone` (≥ 9 digits) and `note` (reason) are required.
+- `photo` is required: a `MediaUpload` with purpose `STORAGE_HANDOVER` (ADMIN only, see media-storage.md).
+- When `outstandingAmount > 0` (same formula as § 1.3; `paymentStatus = UNPAID` ⇒ `totalPrice` when
+  payment-service is down), `collectedAmount ≥ outstanding` and `collectionMethod` `CASH` | `TRANSFER` are required.
+  This is only recorded on the handover; no payment row is created in payment-service.
+- Errors (400): `HANDOVER_ORDER_NOT_IN_STORAGE`, `HANDOVER_RECIPIENT_TYPE_INVALID`, `HANDOVER_PHONE_LAST4_REQUIRED`,
+  `HANDOVER_PHONE_UNKNOWN`, `HANDOVER_PHONE_MISMATCH`, `HANDOVER_OTHER_RECIPIENT_INCOMPLETE`,
+  `HANDOVER_OUTSTANDING_NOT_COLLECTED`, plus the `MEDIA_*` photo errors.
+- The record is stored in `order_schema.storage_handovers` (V41). The status-history note summarises it
+  (recipient, `***` + last 4 digits, amount collected, note).
+Response `data` = legacy `OrderResponse` (code `ORDER_STORAGE_HANDED_OVER`).
 
 ---
 

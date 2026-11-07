@@ -68,6 +68,7 @@ Thư mục trên Cloudinary: `<root>/avatars|reports|stores|promotions/u<userId>
 | `AVATAR` | Mọi tài khoản | Ảnh đại diện |
 | `STORE_IMAGE` | ADMIN | Ảnh cửa hàng |
 | `PROMOTION_IMAGE` | ADMIN | Ảnh khuyến mãi |
+| `STORAGE_HANDOVER` | ADMIN | Ảnh xác minh khi trao đồ lưu kho tại quầy (`POST /api/admin/orders/{id}/storage-handover`) |
 
 ## 4. API
 
