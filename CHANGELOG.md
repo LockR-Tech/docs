@@ -4,7 +4,7 @@ Mỗi thay đổi ở repo docs thêm **một dòng** vào ngày tương ứng (
 
 ## 2026-11-07
 
-- STATUS § 3, flow-2 F2.09, admin-reporting-api § 1.4–1.5: đơn EXPIRED (đồ ở kho) chỉ đóng bằng trao trả tại quầy — khách `complete`/`pickup-storage` và admin `PUT /status` bị chặn; app khách chỉ trả phí rồi được báo tới quầy nhận.
+- STATUS § 3, flow-2 F2.09, admin-reporting-api § 1.4–1.5, diagrams/order-status O11–O12: đơn EXPIRED (đồ ở kho) chỉ đóng bằng trao trả tại quầy — khách `complete`/`pickup-storage` và admin `PUT /status` bị chặn; app khách chỉ trả phí rồi được báo tới quầy nhận.
 - STATUS § 3, flow-2 F2.09, admin-reporting-api § 1.5, media-storage: trao đồ lưu kho tại quầy bắt buộc đối chiếu 4 số cuối SĐT người nhận, ảnh xác minh (`STORAGE_HANDOVER`) và khai đã thu khi khách còn nợ — `POST /api/admin/orders/{id}/storage-handover`, biên bản `storage_handovers`.
 - STATUS § 3, flow-2 F2.09, admin-reporting-api: trang admin "Đồ lưu kho" (`/admin/storage`) cho đơn quá hạn đã dời vào kho; `AdminOrderResponse.storage` (lúc vào kho, ai chuyển) và sắp xếp theo `pickupDeadline`.
 - STATUS § 5 + 04-engineering/cau-hinh-dich-vu-ngoai § 11c: SMS OTP Firebase bằng tiếng Việt (`languageCode = 'vi'`, iot [#42](https://github.com/LockR-Tech/iot/pull/42), mobile [#128](https://github.com/LockR-Tech/mobile/pull/128), F2-G09); câu chữ SMS không sửa được, tên trong tin lấy từ Public-facing name của project.
