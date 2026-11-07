@@ -1,8 +1,13 @@
 # Hợp đồng mở ô qua Bluetooth (BLE) — app ⇄ Pi
 
-> Phiên bản 1.0 · 2026-10-24 · gap **F3-G11** · code: backend `iot-service` (`BleTestService`, `BleTokenSigner`), iot `services/ble_gatt_service.py` + `services/ble_open_token.py`, mobile `lib/core/services/locker_ble_open_service.dart`, web admin `BluetoothTestPanel.tsx`.
+> Phiên bản 1.1 · 2026-11-07 (thêm **mở ô theo đơn**, § 7) · 1.0 · 2026-10-24 · gap **F3-G11** · code: backend `iot-service` (`BleTestService`, `BleTokenSigner`), iot `services/ble_gatt_service.py` + `services/ble_open_token.py`, mobile `lib/core/services/locker_ble_open_service.dart`, web admin `BluetoothTestPanel.tsx`.
 
-Chế độ **thử mở ô qua Bluetooth**: admin cho từng tài khoản khách thử trên từng tủ; tài khoản được cấp mở được **ô bất kỳ** của tủ đó bằng điện thoại, đứng cạnh tủ, không cần đơn. Lúc mở, Pi không cần mạng: nó tự kiểm chữ ký của mã do máy chủ cấp.
+Hai chế độ dùng chung mã và kênh Bluetooth:
+
+- **Thử mở ô** (§ 1–6): admin cho từng tài khoản khách thử trên từng tủ; tài khoản được cấp mở được **ô bất kỳ** của tủ đó, không cần đơn.
+- **Mở ô theo đơn** (§ 7): đơn đã thanh toán, đúng người, đúng ô — mở xong trạng thái đơn chạy y hệt mở bằng PIN/QR. Bluetooth không dùng được thì app chuyển sang mã QR / OTP ở kiosk.
+
+Lúc mở, Pi không cần mạng: nó tự kiểm chữ ký của mã do máy chủ cấp.
 
 ## 1. Luồng
 
@@ -24,6 +29,7 @@ Pi         ── nhật ký điều khiển BOX_OPEN_BLE (kèm tài khoản) �
 | `DELETE /api/admin/iot/ble-test/lockers/{lockerId}/users/{userId}` | ADMIN | Mã đã cấp trước đó vẫn dùng được tới khi hết hạn (≤ 120 s) |
 | `GET /api/iot/ble-test/lockers` | mọi JWT | Tủ của tài khoản đang đăng nhập: `[{lockerId, code, name}]` |
 | `POST /api/iot/ble-test/lockers/{lockerId}/boxes/{boxNumber}/token` | mọi JWT, service kiểm quyền | 403 `BLE_TEST_NOT_GRANTED`, 404 `BOX_NOT_IN_LOCKER`, 503 `LOCKER_LOOKUP_FAILED`. Mỗi lần cấp ghi nhật ký điều khiển `BLE_TOKEN` / `ISSUED` |
+| `POST /api/iot/ble/orders/{orderId}/token` | mọi JWT, service kiểm đúng người + trạng thái đơn | Mã theo đơn — § 7 |
 | `GET /api/iot/ble/public-key` | **công khai** (Pi) | `{algorithm: "Ed25519", publicKey: <32 byte base64>, tokenVersion: 1}` |
 
 Trả lời của `…/token`: `token` (base64url, không padding), `nonce` (hex), `expiresAt`, `lockerId`, `lockerCode`, `boxNumber`, `boxId`, `boxStatus` (app hỏi lại khi `OCCUPIED`), `deviceName` (`LOCKR_<mã tủ>`), `serviceUuid`, `openCharUuid`, `resultCharUuid`.
@@ -55,6 +61,7 @@ Pi từ chối (mã lỗi gửi lại app):
 | `EXPIRED` · `BAD_EXPIRY` | quá hạn (cho lệch đồng hồ 30 s) / hạn xa hơn 600 s |
 | `REPLAYED` | nonce đã dùng (Pi nhớ tới khi mã hết hạn) |
 | `INVALID_SLOT` · `HARDWARE_ERROR` | ô không có relay / lỗi phần cứng |
+| `JAMMED` | đã kích relay nhưng cảm biến vẫn báo cửa đóng (chỉ khi Pi bật `REQUIRE_DOOR_SENSOR`, giống mở từ xa) |
 
 ## 4. GATT trên Pi
 
@@ -100,3 +107,39 @@ Mã lỗi phía app (ngoài mã Pi ở § 3): `NOT_FOUND`, `NOT_FOUND_LOCATION_O
 3. App: Hồ sơ → **Thử mở ô qua Bluetooth** → chọn ô → Mở. Cửa sổ laptop in mã nhận được và câu trả lời cho app.
 
 Giới hạn: Windows không cho đặt tên quảng bá (bless cần `pysetupdi`, không có trên PyPI; script thay bằng adapter rỗng) ⇒ app nhận ra tủ giả theo service UUID, chỉ bật **một** tủ giả mỗi lần. Adapter phải hỗ trợ vai peripheral (đa số adapter Intel/Realtek từ Windows 10 trở lên).
+
+## 7. Mở ô theo đơn
+
+Sau khi khách thanh toán trên app, nút **Mở ô** thử Bluetooth trước; không được thì chuyển sang mã QR / OTP dùng ở kiosk. Mã 91 byte giữ nguyên phiên bản 1 (§ 3) — Pi không đổi cách kiểm; máy chủ ghi nhớ `nonce → đơn` lúc cấp.
+
+```
+App  ── POST /api/iot/ble/orders/{orderId}/token ──▶ iot-service: kiểm đơn + người ⇒ mã 91 byte, lưu ble_order_tokens
+App  ── BLE: ghi mã vào OPEN (như § 4)
+Pi   ── kiểm mã ⇒ kích relay ⇒ (REQUIRE_DOOR_SENSOR: cửa vẫn đóng ⇒ JAMMED) ⇒ notify RESULT cho app
+Pi   ── event/control BOX_OPEN_BLE kèm nonce, userId, boxNumber ──outbox, gửi bù khi mất mạng──▶ iot-service
+iot-service ── nonce khớp ble_order_tokens (chưa xử lý) ⇒ box_access_logs (BLE) ⇒ chuyển trạng thái đơn như mở bằng PIN/QR
+```
+
+**Ai được cấp mã, mở ô nào** — ô = `receiveBoxId ?: sendBoxId`; điều kiện chặn y như PIN/QR (`OrderAccessPolicy`: chưa thanh toán, thuê quá hạn…):
+
+| Trạng thái đơn | Người gọi | `action` | Sau khi Pi báo mở được |
+|---|---|---|---|
+| `INITIALIZED` (đã thanh toán) | chủ đơn | `DROP` | ghi `dropOpenedAt` — khách bấm "Đã bỏ hàng" như cũ |
+| `STORING` + `RENTAL` | chủ đơn | `RENTAL_ACCESS` | không đổi trạng thái (ô thuê mở lại nhiều lần) |
+| `RETURNED` | chủ đơn | `PICKUP` | đơn `COMPLETED` |
+| `STORING` (không thuê; drone khi `READY_FOR_PICKUP`) | người nhận, hoặc **chỉ** người được uỷ quyền nếu đơn đã uỷ quyền | `PICKUP` | đơn `COMPLETED` |
+
+Lỗi: 404 `ORDER_NOT_FOUND`, 403 `BLE_ORDER_FORBIDDEN` (không đúng người), 409 `BLE_ORDER_NOT_OPENABLE` (sai trạng thái), các mã chặn sẵn có (`ORDER_UNPAID`, `RENTAL_EXPIRED`…), 503 `ORDER_LOOKUP_UNAVAILABLE` (không hỏi được order-service). Lỗi cấp mã **không** tính vào khoá ô vì nhập sai mã.
+
+Trả lời giống `…/ble-test/…/token` (§ 2) thêm `orderId`, `action`.
+
+**Vì sao máy chủ đợi Pi báo, không tin app:** app có thể mất kết nối hoặc báo sai; Pi ký nhận bằng chính `nonce` trong mã đã ký, gửi qua outbox nên mất mạng vẫn tới sau. Sự kiện lặp (outbox gửi lại) không chuyển trạng thái lần hai. Pi báo `FAILED` / `JAMMED` ⇒ ghi `box_access_logs` thất bại (`JAMMED` báo lỗi ô như mở từ xa).
+
+**App — một nút "Mở ô tủ"** cho mỗi việc (bỏ hàng, lấy hàng, mở ô thuê; ở màn sau thanh toán, chi tiết đơn và màn người nhận). Bấm nút ⇒ app thử Bluetooth ngay (hiện từng bước), không hỏi cách mở trước. Chỉ khi Bluetooth tắt, chưa cấp quyền, không thấy tủ, kết nối lỗi hay Pi từ chối, app mới cho khách chọn một trong hai:
+
+1. **Quét mã QR** dán trên tủ ⇒ mở từ xa qua `/api/iot/unlock` như cũ;
+2. **Dùng mã OTP** ⇒ app hiện mã để nhập ở kiosk (kiosk tự mở khi nhập đủ 6 số).
+
+Màn này có thêm nút "Thử lại Bluetooth" (xin mã mới, `nonce` mới). Bluetooth bị tắt thì có nút bật (Android) / hướng dẫn (iOS). Hộp chọn 3 cách mở cũ không còn ở bước đầu.
+
+**Triển khai:** order-service và iot-service lên cùng lúc (iot-service hỏi `GET /internal/orders/{id}/ble-access`; order-service cũ ⇒ app nhận 503 `ORDER_LOOKUP_UNAVAILABLE`), Flyway iot-service V10 tạo `iot_schema.ble_order_tokens`; sau đó Pi (tự cập nhật trong 5 phút), cuối cùng app.
