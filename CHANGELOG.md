@@ -2,6 +2,10 @@
 
 Mỗi thay đổi ở repo docs thêm **một dòng** vào ngày tương ứng (mới nhất ở trên). Ghi mã gap/SEC/ADR nếu có.
 
+## 2026-11-07
+
+- STATUS § 5 + 03-hardware/pi-lockr-tu01 (Cập nhật code): kiosk gửi lại OTP, reCAPTCHA tách khỏi nút, Pi tự cập nhật code qua timer `lockr-auto-update` (iot [#41](https://github.com/LockR-Tech/iot/pull/41), F2-G09); ghi lỗi OTP SMS web `INVALID_APP_CREDENTIAL` còn mở.
+
 ## 2026-11-05
 
 - flow-1 § cập nhật 2026-11-05 + STATUS § 3: app KTV drone tách "Vào ca" (online + toạ độ) khỏi công tắc nhận việc lấy hàng (chỉ bật mới thấy lời mời), sửa xác nhận nạp xong vẫn hiện nút "Xác nhận nạp".

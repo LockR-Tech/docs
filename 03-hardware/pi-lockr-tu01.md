@@ -128,7 +128,7 @@ Sự cố 1–18 xảy ra trên bản cài USB flash đầu tiên; 19–21 khi d
 | Xem trạng thái | `systemctl status lockr-controller lockr-kiosk postgresql --no-pager` |
 | Log | `journalctl -u lockr-controller -f` · `journalctl -u lockr-kiosk -f` |
 | Tắt máy | `sudo sync && sudo poweroff` — **không rút nguồn ngang** |
-| Cập nhật code | `cd ~/iot && git pull && uv sync`, rồi `cd ui && npm ci --no-audit --no-fund && npm run build && sync` (~40 giây), `sudo systemctl restart lockr-controller lockr-kiosk lightdm` |
+| Cập nhật code | **Tự động** từ [iot#41](https://github.com/LockR-Tech/iot/pull/41): timer `lockr-auto-update` mỗi 5 phút kéo fast-forward `main`; `ui/` đổi ⇒ build `ui/dist.new`, thành công mới thay bản chạy, khởi động lại `lockr-kiosk` và tải lại Chromium (build lỗi giữ bản cũ); code Python đổi ⇒ khởi động lại `lockr-controller`. Bỏ qua khi `~/iot` có thay đổi chưa commit hoặc không ở `main`. Cài một lần: `cd ~/iot && git pull && sudo bash scripts/install-pi-auto-update.sh` · log: `journalctl -u lockr-auto-update -n 50` · chạy ngay: `sudo systemctl start lockr-auto-update` · tắt: `sudo systemctl disable --now lockr-auto-update.timer`. Cập nhật tay (khi tắt timer): `cd ~/iot && git pull && uv sync`, rồi `cd ui && npm ci --no-audit --no-fund && npm run build && sync`, `sudo systemctl restart lockr-controller lockr-kiosk lightdm` |
 | Cập nhật hệ thống | `sudo apt update && sudo apt full-upgrade -y` |
 | Đổi tủ trên kiosk | sửa `VITE_LOCKER_ID`, `VITE_LOCKER_CODE` trong `~/iot/ui/.env.local` → `npm run build && sync` → `sudo systemctl restart lockr-kiosk lightdm` |
 | Xem kiosk khi chưa có màn hình | `ssh -N -L 3002:127.0.0.1:3002 -L 8000:127.0.0.1:8000 lockr@lockr-tu01.local`, mở `http://localhost:3002` trên laptop |
