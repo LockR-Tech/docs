@@ -4,6 +4,7 @@ Mỗi thay đổi ở repo docs thêm **một dòng** vào ngày tương ứng (
 
 ## 2026-11-07
 
+- STATUS § 5: "Thanh toán bằng app ngân hàng" lưu mã VietQR vào Thư viện ảnh để app ngân hàng quét và tự điền — link `dl.vietqr.io` trên Android không mang dữ liệu (mobile [#131](https://github.com/LockR-Tech/mobile/pull/131), F2-G04).
 - STATUS § 5, ble-open-contract 1.1 (§ 7 mở ô theo đơn, một nút "Mở ô" Bluetooth trước rồi QR/OTP), mqtt-contract § 2.2 (`BOX_OPEN_BLE` kèm `nonce`/`userId`/`boxNumber`/`errorCode`): backend [#137](https://github.com/LockR-Tech/backend/pull/137), iot [#47](https://github.com/LockR-Tech/iot/pull/47), mobile [#130](https://github.com/LockR-Tech/mobile/pull/130) (F3-G11).
 - STATUS § 5: kiosk tự mở khi nhập đủ 6 số OTP (iot [#46](https://github.com/LockR-Tech/iot/pull/46), F2-G09).
 - STATUS § 5 + 03-hardware/pi-lockr-tu01 (việc còn mở): kiosk ẩn ô chọn tủ, chỉ hiện khi chạy thử `?chonTu=1` (iot [#45](https://github.com/LockR-Tech/iot/pull/45), F2-G09).
