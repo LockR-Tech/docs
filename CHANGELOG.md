@@ -2,6 +2,10 @@
 
 Mỗi thay đổi ở repo docs thêm **một dòng** vào ngày tương ứng (mới nhất ở trên). Ghi mã gap/SEC/ADR nếu có.
 
+## 2026-11-08
+
+- review-2/ (mới): hướng dẫn và 4 biểu mẫu Review 2 của môn (BM01–BM04) gom vào `review-2/bieu-mau/`; Design Brief Lock.R bản nháp v1.0 điền trên BM01 kèm script dựng lại (`build_brief.py`, `to_pdf.ps1`) — còn chờ mã đề tài, thay đổi phiếu đăng ký và kết quả BM02.
+
 ## 2026-11-07
 
 - STATUS § 5: màn "Đơn tủ" và màn thử Bluetooth của app khách dùng toast chung `AppToast` thay SnackBar đen (mobile [#132](https://github.com/LockR-Tech/mobile/pull/132), ADR-0010).
