@@ -42,6 +42,8 @@ Mỗi service có database Postgres riêng, Flyway, `ddl-auto: validate`.
 
 Đường công khai của kiosk (mã là credential, không JWT): `/api/iot/verify-pin`, `/verify-access`, `/unlock`, `/unlock-with-code`, `/confirm-drop-with-code`, `/end-rental-with-code`. `GET /api/iot/ble/public-key` cũng công khai — Pi tải khoá kiểm mã mở ô qua Bluetooth ([ble-open-contract](ble-open-contract.md), F3-G11; admin cấp quyền qua `/api/admin/iot/ble-test/**`, khách xin mã qua `/api/iot/ble-test/**`). RBAC đáng chú ý: LOCKER_TECHNICIAN chỉ được `GET /api/admin/lockers/reports` (không giao/đóng/gia hạn bản admin); `PUT /api/maintenance/schedules/**` chỉ ADMIN.
 
+Lắp đặt & nghiệm thu tủ (F3-G12, [flow-3 § 8](../02-flows/flow-3-roles-maintenance.md#8-lắp-đặt--nghiệm-thu-tủ-f3-g12)): admin `GET /api/admin/lockers/installations?status=`, `GET|POST /api/admin/lockers/{lockerId}/installation`, `GET|PUT /api/admin/lockers/installations/{id}`, `POST …/{id}/approve|return|cancel`, `POST|DELETE …/{id}/photos` → locker; KTV tủ `GET /api/locker-technician/installations[/{id}]`, `POST …/{id}/start|submit`, `PUT …/{id}/checks/{item}`, `POST|DELETE …/{id}/photos` → locker; gán Pi `GET /api/locker-technician/cabinet/{lockerId}/controller/candidates`, `POST /api/locker-technician/cabinet/{lockerId}/controller` → iot (`/api/locker-technician/cabinet/**` khai báo trước locker-service). Nội bộ: locker-service đọc `GET /internal/iot/cabinet/{lockerId}/commissioning?since=` để tự xác nhận các bước máy kiểm được. Bảng mới (locker_schema, V34): `locker_installations`, `locker_installation_checks`, `locker_installation_photos`. Sự kiện mới: `locker.installation.assigned`, `locker.installation.reviewed` (routing key `LOCKER_REPORT_ASSIGNED`).
+
 ## 3. Hạ tầng
 
 | | Local | Production |
