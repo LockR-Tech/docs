@@ -4,6 +4,7 @@ Mỗi thay đổi ở repo docs thêm **một dòng** vào ngày tương ứng (
 
 ## 2026-11-09
 
+- rp3/srs-assets/drawio: thêm activity diagram luồng bảo trì của KTV tủ (L3): `06f` xử lý phiếu sự cố (khách báo hỏng → định tuyến cho KTV phụ trách tủ → nhận phiếu, gia hạn SLA, từ chối hoặc dời hàng rồi sửa / khoá ô → RESOLVED, khách đánh giá) và `06g` kiểm tra định kỳ (nhắc khi tới hạn → checklist Đạt / Không đạt → mục không đạt mở phiếu cho chính KTV, xử lý xong mới dời hạn), sinh bằng `gen_activity.py`.
 - rp3 + rp4: bỏ toàn bộ phần ví (nạp ví, rút tiền, thanh toán bằng ví, điều chỉnh ví) vì khách, admin và các bên không dùng nữa (app khách đã gỡ ở mobile [#109](https://github.com/LockR-Tech/mobile/pull/109)). SRS: bỏ UC Manage Wallet, mục Top Up / Withdraw, BR-16, MSG15, 3 bảng ví; 3.2.24 thành Transaction History; đánh số lại UC, BR, MSG và mục 3.2.25–3.2.32. SDD: bỏ mục 3.12 Wallet, bảng ví của payment_db, class ví; đánh số lại 3.12–3.27. Vẽ lại use case, screen flow, ERD, class/sequence/package liên quan; Project Tracking bỏ 2 dòng WBS ví; rp5 đánh số lại BR/MSG theo SRS mới.
 - rp5/ (mới): Report 5 – Software Test Documentation theo form chương "Software Testing Documentation" của report mẫu: tài liệu Word + PDF, Unit Test (38 function, 428 unit test, kết quả chạy JUnit thật trên backend `main` 408d1fd: 414 pass, 14 untested vì không có Docker) và Test Report (45 module, 282 test case hệ thống, round 1); bỏ phần ví vì không còn dùng; script dựng lại trong `rp5/test-assets/_generator`.
 

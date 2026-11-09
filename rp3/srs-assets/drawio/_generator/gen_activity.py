@@ -533,10 +533,111 @@ def knowledge_base():
     return a
 
 
+# =============================================================================================================
+# 6. Handle Incident Ticket  (Customer | System | Locker Technician)
+# =============================================================================================================
+def incident_ticket():
+    a = Activity("06f-activity-handle-incident-ticket",
+                 [("Customer", 150), ("System", 236), ("Locker<br>Technician", 210)])
+    C, Y, T = 0, 1, 2
+    up, lo = 0.27, 0.75
+    tm, tl, tt = 0.42, 0.82, 0.1          # technician lane: main row, lower row, upper bypass
+    a.start("st", C, -0.45)
+    a.action("report", C, 0.5, "Report faulty box: title, description &amp; photos")
+    a.decision("dopen", Y, 1.4, f=up)
+    a.action("merged", Y, 1.4, "Add the report to the box's open ticket", f=lo)
+    a.final("end_merged", Y, 2.2, f=lo)
+    a.action("create", Y, 2.45, "Open ticket (OPEN), box PENDING_CHECK &amp; pause the order's fees", f=up)
+    a.action("route", Y, 3.45, "Route the ticket to the locker's technician (SLA 4 h from the report)", f=up, tone="green")
+    a.action("claim", T, 4.3, "Claim ticket (blocked while holding 3 or more overdue tickets)", f=tm)
+    a.action("inprog", Y, 5.3, "Mark ticket IN_PROGRESS", f=up)
+    a.merge("minspect", T, 6.1, f=tm)
+    a.action("inspect", T, 6.9, "Go to the locker, inspect the box, log progress &amp; photos", f=tm)
+    a.decision("dtime", T, 7.7, f=tm)
+    a.action("extend", T, 6.9, "Extend SLA with a reason (max 2 × 24 h)", f=tl)
+    a.decision("dfault", T, 8.5, f=tm)
+    a.action("reject", T, 8.5, "Reject with feedback: box back to previous status, order resumes", f=tl,
+             tone="orange")
+    a.final("end_rej", T, 9.35, f=tl)
+    a.decision("dparcel", T, 9.4, f=tm)
+    a.action("move", T, 10.6, "Move the parcel: relocate to another box, hand over with the customer's code "
+             "or seal to hub", f=tm, h=66)
+    a.merge("mfix", T, 11.5, f=tm)
+    a.decision("dfix", T, 12.3, f=tm)
+    a.action("fix", T, 13.2, "Fix the box on site &amp; take after-fix photo", f=tm)
+    a.action("lock", T, 13.2, "Lock the box (FAULT) &amp; take photo", f=tl, tone="orange")
+    a.merge("mres", T, 14.1, f=tm)
+    a.action("resolve", Y, 15.1, "Mark RESOLVED, update box status, resume the order &amp; notify the customer",
+             f=up, tone="green", h=66)
+    a.action("rate", C, 16.1, "Rate the technician (optional)")
+    a.final("end", C, 16.9)
+
+    a.flow("st", "report"); a.flow("report", "dopen", out="r", inn="t")
+    a.flow("dopen", "merged", "[box already has an open ticket]")
+    a.flow("merged", "end_merged")
+    a.flow("dopen", "create", "[no open ticket]", gpos=(4, -16))
+    a.flow("create", "route"); a.flow("route", "claim", out="r", inn="t")
+    a.flow("claim", "inprog", out="r", inn="b"); a.flow("inprog", "minspect", out="r", inn="t")
+    a.flow("minspect", "inspect"); a.flow("inspect", "dtime")
+    a.flow("dtime", "extend", "[more time needed]", out="b", inn="r", via=[(a.X(7.7), a.Y(T, tl))],
+           gpos=(5, 6))
+    a.flow("extend", "minspect", out="l", inn="b", via=[(a.X(6.1), a.Y(T, tl))])
+    a.flow("dtime", "dfault", "[within SLA]", gpos=(2, -16))
+    a.flow("dfault", "reject", "[not a fault]", gpos=(5, 4))
+    a.flow("reject", "end_rej")
+    a.flow("dfault", "dparcel", "[fault]", gpos=(4, -16))
+    a.flow("dparcel", "move", "[box holds a parcel]", gpos=(3, -16))
+    a.flow("move", "mfix")
+    a.flow("dparcel", "mfix", "[box empty]", out="t", inn="t",
+           via=[(a.X(9.4), a.Y(T, tt)), (a.X(11.5), a.Y(T, tt))], gpos=(5, -24))
+    a.flow("mfix", "dfix")
+    a.flow("dfix", "fix", "[fixable on site]", gpos=(3, -16))
+    a.flow("dfix", "lock", "[cannot fix]", out="b", inn="l", via=[(a.X(12.3), a.Y(T, tl))], gpos=(5, 6))
+    a.flow("fix", "mres"); a.flow("lock", "mres", out="r", inn="b")
+    a.flow("mres", "resolve", out="r", inn="b")
+    a.flow("resolve", "rate", out="r", inn="b"); a.flow("rate", "end")
+    return a
+
+
+# =============================================================================================================
+# 7. Perform Periodic Inspection  (Administrator | System | Locker Technician)
+# =============================================================================================================
+def periodic_inspection():
+    a = Activity("06g-activity-periodic-inspection",
+                 [("Administrator", 150), ("System", 236), ("Locker<br>Technician", 170)])
+    A, Y, T = 0, 1, 2
+    up, lo = 0.27, 0.75
+    a.start("st", A, -0.45)
+    a.action("schedule", A, 0.5, "Create inspection schedule: locker, checklist, period &amp; technician")
+    a.action("save", Y, 1.5, "Save schedule &amp; first due date", f=up)
+    a.action("remind", Y, 2.5, "Remind the technician once the schedule is due", f=up, tone="green")
+    a.action("open", T, 3.5, "Open the due schedule (on shift)")
+    a.action("fill", T, 4.5, "Mark every checklist item Pass / Fail &amp; attach photos")
+    a.action("validate", Y, 5.5, "Check the items match the schedule's checklist", f=up)
+    a.decision("dall", Y, 6.3, f=up)
+    a.action("ticket", Y, 6.3, "Keep due date, open a ticket for the inspector (IN_PROGRESS); faulty box → FAULT",
+             f=lo, tone="orange", h=66)
+    a.action("handle", T, 7.3, "Handle the ticket (Handle Incident Ticket) until RESOLVED")
+    a.merge("madv", Y, 8.3, f=up)
+    a.action("advance", Y, 9.1, "Advance the due date to the next period", f=up)
+    a.final("end", Y, 9.9, f=up)
+
+    a.flow("st", "schedule"); a.flow("schedule", "save", out="r", inn="t"); a.flow("save", "remind")
+    a.flow("remind", "open", out="r", inn="t"); a.flow("open", "fill"); a.flow("fill", "validate", out="r", inn="b")
+    a.flow("validate", "dall")
+    a.flow("dall", "ticket", "[an item fails]", gpos=(5, 4))
+    a.flow("ticket", "handle", out="r", inn="t")
+    a.flow("dall", "madv", "[all items pass]", gpos=(4, -16))
+    a.flow("handle", "madv", out="r", inn="b")
+    a.flow("madv", "advance"); a.flow("advance", "end")
+    return a
+
+
 if __name__ == "__main__":
     only = set(sys.argv[1:])
     ok = True
-    for f in (send_parcel, rent_locker, drone_delivery, ask_assistant, knowledge_base):
+    for f in (send_parcel, rent_locker, drone_delivery, ask_assistant, knowledge_base, incident_ticket,
+              periodic_inspection):
         act = f()
         if only and not any(o in act.d.name for o in only):
             continue
