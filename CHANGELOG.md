@@ -2,6 +2,10 @@
 
 Mỗi thay đổi ở repo docs thêm **một dòng** vào ngày tương ứng (mới nhất ở trên). Ghi mã gap/SEC/ADR nếu có.
 
+## 2026-11-09
+
+- rp5/ (mới): Report 5 – Software Test Documentation theo form chương "Software Testing Documentation" của report mẫu: tài liệu Word + PDF, Unit Test (38 function, 428 unit test, kết quả chạy JUnit thật trên backend `main` 408d1fd: 414 pass, 14 untested vì không có Docker) và Test Report (45 module, 282 test case hệ thống, round 1); bỏ phần ví vì không còn dùng; script dựng lại trong `rp5/test-assets/_generator`.
+
 ## 2026-11-08
 
 - review-2/ (mới): hướng dẫn và 4 biểu mẫu Review 2 của môn (BM01–BM04) gom vào `review-2/bieu-mau/`; Design Brief Lock.R bản nháp v1.0 điền trên BM01 kèm script dựng lại (`build_brief.py`, `to_pdf.ps1`) — còn chờ mã đề tài, thay đổi phiếu đăng ký và kết quả BM02.
