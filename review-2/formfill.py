@@ -112,3 +112,18 @@ def keep_rows_together(document):
                 for cell in row.cells:
                     for para in cell.paragraphs:
                         para.paragraph_format.keep_with_next = True
+
+
+def rebrand_sep490(document):
+    """Replace SWP490 with SEP490 in body paragraphs, headers, and footers while preserving formatting."""
+    for p in document.paragraphs:
+        for r in p.runs:
+            if 'SWP490' in r.text:
+                r.text = r.text.replace('SWP490', 'SEP490')
+    for sec in document.sections:
+        for part in (sec.header, sec.footer):
+            for p in part.paragraphs:
+                for r in p.runs:
+                    if 'SWP490' in r.text:
+                        r.text = r.text.replace('SWP490', 'SEP490')
+

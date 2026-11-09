@@ -13,7 +13,7 @@ from docx.shared import Cm, RGBColor
 
 OUT_DIR = os.path.dirname(os.path.abspath(__file__))
 SRC = os.path.join(OUT_DIR, 'bieu-mau', 'SWP490_R2_BM01_Design_Brief_1.docx')
-OUT = os.path.join(OUT_DIR, 'SWP490_FA26SE002_R2_DesignBrief.docx')
+OUT = os.path.join(OUT_DIR, 'SEP490_FA26SE002_R2_DesignBrief.docx')
 
 TODO = object()  # marker: the next text part is a placeholder (yellow)
 BODY = RGBColor(0x1F, 0x29, 0x37)
@@ -25,29 +25,28 @@ HEADER = [
     'Lê Thị Yến Vi (SE182544, leader) · Trương Nguyễn Thái Bình (SE182370) · '
     'Nguyễn Quốc Bảo Huy (SE180211) · Trần Kim Nhã (SE182290)',
     'Đặng Ngọc Minh Đức (DucDNM) · Đỗ Hữu Tiến (TienDH)',
-    ['https://github.com/LockR-Tech (backend, frontend, mobile, iot, docs) – ',
-     TODO, 'tag review-2 to be created on all five repos'],
+    'https://github.com/LockR-Tech (backend, frontend, mobile, iot, docs) – tag review-2',
     '1.0',
     '09/11/2026',
 ]
 
 REG_CHANGES = [
-    ['3.2 b–c, f–g; 3.3 Research', 'Battery-aware assignment, strategy comparison, experimental report, '
-     'conference paper', 'Removed; an idle drone with battery above the minimum is assigned',
+    ['3.2 b–c, f–g; 3.3 Research', 'Battery-aware assignment, strategy comparison, research outputs',
+     'Removed; idle drone above minimum battery; Software & Hardware Products',
      'Iteration 1: one real drone (BM03 No. 1–3)'],
-    ['3.2 c) Module 4', 'AI summaries of operational reports', 'Removed', 'BM03 No. 4'],
+    ['3.2 c) Module 5', 'AI summaries of operational reports', 'Removed', 'BM03 No. 4'],
     ['3.2 d) NFR', 'p95 < 300 ms, availability > 95 %, telemetry 3–5 s', 'N1–N6 (§7)', 'BM03 No. 5'],
     ['3.2 b), c) Module 2', 'Parcel collection by PIN/QR; generate PIN and QR codes',
-     'PIN at the kiosk; app opens by Bluetooth or after scanning the locker QR', 'BM03 No. 6'],
-    ['3.2 a–c, g; 3.3 b)', 'Modules 1–4 without a separate incident module',
-     'Module 3: Incident Reporting and Management added before Maintenance (now Modules 4–5)', 'BM03 No. 7'],
+     'PIN at kiosk; app opens via Bluetooth or locker QR', 'BM03 No. 6'],
+    ['3.2 b–c, g; 3.3 b)', 'Modules 1–4 without a separate incident module',
+     'Added Module 3: Incident Reporting before Maintenance (Modules 4–5)', 'BM03 No. 7'],
 ]
 
 OUT_OF_SCOPE = [
     ['Beyond-visual-line-of-sight commercial drone flights',
      'Needs aviation permits; demo flights run in a controlled area with one drone.'],
     ['Payment gateways other than SePay VietQR (MoMo, VNPay, cards)',
-     'One reconciled payment path; VietQR works with every Vietnamese bank app (BR-22).'],
+     'One reconciled payment path; VietQR works with every Vietnamese bank app (BR-21).'],
     ['Publishing on Google Play / App Store', 'Pilot ships as an Android APK and mobile web.'],
     ['Battery-aware drone assignment research and strategy comparison',
      'Removed from the registration (BM03 No. 1–3): one real drone gives no meaningful comparison.'],
@@ -78,21 +77,21 @@ DECISIONS = [
     ['D2', 'Locker control and box opening', 'Arduino/RS485; vendor controller; Pi on GPIO',
      "Pi 5 on GPIO with a versioned MQTT contract (ACL per device, resend outbox). Orders change only on "
      "the cabinet's report; Bluetooth tokens (Ed25519, 120 s, single use) are checked offline on the Pi.",
-     'Huy', 'UC17, UC35; BR-09, BR-25'],
+     'Huy', 'UC16, UC34; BR-09, BR-24'],
     ['D3', 'Payment method', 'MoMo / VNPay; wallet; SePay VietQR',
      'SePay VietQR only: PAID only when the webhook amount covers the total; duplicate webhooks ignored; '
      'no merchant contract, works with every bank app.',
-     'Bình', 'UC08; BR-02, BR-22'],
+     'Bình', 'UC08; BR-02, BR-21'],
     ['D4', 'Drone delivery orchestration', 'Auto nearest-drone dispatch; technician accepts offer',
      'The nearest free technician on shift collects the parcel at home, picks an idle drone, completes the '
      'loading checklist and launches; one delivery state machine fed by MQTT telemetry; a person answers '
      'for every flight.',
-     'Vi', 'UC10, UC32; BR-10, BR-11'],
+     'Vi', 'UC10, UC31; BR-10, BR-11'],
     ['D5', 'Incident and maintenance tickets', 'Complaint to admin; box FAULT at once; ticket with SLA',
      'Reports, failed inspections and drone faults become tickets; a customer report sets the box '
      'PENDING_CHECK, not FAULT; only a technician on shift claims (SLA 4 h, max 2 extensions); the '
      'scheduler escalates.',
-     'Nhã', 'UC13, UC28; BR-19, BR-24'],
+     'Nhã', 'UC12, UC27; BR-18, BR-23'],
 ]
 
 RISKS = [
@@ -112,21 +111,20 @@ RISKS = [
 ]
 
 GAPS = [
-    ['G1', 'SRS keeps the customer wallet; the app removed it (SePay only)',
-     'SRS UC08, UC12, §3.2.24–26, BR-16', 'Remove wallet from SRS', 'Bình', '15/11/2026'],
-    ['G2', "Opening an order's box over Bluetooth (fallback: locker QR scan or PIN) is built but not specified",
-     'SRS UC16; SDD §3; backend #137', 'Add use case, rule, sequence diagram', 'Huy', '15/11/2026'],
-    ['G3', 'State machines and activity diagrams not yet in Report 3/4; 06c lacks home pickup', 'docs/diagrams/src, srs-assets/drawio', 'Insert 5 + 5 diagrams; redraw 06c', 'Vi',
-     '15/11/2026'],
-    ['G4', 'Report 4 declares no environments; the Azure VM (api.locker-drone.tech) is used as staging / demo',
-     'Report 4; backend scripts/seed-*.sql', 'Declare VM as staging with seed and rollback steps', 'Huy',
-     '15/11/2026'],
-    ['G5', 'Report 5 test cases not written; automated tests not mapped to TC IDs',
-     'Report 5; test suites', 'Write Report 5 with §6 TC IDs', 'Nhã', '22/11/2026'],
-    ['G6', 'SRS FRs have no testable acceptance criteria (BM02 SR-08; other High: SR-01 = G1, '
-     'SR-13 and SR-17 = G3)', 'SRS §3.2–3.6', 'Add acceptance criteria per FR from §6', 'Nhã', '22/11/2026'],
-    ['G7', 'Inspection activity 06g covers lockers only; drone schedules (MAINTENANCE, FAULT) are built',
-     'srs-assets/drawio/06g', 'Add the drone path to 06g', 'Nhã', '15/11/2026'],
+    ['G1', 'Seven tables and ten columns added since 29/10 missing from Logical ERD (SR-10, SR-11)',
+     'rp3/srs-assets/drawio/05*', 'Regenerate Logical ERD', 'Bình', '15/11/2026'],
+    ['G2', 'Opening an order box via Bluetooth (fallback: locker QR or PIN) is built, not in SRS',
+     'SRS UC15; SDD §3; backend #137', 'Add use case, rule, sequence diagram', 'Huy', '15/11/2026'],
+    ['G3', 'State machines and activity diagrams not yet in Report 3/4; 06c lacks pickup',
+     'docs/diagrams/src, srs-assets/drawio', 'Insert 5 + 5 diagrams; redraw 06c', 'Vi', '15/11/2026'],
+    ['G4', 'Report 4 declares no environments; Azure VM (api.locker-drone.tech) is staging',
+     'Report 4; backend scripts/seed-*.sql', 'Declare VM as staging with seed/rollback', 'Huy', '15/11/2026'],
+    ['G5', 'Report 5 written; CI tests not mapped to §6 TC IDs and iot has no CI (BM02 SR-20)',
+     'Report 5; test suites', 'Map CI tests to §6 TC IDs; add iot CI', 'Nhã', '22/11/2026'],
+    ['G6', 'SRS FRs have no testable acceptance criteria (BM02 SR-08; SR-13, SR-17 = G3; SR-01 fixed)',
+     'SRS §3.2–3.6', 'Add acceptance criteria per FR from §6', 'Nhã', '22/11/2026'],
+    ['G7', 'Inspection activity 06g covers lockers only; drone schedules are built',
+     'srs-assets/drawio/06g', 'Add the drone path to 06g', 'Bình', '15/11/2026'],
 ]
 
 FEATURES = [
@@ -141,12 +139,11 @@ FEATURES = [
     ['F-04', 'Drop parcel, share code', 'Customer',
      'Box opens only if PAID; drop gives STORING / OCCUPIED and a 6-digit PIN to the receiver.', 'Done'],
     ['F-05', 'Pick up at kiosk', 'Receiver',
-     'Right PIN opens and completes the order; 5 wrong PINs lock the box 15 min (MSG22).', 'Done'],
+     'Right PIN opens and completes the order; 5 wrong PINs lock the box 15 min (MSG21).', 'Done'],
     ['F-06', 'Rent box by hours', 'Customer',
      '1–720 h; multi-use PIN until the end; extension <= 24 h; ending frees the box.', 'Done'],
     ['F-07', 'Open box by Bluetooth', 'Customer, Receiver',
-     "Token for the order's owner/receiver only, 120 s, single use; state changes once on the Pi report; "
-     'failure offers locker QR or PIN.', 'Done'],
+     'Owner/receiver token only, 120 s, single use; state changes on Pi report; fallback: QR or PIN.', 'Done'],
     ['F-08', 'Overdue fee, expiry', 'Customer, Scheduler',
      '500 VND/h, max 50,000 VND and 50 % of price; opens only after paying; > 72 h: EXPIRED.', 'Done'],
     ['F-09', 'Cabinet commands', 'Locker Controller',
@@ -158,10 +155,9 @@ FEATURES = [
      'Only an idle drone > 20 % battery is assigned; launch needs the checklist; + 50 g re-prices.',
      'Done'],
     ['F-12', 'Track drone, drop into locker', 'Customer, Receiver',
-     'Stage updates reach the app in 2 s; on arrival lid opens, servo releases, lid closes; order STORING '
-     'with a PIN.', 'Done'],
+     'Stage updates in 2 s; on arrival lid opens, servo releases, lid closes; STORING with PIN.', 'Done'],
     ['F-13', 'Report box incident', 'Customer',
-     'Title and description required, up to 5 photos; box PENDING_CHECK, no new orders, overdue fee stops.',
+     'Title and description required, <= 5 photos; box PENDING_CHECK, no new orders, fee stops.',
      'Done'],
     ['F-14', 'Ticket within SLA', 'Locker Tech., Admin',
      'Claim only on shift; SLA 4 h, max 2 extensions with reason; 3 overdue tickets block claims.', 'Done'],
@@ -171,14 +167,11 @@ FEATURES = [
     ['F-16', 'AI assistant', 'User',
      'Answers cite sources; order questions see only own orders; reply within 10 s.', 'Done'],
     ['F-17', 'Home pickup by technician', 'Drone Tech., Admin',
-     'Offered to the nearest free technician on shift; no answer in 180 s: next one; "Picked up" needs '
-     "the sender's code within 300 m.", 'Done'],
+     'Nearest free technician on shift; 180 s timeout: next one; pickup needs sender code within 300 m.', 'Done'],
     ['F-18', 'Maintenance schedule', 'Admin',
-     'One locker or drone; technician with the matching role; a new drone schedule sets MAINTENANCE (no '
-     'deliveries) until inspected.', 'Done'],
+     'One locker or drone; matching technician role; drone schedule sets MAINTENANCE until inspected.', 'Done'],
     ['F-19', 'Inspection checklist', 'Locker / Drone Tech.',
-     'Assigned technician only; every item Pass / Fail / NA; all pass: next due date; a fail opens a '
-     'ticket, faulty box or drone FAULT.', 'Done'],
+     'Assigned technician only; items Pass/Fail/NA; all pass: next due date; fail opens ticket, FAULT.', 'Done'],
     ['F-20', 'Dashboard, revenue report', 'Admin',
      'Revenue = payments collected minus refunds in the period; each total opens the entries behind it.',
      'Done'],
@@ -197,25 +190,24 @@ NFRS = [
     ['N6', 'Availability', 'Monthly API uptime', '>= 99 %', 'Health check every 5 min'],
 ]
 
-# Parts follow git authorship on origin/main (surviving lines, 08–09/11/2026); workflow owners were chosen by
-# the team on 09/11/2026 (Nhã owns WF-04 although most schedule code is Huy's and Bình's).
+# Parts follow git authorship on origin/main and balance 5 features + 1 workflow per member across the team.
 OWNERS = [
     ['Nguyễn Quốc Bảo Huy', 'Backend, IoT, DevOps',
-     '1) Architecture, gateway/auth, CI/CD, VM; 2) Locker controller, kiosk, MQTT, Bluetooth open, rental '
-     'overdue and expiry; 3) AI assistant, dashboard and revenue reports',
+     '1) Architecture, gateway/auth, CI/CD, VM; 2) Locker controller, kiosk, MQTT, Bluetooth open; '
+     '3) AI assistant and knowledge base',
      'WF-02', 'D1, D2; auth, iot, assistant services; iot repo'],
     ['Trương Nguyễn Thái Bình', 'Mobile – customer, payment, incidents',
      '1) Incident report and technician ticket screens; 2) SePay VietQR payment; '
      '3) Send / rent / my-orders screens, rental rules',
      'WF-03', 'D3; payment-service, mobile'],
     ['Lê Thị Yến Vi', 'Leader; drone delivery',
-     '1) Drone booking, technician dispatch, home pickup; 2) Drone telemetry, drone Pi (ArUco, servo '
-     'release); 3) Mobile drone screens',
+     '1) Drone booking, dispatch, home pickup; 2) Drone telemetry, drone Pi (ArUco, servo); '
+     '3) Dashboard, revenue, drone screens',
      'WF-01', 'D4; order-service (drone), drone-iot'],
     ['Trần Kim Nhã', 'Drone fleet, maintenance',
-     '1) Drone units, devices, IoT logs, admin drone tickets; 2) Maintenance schedules and inspections, '
-     'technician shifts; 3) Parcel drop and recovery',
-     'WF-04', 'D5; locker-service (drone), order-service (incident)'],
+     '1) Drone units, devices, logs, tickets; 2) Maintenance schedules, inspections, '
+     'shifts; 3) Parcel drop, overdue and expiry',
+     'WF-04', 'D5; locker-service (drone), order-service'],
 ]
 
 # The four flows the team demos (06/11/2026): drone delivery, locker rental, incident report, maintenance.
@@ -260,7 +252,7 @@ DEMOS = [
      'Order COMPLETED, box AVAILABLE; payment in revenue', 'Huy'],
     ['DS-02b', 'WF-02', 'Exception', 'Rental DS-02a in STORING; a second rental past its end time',
      'Enter a wrong PIN 5 times at the kiosk; open the overdue rental',
-     'Box locked 15 min (MSG22); overdue box opens only after the fee is paid', 'Huy'],
+     'Box locked 15 min (MSG21); overdue box opens only after the fee is paid', 'Huy'],
     ['DS-03a', 'WF-03', 'Main', 'Occupied box on CAB-TU01; locker technician on shift',
      'Customer reports with a photo → technician claims → inspects, fixes on site with a photo → resolves',
      'Box PENDING_CHECK → back in service; ticket RESOLVED; customer notified', 'Bình'],
@@ -357,6 +349,16 @@ def set_widths(table, widths_cm):
 
 # ---------------------------------------------------------------- build
 d = docx.Document(SRC)
+for p in d.paragraphs:
+    for r in p.runs:
+        if 'SWP490' in r.text:
+            r.text = r.text.replace('SWP490', 'SEP490')
+for sec in d.sections:
+    for part in (sec.header, sec.footer):
+        for p in part.paragraphs:
+            for r in p.runs:
+                if 'SWP490' in r.text:
+                    r.text = r.text.replace('SWP490', 'SEP490')
 t = d.tables
 
 tmpl = run_template(t[0].rows[0].cells[1])

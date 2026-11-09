@@ -19,6 +19,10 @@ B = '-\t'  # list items in the form are typed as "-<tab>text"
 DELETE = [
     B + 'Battery-aware drone assignment strategy.',
     B + 'Generate summaries of operational reports.',
+    B + 'Smart Locker Management System.',
+    B + 'Real-Time Monitoring Dashboard.',
+    B + 'AI Knowledge Support Module.',
+    B + 'Customer Mobile Application.',
     'Research Outputs',
     B + 'Experimental evaluation report on drone assignment strategies.',
     B + 'Conference paper manuscript prepared for submission.',
@@ -49,6 +53,9 @@ REPLACE = {
         B + 'Box open result shown within 5 s in 95% of opens.',
     B + 'System availability greater than 95% during testing.':
         B + 'Monthly API uptime of at least 99%.',
+    'Software Products': 'Software Products:',
+    B + 'Drone Delivery Management Web Application.':
+        B + 'Drone Delivery and Smart Locker Management Web Application.',
     'Phase 3: Advanced Features and Evaluation': 'Phase 3: Advanced Features',
     '3.3. Research Information': '3.3. Objectives, Scope & Methodology',
     'b. Research Objectives:': 'a. Objectives:',
@@ -62,19 +69,6 @@ REPLACE = {
     B + 'Generate PIN and QR codes for parcel pickup.':
         B + 'Generate a PIN for parcel pickup; open the box from the mobile app over Bluetooth or after '
             'scanning the locker QR code.',
-    'The rapid growth of e-commerce has significantly increased':
-        'The rapid growth of e-commerce has significantly increased the demand for fast, efficient, and '
-        'contactless last-mile delivery services. Smart Locker systems have been widely deployed in '
-        'residential areas, universities, and commercial centers, providing a practical infrastructure for '
-        'parcel pickup and delivery. However, most existing drone delivery solutions focus primarily on '
-        'flight control, routing algorithms, or simulation environments without offering an integrated '
-        'platform that combines delivery management, drone fleet management, incident reporting, maintenance '
-        'management, real-time monitoring, and Smart Locker operations.',
-    'This project aims to develop an integrated Drone Delivery and Smart Locker Management System':
-        'This project aims to develop an integrated Drone Delivery and Smart Locker Management System '
-        '(DDSLMS) based on the Hub-to-Smart Locker delivery model. The system supports autonomous delivery '
-        'operations, real-time monitoring, incident reporting, maintenance management, and AI-assisted '
-        'operational support, providing a complete software solution for smart logistics applications.',
     'Module 3: Maintenance Management': 'Module 4: Maintenance Management',
     'Module 4: AI Knowledge Support': 'Module 5: AI Knowledge Support',
 }
@@ -85,12 +79,21 @@ INSERT_AFTER = {
         B + 'A box is locked after 5 wrong PIN entries; Bluetooth open tokens are single-use.',
     B + 'Smart Locker management and parcel collection using a PIN at the kiosk, or from the mobile app over Bluetooth or after scanning the locker QR code.':
         B + 'Incident reporting and resolution management.',
+    B + 'Generate maintenance notifications and alerts.': '- \tInstallation of a smart locker system',
     B + 'Real-time tracking and monitoring.': B + 'Incident Reporting and Management Module.',
+    B + 'Maintenance Management.': B + 'Real-Time Monitoring Dashboard.',
 }
 
 INSERT_BEFORE = {
     B + 'Maintenance Management.': B + 'Incident Reporting and Management.',
 }
+
+PRODUCTS_EXTRA = [
+    (True, B + 'Mobile Application For Customer & Technicians.'),
+    (True, B + 'Kiosk Screen Web Application'),
+    (False, 'Hardware Products:'),
+    (True, B + 'Drone and Smart Locker System.'),
+]
 
 INCIDENT_MODULE_TITLE = 'Module 3: Incident Reporting and Management'
 INCIDENT_MODULE_ITEMS = [
@@ -159,6 +162,19 @@ for idx, p in enumerate(list(d.paragraphs)):
             item_clone = copy.deepcopy(bullet_tmpl)
             p._p.addprevious(item_clone)
             set_text(docx.text.paragraph.Paragraph(item_clone, p._parent), item)
+        break
+
+# Insert updated Software Products and Hardware Products under f) Products (Expected Deliverables)
+for idx, p in enumerate(list(d.paragraphs)):
+    if matches(p, B + 'Drone Delivery and Smart Locker Management Web Application.'):
+        heading_tmpl = d.paragraphs[idx - 1]._p
+        bullet_tmpl = p._p
+        anchor = p._p
+        for is_bullet, text in PRODUCTS_EXTRA:
+            clone = copy.deepcopy(bullet_tmpl if is_bullet else heading_tmpl)
+            anchor.addnext(clone)
+            set_text(docx.text.paragraph.Paragraph(clone, p._parent), text)
+            anchor = clone
         break
 
 dots = [p for p in d.paragraphs if p.text.strip().startswith('.....')]
