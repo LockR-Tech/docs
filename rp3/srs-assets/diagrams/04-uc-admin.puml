@@ -25,7 +25,7 @@ rectangle "Lock.R - Administration (web)" {
   usecase "UC49 Manage lockers, boxes\n& controllers" as UC49
   usecase "UC50 Manage drones & devices" as UC50
   usecase "UC51 Monitor orders & drone orders" as UC51
-  usecase "UC52 Process refunds & withdrawals" as UC52
+  usecase "UC52 Process refunds" as UC52
   usecase "UC53 Handle drone parcel incidents" as UC53
   usecase "UC54 Manage tickets & inspection schedules" as UC54
   usecase "UC55 Manage promotions & loyalty" as UC55

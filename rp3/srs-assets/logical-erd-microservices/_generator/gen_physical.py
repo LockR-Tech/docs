@@ -46,7 +46,7 @@ DBS = {
                         ["drone_flight_blocks", "drone_flight_track_points", "drone_station_suspensions",
                          "drone_station_suspension_logs"],
                         ["system_settings", "system_setting_audits"]]),
-    "payment_db": ("07", [["payments", "refunds"], ["wallets", "wallet_transactions"], ["withdrawal_requests", "user_bank_accounts"],
+    "payment_db": ("07", [["payments", "refunds"], ["user_bank_accounts"],
                           ["system_settings", "system_setting_audits"]]),
     "loyalty_db": ("08", [["loyalty_accounts"], ["point_transactions"], ["system_settings", "system_setting_audits"]]),
     "notification_db": ("09", [["notifications"], ["fcm_tokens"]]),
@@ -217,7 +217,8 @@ def build(db):
     bottom = max(heights) + 110
     box = (f'<mxCell id="svcbox" value="" style="rounded=1;arcSize=1.2;fillColor={fill};strokeColor={stroke};strokeWidth=3;html=1;" '
            f'vertex="1" parent="1"><mxGeometry x="{x0}" y="{y0}" width="{right - x0}" height="{bottom - y0}" as="geometry"/></mxCell>')
-    title = (f'<mxCell id="svctitle" value="{html.escape(f"<b>{db}</b>  ·  schema {meta["schema"]}  ·  PostgreSQL 16  ·  {svc}", quote=True)}" '
+    schema_name = meta["schema"]   # Python 3.11: no nested quotes inside f-strings
+    title = (f'<mxCell id="svctitle" value="{html.escape(f"<b>{db}</b>  ·  schema {schema_name}  ·  PostgreSQL 16  ·  {svc}", quote=True)}" '
              f'style="text;html=1;align=left;verticalAlign=middle;fontSize=20;fontColor={stroke};{FONT}" vertex="1" parent="1">'
              f'<mxGeometry x="{x0 + 20}" y="{y0 + 12}" width="{right - x0 - 40}" height="36" as="geometry"/></mxCell>')
     d.cells[0:0] = [box, title]

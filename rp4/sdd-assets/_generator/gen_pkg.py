@@ -131,8 +131,8 @@ p.save()
 p = Pk("pkg_mobile_app", "Mobile Application Package Diagram (mobile/lib)")
 MN = p.single("main", "main.dart · injection_container", 40, 90, 260, 62)
 F = p.group("features", "features", 40, 210,
-            ["auth", "home", "stores", "locker", "orders", "payment", "wallet", "transactions", "promotions", "vouchers",
-             "delegations", "qr_login", "notifications", "profile", "subscription", "drone_delivery", "drone_mission",
+            ["auth", "home", "stores", "locker", "orders", "payment", "transactions", "promotions", "vouchers",
+             "delegations", "qr_login", "notifications", "profile", "drone_delivery", "drone_mission",
              "drone_telemetry", "maintenance", "locker_ops", "assistant"], cols=4, cw=128)
 C = p.group("core", "core", F[0] + F[2] + 90, 210,
             ["network", "routing", "services", "config", "constants", "domain", "enums", "errors", "media",

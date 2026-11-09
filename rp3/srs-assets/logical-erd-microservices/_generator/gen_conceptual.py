@@ -23,7 +23,7 @@ TALL = {"UserProfile": 130, "LockerOrder": 90}   # thực thể trung tâm nhi�
 # Bố cục chọn để các đường không phải đan chéo: các service chỉ nối vào UserProfile nằm phía trên user-service;
 # store trên locker, iot dưới locker (đặt iot phía trên thì dây BoxAccessLog→LockerBox chắn lối LockerUnit→UserProfile);
 # locker nối order theo hướng xuống – phải; payment nằm sau loyalty,
-# dây từ UserProfile tới ví / rút tiền đi phía trên loyalty, dây từ đơn hàng tới thanh toán đi phía dưới.
+# dây từ đơn hàng tới thanh toán đi phía dưới.
 LAYOUT = {
     "store-service": ((80, 150, 340, 170), [("StoreLocation", 60, 80, EW)]),
     "iot-service": ((380, 1060, 600, 170), [("GatewayDevice", 40, 80, EW), ("BoxAccessLog", 340, 80, EW)]),
@@ -35,9 +35,7 @@ LAYOUT = {
                                              ("LockerReport", 680, 290, EW), ("DroneDeliveryRequest", 200, 460, EW)]),
     "user-service": ((1140, 420, 420, 280), [("UserProfile", 40, 90, 340)]),
     "loyalty-service": ((1640, 600, 340, 380), [("LoyaltyAccount", 60, 70, EW), ("PointTransaction", 60, 260, EW)]),
-    "payment-service": ((2080, 440, 620, 600), [("Wallet", 40, 100, EW), ("WithdrawalRecord", 340, 100, EW),
-                                                ("WalletTransaction", 40, 280, EW), ("PaymentRecord", 340, 300, EW),
-                                                ("RefundRecord", 340, 470, EW)]),
+    "payment-service": ((2380, 680, 300, 360), [("PaymentRecord", 40, 60, EW), ("RefundRecord", 40, 230, EW)]),
     "order-service": ((1100, 1080, 1000, 640), [("DroneMission", 40, 90, EW), ("LockerOrder", 330, 90, 300),
                                                ("DroneParcelIncident", 40, 300, EW), ("PromotionUsage", 370, 300, EW),
                                                ("Promotion", 370, 480, EW), ("OrderDetail", 720, 90, EW),

@@ -19,7 +19,7 @@ ARCH_COMPONENTS = [
     ("user-service", "User profiles, roles and status; admin user management; signed Cloudinary upload parameters."),
     ("order-service", "SEND / RENTAL / DRONE_DELIVERY orders, pricing, vouchers and points, ratings and complaints, drone missions, pickups, telemetry, incidents, revenue reports and scheduled jobs."),
     ("locker-service", "Lockers, boxes and layouts, tickets and repair logs, periodic inspections, technician presence, drones and drone devices."),
-    ("payment-service", "Payments (SePay VietQR, wallet), SePay webhook, refunds, wallet ledger and withdrawals."),
+    ("payment-service", "Payments (SePay VietQR), SePay webhook and refunds."),
     ("notification-service", "In-app notifications, FCM push, STOMP /ws broker, SMS / email to receivers without an account."),
     ("iot-service", "MQTT bridge to lockers: open / lid / setup commands, heartbeats and door states, PIN / QR verification, controller provisioning, BLE open tokens."),
     ("store-service", "Stores (locations hosting lockers) and nearby search."),
@@ -38,7 +38,7 @@ SERVICE_DESC = {
     "user-service": "User profiles, roles and media signatures.",
     "order-service": "Orders, promotions, drone delivery and reports.",
     "locker-service": "Lockers, boxes, tickets, inspections and drones.",
-    "payment-service": "Payments, refunds, wallet and withdrawals.",
+    "payment-service": "Payments and refunds.",
     "notification-service": "Notifications, push and realtime messaging.",
     "iot-service": "MQTT bridge and access control of the lockers.",
     "store-service": "Stores and nearby search.",
@@ -96,7 +96,7 @@ ADMIN_WEB_PKGS = [
 
 MOBILE_PKGS = [
     ("main.dart / injection_container", "Application entry, Firebase initialisation and provider factories that wire data sources, repositories and use cases (per-feature *_injection providers)."),
-    ("features", "One folder per business feature: auth, home, stores, locker, orders, payment, wallet, transactions, promotions, vouchers, delegations, qr_login, notifications, profile, subscription, drone_delivery, drone_mission, drone_telemetry, maintenance (locker technician), locker_ops, assistant."),
+    ("features", "One folder per business feature: auth, home, stores, locker, orders, payment, transactions, promotions, vouchers, delegations, qr_login, notifications, profile, drone_delivery, drone_mission, drone_telemetry, maintenance (locker technician), locker_ops, assistant."),
     ("core/network", "dio ApiClient, AuthInterceptor (token refresh), gateway client."),
     ("core/routing", "go_router configuration, role-based routes, main navigation wrapper, notification deep links."),
     ("core/services", "Session and token storage, Firebase auth / messaging, BLE open service, biometric, app event bus."),

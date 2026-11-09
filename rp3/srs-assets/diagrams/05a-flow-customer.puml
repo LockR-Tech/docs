@@ -52,9 +52,6 @@ rectangle "Refund Requests" as RR
 rectangle "Loyalty" as LO
 rectangle "Promotions / My Vouchers" as PV
 rectangle "Transactions" as TR
-rectangle "Top-up" as TU
-rectangle "Withdraw" as WD
-rectangle "Withdrawal Requests" as WR
 rectangle "My Delegations" as MD
 rectangle "Authorized Opening" as AO
 rectangle "Create Report" as CR
@@ -99,9 +96,6 @@ PR --> RR
 PR --> LO
 PR --> PV
 PR --> TR
-TR --> TU
-TR --> WD
-WD --> WR
 PR --> MD
 MD --> AO
 PR --> MR
