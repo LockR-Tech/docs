@@ -23,7 +23,7 @@ ONE_WAY = {("Splash Screen", "Login Screen"), ("Login Screen", "Home (Main Navig
            ("Drone Booking", "Drone Tracking"), ("Location Services (sheet)", "Send Parcel"),
            ("Location Services (sheet)", "Rent Locker"), ("More Services (sheet)", "Create Report"),
            ("More Services (sheet)", "My Reports"), ("More Services (sheet)", "Favorite Stores"),
-           ("Withdraw", "Withdrawal Requests"), ("Technician Profile", "Logout (dialog)")}
+           ("Technician Profile", "Logout (dialog)")}
 
 
 def T(name, *kids):
@@ -194,7 +194,7 @@ def build(page_id, title, hub, chain, blocks):
     print(d.save(OUT, scale=2.0))
 
 
-AUTH_KIDS = [T("Phone OTP (dialog)", T("Complete Profile (dialog)")), T("Forgot Password"), T("Face Verify Login"),
+AUTH_KIDS = [T("Phone OTP (dialog)", T("Complete Profile (dialog)")), T("Forgot Password"),
              T("Terms &amp; Policy")]
 HOME_TAB = T("Home (tab)",
              T("QR Scan / Kiosk Login", T("Kiosk Login Confirm (sheet)"), T("Manual Kiosk Code (sheet)")),
@@ -219,17 +219,16 @@ ORDERS_TAB = T("Orders (tab)",
                T("Locker Reports", T("Report Detail (sheet)")))
 PROFILE_TAB = T("Profile (tab)",
                 T("Profile Detail", T("Edit Profile"), T("Security")),
-                T("Face Registration"), T("Refund Bank Account"),
+                T("Refund Bank Account"),
                 T("Refund Requests", T("Create Refund (sheet)"), T("Refund Detail (sheet)")),
-                T("Loyalty"), T("Plans"),
+                T("Loyalty"),
                 T("My Vouchers", T("Voucher Detail")),
-                T("Transactions", T("Top Up", T("Top Up Payment")), T("Withdraw", T("Withdrawal Requests")),
-                  T("Transaction Detail (sheet)")),
+                T("Transactions", T("Transaction Detail (sheet)")),
                 T("My Delegations"), T("Bluetooth Open Test"), T("Location Permission"))
 
-TECH_LOGIN = T("Login Screen", T("Face Verify Login"), T("Forgot Password"))
+TECH_LOGIN = T("Login Screen", T("Forgot Password"))
 SHIFT = T("Shift Card (Start / End)", T("Location Permission (sheet)"), T("End Shift Confirm (dialog)"))
-PROFILE_TECH = T("Technician Profile", T("Face Registration"), T("Logout (dialog)"))
+PROFILE_TECH = T("Technician Profile", T("Logout (dialog)"))
 
 PAGES = {
     "03a-screen-flow-mobile-customer": dict(
@@ -243,7 +242,7 @@ PAGES = {
                   T("Cell Actions (sheet)", T("Report Box Fault (dialog)"), T("Out of Service (dialog)"),
                     T("Emergency Open (dialog)"), T("Mark Fixed / Reopen Box"), T("Clean / Restore Box"))),
                 T("Periodic (tab)", T("Schedule Detail (sheet)", T("Inspection Checklist (sheet)"))),
-                T("IoT Devices (tab)", T("IoT Device (sheet)", T("Change Device Status (dialog)"), T("Restart Controller"))),
+                T("IoT Devices (tab)", T("IoT Device (sheet)", T("Change Device Status (dialog)"))),
                 T("Notifications"),
                 T("Incidents (tab)", T("Claim Ticket (dialog)"),
                   T("Ticket Detail (sheet)",
@@ -280,7 +279,7 @@ PAGES = {
     "03d-screen-flow-admin-web": dict(
         title="Screen Flow — Admin Web", hub="Admin Sidebar Menu", chain=[T("Admin Login"), T("2FA Email OTP")],
         blocks=[T("Dashboard"),
-                T("Users", T("Create User / Staff (modal)"), T("Wallet Adjust (modal)"), T("User Detail")),
+                T("Users", T("Create User / Staff (modal)"), T("User Detail")),
                 T("Stores", T("Store Create / Edit (modal)"),
                   T("Store Detail", T("Add Locker (modal)"), T("Box Settings (modal)"), T("Locker Settings (modal)"))),
                 T("Lockers",
@@ -299,7 +298,7 @@ PAGES = {
                   T("Recovery Dispatch Map (modal)"), T("Drone Incident Detail")),
                 T("Drone Logs"),
                 T("Orders", T("Order Status Update (modal)"), T("Order Detail")),
-                T("Payments", T("Payment Detail (modal)"), T("Approve / Reject Withdrawal (dialog)")),
+                T("Payments", T("Payment Detail (modal)")),
                 T("Refunds", T("Refund Detail (dialog)"), T("Approve Refund (dialog)"), T("Reject Refund (dialog)")),
                 T("Revenue", T("Revenue Orders (modal)"), T("Revenue Detail")),
                 T("Loyalty"),

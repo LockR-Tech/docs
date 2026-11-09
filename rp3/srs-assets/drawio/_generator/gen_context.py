@@ -128,7 +128,7 @@ def ring(entities, y, top):
 ring([
     ("Receiver", 305, 160, [("Pickup Code (at Kiosk)", True), ("Pickup Code Email", False), ("Incoming Order Notifications", False)]),
     ("Locker Technician", 500, 170, [("Ticket Claims &amp; Resolutions", True), ("Inspection Checklists", True),
-                                    ("Emergency Open &amp; Restart Commands", True), ("Assigned Tickets &amp; Schedules", False)]),
+                                    ("Emergency Open &amp; Lid Commands", True), ("Assigned Tickets &amp; Schedules", False)]),
     ("Drone Technician", 700, 170, [("Order Acceptance &amp; Loading Confirmation", True), ("Launch &amp; Stage Updates", True),
                                    ("Drone Status &amp; Battery Updates", True), ("Dispatch Queue &amp; Missions", False)]),
     ("Firebase<br>(Auth &amp; Cloud Messaging)", 900, 185, [("Firebase ID Token", False), ("Verified Identity", True),

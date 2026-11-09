@@ -1,6 +1,6 @@
 <mxfile host="Electron" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/29.0.3 Chrome/140.0.7339.249 Electron/38.7.0 Safari/537.36" version="29.0.3">
   <diagram name="State Machine Diagram — Drone Delivery Order" id="06-2-state-machine-drone-delivery-order">
-    <mxGraphModel dx="1905" dy="922" grid="0" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="0" pageScale="1" pageWidth="1600" pageHeight="1200" math="0" shadow="0">
+    <mxGraphModel dx="1346" dy="829" grid="0" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="0" pageScale="1" pageWidth="1600" pageHeight="1200" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
@@ -125,8 +125,10 @@
         <mxCell id="e7" value="Near&lt;br&gt;destination" style="edgeStyle=none;rounded=0;html=1;strokeColor=#333333;strokeWidth=1.4;endArrow=block;endFill=1;endSize=8;fontSize=12;fontColor=#000000;labelBackgroundColor=#FFFFFF;" parent="1" source="n_ENR" target="n_APP" edge="1">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="e8" value="Land at&lt;br&gt;destination" style="edgeStyle=none;rounded=0;html=1;strokeColor=#333333;strokeWidth=1.4;endArrow=block;endFill=1;endSize=8;fontSize=12;fontColor=#000000;labelBackgroundColor=#FFFFFF;" parent="1" source="n_APP" target="n_ARR" edge="1">
-          <mxGeometry relative="1" as="geometry" />
+        <mxCell id="e8" value="Hover over&lt;div&gt;destination&lt;/div&gt;" style="edgeStyle=none;rounded=0;html=1;strokeColor=#333333;strokeWidth=1.4;endArrow=block;endFill=1;endSize=8;fontSize=12;fontColor=#000000;labelBackgroundColor=#FFFFFF;" parent="1" source="n_APP" target="n_ARR" edge="1">
+          <mxGeometry x="-0.0556" relative="1" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
         </mxCell>
         <mxCell id="e9" value="Parcel in cell,&lt;br&gt;PIN sent" style="edgeStyle=none;rounded=0;html=1;strokeColor=#333333;strokeWidth=1.4;endArrow=block;endFill=1;endSize=8;fontSize=12;fontColor=#000000;labelBackgroundColor=#FFFFFF;" parent="1" source="n_ARR" target="n_RFP" edge="1">
           <mxGeometry relative="1" as="geometry" />
@@ -169,8 +171,8 @@
             </Array>
           </mxGeometry>
         </mxCell>
-        <mxCell id="e16" value="Cancel before launch" style="edgeStyle=none;rounded=0;html=1;strokeColor=#333333;strokeWidth=1.4;endArrow=block;endFill=1;endSize=8;fontSize=12;fontColor=#000000;labelBackgroundColor=#FFFFFF;" parent="1" source="n_ACC" target="n_CAN" edge="1">
-          <mxGeometry x="-0.0482" relative="1" as="geometry">
+        <mxCell id="e16" value="Cancel before launch&lt;div&gt;due to weather&lt;/div&gt;" style="edgeStyle=none;rounded=0;html=1;strokeColor=#333333;strokeWidth=1.4;endArrow=block;endFill=1;endSize=8;fontSize=12;fontColor=#000000;labelBackgroundColor=#FFFFFF;" parent="1" source="n_ACC" target="n_CAN" edge="1">
+          <mxGeometry x="-0.0534" relative="1" as="geometry">
             <mxPoint as="offset" />
           </mxGeometry>
         </mxCell>

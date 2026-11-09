@@ -143,38 +143,37 @@ feature("send", "Send Parcel",
 
 # ---------------------------------------------------------------- 3.7 Payment
 feature("payment", "VietQR Payment (SePay)",
-        "Orders and wallet top-ups are paid by bank transfer through SePay. payment-service creates a PENDING "
+        "Orders are paid by bank transfer through SePay. payment-service creates a PENDING "
         "payment with a unique reference and returns a VietQR image and transfer details. When the bank transfer "
         "arrives, SePay calls the webhook; the payment becomes COMPLETED only from that verified webhook, then "
         "payment.completed is published and order-service marks the order PAID.",
         {
             "PaymentController": C("controller", [
-                ("checkout(userId: Long, request: CheckoutRequest): ApiResponse<PaymentResponse>", "Creates / reuses the pending payment of an order (SEPAY or WALLET)."),
+                ("checkout(userId: Long, request: CheckoutRequest): ApiResponse<PaymentResponse>", "Creates / reuses the pending SePay payment of an order."),
                 ("sepayWebhook(body: Map, authorization: String): ApiResponse<PaymentResponse>", "Receives the SePay bank-transfer webhook."),
                 ("get(id: Long): ApiResponse<PaymentResponse>", "Payment status polled by the app."),
                 ("listByOrder(orderId: Long): ApiResponse<List<PaymentResponse>>", "Payments of an order."),
             ]),
             "PaymentService": C("service", [
-                ("checkout(userId: Long, request: CheckoutRequest): PaymentResponse", "Checks method and order, computes the outstanding amount, builds the transfer content and creates a PENDING payment; WALLET is debited at once."),
+                ("checkout(userId: Long, request: CheckoutRequest): PaymentResponse", "Checks method and order, computes the outstanding amount, builds the transfer content and creates a PENDING payment."),
                 ("handleSepayWebhook(body: Map, authHeader: String): PaymentResponse", "Verifies API key, ignores outgoing transfers and duplicates, finds the payment by reference and completes it."),
-                ("completeTransfer(payment, received, refId): PaymentResponse", "Marks COMPLETED, credits any surplus to the wallet and publishes payment.completed."),
+                ("completeTransfer(payment, received, refId): PaymentResponse", "Marks the payment COMPLETED and publishes payment.completed."),
             ]),
             "SepayService": C("component", [
                 ("generateVietQrUrl(payment: PaymentRecord): String", "Builds the VietQR image URL (bank BIN, account, amount, content)."),
                 ("verifyWebhook(body: Map, authHeader: String): boolean", "Checks the SePay API key."),
                 ("extractReferenceId(body: Map): String", "Reads the payment reference from the transfer content."),
             ]),
-            "WalletService": C("service", ["debit(userId, amount, source, ref, note): WalletTransaction", "credit(userId, amount, source, ref, note): WalletTransaction"]),
             "OrderClient": C("client", ["getOrder(orderId: Long): ApiResponse<OrderSummary>", "updatePaymentStatus(orderId, body): void"]),
             "PaymentRepository": C("repository", ["findByOrderId(orderId: Long): List<PaymentRecord>", "findByReferenceId(ref: String): Optional<PaymentRecord>", "findFirstByReferenceTransactionId(txn: String): Optional"]),
             "OrderPaymentEventListener": C("component", [("onPaymentEvent(event: DomainEvent): void", "Consumes payment.completed in order-service and marks the order PAID.")]),
             "PaidOrderEffects": C("component", [("afterPaid(order: LockerOrder): void", "Publishes order.status.changed, notifies the customer and starts drone pickup for paid drone orders.")]),
             "PaymentRecord": E("PaymentRecord"),
         },
-        [["PaymentController"], ["SepayService", "PaymentService", "WalletService"],
+        [["PaymentController"], ["SepayService", "PaymentService"],
          ["OrderClient", "PaymentRepository", "OrderPaymentEventListener"], ["PaymentRecord", "PaidOrderEffects"]],
         [("PaymentController", "PaymentService", U, "Uses"), ("PaymentService", "SepayService", U, "Uses"),
-         ("PaymentService", "WalletService", U, "Uses"), ("PaymentService", "OrderClient", U, "Feign"),
+         ("PaymentService", "OrderClient", U, "Feign"),
          ("PaymentService", "PaymentRepository", U, "Uses"), ("PaymentRepository", "PaymentRecord", U, "Manages"),
          ("PaymentService", "OrderPaymentEventListener", "async", "payment.completed"),
          ("OrderPaymentEventListener", "PaidOrderEffects", U, "Uses")],

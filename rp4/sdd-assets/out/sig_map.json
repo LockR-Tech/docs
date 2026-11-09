@@ -1,0 +1,2810 @@
+[
+ [
+  "auth",
+  "AuthController",
+  "login(request: LoginRequest): ApiResponse<AuthResponse>",
+  "login(request: LoginRequest): AuthResponse"
+ ],
+ [
+  "auth",
+  "AuthController",
+  "firebaseLogin(request: FirebaseLoginRequest): ApiResponse<AuthResponse>",
+  "firebaseLogin(request: FirebaseLoginRequest): AuthResponse"
+ ],
+ [
+  "auth",
+  "AuthController",
+  "sendEmailOtp(body: Map): ApiResponse<Boolean>",
+  "sendEmailOtp(request: Map<String, Object>): void"
+ ],
+ [
+  "auth",
+  "AuthController",
+  "verifyEmailOtp(body: Map): ApiResponse<Map>",
+  "verifyEmailOtp(request: Map<String, Object>): Map<String, Object>"
+ ],
+ [
+  "auth",
+  "AuthController",
+  "adminLogin(body: Map): ApiResponse<Map>",
+  "adminLogin(request: Map<String, Object>): Map<String, Object>"
+ ],
+ [
+  "auth",
+  "AuthController",
+  "adminVerify2fa(body: Map): ApiResponse<Map>",
+  "adminVerify2fa(request: Map<String, Object>): Map<String, Object>"
+ ],
+ [
+  "auth",
+  "AuthController",
+  "refresh(request: RefreshTokenRequest): ApiResponse<AuthResponse>",
+  "refresh(request: RefreshTokenRequest): AuthResponse"
+ ],
+ [
+  "auth",
+  "AuthController",
+  "logout(request: LogoutRequest): ApiResponse<Void>",
+  "logout(request: LogoutRequest): void"
+ ],
+ [
+  "auth",
+  "AuthService",
+  "login(request: LoginRequest): AuthResponse",
+  "login(request: LoginRequest): AuthResponse"
+ ],
+ [
+  "auth",
+  "AuthService",
+  "firebaseLogin(idToken: String): AuthResponse",
+  "firebaseLogin(idToken: String): AuthResponse"
+ ],
+ [
+  "auth",
+  "AuthService",
+  "verifyEmailOtp(request: Map): Map",
+  "verifyEmailOtp(request: Map<String, Object>): Map<String, Object>"
+ ],
+ [
+  "auth",
+  "AuthService",
+  "adminLogin(request: Map): Map",
+  "adminLogin(request: Map<String, Object>): Map<String, Object>"
+ ],
+ [
+  "auth",
+  "AuthService",
+  "verifyAdmin2fa(request: Map): Map",
+  "verifyAdmin2fa(request: Map<String, Object>): Map<String, Object>"
+ ],
+ [
+  "auth",
+  "AuthService",
+  "refresh(request: RefreshTokenRequest): AuthResponse",
+  "refresh(request: RefreshTokenRequest): AuthResponse"
+ ],
+ [
+  "auth",
+  "AuthService",
+  "logout(request: LogoutRequest): void",
+  "logout(request: LogoutRequest): void"
+ ],
+ [
+  "auth",
+  "JwtService",
+  "issue(userId: Long, accountId: Long, roles: Set<String>): TokenPair",
+  "issue(accountId: Long, userId: Long, roles: Set<String>): TokenPair"
+ ],
+ [
+  "auth",
+  "JwtService",
+  "parse(token: String): Claims",
+  "parse(token: String): Claims"
+ ],
+ [
+  "auth",
+  "EmailOtpService",
+  "sendOtp(email: String, purpose: String): boolean",
+  "sendOtp(email: String, purpose: String): boolean"
+ ],
+ [
+  "auth",
+  "EmailOtpService",
+  "verifyOtp(email: String, purpose: String, code: String): boolean",
+  "verifyOtp(email: String, purpose: String, code: String): boolean"
+ ],
+ [
+  "auth",
+  "UserClient",
+  "getUser(id: Long): ApiResponse<UserSummary>",
+  "getUser(id: Long): UserSummary"
+ ],
+ [
+  "auth",
+  "UserClient",
+  "provisionUser(request: UserProvisionRequest): UserSummary",
+  "provisionUser(request: UserProvisionRequest): UserSummary"
+ ],
+ [
+  "auth",
+  "AuthAccountRepository",
+  "findByEmail(email: String): Optional<AuthAccount>",
+  "findByEmail(email: String): Optional<AuthAccount>"
+ ],
+ [
+  "auth",
+  "AuthAccountRepository",
+  "findByPhoneNumber(phone: String): Optional<AuthAccount>",
+  "findByPhoneNumber(phoneNumber: String): Optional<AuthAccount>"
+ ],
+ [
+  "auth",
+  "RefreshTokenRepository",
+  "findByTokenHashAndRevokedFalse(hash: String): Optional<RefreshToken>",
+  "findByTokenHashAndRevokedFalse(tokenHash: String): Optional<RefreshToken>"
+ ],
+ [
+  "auth",
+  "RefreshTokenRepository",
+  "save(token: RefreshToken): RefreshToken",
+  "save(entity: RefreshToken): RefreshToken"
+ ],
+ [
+  "auth",
+  "SocialIdentityRepository",
+  "findByProviderAndProviderUserId(p: String, uid: String): Optional<SocialIdentity>",
+  "findByProviderAndProviderUserId(provider: String, providerUserId: String): Optional<SocialIdentity>"
+ ],
+ [
+  "kioskqr",
+  "KioskQrLoginController",
+  "create(request: CreateSessionRequest): ApiResponse<SessionCreated>",
+  "create(request: CreateRequest): SessionCreated"
+ ],
+ [
+  "kioskqr",
+  "KioskQrLoginController",
+  "poll(sessionId: String, pollToken: String): ApiResponse<SessionStatus>",
+  "poll(sessionId: String, pollToken: String): SessionStatus"
+ ],
+ [
+  "kioskqr",
+  "KioskQrLoginController",
+  "confirm(sessionId: String, request: ConfirmRequest): ApiResponse<ConfirmResult>",
+  "confirm(sessionId: String, userId: Long, request: ConfirmRequest): ConfirmResult"
+ ],
+ [
+  "kioskqr",
+  "KioskQrLoginController",
+  "cancel(sessionId: String, pollToken: String): ApiResponse<SessionStatus>",
+  "cancel(sessionId: String, pollToken: String): SessionStatus"
+ ],
+ [
+  "kioskqr",
+  "KioskQrLoginService",
+  "create(lockerId: Long, clientIp: String): SessionCreated",
+  "create(lockerId: Long, clientIp: String): SessionCreated"
+ ],
+ [
+  "kioskqr",
+  "KioskQrLoginService",
+  "poll(sessionId: String, pollToken: String): SessionStatus",
+  "poll(sessionId: String, pollToken: String): SessionStatus"
+ ],
+ [
+  "kioskqr",
+  "KioskQrLoginService",
+  "confirm(sessionId: String, userId: Long, code: String): ConfirmResult",
+  "confirm(sessionId: String, userId: Long, confirmCode: String): ConfirmResult"
+ ],
+ [
+  "kioskqr",
+  "KioskQrLoginService",
+  "cancel(sessionId: String, pollToken: String): SessionStatus",
+  "cancel(sessionId: String, pollToken: String): SessionStatus"
+ ],
+ [
+  "kioskqr",
+  "KioskQrLoginService",
+  "cleanup(): void",
+  "cleanup(): void"
+ ],
+ [
+  "kioskqr",
+  "AuthService",
+  "requireActiveAccount(userId: Long): void",
+  "requireActiveAccount(userId: Long): void"
+ ],
+ [
+  "kioskqr",
+  "AuthService",
+  "issueKioskLogin(userId: Long): KioskLoginGrant",
+  "issueKioskLogin(userId: Long): KioskLoginGrant"
+ ],
+ [
+  "users",
+  "UserController",
+  "profile(userId: Long): ApiResponse<UserProfileView>",
+  "profile(userId: Long): UserProfileView"
+ ],
+ [
+  "users",
+  "UserController",
+  "updateProfile(userId: Long, request: UserProfileRequest): ApiResponse<UserSummary>",
+  "updateProfile(userId: Long, request: UserProfileRequest): UserSummary"
+ ],
+ [
+  "users",
+  "UserController",
+  "updateAvatar(userId: Long, upload: MediaUpload): ApiResponse<UserSummary>",
+  "updateAvatar(userId: Long, request: Map<String, Object>): UserSummary"
+ ],
+ [
+  "users",
+  "UserController",
+  "adminCreate(request: AdminCreateUserRequest): ApiResponse<UserSummary>",
+  "adminCreate(request: AdminCreateUserRequest): UserSummary"
+ ],
+ [
+  "users",
+  "UserController",
+  "adminStatus(id: Long, body: Map): ApiResponse<UserSummary>",
+  "adminStatus(id: Long, status: String, request: Map<String, Object>): UserSummary"
+ ],
+ [
+  "users",
+  "UserController",
+  "adminRoles(id: Long, body: Map): ApiResponse<UserSummary>",
+  "adminRoles(id: Long, request: Map<String, Set<String>>): UserSummary"
+ ],
+ [
+  "users",
+  "MediaController",
+  "uploadSignatures(request: UploadSignatureRequest): ApiResponse<List<UploadSignatureResponse>>",
+  "uploadSignatures(request: SignatureRequest, userId: Long, roles: String): UploadSignatureResponse"
+ ],
+ [
+  "users",
+  "UserProfileService",
+  "create(request: UserProfileRequest): UserSummary",
+  "create(request: UserProfileRequest): UserSummary"
+ ],
+ [
+  "users",
+  "UserProfileService",
+  "update(id: Long, request: UserProfileRequest): UserSummary",
+  "update(id: Long, request: UserProfileRequest): UserSummary"
+ ],
+ [
+  "users",
+  "UserProfileService",
+  "updateAvatar(id: Long, upload: MediaUpload, actor: Long): UserSummary",
+  "updateAvatar(id: Long, upload: MediaUpload, actorUserId: Long): UserSummary"
+ ],
+ [
+  "users",
+  "UserProfileService",
+  "updateStatus(id: Long, status: String): UserSummary",
+  "updateStatus(id: Long, status: String): UserSummary"
+ ],
+ [
+  "users",
+  "UserProfileService",
+  "updateRoles(id: Long, roles: Set<String>): UserSummary",
+  "updateRoles(id: Long, roles: Set<String>): UserSummary"
+ ],
+ [
+  "users",
+  "CloudinaryMediaStorage",
+  "signUpload(purpose: MediaPurpose, owner: Long): UploadSignatureResponse",
+  "createUploadSignatures(purpose: MediaPurpose, userId: Long, count: int): UploadSignatureResponse"
+ ],
+ [
+  "users",
+  "CloudinaryMediaStorage",
+  "verify(upload: MediaUpload, purpose: MediaPurpose): VerifiedMedia",
+  "verify(upload: MediaUpload, purpose: MediaPurpose, actorUserId: Long): VerifiedMedia"
+ ],
+ [
+  "users",
+  "CloudinaryMediaStorage",
+  "deleteReplacedAfterCommit(publicId: String): void",
+  "deleteReplacedAfterCommit(oldUrl: String, newUrl: String): void"
+ ],
+ [
+  "users",
+  "AuthClient",
+  "createAccount(request): AuthResponse",
+  "createAccount(request: Map<String, Object>): Map<String, Object>"
+ ],
+ [
+  "users",
+  "AuthClient",
+  "updateStatus(userId, status): Map",
+  "updateStatus(userId: Long, request: Map<String, Object>): Map<String, Object>"
+ ],
+ [
+  "users",
+  "AuthClient",
+  "updateIdentifiers(userId, request): Map",
+  "updateIdentifiers(userId: Long, request: Map<String, Object>): Map<String, Object>"
+ ],
+ [
+  "users",
+  "UserProfileRepository",
+  "findFirstByEmailIgnoreCase(email: String): Optional<UserProfile>",
+  "findFirstByEmailIgnoreCase(email: String): Optional<UserProfile>"
+ ],
+ [
+  "users",
+  "UserProfileRepository",
+  "findFirstByPhoneNumber(phone: String): Optional<UserProfile>",
+  "findFirstByPhoneNumber(phoneNumber: String): Optional<UserProfile>"
+ ],
+ [
+  "stores",
+  "StoreController",
+  "list(): ApiResponse<List<StoreResponse>>",
+  "list(latitude: Double, longitude: Double, radiusKm: Double): List<StoreResponse>"
+ ],
+ [
+  "stores",
+  "StoreController",
+  "nearby(lat: Double, lng: Double, radiusKm: Double): ApiResponse<List<StoreResponse>>",
+  "nearby(latitude: Double, longitude: Double, radiusKm: Double): List<StoreResponse>"
+ ],
+ [
+  "stores",
+  "StoreController",
+  "get(id: Long): ApiResponse<StoreResponse>",
+  "get(id: Long): StoreResponse"
+ ],
+ [
+  "stores",
+  "StoreController",
+  "ratings(storeId: Long): ApiResponse<List<Map>>",
+  "ratings(storeId: Long): List<Map<String, Object>>"
+ ],
+ [
+  "stores",
+  "StoreController",
+  "adminCreate(request: StoreRequest): ApiResponse<StoreResponse>",
+  "adminCreate(request: StoreRequest): StoreResponse"
+ ],
+ [
+  "stores",
+  "StoreController",
+  "adminUpdate(id: Long, request: StoreRequest): ApiResponse<StoreResponse>",
+  "adminUpdate(id: Long, request: StoreRequest): StoreResponse"
+ ],
+ [
+  "stores",
+  "StoreController",
+  "adminStatus(id: Long, body: Map): ApiResponse<StoreResponse>",
+  "adminStatus(id: Long, status: String, request: Map<String, Object>): StoreResponse"
+ ],
+ [
+  "stores",
+  "StoreService",
+  "nearby(lat: Double, lng: Double, radiusKm: Double): List<StoreResponse>",
+  "nearby(latitude: Double, longitude: Double, radiusKm: Double): List<StoreResponse>"
+ ],
+ [
+  "stores",
+  "StoreService",
+  "get(id: Long): StoreResponse",
+  "get(id: Long): StoreResponse"
+ ],
+ [
+  "stores",
+  "StoreService",
+  "delete(id: Long): void",
+  "delete(id: Long): void"
+ ],
+ [
+  "stores",
+  "StoreService",
+  "create(request: StoreRequest): StoreResponse",
+  "create(request: StoreRequest): StoreResponse"
+ ],
+ [
+  "stores",
+  "StoreService",
+  "update(id: Long, request: StoreRequest): StoreResponse",
+  "update(id: Long, request: StoreRequest): StoreResponse"
+ ],
+ [
+  "stores",
+  "StoreService",
+  "updateStatus(id: Long, status: String): StoreResponse",
+  "updateStatus(id: Long, status: String): StoreResponse"
+ ],
+ [
+  "stores",
+  "StoreService",
+  "ratings(storeId: Long): List<Map>",
+  "ratings(storeId: Long): List<Map<String, Object>>"
+ ],
+ [
+  "stores",
+  "LockerClient",
+  "lockersByStore(storeId: Long): ApiResponse<List<LockerRef>>",
+  "lockersByStore(storeId: Long): List<LockerRef>"
+ ],
+ [
+  "stores",
+  "OrderClient",
+  "storeRatings(storeId: Long): List<Map>",
+  "storeRatings(storeId: Long): List<Map<String, Object>>"
+ ],
+ [
+  "stores",
+  "StoreRepository",
+  "findByStatusAndActiveTrue(status: String): List<StoreLocation>",
+  "findByStatusAndActiveTrue(status: String): List<StoreLocation>"
+ ],
+ [
+  "lockers",
+  "LockerController",
+  "createLocker(request: LockerRequest): ApiResponse<LockerResponse>",
+  "createLocker(request: LockerRequest): LockerResponse"
+ ],
+ [
+  "lockers",
+  "LockerController",
+  "adminAddBoxesBatch(id: Long, request: BatchCreateBoxesRequest): ApiResponse<List<CellResponse>>",
+  "adminAddBoxesBatch(id: Long, request: BatchCreateBoxesRequest): List<CellResponse>"
+ ],
+ [
+  "lockers",
+  "LockerController",
+  "listLockers(storeId: Long): ApiResponse<List<LockerResponse>>",
+  "listLockers(storeId: Long): List<LockerResponse>"
+ ],
+ [
+  "lockers",
+  "LockerController",
+  "layout(id: Long): ApiResponse<LockerLayoutResponse>",
+  "layout(id: Long): LockerLayoutResponse"
+ ],
+ [
+  "lockers",
+  "LockerController",
+  "listAvailableBoxes(lockerId: Long): ApiResponse<List<LockerBoxSummary>>",
+  "listAvailableBoxes(lockerId: Long): List<LockerBoxSummary>"
+ ],
+ [
+  "lockers",
+  "LockerService",
+  "createLocker(request: LockerRequest): LockerResponse",
+  "createLocker(request: LockerRequest): LockerResponse"
+ ],
+ [
+  "lockers",
+  "LockerService",
+  "createBoxesBatch(lockerId: Long, request: BatchCreateBoxesRequest): List<CellResponse>",
+  "createBoxesBatch(lockerId: Long, request: BatchCreateBoxesRequest): List<CellResponse>"
+ ],
+ [
+  "lockers",
+  "LockerService",
+  "layout(lockerId: Long): LockerLayoutResponse",
+  "layout(lockerId: Long): LockerLayoutResponse"
+ ],
+ [
+  "lockers",
+  "LockerService",
+  "reserveBox(boxId: Long, until: String): LockerBoxSummary",
+  "reserveBox(boxId: Long, channel: String): LockerBoxSummary"
+ ],
+ [
+  "lockers",
+  "LockerService",
+  "occupyBox(boxId: Long): LockerBoxSummary",
+  "occupyBox(boxId: Long): LockerBoxSummary"
+ ],
+ [
+  "lockers",
+  "LockerService",
+  "releaseBox(boxId: Long): LockerBoxSummary",
+  "releaseBox(boxId: Long): LockerBoxSummary"
+ ],
+ [
+  "lockers",
+  "IotClient",
+  "boxStatus(lockerId: Long): List<BoxHardwareStatus>",
+  "boxStatus(lockerId: Long): List<BoxHardwareStatus>"
+ ],
+ [
+  "lockers",
+  "IotClient",
+  "getGatewayByLockerId(lockerId: Long): GatewayDeviceView",
+  "getGatewayByLockerId(lockerId: Long): GatewayDeviceResponse"
+ ],
+ [
+  "lockers",
+  "LockerUnitRepository",
+  "save(locker: LockerUnit): LockerUnit",
+  "save(entity: LockerUnit): LockerUnit"
+ ],
+ [
+  "lockers",
+  "LockerUnitRepository",
+  "findByStoreId(storeId: Long): List<LockerUnit>",
+  "findByStoreId(storeId: Long): List<LockerUnit>"
+ ],
+ [
+  "lockers",
+  "LockerBoxRepository",
+  "existsByLockerIdAndBoxNumber(id: Long, n: Integer): boolean",
+  "existsByLockerIdAndBoxNumber(lockerId: Long, boxNumber: Integer): boolean"
+ ],
+ [
+  "lockers",
+  "LockerBoxRepository",
+  "findByLockerIdOrderByRowIndexAscColIndexAsc(id: Long): List<LockerBox>",
+  "findByLockerIdOrderByRowIndexAscColIndexAsc(lockerId: Long): List<LockerBox>"
+ ],
+ [
+  "lockers",
+  "LockerBoxRepository",
+  "saveAll(boxes): List<LockerBox>",
+  "saveAll(entities: Iterable<LockerBox>): List<LockerBox>"
+ ],
+ [
+  "send",
+  "OrderController",
+  "createSend(request: SendOrderRequest, userId: Long): ApiResponse<OrderResponse>",
+  "createSend(request: SendOrderRequest, userId: Long): OrderResponse"
+ ],
+ [
+  "send",
+  "OrderController",
+  "get(id: Long): ApiResponse<OrderResponse>",
+  "get(id: Long, userId: Long, roles: String): OrderResponse"
+ ],
+ [
+  "send",
+  "OrderController",
+  "myOrders(userId: Long): ApiResponse<List<OrderResponse>>",
+  "myOrders(userId: Long): List<OrderResponse>"
+ ],
+ [
+  "send",
+  "OrderController",
+  "timeline(orderId: Long): ApiResponse<List<OrderTimelineEvent>>",
+  "timeline(orderId: Long, userId: Long, roles: String): List<OrderTimelineEvent>"
+ ],
+ [
+  "send",
+  "OrderService",
+  "createSend(request: SendOrderRequest, userId: Long): OrderResponse",
+  "createSend(request: SendOrderRequest, userId: Long): OrderResponse"
+ ],
+ [
+  "send",
+  "OrderService",
+  "create(request: CreateOrderRequest, serverPrice: BigDecimal): OrderResponse",
+  "create(request: CreateOrderRequest, serverPrice: BigDecimal): OrderResponse"
+ ],
+ [
+  "send",
+  "OrderService",
+  "confirm(orderId: Long, userId: Long): OrderResponse",
+  "confirm(id: Long, userId: Long): OrderResponse"
+ ],
+ [
+  "send",
+  "OrderService",
+  "complete(orderId: Long, userId: Long): OrderResponse",
+  "complete(id: Long, userId: Long): OrderResponse"
+ ],
+ [
+  "send",
+  "OrderService",
+  "cancel(orderId: Long, reason: Integer, userId: Long): OrderResponse",
+  "cancel(id: Long, reason: Integer, userId: Long): OrderResponse"
+ ],
+ [
+  "send",
+  "OrderBenefitService",
+  "applyVouchers(order: LockerOrder, codes: List<String>, lockerId: Long): void",
+  "applyVouchers(order: LockerOrder, codes: List<String>, eligibleLockerId: Long): void"
+ ],
+ [
+  "send",
+  "OrderBenefitService",
+  "redeemPoints(order: LockerOrder, points: Integer): void",
+  "redeemPoints(order: LockerOrder, pointsToUse: Integer): void"
+ ],
+ [
+  "send",
+  "PaidOrderEffects",
+  "settleIfFree(order: LockerOrder): boolean",
+  "settleIfFree(order: LockerOrder): boolean"
+ ],
+ [
+  "send",
+  "LockerClient",
+  "reserveBox(boxId: Long, until: String): ApiResponse",
+  "reserveBox(id: Long, channel: String): LockerBoxSummary"
+ ],
+ [
+  "send",
+  "LockerClient",
+  "occupyBox(boxId: Long): ApiResponse",
+  "occupyBox(id: Long): LockerBoxSummary"
+ ],
+ [
+  "send",
+  "LockerClient",
+  "releaseBox(boxId: Long): ApiResponse",
+  "releaseBox(id: Long): LockerBoxSummary"
+ ],
+ [
+  "send",
+  "LockerCellClient",
+  "findAvailable(lockerId, size, cellType): CellDto",
+  "findAvailable(id: Long, size: String, cellType: String): CellDto"
+ ],
+ [
+  "send",
+  "UserClient",
+  "getUser(id: Long): UserSummary",
+  "getUser(id: Long): UserSummary"
+ ],
+ [
+  "send",
+  "UserClient",
+  "getUserByPhone(phone: String): UserSummary",
+  "getUserByPhone(phone: String): UserSummary"
+ ],
+ [
+  "send",
+  "UserClient",
+  "getUserByEmail(email: String): UserSummary",
+  "getUserByEmail(email: String): UserSummary"
+ ],
+ [
+  "send",
+  "NotificationClient",
+  "requestNotification(request: NotificationRequest): void",
+  "requestNotification(request: NotificationRequest): void"
+ ],
+ [
+  "send",
+  "LockerOrderRepository",
+  "save(order: LockerOrder): LockerOrder",
+  "save(entity: LockerOrder): LockerOrder"
+ ],
+ [
+  "send",
+  "LockerOrderRepository",
+  "findByUserIdOrderByCreatedAtDesc(userId: Long): List<LockerOrder>",
+  "findByUserIdOrderByCreatedAtDesc(userId: Long): List<LockerOrder>"
+ ],
+ [
+  "send",
+  "LockerOrderRepository",
+  "findByPinCode(pin: String): Optional<LockerOrder>",
+  "findByPinCode(pinCode: String): Optional<LockerOrder>"
+ ],
+ [
+  "send",
+  "OrderStatusHistoryRepository",
+  "save(h: OrderStatusHistory)",
+  "save(entity: OrderStatusHistory): OrderStatusHistory"
+ ],
+ [
+  "send",
+  "OrderStatusHistoryRepository",
+  "findByOrderIdOrderByCreatedAtAscIdAsc(id: Long): List",
+  "findByOrderIdOrderByCreatedAtAscIdAsc(orderId: Long): List<OrderStatusHistory>"
+ ],
+ [
+  "payment",
+  "PaymentController",
+  "checkout(userId: Long, request: CheckoutRequest): ApiResponse<PaymentResponse>",
+  "checkout(request: CheckoutRequest, userId: Long): PaymentResponse"
+ ],
+ [
+  "payment",
+  "PaymentController",
+  "sepayWebhook(body: Map, authorization: String): ApiResponse<PaymentResponse>",
+  "sepayWebhook(body: Map<String, Object>, authHeader: String): Map<String, Object>"
+ ],
+ [
+  "payment",
+  "PaymentController",
+  "get(id: Long): ApiResponse<PaymentResponse>",
+  "get(id: Long, userId: Long, roles: String): PaymentResponse"
+ ],
+ [
+  "payment",
+  "PaymentController",
+  "listByOrder(orderId: Long): ApiResponse<List<PaymentResponse>>",
+  "listByOrder(orderId: Long, userId: Long, roles: String): List<PaymentResponse>"
+ ],
+ [
+  "payment",
+  "PaymentService",
+  "checkout(userId: Long, request: CheckoutRequest): PaymentResponse",
+  "checkout(userId: Long, request: CheckoutRequest): PaymentResponse"
+ ],
+ [
+  "payment",
+  "PaymentService",
+  "handleSepayWebhook(body: Map, authHeader: String): PaymentResponse",
+  "handleSepayWebhook(body: Map<String, Object>, authHeader: String): PaymentResponse"
+ ],
+ [
+  "payment",
+  "PaymentService",
+  "completeTransfer(payment, received, refId): PaymentResponse",
+  "completeTransfer(payment: PaymentRecord, received: BigDecimal, refId: String): PaymentResponse"
+ ],
+ [
+  "payment",
+  "SepayService",
+  "generateVietQrUrl(payment: PaymentRecord): String",
+  "generateVietQrUrl(payment: PaymentRecord): String"
+ ],
+ [
+  "payment",
+  "SepayService",
+  "verifyWebhook(body: Map, authHeader: String): boolean",
+  "verifyWebhook(body: Map<String, Object>, authHeader: String): boolean"
+ ],
+ [
+  "payment",
+  "SepayService",
+  "extractReferenceId(body: Map): String",
+  "extractReferenceId(body: Map<String, Object>): String"
+ ],
+ [
+  "payment",
+  "OrderClient",
+  "getOrder(orderId: Long): ApiResponse<OrderSummary>",
+  "getOrder(id: Long): OrderSummary"
+ ],
+ [
+  "payment",
+  "OrderClient",
+  "updatePaymentStatus(orderId, body): void",
+  "updatePaymentStatus(id: Long, status: String, note: String, actorUserId: Long): void"
+ ],
+ [
+  "payment",
+  "PaymentRepository",
+  "findByOrderId(orderId: Long): List<PaymentRecord>",
+  "findByOrderId(orderId: Long): List<PaymentRecord>"
+ ],
+ [
+  "payment",
+  "PaymentRepository",
+  "findByReferenceId(ref: String): Optional<PaymentRecord>",
+  "findByReferenceId(referenceId: String): Optional<PaymentRecord>"
+ ],
+ [
+  "payment",
+  "PaymentRepository",
+  "findFirstByReferenceTransactionId(txn: String): Optional",
+  "findFirstByReferenceTransactionId(referenceTransactionId: String): Optional<PaymentRecord>"
+ ],
+ [
+  "payment",
+  "OrderPaymentEventListener",
+  "onPaymentEvent(event: DomainEvent): void",
+  "onPaymentEvent(event: DomainEvent): void"
+ ],
+ [
+  "payment",
+  "PaidOrderEffects",
+  "afterPaid(order: LockerOrder): void",
+  "afterPaid(order: LockerOrder): void"
+ ],
+ [
+  "kiosk",
+  "IotController",
+  "verifyAccess(request: VerifyAccessRequest): ApiResponse<VerifyPinResponse>",
+  "verifyAccess(request: VerifyPinRequest): VerifyPinResponse"
+ ],
+ [
+  "kiosk",
+  "IotController",
+  "unlockWithCode(request: UnlockWithCodeRequest): ApiResponse<Map>",
+  "unlockWithCode(request: UnlockWithCodeRequest): Map<String, Object>"
+ ],
+ [
+  "kiosk",
+  "IotController",
+  "confirmDropWithCode(request: UnlockWithCodeRequest): ApiResponse<Map>",
+  "confirmDropWithCode(request: UnlockWithCodeRequest): Map<String, Object>"
+ ],
+ [
+  "kiosk",
+  "IotController",
+  "endRentalWithCode(request: UnlockWithCodeRequest): ApiResponse<Map>",
+  "endRentalWithCode(request: UnlockWithCodeRequest): Map<String, Object>"
+ ],
+ [
+  "kiosk",
+  "IotService",
+  "unlockWithCode(request: UnlockWithCodeRequest): Map",
+  "unlockWithCode(request: UnlockWithCodeRequest): Map<String, Object>"
+ ],
+ [
+  "kiosk",
+  "IotService",
+  "verifyAccess(boxId: Long, code: String): VerifyPinResponse",
+  "verifyAccess(boxId: Long, code: String): VerifyPinResponse"
+ ],
+ [
+  "kiosk",
+  "IotService",
+  "confirmDropWithCode(request: UnlockWithCodeRequest): Map",
+  "confirmDropWithCode(request: UnlockWithCodeRequest): Map<String, Object>"
+ ],
+ [
+  "kiosk",
+  "IotService",
+  "endRentalWithCode(request: UnlockWithCodeRequest): Map",
+  "endRentalWithCode(request: UnlockWithCodeRequest): Map<String, Object>"
+ ],
+ [
+  "kiosk",
+  "LockerMqttService",
+  "sendUnlockCommandAsync(lockerId: Long, boxId: Long): CompletableFuture<JsonNode>",
+  "sendUnlockCommandAsync(lockerId: Long, boxId: Long): CompletableFuture<JsonNode>"
+ ],
+ [
+  "kiosk",
+  "LockerMqttService",
+  "messageArrived(topic: String, msg: MqttMessage): void",
+  "messageArrived(topic: String, message: MqttMessage): void"
+ ],
+ [
+  "kiosk",
+  "OrderClient",
+  "getByAccess(code: String): ApiResponse<OrderLookupResponse>",
+  "getByAccess(code: String): OrderLookupResponse"
+ ],
+ [
+  "kiosk",
+  "OrderClient",
+  "confirm(orderId): void",
+  "confirm(orderId: Long, userId: Long): OrderLookupResponse"
+ ],
+ [
+  "kiosk",
+  "OrderClient",
+  "dropOpened(orderId): void",
+  "dropOpened(orderId: Long): void"
+ ],
+ [
+  "kiosk",
+  "OrderClient",
+  "complete(orderId): void",
+  "complete(orderId: Long, userId: Long): OrderLookupResponse"
+ ],
+ [
+  "kiosk",
+  "OrderClient",
+  "pickupStorage(orderId): void",
+  "pickupStorage(orderId: Long, userId: Long): OrderLookupResponse"
+ ],
+ [
+  "kiosk",
+  "LockerClient",
+  "openBox(boxId: Long): void",
+  "openBox(id: Long): LockerBoxSummary"
+ ],
+ [
+  "kiosk",
+  "LockerClient",
+  "markFault(boxId, reason): void",
+  "markFault(id: Long, body: Map<String, Object>): Map<String, Object>"
+ ],
+ [
+  "kiosk",
+  "BoxAccessLogRepository",
+  "save(log: BoxAccessLog)",
+  "save(entity: BoxAccessLog): BoxAccessLog"
+ ],
+ [
+  "kiosk",
+  "BoxAccessLogRepository",
+  "existsByOrderIdAndResultAndCreatedAtAfter(id, result, t): boolean",
+  "existsByOrderIdAndResultAndCreatedAtAfter(orderId: Long, result: String, after: LocalDateTime): boolean"
+ ],
+ [
+  "kiosk",
+  "AccessAttemptRepository",
+  "findById(boxId: Long): Optional<AccessAttempt>",
+  "findById(id: Long): Optional<AccessAttempt>"
+ ],
+ [
+  "kiosk",
+  "AccessAttemptRepository",
+  "save(a: AccessAttempt)",
+  "save(entity: AccessAttempt): AccessAttempt"
+ ],
+ [
+  "rental",
+  "OrderController",
+  "createRental(request: RentalOrderRequest, userId: Long): ApiResponse<OrderResponse>",
+  "createRental(request: RentalOrderRequest, userId: Long): OrderResponse"
+ ],
+ [
+  "rental",
+  "OrderController",
+  "extendRental(orderId: Long, body: Map, userId: Long): ApiResponse<OrderResponse>",
+  "extendRental(orderId: Long, request: Map<String, Object>, userId: Long): OrderResponse"
+ ],
+ [
+  "rental",
+  "OrderController",
+  "assessOvertime(orderId: Long, userId: Long): ApiResponse<OrderResponse>",
+  "assessOvertime(orderId: Long, userId: Long): OrderResponse"
+ ],
+ [
+  "rental",
+  "OrderController",
+  "pickupStorage(orderId: Long, userId: Long): ApiResponse<OrderResponse>",
+  "pickupStorage(orderId: Long, userId: Long): OrderResponse"
+ ],
+ [
+  "rental",
+  "OrderService",
+  "createRental(request: RentalOrderRequest, userId: Long): OrderResponse",
+  "createRental(request: RentalOrderRequest, userId: Long): OrderResponse"
+ ],
+ [
+  "rental",
+  "OrderService",
+  "extendRental(orderId: Long, userId: Long, hours: int): OrderResponse",
+  "extendRental(id: Long, userId: Long, hours: int): OrderResponse"
+ ],
+ [
+  "rental",
+  "OrderService",
+  "assessOvertime(orderId: Long, userId: Long): OrderResponse",
+  "assessOvertime(id: Long, userId: Long): OrderResponse"
+ ],
+ [
+  "rental",
+  "OrderService",
+  "pickupStorage(orderId: Long, userId: Long): OrderResponse",
+  "pickupStorage(id: Long, userId: Long): OrderResponse"
+ ],
+ [
+  "rental",
+  "OrderRules",
+  "rentalPrice(cellType: String, hours: int): BigDecimal",
+  "rentalPrice(cellType: String, hours: long): BigDecimal"
+ ],
+ [
+  "rental",
+  "OrderRules",
+  "rentalMinHours(): int",
+  "rentalMinHours(): int"
+ ],
+ [
+  "rental",
+  "OrderRules",
+  "rentalMaxHours(): int",
+  "rentalMaxHours(): int"
+ ],
+ [
+  "rental",
+  "OrderRules",
+  "extendMaxHours(): int",
+  "extendMaxHours(): int"
+ ],
+ [
+  "rental",
+  "LockerCellClient",
+  "getCell(boxId: Long): CellDto",
+  "getCell(boxId: Long): CellDto"
+ ],
+ [
+  "rental",
+  "LockerCellClient",
+  "findAvailable(lockerId, size, cellType): CellDto",
+  "findAvailable(id: Long, size: String, cellType: String): CellDto"
+ ],
+ [
+  "rental",
+  "LockerOrderRepository",
+  "findById(id: Long): Optional<LockerOrder>",
+  "findById(id: Long): Optional<LockerOrder>"
+ ],
+ [
+  "rental",
+  "LockerOrderRepository",
+  "save(order: LockerOrder): LockerOrder",
+  "save(entity: LockerOrder): LockerOrder"
+ ],
+ [
+  "delegate",
+  "OrderController",
+  "delegate(orderId: Long, request: DelegateOrderRequest, userId: Long): ApiResponse<OrderResponse>",
+  "delegate(orderId: Long, request: DelegateOrderRequest, userId: Long): OrderResponse"
+ ],
+ [
+  "delegate",
+  "OrderController",
+  "resetPin(orderId: Long, userId: Long): ApiResponse<OrderResponse>",
+  "resetPin(orderId: Long, userId: Long): OrderResponse"
+ ],
+ [
+  "delegate",
+  "OrderController",
+  "delegatedToMe(userId: Long): ApiResponse<List<OrderResponse>>",
+  "delegatedToMe(userId: Long, activeOnly: boolean, limit: Integer): List<ReceiverOrderResponse>"
+ ],
+ [
+  "delegate",
+  "OrderService",
+  "delegate(orderId: Long, userId: Long, request: DelegateOrderRequest): OrderResponse",
+  "delegate(id: Long, userId: Long, request: DelegateOrderRequest): OrderResponse"
+ ],
+ [
+  "delegate",
+  "OrderService",
+  "resetPin(orderId: Long, userId: Long): OrderResponse",
+  "resetPin(id: Long, userId: Long): OrderResponse"
+ ],
+ [
+  "delegate",
+  "QrTokenService",
+  "issue(order: LockerOrder): String",
+  "issue(orderId: Long, pinCode: String): String"
+ ],
+ [
+  "delegate",
+  "UserClient",
+  "getUserByPhone(phone: String): UserSummary",
+  "getUserByPhone(phone: String): UserSummary"
+ ],
+ [
+  "delegate",
+  "NotificationClient",
+  "requestNotification(request: NotificationRequest): void",
+  "requestNotification(request: NotificationRequest): void"
+ ],
+ [
+  "delegate",
+  "LockerOrderRepository",
+  "findById(id: Long)",
+  "findById(id: Long): Optional<LockerOrder>"
+ ],
+ [
+  "delegate",
+  "LockerOrderRepository",
+  "save(order: LockerOrder)",
+  "save(entity: LockerOrder): LockerOrder"
+ ],
+ [
+  "feedback",
+  "OrderController",
+  "rate(orderId: Long, request: OrderRatingRequest, userId: Long): ApiResponse<OrderRatingResponse>",
+  "rate(orderId: Long, request: OrderRatingRequest, userId: Long): OrderRatingResponse"
+ ],
+ [
+  "feedback",
+  "OrderController",
+  "complaint(orderId: Long, request: OrderComplaintRequest, userId: Long): ApiResponse<OrderComplaintResponse>",
+  "complaint(orderId: Long, request: OrderComplaintRequest, userId: Long): OrderComplaintResponse"
+ ],
+ [
+  "feedback",
+  "AdminFeedbackController",
+  "list(filters): ApiResponse<PageResponse>",
+  "list(page: int, size: int, minRating: Integer, maxRating: Integer, isResolved: Boolean, userId: Long): PageResponse<FeedbackResponse>"
+ ],
+ [
+  "feedback",
+  "AdminFeedbackController",
+  "reply(id: Long, body: Map, adminId: Long): ApiResponse<FeedbackDetail>",
+  "reply(id: Long, request: FeedbackReplyRequest, adminId: Long): FeedbackDetailResponse"
+ ],
+ [
+  "feedback",
+  "AdminFeedbackController",
+  "satisfaction(range): ApiResponse<Map>",
+  "satisfaction(): SatisfactionMetricsResponse"
+ ],
+ [
+  "feedback",
+  "OrderService",
+  "rate(orderId: Long, request: OrderRatingRequest, userId: Long): OrderRatingResponse",
+  "rate(orderId: Long, request: OrderRatingRequest, userId: Long): OrderRatingResponse"
+ ],
+ [
+  "feedback",
+  "OrderService",
+  "complain(orderId: Long, request: OrderComplaintRequest, userId: Long): OrderComplaintResponse",
+  "complain(orderId: Long, request: OrderComplaintRequest, userId: Long): OrderComplaintResponse"
+ ],
+ [
+  "feedback",
+  "AdminFeedbackService",
+  "reply(id: Long, text: String, adminId: Long): FeedbackDetail",
+  "reply(id: Long, reply: String, adminId: Long): FeedbackDetailResponse"
+ ],
+ [
+  "feedback",
+  "AdminFeedbackService",
+  "analytics(range): Map",
+  "analytics(period: String): FeedbackAnalyticsResponse"
+ ],
+ [
+  "feedback",
+  "NotificationClient",
+  "requestNotification(request: NotificationRequest): void",
+  "requestNotification(request: NotificationRequest): void"
+ ],
+ [
+  "feedback",
+  "OrderRatingRepository",
+  "findByOrderId(orderId: Long)",
+  "findByOrderId(orderId: Long): Optional<OrderRating>"
+ ],
+ [
+  "feedback",
+  "OrderRatingRepository",
+  "save(r: OrderRating)",
+  "save(entity: OrderRating): OrderRating"
+ ],
+ [
+  "feedback",
+  "OrderRatingRepository",
+  "averageByOrderType(..)",
+  "averageByOrderType(): List<Object[]>"
+ ],
+ [
+  "feedback",
+  "OrderComplaintRepository",
+  "save(c: OrderComplaint)",
+  "save(entity: OrderComplaint): OrderComplaint"
+ ],
+ [
+  "feedback",
+  "OrderComplaintRepository",
+  "findByUserIdOrderByCreatedAtDesc(userId)",
+  "findByUserIdOrderByCreatedAtDesc(userId: Long): List<OrderComplaint>"
+ ],
+ [
+  "refund",
+  "PaymentController",
+  "requestRefund(userId: Long, request: CreateRefundRequest): ApiResponse<RefundResponse>",
+  "requestRefund(userId: Long, request: CreateRefundRequest): RefundResponse"
+ ],
+ [
+  "refund",
+  "PaymentController",
+  "myRefunds(userId: Long): ApiResponse<List<RefundResponse>>",
+  "myRefunds(userId: Long): List<RefundResponse>"
+ ],
+ [
+  "refund",
+  "AdminPaymentController",
+  "approveRefund(id: Long, request: ProcessRefundRequest): ApiResponse<RefundResponse>",
+  "approveRefund(id: Long, adminUserId: Long, request: ProcessRefundRequest): RefundResponse"
+ ],
+ [
+  "refund",
+  "AdminPaymentController",
+  "rejectRefund(id: Long, request: ProcessRefundRequest): ApiResponse<RefundResponse>",
+  "rejectRefund(id: Long, adminUserId: Long, request: ProcessRefundRequest): RefundResponse"
+ ],
+ [
+  "refund",
+  "AdminPaymentController",
+  "refunds(filters): ApiResponse<PageResponse<AdminRefundResponse>>",
+  "refunds(page: int, size: int, status: List<String>, from: String, to: String, orderId: Long, paymentId: Long, userId: Long, sort: String): PageResponse<AdminRefundResponse>"
+ ],
+ [
+  "refund",
+  "PaymentService",
+  "requestRefund(userId: Long, request: CreateRefundRequest): RefundResponse",
+  "requestRefund(userId: Long, request: CreateRefundRequest): RefundResponse"
+ ],
+ [
+  "refund",
+  "PaymentService",
+  "adminApproveRefund(id: Long, adminId: Long, req: ProcessRefundRequest): RefundResponse",
+  "adminApproveRefund(refundId: Long, adminUserId: Long, request: ProcessRefundRequest): RefundResponse"
+ ],
+ [
+  "refund",
+  "PaymentService",
+  "adminRejectRefund(id: Long, adminId: Long, req: ProcessRefundRequest): RefundResponse",
+  "adminRejectRefund(refundId: Long, adminUserId: Long, request: ProcessRefundRequest): RefundResponse"
+ ],
+ [
+  "refund",
+  "PaymentRules",
+  "isRefundEnabled(): boolean",
+  "isRefundEnabled(): boolean"
+ ],
+ [
+  "refund",
+  "PaymentRules",
+  "refundMaxDays(): int",
+  "refundMaxDays(): int"
+ ],
+ [
+  "refund",
+  "PaymentRules",
+  "refundMinAmount(): BigDecimal",
+  "refundMinAmount(): BigDecimal"
+ ],
+ [
+  "refund",
+  "PaymentRules",
+  "isRequireBankTransferRef(): boolean",
+  "isRequireBankTransferRef(): boolean"
+ ],
+ [
+  "refund",
+  "OrderClient",
+  "updatePaymentStatus(orderId: Long, body: Map): void",
+  "updatePaymentStatus(id: Long, status: String, note: String, actorUserId: Long): void"
+ ],
+ [
+  "refund",
+  "RefundRepository",
+  "findByOrderId(orderId: Long): List<RefundRecord>",
+  "findByOrderId(orderId: Long): List<RefundRecord>"
+ ],
+ [
+  "refund",
+  "RefundRepository",
+  "save(r: RefundRecord)",
+  "save(entity: RefundRecord): RefundRecord"
+ ],
+ [
+  "refund",
+  "UserBankAccountRepository",
+  "findByUserId(userId: Long): Optional<UserBankAccount>",
+  "findByUserId(userId: Long): Optional<UserBankAccount>"
+ ],
+ [
+  "loyalty",
+  "OrderController",
+  "activePromotions(userId: Long): ApiResponse<List<PromotionView>>",
+  "activePromotions(lockerId: Long): List<PromotionView>"
+ ],
+ [
+  "loyalty",
+  "OrderController",
+  "claimPromotion(promotionId: Long, userId: Long): ApiResponse<Map>",
+  "claimPromotion(promotionId: Long, userId: Long): Map<String, Object>"
+ ],
+ [
+  "loyalty",
+  "OrderController",
+  "exchangeVoucher(promotionId: Long, userId: Long): ApiResponse<VoucherExchangeResult>",
+  "exchangeVoucher(promotionId: Long, userId: Long): VoucherExchangeResult"
+ ],
+ [
+  "loyalty",
+  "OrderController",
+  "myVouchers(userId: Long): ApiResponse<List<Map>>",
+  "myVouchers(userId: Long, status: String, lockerId: Long): List<Map<String, Object>>"
+ ],
+ [
+  "loyalty",
+  "VoucherExchangeService",
+  "exchangeable(userId: Long): List<ExchangeableVoucherView>",
+  "exchangeable(userId: Long): List<ExchangeableVoucherView>"
+ ],
+ [
+  "loyalty",
+  "VoucherExchangeService",
+  "exchange(promotionId: Long, userId: Long): VoucherExchangeResult",
+  "exchange(promotionId: Long, userId: Long): VoucherExchangeResult"
+ ],
+ [
+  "loyalty",
+  "LoyaltyController",
+  "summary(userId: Long): ApiResponse<LoyaltyAccountResponse>",
+  "summary(userId: Long): LoyaltyAccountResponse"
+ ],
+ [
+  "loyalty",
+  "LoyaltyController",
+  "history(userId: Long): ApiResponse<List<PointTransactionResponse>>",
+  "history(userId: Long): List<PointTransactionResponse>"
+ ],
+ [
+  "loyalty",
+  "LoyaltyController",
+  "exchangeForVoucher(request: VoucherExchangeRequest): ApiResponse<VoucherExchangeResponse>",
+  "exchangeForVoucher(request: VoucherExchangeRequest): VoucherExchangeResponse"
+ ],
+ [
+  "loyalty",
+  "LoyaltyService",
+  "awardOrderPoints(userId: Long, orderId: Long, paid: BigDecimal): Optional<LoyaltyAccountResponse>",
+  "awardOrderPoints(orderId: Long, userId: Long, paidAmount: BigDecimal): Optional<LoyaltyAccountResponse>"
+ ],
+ [
+  "loyalty",
+  "LoyaltyService",
+  "exchangeForVoucher(request: VoucherExchangeRequest): VoucherExchangeResponse",
+  "exchangeForVoucher(request: VoucherExchangeRequest): VoucherExchangeResponse"
+ ],
+ [
+  "loyalty",
+  "LoyaltyService",
+  "reverseOrderEarn(orderId: Long, refunded: BigDecimal, paid: BigDecimal): int",
+  "reverseOrderEarn(orderId: Long, refundedAmount: BigDecimal, paidAmount: BigDecimal): int"
+ ],
+ [
+  "loyalty",
+  "LoyaltyService",
+  "redeemForOrder(request: OrderRedemptionRequest): OrderRedemptionResponse",
+  "redeemForOrder(request: OrderRedemptionRequest): OrderRedemptionResponse"
+ ],
+ [
+  "loyalty",
+  "OrderCompletedPointsListener",
+  "onOrderCompleted(event: DomainEvent): void",
+  "onOrderCompleted(event: DomainEvent): void"
+ ],
+ [
+  "loyalty",
+  "LoyaltyClient",
+  "exchangeVoucher(request): VoucherExchangeResponse",
+  "exchangeVoucher(request: LoyaltyVoucherExchange.Request): LoyaltyVoucherExchange.Result"
+ ],
+ [
+  "loyalty",
+  "LoyaltyClient",
+  "refundVoucherExchange(reference): void",
+  "refundVoucherExchange(reference: String): LoyaltyRedemption.Refund"
+ ],
+ [
+  "loyalty",
+  "PromotionRepository",
+  "findByIdForUpdate(id: Long): Optional<Promotion>",
+  "findByIdForUpdate(id: Long): Optional<Promotion>"
+ ],
+ [
+  "loyalty",
+  "PromotionRepository",
+  "findByCodeIgnoreCase(code: String)",
+  "findByCodeIgnoreCase(code: String): Optional<Promotion>"
+ ],
+ [
+  "loyalty",
+  "PromotionClaimRepository",
+  "findByPromotionIdAndUserId(pid, uid)",
+  "findByPromotionIdAndUserId(promotionId: Long, userId: Long): Optional<PromotionClaim>"
+ ],
+ [
+  "loyalty",
+  "PromotionClaimRepository",
+  "save(c: PromotionClaim)",
+  "save(entity: PromotionClaim): PromotionClaim"
+ ],
+ [
+  "loyalty",
+  "LoyaltyAccountRepository",
+  "findByUserIdForUpdate(userId: Long)",
+  "findByUserIdForUpdate(userId: Long): Optional<LoyaltyAccount>"
+ ],
+ [
+  "loyalty",
+  "LoyaltyAccountRepository",
+  "save(a: LoyaltyAccount)",
+  "save(entity: LoyaltyAccount): LoyaltyAccount"
+ ],
+ [
+  "loyalty",
+  "PointTransactionRepository",
+  "existsByOrderIdAndType(orderId, type): boolean",
+  "existsByOrderIdAndType(orderId: Long, type: String): boolean"
+ ],
+ [
+  "loyalty",
+  "PointTransactionRepository",
+  "saveAndFlush(t: PointTransaction)",
+  "saveAndFlush(entity: PointTransaction): PointTransaction"
+ ],
+ [
+  "dronebook",
+  "OrderController",
+  "quoteDroneDelivery(request: DroneDeliveryQuoteRequest): ApiResponse<DroneDeliveryQuoteResponse>",
+  "quoteDroneDelivery(request: DroneDeliveryQuoteRequest, userId: Long): DroneDeliveryQuoteResponse"
+ ],
+ [
+  "dronebook",
+  "OrderController",
+  "createDroneDelivery(request: CreateDroneDeliveryOrderRequest, userId: Long, key: String): ApiResponse<DroneDeliveryOrderResponse>",
+  "createDroneDelivery(request: CreateDroneDeliveryOrderRequest, userId: Long, idempotencyKey: String): DroneDeliveryOrderResponse"
+ ],
+ [
+  "dronebook",
+  "OrderController",
+  "getDroneDelivery(orderId: Long, userId: Long): ApiResponse<DroneDeliveryOrderResponse>",
+  "getDroneDelivery(orderId: Long, userId: Long): DroneDeliveryOrderResponse"
+ ],
+ [
+  "dronebook",
+  "DroneOrderBookingService",
+  "quote(request: DroneDeliveryQuoteRequest): DroneDeliveryQuoteResponse",
+  "quote(request: DroneDeliveryQuoteRequest): DroneDeliveryQuoteResponse"
+ ],
+ [
+  "dronebook",
+  "DroneOrderBookingService",
+  "create(request, userId: Long, idempotencyKey: String): DroneDeliveryOrderResponse",
+  "create(request: CreateDroneDeliveryOrderRequest, userId: Long, idempotencyKey: String): DroneDeliveryOrderResponse"
+ ],
+ [
+  "dronebook",
+  "DroneSourceLockerSelector",
+  "select(request): SourceLocker",
+  "select(pickupLatitude: double, pickupLongitude: double, destinationLockerId: Long, excludedSourceLockerId: Long): Selection"
+ ],
+ [
+  "dronebook",
+  "DroneWeatherService",
+  "assessJourney(from, to): WeatherAssessment",
+  "assessJourney(pickupLatitude: Double, pickupLongitude: Double, source: LockerInfo, destination: LockerInfo): DroneWeatherAssessment"
+ ],
+ [
+  "dronebook",
+  "OrderBenefitService",
+  "applyVouchers(order, codes, lockerId): void",
+  "applyVouchers(order: LockerOrder, codes: List<String>, eligibleLockerId: Long): void"
+ ],
+ [
+  "dronebook",
+  "OrderBenefitService",
+  "redeemPoints(order, points): void",
+  "redeemPoints(order: LockerOrder, pointsToUse: Integer): void"
+ ],
+ [
+  "dronebook",
+  "LockerCellClient",
+  "findAvailable(lockerId, size, DRONE): CellDto",
+  "findAvailable(id: Long, size: String, cellType: String): CellDto"
+ ],
+ [
+  "dronebook",
+  "LockerCellClient",
+  "getCell(boxId): CellDto",
+  "getCell(boxId: Long): CellDto"
+ ],
+ [
+  "dronebook",
+  "LockerClient",
+  "reserveBox(boxId: Long, until: String): ApiResponse",
+  "reserveBox(id: Long, channel: String): LockerBoxSummary"
+ ],
+ [
+  "dronebook",
+  "UserClient",
+  "getUser(id: Long)",
+  "getUser(id: Long): UserSummary"
+ ],
+ [
+  "dronebook",
+  "UserClient",
+  "getUserByPhone(phone: String)",
+  "getUserByPhone(phone: String): UserSummary"
+ ],
+ [
+  "dronebook",
+  "LockerOrderRepository",
+  "findByUserIdAndIdempotencyKey(uid, key)",
+  "findByUserIdAndIdempotencyKey(userId: Long, idempotencyKey: String): Optional<LockerOrder>"
+ ],
+ [
+  "dronebook",
+  "LockerOrderRepository",
+  "countByUserIdAndTypeAndStatus(..)",
+  "countByUserIdAndTypeAndStatus(userId: Long, type: String, status: String): long"
+ ],
+ [
+  "dronebook",
+  "LockerOrderRepository",
+  "saveAndFlush(o: LockerOrder)",
+  "saveAndFlush(entity: LockerOrder): LockerOrder"
+ ],
+ [
+  "dronepickup",
+  "OrderController",
+  "acceptDronePickup(orderId: Long, userId: Long): ApiResponse",
+  "acceptDronePickup(orderId: Long, userId: Long): DroneDeliveryOrderResponse"
+ ],
+ [
+  "dronepickup",
+  "OrderController",
+  "declineDronePickup(orderId: Long, userId: Long): ApiResponse",
+  "declineDronePickup(orderId: Long, userId: Long): void"
+ ],
+ [
+  "dronepickup",
+  "OrderController",
+  "confirmDronePickup(orderId: Long, request, userId: Long): ApiResponse",
+  "confirmDronePickup(orderId: Long, request: DronePickupConfirmRequest, userId: Long): DroneDeliveryOrderResponse"
+ ],
+ [
+  "dronepickup",
+  "OrderController",
+  "assignDronePickup(orderId: Long, request): ApiResponse",
+  "assignDronePickup(orderId: Long, request: AssignDronePickupRequest, userId: Long): DroneDeliveryOrderResponse"
+ ],
+ [
+  "dronepickup",
+  "DronePickupService",
+  "startForPaidOrder(orderId: Long): void",
+  "startForPaidOrder(orderId: Long): void"
+ ],
+ [
+  "dronepickup",
+  "DronePickupService",
+  "accept(orderId: Long, technicianId: Long): void",
+  "accept(orderId: Long, technicianId: Long): void"
+ ],
+ [
+  "dronepickup",
+  "DronePickupService",
+  "decline(orderId: Long, technicianId: Long): void",
+  "decline(orderId: Long, technicianId: Long): void"
+ ],
+ [
+  "dronepickup",
+  "DronePickupService",
+  "confirmPickedUp(orderId, technicianId, code, matched, note, photo): void",
+  "confirmPickedUp(orderId: Long, technicianId: Long, pickupCode: String, parcelMatched: boolean, note: String, pickupPhoto: MediaUpload): void"
+ ],
+ [
+  "dronepickup",
+  "DronePickupService",
+  "sweep(now: LocalDateTime): void",
+  "sweep(now: LocalDateTime): void"
+ ],
+ [
+  "dronepickup",
+  "CloudinaryMediaStorage",
+  "verify(upload: MediaUpload, purpose): VerifiedMedia",
+  "verify(upload: MediaUpload, purpose: MediaPurpose, actorUserId: Long): VerifiedMedia"
+ ],
+ [
+  "dronepickup",
+  "NotificationClient",
+  "requestNotification(request)",
+  "requestNotification(request: NotificationRequest): void"
+ ],
+ [
+  "dronepickup",
+  "NotificationClient",
+  "notifyDeliveryStatus(request)",
+  "notifyDeliveryStatus(request: DeliveryStatusNotificationRequest): void"
+ ],
+ [
+  "dronepickup",
+  "DronePickupRepository",
+  "findByOrderIdForUpdate(orderId)",
+  "findByOrderIdForUpdate(orderId: Long): Optional<DronePickup>"
+ ],
+ [
+  "dronepickup",
+  "DronePickupRepository",
+  "saveAndFlush(p: DronePickup)",
+  "saveAndFlush(entity: DronePickup): DronePickup"
+ ],
+ [
+  "dronepickup",
+  "DronePickupOfferRepository",
+  "findByPickupId(pickupId)",
+  "findByPickupId(pickupId: Long): List<DronePickupOffer>"
+ ],
+ [
+  "dronepickup",
+  "DronePickupOfferRepository",
+  "save(o: DronePickupOffer)",
+  "save(entity: DronePickupOffer): DronePickupOffer"
+ ],
+ [
+  "dronepickup",
+  "DroneTechnicianPresenceRepository",
+  "findByOnDutyTrue(): List<DroneTechnicianPresence>",
+  "findByOnDutyTrue(): List<DroneTechnicianPresence>"
+ ],
+ [
+  "dronedispatch",
+  "OrderController",
+  "maintenanceDroneOrders(userId: Long): ApiResponse<List<DroneMissionResponse>>",
+  "maintenanceDroneOrders(deliveryStage: String, userId: Long): List<DroneDeliveryOrderResponse>"
+ ],
+ [
+  "dronedispatch",
+  "OrderController",
+  "acceptDroneOrder(orderId: Long, request: AcceptDroneOrderRequest, userId: Long): ApiResponse<DroneMissionResponse>",
+  "acceptDroneOrder(orderId: Long, request: AcceptDroneOrderRequest, userId: Long, idempotencyKey: String): DroneMissionResponse"
+ ],
+ [
+  "dronedispatch",
+  "OrderController",
+  "confirmDroneLoading(orderId: Long, request: ConfirmDroneLoadingRequest, userId: Long): ApiResponse<DroneMissionResponse>",
+  "confirmDroneLoading(orderId: Long, request: ConfirmDroneLoadingRequest, userId: Long, idempotencyKey: String): DroneMissionResponse"
+ ],
+ [
+  "dronedispatch",
+  "OrderController",
+  "launchDroneOrder(orderId: Long, userId: Long): ApiResponse<DroneMissionResponse>",
+  "launchDroneOrder(orderId: Long, userId: Long, idempotencyKey: String): DroneMissionResponse"
+ ],
+ [
+  "dronedispatch",
+  "OrderController",
+  "cancelDroneOrder(orderId: Long, request, userId: Long): ApiResponse<DroneMissionResponse>",
+  "cancelDroneOrder(orderId: Long, request: CancelDroneOrderRequest, userId: Long): DroneMissionResponse"
+ ],
+ [
+  "dronedispatch",
+  "DroneOrderMaintenanceService",
+  "queue(role: String): List<DroneMissionResponse>",
+  "queue(deliveryStage: String): List<DroneMissionResponse>"
+ ],
+ [
+  "dronedispatch",
+  "DroneOrderMaintenanceService",
+  "accept(orderId, userId, role, request): DroneMissionResponse",
+  "accept(orderId: Long, userId: Long, idempotencyKey: String, request: AcceptDroneOrderRequest): DroneMissionResponse"
+ ],
+ [
+  "dronedispatch",
+  "DroneOrderMaintenanceService",
+  "confirmLoading(orderId, userId, role, request): DroneMissionResponse",
+  "confirmLoading(orderId: Long, userId: Long, idempotencyKey: String, request: ConfirmDroneLoadingRequest): DroneMissionResponse"
+ ],
+ [
+  "dronedispatch",
+  "DroneOrderMaintenanceService",
+  "launch(orderId, userId, role): DroneMissionResponse",
+  "launch(orderId: Long, userId: Long, idempotencyKey: String): DroneMissionResponse"
+ ],
+ [
+  "dronedispatch",
+  "DroneOrderMaintenanceService",
+  "cancel(orderId, userId, request): DroneMissionResponse",
+  "cancel(orderId: Long, userId: Long, request: CancelDroneOrderRequest): DroneMissionResponse"
+ ],
+ [
+  "dronedispatch",
+  "LockerDroneClient",
+  "getDroneUnit(id: Long): DroneUnitView",
+  "getDroneUnit(id: Long): DroneUnitDto"
+ ],
+ [
+  "dronedispatch",
+  "LockerDroneClient",
+  "getLockerLayout(lockerId: Long): LockerLayoutView",
+  "getLockerLayout(id: Long): LockerLayoutDto"
+ ],
+ [
+  "dronedispatch",
+  "LockerDroneClient",
+  "transitionDroneStatus(id, request): void",
+  "transitionDroneStatus(id: Long, request: DroneStatusTransitionRequest): DroneUnitDto"
+ ],
+ [
+  "dronedispatch",
+  "DroneWeatherService",
+  "assessRoute(points): WeatherAssessment",
+  "assessRoute(source: LockerInfo, destination: LockerInfo): DroneWeatherAssessment"
+ ],
+ [
+  "dronedispatch",
+  "DroneDeliveryMailer",
+  "launched(order, mission): void",
+  "launched(order: LockerOrder, mission: DroneMission): Outcome"
+ ],
+ [
+  "dronedispatch",
+  "NotificationClient",
+  "notifyDeliveryStatus(request): void",
+  "notifyDeliveryStatus(request: DeliveryStatusNotificationRequest): void"
+ ],
+ [
+  "dronedispatch",
+  "DroneMissionRepository",
+  "findByOrderId(orderId: Long): Optional<DroneMission>",
+  "findByOrderId(orderId: Long): Optional<DroneMission>"
+ ],
+ [
+  "dronedispatch",
+  "DroneMissionRepository",
+  "save(m: DroneMission)",
+  "save(entity: DroneMission): DroneMission"
+ ],
+ [
+  "dronedispatch",
+  "LockerOrderRepository",
+  "save(o: LockerOrder)",
+  "save(entity: LockerOrder): LockerOrder"
+ ],
+ [
+  "dronetrack",
+  "OrderController",
+  "advanceDroneOrder(orderId: Long, request: AdvanceDroneOrderRequest, userId: Long): ApiResponse<String>",
+  "advanceDroneOrder(orderId: Long, request: AdvanceDroneOrderRequest, userId: Long): DroneDeliveryOrderResponse"
+ ],
+ [
+  "dronetrack",
+  "DroneMissionProgressService",
+  "nextStage(current: String): String",
+  "nextStage(missionStatus: String): String"
+ ],
+ [
+  "dronetrack",
+  "DroneMissionProgressService",
+  "advanceByOperator(orderId: Long, userId: Long, expected: String): String",
+  "advanceByOperator(orderId: Long, userId: Long, expectedStage: String): String"
+ ],
+ [
+  "dronetrack",
+  "DroneMissionProgressService",
+  "advanceToStage(order, mission, stage, actor, note): void",
+  "advanceToStage(order: LockerOrder, mission: DroneMission, targetStage: String, actorUserId: Long, note: String): void"
+ ],
+ [
+  "dronetrack",
+  "DroneTelemetryMqttListener",
+  "messageArrived(topic: String, msg: MqttMessage): void",
+  "messageArrived(topic: String, message: MqttMessage): void"
+ ],
+ [
+  "dronetrack",
+  "DroneTelemetryService",
+  "ingest(droneCode: String, payload: JsonNode): void",
+  "ingest(droneCode: String, frame: DroneTelemetryFrame): void"
+ ],
+ [
+  "dronetrack",
+  "DroneTelemetrySigner",
+  "verify(droneCode, payload, signature): boolean",
+  "verify(secret: String, droneCode: String, topic: String, payload: String, signature: String): boolean"
+ ],
+ [
+  "dronetrack",
+  "DroneTelemetryRegistry",
+  "latest(droneCode): Telemetry",
+  "latest(droneCode: String): Optional<DroneTelemetryFrame>"
+ ],
+ [
+  "dronetrack",
+  "DroneTelemetryRegistry",
+  "isLive(droneCode): boolean",
+  "isLive(droneCode: String): boolean"
+ ],
+ [
+  "dronetrack",
+  "DronePositionBroadcaster",
+  "publish(orderId: Long, lat: Double, lng: Double, alt: Double): void",
+  "broadcast(order: LockerOrder, mission: DroneMission, now: LocalDateTime, stageDelayMs: long): void"
+ ],
+ [
+  "dronetrack",
+  "DronePositionClient",
+  "publish(orderId: Long, request: DronePositionRequest): void",
+  "publish(orderId: Long, position: DronePositionUpdate): Map<String, Object>"
+ ],
+ [
+  "dronetrack",
+  "DroneMissionRepository",
+  "findByOrderId(orderId)",
+  "findByOrderId(orderId: Long): Optional<DroneMission>"
+ ],
+ [
+  "dronetrack",
+  "DroneMissionRepository",
+  "save(m: DroneMission)",
+  "save(entity: DroneMission): DroneMission"
+ ],
+ [
+  "droneincident",
+  "DroneParcelIncidentController",
+  "report(orderId: Long, request: ReportDroppedParcelRequest, userId: Long): ApiResponse",
+  "report(orderId: Long, userId: Long, roles: String, idempotencyKey: String, request: ReportDroppedParcelRequest): DroneParcelIncidentResponse"
+ ],
+ [
+  "droneincident",
+  "DroneParcelIncidentController",
+  "assignRecovery(id: Long, request: AssignDroneRecoveryRequest, adminId: Long): ApiResponse",
+  "assignRecovery(id: Long, userId: Long, roles: String, request: AssignDroneRecoveryRequest): DroneParcelIncidentResponse"
+ ],
+ [
+  "droneincident",
+  "DroneParcelIncidentController",
+  "submitRecovery(id: Long, request: DroneRecoverySubmitRequest, userId: Long): ApiResponse",
+  "submitRecovery(id: Long, userId: Long, request: DroneRecoverySubmitRequest): DroneParcelIncidentResponse"
+ ],
+ [
+  "droneincident",
+  "DroneParcelIncidentController",
+  "propose(id: Long, request: DroneIncidentProposalRequest, adminId: Long): ApiResponse",
+  "propose(id: Long, userId: Long, roles: String, request: DroneIncidentProposalRequest): DroneParcelIncidentResponse"
+ ],
+ [
+  "droneincident",
+  "DroneParcelIncidentController",
+  "customerRespond(id: Long, request, userId: Long): ApiResponse",
+  "customerRespond(id: Long, userId: Long, request: DroneIncidentCustomerResponseRequest): DroneParcelIncidentResponse"
+ ],
+ [
+  "droneincident",
+  "DroneParcelIncidentService",
+  "report(orderId, userId, role, key, request): DroneParcelIncidentResponse",
+  "report(orderId: Long, actorUserId: Long, roles: String, idempotencyKey: String, request: ReportDroppedParcelRequest): DroneParcelIncidentResponse"
+ ],
+ [
+  "droneincident",
+  "DroneParcelIncidentService",
+  "assignRecovery(id, adminId, role, request): DroneParcelIncidentResponse",
+  "assignRecovery(incidentId: Long, adminUserId: Long, roles: String, request: AssignDroneRecoveryRequest): DroneParcelIncidentResponse"
+ ],
+ [
+  "droneincident",
+  "DroneParcelIncidentService",
+  "submitRecovery(id, userId, request): DroneParcelIncidentResponse",
+  "submitRecovery(incidentId: Long, actorUserId: Long, request: DroneRecoverySubmitRequest): DroneParcelIncidentResponse"
+ ],
+ [
+  "droneincident",
+  "DroneParcelIncidentService",
+  "propose(id, adminId, request): DroneParcelIncidentResponse",
+  "propose(incidentId: Long, adminUserId: Long, request: DroneIncidentProposalRequest): DroneParcelIncidentResponse"
+ ],
+ [
+  "droneincident",
+  "DroneParcelIncidentService",
+  "customerRespond(id, userId, request): DroneParcelIncidentResponse",
+  "customerRespond(incidentId: Long, customerUserId: Long, request: DroneIncidentCustomerResponseRequest): DroneParcelIncidentResponse"
+ ],
+ [
+  "droneincident",
+  "DroneTelemetryRegistry",
+  "latest(droneCode): Telemetry",
+  "latest(droneCode: String): Optional<DroneTelemetryFrame>"
+ ],
+ [
+  "droneincident",
+  "LockerDroneClient",
+  "transitionDroneStatus(id, request)",
+  "transitionDroneStatus(id: Long, request: DroneStatusTransitionRequest): DroneUnitDto"
+ ],
+ [
+  "droneincident",
+  "LockerDroneClient",
+  "createIncidentTickets(command)",
+  "createIncidentTickets(request: CreateIncidentTicketsCommand): IncidentTicketBundle"
+ ],
+ [
+  "droneincident",
+  "DroneReturnCommandGateway",
+  "requestReturnToLaunch(droneCode, reason): boolean",
+  "requestReturnToLaunch(droneCode: String, incidentCode: String): CommandResult"
+ ],
+ [
+  "droneincident",
+  "IncidentCompensationGateway",
+  "submit(incident, proposal): CompensationRefundResult",
+  "submit(incidentId: Long, orderId: Long, beneficiaryUserId: Long, amount: BigDecimal, refundShippingFee: boolean, idempotencyKey: String): Submission"
+ ],
+ [
+  "droneincident",
+  "IncidentRedeliveryGateway",
+  "createAttempt(incident): Long",
+  "createAttempt(incidentId: Long, originalOrderId: Long, customerUserId: Long, idempotencyKey: String): Submission"
+ ],
+ [
+  "droneincident",
+  "DroneParcelIncidentRepository",
+  "findByIdempotencyKey(key)",
+  "findByIdempotencyKey(idempotencyKey: String): Optional<DroneParcelIncident>"
+ ],
+ [
+  "droneincident",
+  "DroneParcelIncidentRepository",
+  "findByIdForUpdate(id)",
+  "findByIdForUpdate(id: Long): Optional<DroneParcelIncident>"
+ ],
+ [
+  "droneincident",
+  "DroneParcelIncidentRepository",
+  "saveAndFlush(i)",
+  "saveAndFlush(entity: DroneParcelIncident): DroneParcelIncident"
+ ],
+ [
+  "droneincident",
+  "DroneIncidentTimelineRepository",
+  "save(event: DroneIncidentTimeline)",
+  "save(entity: DroneIncidentTimeline): DroneIncidentTimeline"
+ ],
+ [
+  "ticket",
+  "OrderController",
+  "reportBoxFault(orderId: Long, body: Map, userId: Long): ApiResponse<OrderResponse>",
+  "reportBoxFault(orderId: Long, request: Map<String, Object>, userId: Long): OrderResponse"
+ ],
+ [
+  "ticket",
+  "LockerController",
+  "markFaultInternal(id: Long, request: BoxFaultRequest): ApiResponse<CellResponse>",
+  "markFaultInternal(id: Long, body: BoxFaultRequest, userId: Long): CellResponse"
+ ],
+ [
+  "ticket",
+  "LockerController",
+  "maintenanceReports(userId: Long): ApiResponse<List<LockerReportResponse>>",
+  "maintenanceReports(mine: boolean, routed: boolean, all: boolean, userId: Long): List<LockerReportResponse>"
+ ],
+ [
+  "ticket",
+  "LockerController",
+  "maintenanceClaim(id: Long, userId: Long): ApiResponse<LockerReportResponse>",
+  "maintenanceClaim(id: Long, userId: Long): LockerReportResponse"
+ ],
+ [
+  "ticket",
+  "LockerController",
+  "maintenanceAddReportAttachments(id: Long, request, userId: Long): ApiResponse",
+  "maintenanceAddReportAttachments(id: Long, body: ReportAttachmentsRequest, userId: Long, roles: String): List<ReportAttachmentResponse>"
+ ],
+ [
+  "ticket",
+  "LockerController",
+  "maintenanceResolve(id: Long, request: ResolveReportRequest, userId: Long): ApiResponse<LockerReportResponse>",
+  "maintenanceResolve(id: Long, body: ResolveReportRequest, userId: Long, roles: String): LockerReportResponse"
+ ],
+ [
+  "ticket",
+  "LockerController",
+  "maintenanceRejectReport(id: Long, request, userId: Long): ApiResponse",
+  "maintenanceRejectReport(id: Long, body: RejectReportRequest, userId: Long, roles: String): LockerReportResponse"
+ ],
+ [
+  "ticket",
+  "OrderService",
+  "reportBoxFault(orderId, userId, reason, attachments): OrderResponse",
+  "reportBoxFault(id: Long, userId: Long, reason: String, attachments: List<Object>): OrderResponse"
+ ],
+ [
+  "ticket",
+  "LockerService",
+  "markFault(boxId, reason, reporter, attachments, ...): CellResponse",
+  "markFault(boxId: Long, reason: String, userId: Long, attachments: List<ReportAttachmentRequest>, rolesHeader: String): CellResponse"
+ ],
+ [
+  "ticket",
+  "LockerService",
+  "claimReport(reportId: Long, userId: Long): LockerReportResponse",
+  "claimReport(reportId: Long, userId: Long): LockerReportResponse"
+ ],
+ [
+  "ticket",
+  "LockerService",
+  "resolveReport(reportId, userId, request): LockerReportResponse",
+  "resolveReport(reportId: Long, userId: Long, request: ResolveReportRequest): LockerReportResponse"
+ ],
+ [
+  "ticket",
+  "ReportAttachmentService",
+  "addByStaff(reportId, stage, ..., attachments, userId, admin): List",
+  "addByStaff(reportId: Long, stage: String, note: String, requests: List<ReportAttachmentRequest>, actorUserId: Long, admin: boolean): List<ReportAttachmentResponse>"
+ ],
+ [
+  "ticket",
+  "ReportAttachmentService",
+  "hasStage(reportId, AFTER): boolean",
+  "hasStage(reportId: Long, stage: AttachmentStage): boolean"
+ ],
+ [
+  "ticket",
+  "LockerClient",
+  "reportFault(boxId, request): CellResponse",
+  "reportFault(id: Long, body: Map<String, Object>, userId: Long): Map<String, Object>"
+ ],
+ [
+  "ticket",
+  "OrderClient",
+  "boxIncidentOpened(orderId, notice)",
+  "boxIncidentOpened(id: Long, notice: BoxIncidentNotice): Map<String, Object>"
+ ],
+ [
+  "ticket",
+  "OrderClient",
+  "boxIncidentResolved(orderId)",
+  "boxIncidentResolved(id: Long, note: String): Map<String, Object>"
+ ],
+ [
+  "ticket",
+  "LockerReportRepository",
+  "findById(id)",
+  "findById(id: Long): Optional<LockerReport>"
+ ],
+ [
+  "ticket",
+  "LockerReportRepository",
+  "findByAssignedToUserIdOrderByCreatedAtDesc(uid)",
+  "findByAssignedToUserIdOrderByCreatedAtDesc(assignedToUserId: Long): List<LockerReport>"
+ ],
+ [
+  "ticket",
+  "LockerReportRepository",
+  "save(r: LockerReport)",
+  "save(entity: LockerReport): LockerReport"
+ ],
+ [
+  "inspection",
+  "LockerController",
+  "adminCreateSchedule(request: MaintenanceScheduleRequest): ApiResponse<MaintenanceScheduleResponse>",
+  "adminCreateSchedule(request: MaintenanceScheduleRequest): MaintenanceScheduleResponse"
+ ],
+ [
+  "inspection",
+  "LockerController",
+  "assignTechnicianToSchedule(id: Long, request): ApiResponse",
+  "assignTechnicianToSchedule(id: Long, request: AssignTechnicianScheduleRequest): MaintenanceScheduleResponse"
+ ],
+ [
+  "inspection",
+  "LockerController",
+  "maintenanceSchedules(userId: Long): ApiResponse<List>",
+  "maintenanceSchedules(mine: boolean, target: String, userId: Long, roles: String): List<MaintenanceScheduleResponse>"
+ ],
+ [
+  "inspection",
+  "LockerController",
+  "maintenanceCompleteSchedule(id: Long, request: CompleteScheduleRequest, userId: Long): ApiResponse",
+  "maintenanceCompleteSchedule(id: Long, body: CompleteScheduleRequest, actorUserId: Long, roles: String): MaintenanceScheduleResponse"
+ ],
+ [
+  "inspection",
+  "LockerService",
+  "createSchedule(request): MaintenanceScheduleResponse",
+  "createSchedule(request: MaintenanceScheduleRequest): MaintenanceScheduleResponse"
+ ],
+ [
+  "inspection",
+  "LockerService",
+  "completeSchedule(id, userId, request): MaintenanceScheduleResponse",
+  "completeSchedule(id: Long, req: CompleteScheduleRequest, actorUserId: Long): MaintenanceScheduleResponse"
+ ],
+ [
+  "inspection",
+  "LockerScheduler",
+  "remindDueSchedules(): void",
+  "remindDueSchedules(): void"
+ ],
+ [
+  "inspection",
+  "UserClient",
+  "getUser(id: Long): UserSummary",
+  "getUser(id: Long): UserSummary"
+ ],
+ [
+  "inspection",
+  "MaintenanceScheduleRepository",
+  "findByActiveTrueAndLastDueNotifiedAtIsNullAndNextDueAtBefore(t)",
+  "findByActiveTrueAndLastDueNotifiedAtIsNullAndNextDueAtBefore(cutoff: LocalDateTime): List<MaintenanceSchedule>"
+ ],
+ [
+  "inspection",
+  "MaintenanceScheduleRepository",
+  "save(s)",
+  "save(entity: MaintenanceSchedule): MaintenanceSchedule"
+ ],
+ [
+  "inspection",
+  "MaintenanceInspectionLogRepository",
+  "save(log)",
+  "save(entity: MaintenanceInspectionLog): MaintenanceInspectionLog"
+ ],
+ [
+  "inspection",
+  "MaintenanceInspectionLogRepository",
+  "findByScheduleIdOrderByCreatedAtDesc(id)",
+  "findByScheduleIdOrderByCreatedAtDesc(scheduleId: Long): List<MaintenanceInspectionLog>"
+ ],
+ [
+  "iotctl",
+  "GatewayController",
+  "list(): ApiResponse<List<GatewayDeviceResponse>>",
+  "list(): List<GatewayDeviceResponse>"
+ ],
+ [
+  "iotctl",
+  "GatewayController",
+  "assign(id: Long, request: AssignGatewayRequest): ApiResponse<GatewayDeviceResponse>",
+  "assign(id: Long, request: AssignGatewayRequest): GatewayDeviceResponse"
+ ],
+ [
+  "iotctl",
+  "GatewayController",
+  "unassign(id: Long): ApiResponse<GatewayDeviceResponse>",
+  "unassign(id: Long): GatewayDeviceResponse"
+ ],
+ [
+  "iotctl",
+  "CabinetControlController",
+  "openBox(lockerId: Long, boxId: Long, userId: Long): ApiResponse<Map>",
+  "openBox(lockerId: Long, boxId: Long, userId: Long, roles: String): Map<String, Object>"
+ ],
+ [
+  "iotctl",
+  "CabinetControlController",
+  "lid(lockerId: Long, axis: int, action: String): ApiResponse<Map>",
+  "lid(lockerId: Long, axis: int, action: String, userId: Long, roles: String): Map<String, Object>"
+ ],
+ [
+  "iotctl",
+  "CabinetControlController",
+  "panel(lockerId: Long): ApiResponse<Map>",
+  "panel(lockerId: Long, userId: Long, roles: String): Map<String, Object>"
+ ],
+ [
+  "iotctl",
+  "CabinetControlController",
+  "logs(lockerId: Long): ApiResponse<List<CabinetControlLogResponse>>",
+  "logs(lockerId: Long, limit: Integer, userId: Long, roles: String): List<CabinetControlLogResponse>"
+ ],
+ [
+  "iotctl",
+  "GatewayProvisioningService",
+  "onDiscovery(mac: String, payload: JsonNode): void",
+  "onDiscovery(topicMac: String, data: JsonNode): void"
+ ],
+ [
+  "iotctl",
+  "GatewayProvisioningService",
+  "assign(id: Long, request: AssignGatewayRequest): GatewayDeviceResponse",
+  "assign(id: Long, request: AssignGatewayRequest): GatewayDeviceResponse"
+ ],
+ [
+  "iotctl",
+  "GatewayProvisioningService",
+  "onSetupResult(mac: String, payload: JsonNode): void",
+  "onSetupResult(topicMac: String, data: JsonNode): void"
+ ],
+ [
+  "iotctl",
+  "CabinetControlService",
+  "openBox(lockerId, boxId, userId, role): Map",
+  "openBox(lockerId: Long, boxId: Long, userId: Long, roles: String): Map<String, Object>"
+ ],
+ [
+  "iotctl",
+  "CabinetControlService",
+  "lid(lockerId, axis, action, userId, role): Map",
+  "lid(lockerId: Long, axis: int, action: String, userId: Long, roles: String): Map<String, Object>"
+ ],
+ [
+  "iotctl",
+  "CabinetControlService",
+  "panel(lockerId, userId, role): Map",
+  "panel(lockerId: Long, userId: Long, roles: String): Map<String, Object>"
+ ],
+ [
+  "iotctl",
+  "LockerMqttService",
+  "publish(topic: String, payload: JsonNode): void",
+  "publish(topic: String, payload: JsonNode): void"
+ ],
+ [
+  "iotctl",
+  "LockerMqttService",
+  "sendUnlockCommandAsync(lockerId, boxId): CompletableFuture",
+  "sendUnlockCommandAsync(lockerId: Long, boxId: Long): CompletableFuture<JsonNode>"
+ ],
+ [
+  "iotctl",
+  "LockerMqttService",
+  "sendLidCommandAsync(lockerId, axis, action): CompletableFuture",
+  "sendLidCommandAsync(lockerId: Long, axis: int, action: String): CompletableFuture<JsonNode>"
+ ],
+ [
+  "iotctl",
+  "LockerMqttService",
+  "isConnected(): boolean",
+  "isConnected(): boolean"
+ ],
+ [
+  "iotctl",
+  "CabinetLayoutLookup",
+  "layout(lockerId: Long): LockerLayoutView",
+  "layout(lockerId: Long): Optional<LockerLayoutView>"
+ ],
+ [
+  "iotctl",
+  "CabinetControlLogService",
+  "recordWeb(lockerId, action, userId, result): void",
+  "recordWeb(lockerId: Long, actorUserId: Long, action: String, axis: Integer, boxId: Long, revolutions: Double, status: String, message: String): void"
+ ],
+ [
+  "iotctl",
+  "GatewayDeviceRepository",
+  "findByMacAddress(mac)",
+  "findByMacAddress(macAddress: String): Optional<GatewayDevice>"
+ ],
+ [
+  "iotctl",
+  "GatewayDeviceRepository",
+  "findByLockerId(lockerId)",
+  "findByLockerId(lockerId: Long): Optional<GatewayDevice>"
+ ],
+ [
+  "iotctl",
+  "GatewayDeviceRepository",
+  "save(g)",
+  "save(entity: GatewayDevice): GatewayDevice"
+ ],
+ [
+  "notify",
+  "NotificationController",
+  "getCurrentUser(userId: Long): ApiResponse<List<NotificationResponse>>",
+  "getCurrentUser(userId: Long): List<NotificationResponse>"
+ ],
+ [
+  "notify",
+  "NotificationController",
+  "unreadCount(userId: Long): ApiResponse<Long>",
+  "unreadCount(userId: Long): Long"
+ ],
+ [
+  "notify",
+  "NotificationController",
+  "markRead(id: Long, userId: Long): ApiResponse<NotificationResponse>",
+  "markRead(id: Long, userId: Long): NotificationResponse"
+ ],
+ [
+  "notify",
+  "NotificationController",
+  "createInternal(request: NotificationRequest): ApiResponse<NotificationResponse>",
+  "createInternal(request: NotificationRequest): NotificationResponse"
+ ],
+ [
+  "notify",
+  "NotificationController",
+  "adminBroadcast(request: AdminBroadcastRequest): ApiResponse<List>",
+  "adminBroadcast(request: AdminBroadcastRequest): List<NotificationResponse>"
+ ],
+ [
+  "notify",
+  "NotificationEventListener",
+  "onEvent(event: DomainEvent): void",
+  "onEvent(event: DomainEvent): void"
+ ],
+ [
+  "notify",
+  "NotificationService",
+  "consumeDomainEvent(event: DomainEvent): void",
+  "consumeDomainEvent(event: DomainEvent): void"
+ ],
+ [
+  "notify",
+  "NotificationService",
+  "create(request: NotificationRequest): NotificationResponse",
+  "create(request: NotificationRequest): NotificationResponse"
+ ],
+ [
+  "notify",
+  "NotificationService",
+  "markRead(id: Long, userId: Long): NotificationResponse",
+  "markRead(id: Long, userId: Long): NotificationResponse"
+ ],
+ [
+  "notify",
+  "NotificationService",
+  "adminBroadcast(request): List<NotificationResponse>",
+  "adminBroadcast(request: AdminBroadcastRequest): List<NotificationResponse>"
+ ],
+ [
+  "notify",
+  "WebSocketNotificationService",
+  "sendToUser(userId, n): void",
+  "sendToUser(userId: Long, notification: NotificationResponse): void"
+ ],
+ [
+  "notify",
+  "WebSocketNotificationService",
+  "sendOrderUpdate(userId, payload): void",
+  "sendOrderUpdate(userId: Long, orderUpdate: Object): void"
+ ],
+ [
+  "notify",
+  "WebSocketNotificationService",
+  "sendUserEvent(userId, payload): void",
+  "sendUserEvent(userId: Long, event: Object): void"
+ ],
+ [
+  "notify",
+  "WebSocketNotificationService",
+  "sendToDestination(topic, payload): void",
+  "sendToDestination(destination: String, payload: Object): void"
+ ],
+ [
+  "notify",
+  "FcmPushNotificationService",
+  "sendToUser(userId, title, body, data): void",
+  "sendToUser(userId: Long, title: String, body: String, data: Map<String, String>): void"
+ ],
+ [
+  "notify",
+  "NotificationRepository",
+  "findByUserIdOrderByCreatedAtDesc(userId)",
+  "findByUserIdOrderByCreatedAtDesc(userId: Long): List<NotificationMessage>"
+ ],
+ [
+  "notify",
+  "NotificationRepository",
+  "countByUserIdAndIsReadFalse(userId)",
+  "countByUserIdAndIsReadFalse(userId: Long): long"
+ ],
+ [
+  "notify",
+  "NotificationRepository",
+  "save(n)",
+  "save(entity: NotificationMessage): NotificationMessage"
+ ],
+ [
+  "notify",
+  "FcmTokenRepository",
+  "findByUserId(userId)",
+  "findByUserId(userId: Long): List<FcmToken>"
+ ],
+ [
+  "notify",
+  "FcmTokenRepository",
+  "findByToken(token)",
+  "findByToken(token: String): Optional<FcmToken>"
+ ],
+ [
+  "assistant",
+  "AssistantController",
+  "ask(userId: Long, roles: List<String>, request: AskRequest): ApiResponse<AskResponse>",
+  "ask(request: AskRequest, userId: Long, roles: String): AskResponse"
+ ],
+ [
+  "assistant",
+  "AssistantController",
+  "conversations(userId: Long): ApiResponse<List<ConversationView>>",
+  "conversations(userId: Long): List<ConversationView>"
+ ],
+ [
+  "assistant",
+  "AssistantController",
+  "status(): ApiResponse<AssistantStatus>",
+  "status(): AssistantStatus"
+ ],
+ [
+  "assistant",
+  "KnowledgeAdminController",
+  "upload(file: MultipartFile, title: String, roles: List<String>, adminId: Long): ApiResponse<KnowledgeDocument>",
+  "upload(file: MultipartFile, title: String, allowedRoles: List<String>, userId: Long): KnowledgeDocument"
+ ],
+ [
+  "assistant",
+  "KnowledgeAdminController",
+  "reindex(id: Long): ApiResponse<KnowledgeDocument>",
+  "reindex(id: long): KnowledgeDocument"
+ ],
+ [
+  "assistant",
+  "AssistantService",
+  "ask(userId: long, roles: List<String>, request: AskRequest): AskResponse",
+  "ask(userId: long, roles: List<String>, request: AskRequest): AskResponse"
+ ],
+ [
+  "assistant",
+  "AssistantService",
+  "myConversations(userId: long): List<ConversationView>",
+  "myConversations(userId: long): List<ConversationView>"
+ ],
+ [
+  "assistant",
+  "KnowledgeService",
+  "upload(title, fileName, bytes, mime, roles, adminId): KnowledgeDocument",
+  "upload(fileName: String, mimeType: String, content: byte[], title: String, allowedRoles: List<String>, actorUserId: Long): KnowledgeDocument"
+ ],
+ [
+  "assistant",
+  "KnowledgeIndexer",
+  "indexPending(): void",
+  "indexPending(): void"
+ ],
+ [
+  "assistant",
+  "QuestionPreparer",
+  "prepare(question, history): PreparedQuestion",
+  "prepare(question: String): PreparedQuestion"
+ ],
+ [
+  "assistant",
+  "EmbeddingProvider",
+  "embed(texts: List<String>): List<float[]>",
+  "embed(texts: List<String>, type: InputType): List<float[]>"
+ ],
+ [
+  "assistant",
+  "EmbeddingProvider",
+  "configured(): boolean",
+  "configured(): boolean"
+ ],
+ [
+  "assistant",
+  "AnswerGenerator",
+  "generate(question, chunks, context): GeneratedAnswer",
+  "generate(question: String, chunks: List<RetrievedChunk>, history: List<ChatTurn>): GeneratedAnswer"
+ ],
+ [
+  "assistant",
+  "AnswerGenerator",
+  "configured(): boolean",
+  "configured(): boolean"
+ ],
+ [
+  "assistant",
+  "OrderContextService",
+  "load(userId: long, intent: OrderIntent): String",
+  "load(userId: long, question: String): Optional<ContextDocument>"
+ ],
+ [
+  "assistant",
+  "ChunkRepository",
+  "search(vector, roles, topK): List<RetrievedChunk>",
+  "search(query: float[], readerRoles: List<String>, limit: int): List<RetrievedChunk>"
+ ],
+ [
+  "assistant",
+  "ChunkRepository",
+  "insertAll(chunks)",
+  "replace(documentId: long, chunks: List<TextChunker.Chunk>, embeddings: List<float[]>): void"
+ ],
+ [
+  "assistant",
+  "ConversationRepository",
+  "create(userId, title)",
+  "create(userId: long, title: String): long"
+ ],
+ [
+  "assistant",
+  "ConversationRepository",
+  "addMessage(..)",
+  "addMessage(conversationId: long, role: String, content: String, citationsJson: String, refused: boolean, topScore: Double, model: String, inputTokens: Long, outputTokens: Long): long"
+ ],
+ [
+  "assistant",
+  "ConversationRepository",
+  "countQuestionsSince(userId, t)",
+  "countQuestionsSince(userId: long, since: LocalDateTime): long"
+ ],
+ [
+  "settings",
+  "BusinessSettingsController",
+  "list(): ApiResponse<List<SettingView>>",
+  "list(): List<SettingView>"
+ ],
+ [
+  "settings",
+  "BusinessSettingsController",
+  "update(request: UpdateSettingsRequest, adminId: Long): ApiResponse<List<SettingView>>",
+  "update(request: UpdateSettingsRequest, userId: Long): List<SettingView>"
+ ],
+ [
+  "settings",
+  "BusinessSettingsController",
+  "reset(key: String, adminId: Long): ApiResponse<List<SettingView>>",
+  "reset(key: String, userId: Long): List<SettingView>"
+ ],
+ [
+  "settings",
+  "BusinessSettingsController",
+  "audits(key: String, limit: int): ApiResponse<List<SettingAuditView>>",
+  "audits(key: String, limit: int): List<SettingAuditView>"
+ ],
+ [
+  "settings",
+  "BusinessSettingsController",
+  "publicValues(): ApiResponse<Map>",
+  "publicValues(): Map<String, Object>"
+ ],
+ [
+  "settings",
+  "BusinessSettings",
+  "update(values: Map, actorUserId: Long): List<SettingView>",
+  "update(values: Map<String, ?>, actorUserId: Long): List<SettingView>"
+ ],
+ [
+  "settings",
+  "BusinessSettings",
+  "getInt(key)",
+  "getInt(key: String): int"
+ ],
+ [
+  "settings",
+  "BusinessSettings",
+  "getDecimal(key)",
+  "getDecimal(key: String): BigDecimal"
+ ],
+ [
+  "settings",
+  "BusinessSettings",
+  "getBoolean(key)",
+  "getBoolean(key: String): boolean"
+ ],
+ [
+  "settings",
+  "BusinessSettings",
+  "getString(key)",
+  "getString(key: String): String"
+ ],
+ [
+  "settings",
+  "BusinessSettings",
+  "publicValues(): Map",
+  "publicValues(): Map<String, Object>"
+ ],
+ [
+  "settings",
+  "SettingsCatalog",
+  "definitions(): List<SettingDefinition>",
+  "definitions(): List<SettingDefinition>"
+ ],
+ [
+  "settings",
+  "SettingsStore",
+  "loadAll(): Map<String, StoredSetting>",
+  "loadAll(): Map<String, StoredSetting>"
+ ],
+ [
+  "settings",
+  "SettingsStore",
+  "upsert(key, value, actor): void",
+  "upsert(key: String, value: String, actorUserId: Long): void"
+ ],
+ [
+  "settings",
+  "SettingsStore",
+  "audit(key, old, new, actor): void",
+  "audit(key: String, oldValue: String, newValue: String, actorUserId: Long): void"
+ ],
+ [
+  "settings",
+  "JdbcSettingsStore",
+  "loadAll()",
+  "loadAll(): Map<String, StoredSetting>"
+ ],
+ [
+  "settings",
+  "JdbcSettingsStore",
+  "upsert(..)",
+  "upsert(key: String, value: String, actorUserId: Long): void"
+ ],
+ [
+  "settings",
+  "JdbcSettingsStore",
+  "audit(..)",
+  "audit(key: String, oldValue: String, newValue: String, actorUserId: Long): void"
+ ],
+ [
+  "settings",
+  "OrderRules",
+  "sendBaseFee(): BigDecimal",
+  "sendBaseFee(): BigDecimal"
+ ],
+ [
+  "settings",
+  "OrderRules",
+  "rentalPrice(cellType, hours): BigDecimal",
+  "rentalPrice(cellType: String, hours: long): BigDecimal"
+ ],
+ [
+  "revenue",
+  "AdminRevenueController",
+  "summary(from: String, to: String): ApiResponse<RevenueSummaryResponse>",
+  "summary(from: String, to: String): RevenueSummaryResponse"
+ ],
+ [
+  "revenue",
+  "AdminRevenueController",
+  "daily(from, to): ApiResponse<DailyRevenueResponse>",
+  "daily(from: String, to: String): DailyRevenueResponse"
+ ],
+ [
+  "revenue",
+  "AdminRevenueController",
+  "byService(from, to): ApiResponse<ServiceRevenueResponse>",
+  "byService(from: String, to: String): ServiceRevenueResponse"
+ ],
+ [
+  "revenue",
+  "AdminRevenueController",
+  "byLocker(from, to, storeId): ApiResponse<LockerRevenueResponse>",
+  "byLocker(from: String, to: String, storeId: Long): LockerRevenueResponse"
+ ],
+ [
+  "revenue",
+  "AdminRevenueController",
+  "byCustomer(from, to, page, size, sort, q): ApiResponse<PageResponse<CustomerRevenue>>",
+  "byCustomer(from: String, to: String, page: int, size: int, sort: String, q: String): PageResponse<CustomerRevenue>"
+ ],
+ [
+  "revenue",
+  "RevenueReportService",
+  "summary(from: String, to: String): RevenueSummaryResponse",
+  "summary(from: String, to: String): RevenueSummaryResponse"
+ ],
+ [
+  "revenue",
+  "RevenueReportService",
+  "daily(from, to): DailyRevenueResponse",
+  "daily(from: String, to: String): DailyRevenueResponse"
+ ],
+ [
+  "revenue",
+  "RevenueReportService",
+  "byLocker(from, to, storeId): LockerRevenueResponse",
+  "byLocker(from: String, to: String, storeId: Long): LockerRevenueResponse"
+ ],
+ [
+  "revenue",
+  "AdminReferenceResolver",
+  "collected(from, to): CollectedPayments",
+  "collected(from: String, to: String, userId: Long): CollectedPayments"
+ ],
+ [
+  "revenue",
+  "AdminReferenceResolver",
+  "lockers(ids): Map",
+  "lockers(ids: Collection<Long>): Lookup<LockerInfo>"
+ ],
+ [
+  "revenue",
+  "AdminReferenceResolver",
+  "stores(ids): Map",
+  "stores(ids: Collection<Long>): Lookup<StoreInfo>"
+ ],
+ [
+  "revenue",
+  "AdminReferenceResolver",
+  "users(ids): Map",
+  "users(ids: Collection<Long>): Lookup<UserSummary>"
+ ],
+ [
+  "revenue",
+  "PaymentReportClient",
+  "getCollected(from, to): CollectedPaymentsResponse",
+  "getCollected(from: String, to: String, userId: Long): CollectedPayments"
+ ],
+ [
+  "revenue",
+  "PaymentReportClient",
+  "getOrderSummaries(ids): List",
+  "getOrderSummaries(orderIds: Collection<Long>): List<OrderPaymentSummary>"
+ ],
+ [
+  "revenue",
+  "LockerOrderRepository",
+  "findAll(spec): List<LockerOrder>",
+  "findAll(spec: Specification<LockerOrder>): List<LockerOrder>"
+ ],
+ [
+  "revenue",
+  "LockerOrderRepository",
+  "findAllById(ids): List<LockerOrder>",
+  "findAllById(ids: Iterable<Long>): List<LockerOrder>"
+ ],
+ [
+  "scheduler",
+  "OrderScheduler",
+  "sweepUnconfirmedReservations(): void",
+  "sweepUnconfirmedReservations(): void"
+ ],
+ [
+  "scheduler",
+  "OrderScheduler",
+  "releaseCompletedBoxes(): void",
+  "releaseCompletedBoxes(): void"
+ ],
+ [
+  "scheduler",
+  "OrderScheduler",
+  "remindOverduePickups(): void",
+  "remindOverduePickups(): void"
+ ],
+ [
+  "scheduler",
+  "OrderScheduler",
+  "releaseOverdueOrders(): void",
+  "releaseOverdueOrders(): void"
+ ],
+ [
+  "scheduler",
+  "OrderScheduler",
+  "reconcileBoxStates(): void",
+  "reconcileBoxStates(): void"
+ ],
+ [
+  "scheduler",
+  "OrderScheduler",
+  "retryPointRefunds(): void",
+  "retryPointRefunds(): void"
+ ],
+ [
+  "scheduler",
+  "OrderController",
+  "autoCancel(): ApiResponse<Map>",
+  "autoCancel(): Map<String, Object>"
+ ],
+ [
+  "scheduler",
+  "OrderController",
+  "releaseOverdue(): ApiResponse<Map>",
+  "releaseOverdue(): Map<String, Object>"
+ ],
+ [
+  "scheduler",
+  "OrderController",
+  "schedulerStatus(): ApiResponse<Map>",
+  "schedulerStatus(): Map<String, Object>"
+ ],
+ [
+  "scheduler",
+  "OrderService",
+  "releaseOverdueOrders(): Map",
+  "releaseOverdueOrders(): Map<String, Object>"
+ ],
+ [
+  "scheduler",
+  "OrderService",
+  "sendPickupReminders(): int",
+  "sendPickupReminders(): int"
+ ],
+ [
+  "scheduler",
+  "OrderService",
+  "cancel(orderId, reason, actor): OrderResponse",
+  "cancel(id: Long, reason: Integer, userId: Long): OrderResponse"
+ ],
+ [
+  "scheduler",
+  "LockerClient",
+  "releaseBox(boxId: Long)",
+  "releaseBox(id: Long): LockerBoxSummary"
+ ],
+ [
+  "scheduler",
+  "LockerClient",
+  "listBoxes(): List",
+  "listBoxes(): List<Map<String, Object>>"
+ ],
+ [
+  "scheduler",
+  "NotificationClient",
+  "requestNotification(request)",
+  "requestNotification(request: NotificationRequest): void"
+ ],
+ [
+  "scheduler",
+  "LockerOrderRepository",
+  "findByStatusOrderByCreatedAtDesc(status)",
+  "findByStatusOrderByCreatedAtDesc(status: String): List<LockerOrder>"
+ ],
+ [
+  "scheduler",
+  "LockerOrderRepository",
+  "save(o)",
+  "save(entity: LockerOrder): LockerOrder"
+ ]
+]

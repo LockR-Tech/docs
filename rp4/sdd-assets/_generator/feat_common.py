@@ -28,9 +28,9 @@ def E(entity, n=9, pick=None):
     fields = ENT[entity]["fields"]
     if pick:
         fields = [f for f in fields if f["name"] in pick]
+    if not pick and len(fields) <= 12:          # small entity: every attribute; large one: the main attributes only
+        n = len(fields)
     attrs = [f"-{f.get('field') or camel(f['name'])}: {jtype(f['type'])}" for f in fields[:n]]
-    if len(ENT[entity]["fields"]) > len(attrs):
-        attrs.append(f"… ({len(ENT[entity]['fields']) - len(attrs)} more)")
     return ("entity", attrs, ["+getters() / setters()"])
 
 

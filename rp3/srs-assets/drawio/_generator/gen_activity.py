@@ -24,6 +24,11 @@ DIAMOND = "rhombus;html=1;fillColor=#FFF2CC;strokeColor=#D6B656;"
 START = "ellipse;html=1;shape=startState;fillColor=#000000;strokeColor=#000000;"
 FINAL = "ellipse;html=1;shape=endState;fillColor=#000000;strokeColor=#000000;"
 BAR = "rounded=0;html=1;fillColor=#000000;strokeColor=#000000;"
+# UML connector: the flow leaves one phase at a labelled circle and resumes at the circle with the same label.
+CONNECTOR = "ellipse;html=1;fillColor=#FFFFFF;strokeColor=#000000;strokeWidth=1.5;fontStyle=1;fontSize=13;"
+PHASE = "text;html=1;fontSize=14;fontStyle=1;fontColor=#37474F;align=left;verticalAlign=middle;spacing=0;"
+PHASE_H = 30       # phase title row above each block of lanes
+PHASE_GAP = 50     # vertical gap between two phase blocks
 HEAD = ("rounded=0;whiteSpace=wrap;html=1;fillColor=#37474F;strokeColor=#FFFFFF;strokeWidth=2;fontColor=#FFFFFF;"
         "fontStyle=1;fontSize=13;")
 BODY = "rounded=0;html=1;fillColor=#F7F8FA;strokeColor=none;"
@@ -58,20 +63,30 @@ class Node:
 
 
 class Activity:
-    def __init__(self, name, lanes, left=20, top=20):
-        """lanes: [(label, height)] from top to bottom."""
+    def __init__(self, name, lanes=None, left=20, top=20, phases=None, cw=CW):
+        """lanes: [(label, height)] from top to bottom.
+        phases: [(title, lanes)] — a long flow split into blocks stacked top to bottom, each with its own lanes
+        and title; lane indices run on across blocks (block 2's first lane follows block 1's last)."""
         self.d = Diagram(name)
-        self.left = left
-        self.lanes, y = [], top
-        for label, h in lanes:
-            self.lanes.append((label, y, h))
-            y += h
+        self.left, self.cw = left, cw      # cw: column pitch (smaller = tighter, for slides)
+        self.lanes, self.lane_phase, self.phase_titles, y = [], [], [], top
+        for p, (title, block) in enumerate(phases or [(None, lanes)]):
+            if p:
+                y += PHASE_GAP
+            if title:
+                self.phase_titles.append((title, y))
+                y += PHASE_H
+            for label, h in block:
+                self.lanes.append((label, y, h))
+                self.lane_phase.append(p)
+                y += h
         self.nodes, self.edges, self.guards = {}, [], []
         self.max_col = 0
+        self.phase_max_col = {}
 
     # ---- placement ------------------------------------------------------------------------------------------
     def X(self, col):
-        return self.left + HW + 120 + col * CW
+        return self.left + HW + 120 + col * self.cw
 
     def Y(self, lane, f=0.5):
         _, y, h = self.lanes[lane]
@@ -82,8 +97,13 @@ class Activity:
         n = Node(key, kind, cx - w / 2, cy - h / 2, w, h)
         assert key not in self.nodes, key
         self.nodes[key] = n
-        self.max_col = max(self.max_col, col)
+        self._grow_col(lane, col)
         return n
+
+    def _grow_col(self, lane, col):
+        self.max_col = max(self.max_col, col)
+        p = self.lane_phase[lane]
+        self.phase_max_col[p] = max(self.phase_max_col.get(p, col), col)
 
     def start(self, key, lane, col, f=0.5):
         self._add(key, "start", lane, col, f, 28, 28)
@@ -100,10 +120,13 @@ class Activity:
 
     merge = decision
 
+    def connector(self, key, lane, col, label, f=0.5):
+        self._add(key, "connector", lane, col, f, 30, 30).label = label
+
     def bar(self, key, col, lane_from, f_from, lane_to, f_to):
         y0, y1 = self.Y(lane_from, f_from) - 34, self.Y(lane_to, f_to) + 34
         self.nodes[key] = Node(key, "bar", self.X(col) - 4, y0, 8, y1 - y0)
-        self.max_col = max(self.max_col, col)
+        self._grow_col(lane_from, col)
 
     # ---- edges ----------------------------------------------------------------------------------------------
     def flow(self, a, b, guard="", out=None, inn=None, via=(), at_out=None, at_in=None, gpos=None):
@@ -185,19 +208,23 @@ class Activity:
 
     def build(self):
         d = self.d
-        x_end = self.X(self.max_col) + CW / 2 + 10
         x_body = self.left + HW
+        for title, y in self.phase_titles:
+            d.vertex(title, self.left, y, 900, PHASE_H - 6, PHASE)
         for i, (label, y, h) in enumerate(self.lanes):
+            p = self.lane_phase[i]
+            x_end = self.X(self.phase_max_col.get(p, self.max_col)) + self.cw / 2 + 10
             d.vertex(label, self.left, y, HW, h, HEAD)
             d.vertex("", x_body, y, x_end - x_body, h, BODY)
-            if i:
+            if i and self.lane_phase[i - 1] == p:
                 d.vertex("", x_body, y - 0.5, x_end - x_body, 1, RULE)
         for n in self.nodes.values():
             if n.kind == "action":
                 f, s = TONE[n.tone]
                 style = ACTION.format(f=f, s=s)
             else:
-                style = {"start": START, "final": FINAL, "decision": DIAMOND, "bar": BAR}[n.kind]
+                style = {"start": START, "final": FINAL, "decision": DIAMOND, "bar": BAR,
+                         "connector": CONNECTOR}[n.kind]
             n.vid = d.vertex(n.label, n.x, n.y, n.w, n.h, style)
         for a, b, out, inn, p0, p1, pts, at_out, at_in in self.edges:
             A, B = self.nodes[a], self.nodes[b]
@@ -352,10 +379,19 @@ def rent_locker():
 # 3. Drone Delivery  (Sender | System | Drone Technician | Receiver)
 # =============================================================================================================
 def drone_delivery():
-    a = Activity("06c-activity-drone-delivery",
-                 [("Sender", 140), ("System", 236), ("Drone<br>Technician", 150), ("Receiver", 150)])
-    S, Y, T, R = 0, 1, 2, 3
+    # Too long for one row: split at "seal issued" into two stacked phases joined by UML connector A.
+    a = Activity("06c-activity-drone-delivery", phases=[
+        ("Phase 1 — Order, payment &amp; loading",
+         [("Sender", 140), ("System", 236), ("Drone<br>Technician", 150)]),
+        ("Phase 2 — Flight, delivery &amp; pickup",
+         [("Sender", 140), ("System", 236), ("Drone<br>Technician", 150), ("Receiver", 150)]),
+    ])
+    S, Y, T = 0, 1, 2              # phase 1 lanes
+    S2, Y2, T2, R = 3, 4, 5, 6     # phase 2 lanes
     up, lo = 0.27, 0.75
+
+    def o(col):                    # phase 2 columns restart at the left edge
+        return col - 11.55
     a.start("st", S, -0.45)
     a.action("choose", S, 0.5, "Choose receiving locker, parcel details &amp; receiver; confirm no prohibited items")
     a.action("create", Y, 0.5, "Check route, reserve drone box, create order &amp; generate VietQR code", f=up)
@@ -380,25 +416,28 @@ def drone_delivery():
     a.action("paysur", S, 10.25, "Pay surcharge via VietQR")
     a.merge("mload", Y, 11.25, f=lo)
     a.action("seal", Y, 12.05, "Issue seal code (ready to launch)", f=lo)
-    a.merge("mlaunch", T, 12.05, f=0.4)
-    a.action("launch", T, 12.85, "Launch drone", f=0.4)
-    a.decision("dfly", Y, 13.65, f=lo)
-    a.bar("fork", 14.35, S, 0.5, Y, lo)
-    a.action("track", S, 15.2, "Track delivery timeline &amp; map")
-    a.action("fly", Y, 15.2, "Fly mission: LAUNCHING → DEPARTED → EN_ROUTE → APPROACHING → ARRIVED",
+    a.connector("to2", Y, 12.85, "A", f=lo)
+    # ---- phase 2 ----
+    a.connector("from1", Y2, o(11.1), "A", f=lo)
+    a.merge("mlaunch", T2, o(12.05), f=0.4)
+    a.action("launch", T2, o(12.85), "Launch drone", f=0.4)
+    a.decision("dfly", Y2, o(13.65), f=lo)
+    a.bar("fork", o(14.35), S2, 0.5, Y2, lo)
+    a.action("track", S2, o(15.2), "Track delivery timeline &amp; map")
+    a.action("fly", Y2, o(15.2), "Fly mission: LAUNCHING → DEPARTED → EN_ROUTE → APPROACHING → ARRIVED",
              f=lo, tone="green", h=66)
-    a.bar("join", 16.05, S, 0.5, Y, lo)
-    a.action("deposit", Y, 16.9, "Deposit parcel into receiving drone box (READY_FOR_PICKUP)", f=lo, tone="green")
-    a.action("notify", Y, 17.9, "Issue pickup PIN &amp; notify receiver", f=lo, tone="green")
-    a.merge("mpin", R, 17.9, f=0.4)
-    a.action("enter", R, 18.7, "Enter pickup PIN at kiosk", f=0.4)
-    a.action("check", Y, 19.7, "Validate pickup PIN", f=up)
-    a.decision("dpin", Y, 20.5, f=up)
-    a.action("wrong", Y, 20.5, "Show error &amp; count failed attempt", f=lo, tone="orange")
-    a.action("open", Y, 21.5, "Open box", f=up, tone="green")
-    a.action("take", R, 21.5, "Take parcel &amp; close door", f=0.4)
-    a.action("done", Y, 22.5, "Complete order (COMPLETED) &amp; release box", f=up)
-    a.final("end", Y, 23.3, f=up)
+    a.bar("join", o(16.05), S2, 0.5, Y2, lo)
+    a.action("deposit", Y2, o(16.9), "Deposit parcel into receiving drone box (READY_FOR_PICKUP)", f=lo, tone="green")
+    a.action("notify", Y2, o(17.9), "Issue pickup PIN &amp; notify receiver", f=lo, tone="green")
+    a.merge("mpin", R, o(17.9), f=0.4)
+    a.action("enter", R, o(18.7), "Enter pickup PIN at kiosk", f=0.4)
+    a.action("check", Y2, o(19.7), "Validate pickup PIN", f=up)
+    a.decision("dpin", Y2, o(20.5), f=up)
+    a.action("wrong", Y2, o(20.5), "Show error &amp; count failed attempt", f=lo, tone="orange")
+    a.action("open", Y2, o(21.5), "Open box", f=up, tone="green")
+    a.action("take", R, o(21.5), "Take parcel &amp; close door", f=0.4)
+    a.action("done", Y2, o(22.5), "Complete order (COMPLETED) &amp; release box", f=up)
+    a.final("end", Y2, o(23.3), f=up)
 
     a.flow("st", "choose"); a.flow("choose", "create"); a.flow("create", "pay", out="r", inn="b")
     a.flow("pay", "verify"); a.flow("verify", "dpay")
@@ -415,24 +454,26 @@ def drone_delivery():
     a.flow("dagree", "paysur", "[accept]", gpos=(4, -16))
     a.flow("paysur", "mload", out="r", inn="t")
     a.flow("dweight", "mload", "[within declared weight]", gpos=(4, -16))
-    a.flow("mload", "seal"); a.flow("seal", "mlaunch"); a.flow("mlaunch", "launch")
+    a.flow("mload", "seal"); a.flow("seal", "to2")
+    # ---- phase 2 ----
+    a.flow("from1", "mlaunch"); a.flow("mlaunch", "launch")
     a.flow("launch", "dfly", out="r", inn="b")
-    yb = a.Y(T, 0.86)
-    xg = a.X(13.65) + 40
+    yb = a.Y(T2, 0.86)
+    xg = a.X(o(13.65)) + 40
     a.flow("dfly", "mlaunch", "[outside flight window, bad weather or flights paused]", out="r", inn="b",
-           via=[(xg, a.Y(Y, lo)), (xg, yb), (a.X(12.05), yb)], gpos=(31, 68))
-    yf = a.Y(Y, up) + 30
-    a.flow("dfly", "fork", "[launch allowed]", out="t", inn="l", at_in=yf, via=[(a.X(13.65), yf)], gpos=(5, -46))
-    a.flow("fork", "track", out="r", at_out=a.Y(S))
-    a.flow("fork", "fly", out="r", at_out=a.Y(Y, lo))
-    a.flow("track", "join", inn="l", at_in=a.Y(S))
-    a.flow("fly", "join", inn="l", at_in=a.Y(Y, lo))
-    a.flow("join", "deposit", out="r", at_out=a.Y(Y, lo))
+           via=[(xg, a.Y(Y2, lo)), (xg, yb), (a.X(o(12.05)), yb)], gpos=(31, 68))
+    yf = a.Y(Y2, up) + 30
+    a.flow("dfly", "fork", "[launch allowed]", out="t", inn="l", at_in=yf, via=[(a.X(o(13.65)), yf)], gpos=(5, -46))
+    a.flow("fork", "track", out="r", at_out=a.Y(S2))
+    a.flow("fork", "fly", out="r", at_out=a.Y(Y2, lo))
+    a.flow("track", "join", inn="l", at_in=a.Y(S2))
+    a.flow("fly", "join", inn="l", at_in=a.Y(Y2, lo))
+    a.flow("join", "deposit", out="r", at_out=a.Y(Y2, lo))
     a.flow("deposit", "notify"); a.flow("notify", "mpin"); a.flow("mpin", "enter")
     a.flow("enter", "check", out="r", inn="b"); a.flow("check", "dpin")
     a.flow("dpin", "wrong", "[invalid PIN]")
     yl = a.Y(R, 0.86)
-    a.flow("wrong", "mpin", out="b", inn="b", via=[(a.X(20.5), yl), (a.X(17.9), yl)])
+    a.flow("wrong", "mpin", out="b", inn="b", via=[(a.X(o(20.5)), yl), (a.X(o(17.9)), yl)])
     a.flow("dpin", "open", "[valid PIN]", gpos=(4, -16))
     a.flow("open", "take"); a.flow("take", "done", out="r", inn="b"); a.flow("done", "end")
     return a
@@ -530,10 +571,108 @@ def knowledge_base():
     return a
 
 
+# =============================================================================================================
+# 6. Report Incident & Repair  (Customer | System | Locker Technician) — one row, one final node.
+#    Kept short by stepping diagonally between lanes: actions in different lanes share a column.
+# =============================================================================================================
+def report_incident():
+    a = Activity("06f-activity-report-incident", [("Customer", 100), ("System", 180), ("Locker<br>Technician", 180)],
+                 cw=185)
+    C, Y, T = 0, 1, 2
+    up, lo = 0.27, 0.75
+    a.start("st", C, -0.45)
+    a.action("report", C, 0.5, "Report incident (in app or at kiosk)")
+    a.action("create", Y, 0.5, "Create ticket (OPEN) &amp; hold box (PENDING_CHECK)", f=up)
+    a.action("route", Y, 0.5, "Notify the locker's technician", f=lo, tone="green")
+    a.action("claim", T, 0.5, "Claim ticket", f=up)
+    a.action("inprog", Y, 1.7, "Set ticket IN_PROGRESS", f=lo)
+    a.action("inspect", T, 1.7, "Inspect the box at the locker", f=up)
+    a.decision("dfault", T, 2.5, f=up)
+    a.action("reject", T, 2.5, "Reject ticket with feedback", f=lo, tone="orange")
+    a.action("handle", T, 3.7, "Handle box: fix, move items, hand over or seal to hub", f=up)
+    a.action("relocate", Y, 3.7, "Update order &amp; notify customer", f=lo, tone="green")
+    a.action("repair", T, 4.7, "Repair &amp; log progress", f=up)
+    a.action("complete", T, 5.7, "Complete with after-repair photo", f=up)
+    a.action("resolved", Y, 5.7, "Set ticket RESOLVED &amp; restore box", f=up)
+    a.action("rejected", Y, 6.7, "Set ticket REJECTED &amp; restore box", f=lo, tone="orange")
+    a.merge("mres", Y, 6.7, f=up)
+    a.action("notify", Y, 7.7, "Notify the reporter", f=up, tone="green")
+    a.action("view", C, 7.7, "View result &amp; rate")
+    a.final("end", C, 8.5)
+
+    a.flow("st", "report"); a.flow("report", "create"); a.flow("create", "route"); a.flow("route", "claim")
+    a.flow("claim", "inprog", out="r", inn="l"); a.flow("inprog", "inspect")
+    a.flow("inspect", "dfault")
+    a.flow("dfault", "handle", "[fault confirmed]", gpos=(4, -16))
+    a.flow("dfault", "reject", "[no fault found]")
+    a.flow("handle", "relocate"); a.flow("relocate", "repair", out="r", inn="t")
+    a.flow("repair", "complete"); a.flow("complete", "resolved")
+    a.flow("reject", "rejected", out="r", inn="b")
+    a.flow("resolved", "mres"); a.flow("rejected", "mres")
+    a.flow("mres", "notify"); a.flow("notify", "view"); a.flow("view", "end")
+    return a
+
+
+# =============================================================================================================
+# 7. Periodic Maintenance Inspection  (Administrator | System | Technician) — 2 stacked phases, one final node
+# =============================================================================================================
+def periodic_maintenance():
+    a = Activity("06g-activity-periodic-maintenance", cw=185, phases=[
+        ("Phase 1 — Schedule, reminder &amp; inspection",
+         [("Administrator", 100), ("System", 180), ("Locker / Drone<br>Technician", 100)]),
+        ("Phase 2 — Result handling",
+         [("System", 260), ("Locker / Drone<br>Technician", 100)]),
+    ])
+    A, Y, T = 0, 1, 2              # phase 1 lanes
+    Y2, T2 = 3, 4                  # phase 2 lanes
+    up, lo = 0.27, 0.75
+    r1, r2, r3 = 0.2, 0.5, 0.8     # phase 2 System rows
+    a.start("st", A, -0.45)
+    a.action("create", A, 0.5, "Create inspection schedule: locker or drone, interval, checklist, assigned technician")
+    a.action("save", Y, 0.5, "Save schedule &amp; set next due date", f=up)
+    a.action("remind", Y, 1.5, "Daily 07:00: find due schedules &amp; notify the assigned technician", f=up, tone="green")
+    a.action("open", T, 2.5, "Open the due inspection (Periodic tab)")
+    a.action("check", T, 3.5, "Mark each item PASS / FAIL / N/A, add note &amp; photos, submit")
+    a.decision("dpend", Y, 4.5, f=up)
+    a.action("block", Y, 4.5, "Reject: previous failed inspection still has an open ticket", f=lo, tone="orange")
+    a.connector("toB", Y, 5.3, "B", f=lo)
+    a.action("log", Y, 5.6, "Save inspection log; result FAILED if any item fails", f=up)
+    a.connector("toA", Y, 6.4, "A", f=up)
+    # ---- phase 2 ----
+    a.connector("fromA", Y2, -0.45, "A", f=r2)
+    a.decision("dres", Y2, 0.3, f=r2)
+    a.action("drone", Y2, 1.4, "Mark drone FAULT, open drone ticket &amp; move next due date", f=r1, tone="orange")
+    a.action("pass", Y2, 1.4, "Move next due date forward by the interval", f=r2)
+    a.action("ticket", Y2, 1.4, "Open ticket assigned to the inspector; keep the due date", f=r3, tone="orange")
+    a.action("fix", T2, 2.3, "Handle the ticket (as in Report Incident &amp; Repair)")
+    a.action("closed", Y2, 3.3, "Ticket RESOLVED: move next due date forward", f=r3)
+    a.merge("mres", Y2, 4.1, f=r2)
+    a.connector("fromB", Y2, 4.9, "B", f=r1)
+    a.merge("mend", Y2, 4.9, f=r2)
+    a.final("end", Y2, 5.6, f=r2)
+
+    a.flow("st", "create"); a.flow("create", "save"); a.flow("save", "remind")
+    a.flow("remind", "open", out="r", inn="t"); a.flow("open", "check")
+    a.flow("check", "dpend", out="t", inn="l")
+    a.flow("dpend", "block", "[previous ticket still open]", gpos=(-135, 2))
+    a.flow("block", "toB")
+    a.flow("dpend", "log", "[no open ticket]", gpos=(4, -16)); a.flow("log", "toA")
+    # ---- phase 2 ----
+    a.flow("fromA", "dres")
+    a.flow("dres", "drone", "[failed · drone]", out="t", inn="l", gpos=(5, -46))
+    a.flow("dres", "pass", "[all passed]", gpos=(4, -16))
+    a.flow("dres", "ticket", "[failed · locker]", out="b", inn="l", gpos=(5, 30))
+    a.flow("ticket", "fix", out="r", inn="t"); a.flow("fix", "closed", out="r", inn="b")
+    a.flow("drone", "mres", out="r", inn="t"); a.flow("pass", "mres"); a.flow("closed", "mres", out="r", inn="b")
+    a.flow("mres", "mend"); a.flow("fromB", "mend"); a.flow("mend", "end")
+    return a
+
+
 if __name__ == "__main__":
     only = set(sys.argv[1:])
     ok = True
-    for f in (send_parcel, rent_locker, drone_delivery, ask_assistant, knowledge_base):
+    for f in (send_parcel, rent_locker, drone_delivery, ask_assistant, knowledge_base, report_incident,
+              periodic_maintenance):
         act = f()
         if only and not any(o in act.d.name for o in only):
             continue
