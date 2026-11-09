@@ -41,8 +41,8 @@ rectangle "Drone Incidents" as DI
 rectangle "Incident Details" as IDT
 rectangle "Orders" as OR
 rectangle "Order Details" as ODT
-rectangle "Payments\n[Transactions | Wallet | Stats]" as PM #FFE8E1
-rectangle "Refunds & Withdrawals" as RF
+rectangle "Payments\n[Transactions | Stats]" as PM #FFE8E1
+rectangle "Refunds" as RF
 usecase "Approve / Reject\n(receipt)" as AR
 rectangle "Revenue" as RV
 rectangle "Promotions" as PR

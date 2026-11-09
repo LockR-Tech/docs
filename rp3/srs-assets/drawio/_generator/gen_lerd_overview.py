@@ -20,13 +20,13 @@ SKIP = {("LockerOrder", "LockerUnit"), ("LockerOrder", "StoreLocation"), ("Locke
 
 NCOL = 7
 TOP = [["RefreshToken", "AuthAccount"], ["SocialIdentity", "AssistantMessage", "AssistantConversation"],
-       ["FcmToken", "NotificationMessage"], ["WithdrawalRecord", "UserProfile"], ["TechnicianPresence"],
+       ["FcmToken", "NotificationMessage"], ["UserProfile"], ["TechnicianPresence"],
        ["DroneTechnicianPresence"], ["UserBankAccount"]]
 MAIN = [["PromotionClaim", "Promotion", "PromotionUsage", "PaymentRecord", "RefundRecord", "LockerReport", "RepairLog"],
         ["LockerOrder", "ReportAttachment", "LockerReportRating"],
         ["LoyaltyAccount", "PointTransaction", "DroneMission", "OrderStatusHistory", "OrderDetail", "OrderRating",
          "OrderComplaint", "DronePickup"],
-        ["Wallet", "WalletTransaction", "DroneDeliverySession", "DroneLockerCommLog", "DroneParcelIncident",
+        ["DroneDeliverySession", "DroneLockerCommLog", "DroneParcelIncident",
          "DronePickupOffer"],
         ["BleTestGrant", "MaintenanceSchedule", "MaintenanceInspectionLog", ("DroneIncidentTimeline", "DroneParcelIncident"),
          "DroneIncidentResolutionProposal", "DroneIncidentEvidence", "DroneDeliveryRequest"],

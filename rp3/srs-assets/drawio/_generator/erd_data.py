@@ -43,14 +43,19 @@ POS = {
     "LockerUnit": (8, 2), "LockerBox": (10, 2), "BoxAccessLog": (11, 2),
     "LoyaltyAccount": (1, 3), "UserBankAccount": (2, 3), "PromotionUsage": (5, 3), "RepairLog": (6, 3), "LockerReport": (7, 3),
     "MaintenanceInspectionLog": (10, 3), "MaintenanceSchedule": (9, 3),
-    "Wallet": (1, 4), "PointTransaction": (2, 4), "OrderStatusHistory": (3, 4), "LockerOrder": (4, 4), "OrderDetail": (5, 4),
+    "PointTransaction": (2, 4), "OrderStatusHistory": (3, 4), "LockerOrder": (4, 4), "OrderDetail": (5, 4),
     "ReportAttachment": (6, 4), "LockerReportRating": (7, 4), "DroneDeliveryRequest": (10, 4),
-    "WalletTransaction": (0, 5), "WithdrawalRecord": (1, 5), "PaymentRecord": (2, 5), "OrderRating": (3, 5), "OrderComplaint": (4, 5),
+    "PaymentRecord": (2, 5), "OrderRating": (3, 5), "OrderComplaint": (4, 5),
     "DronePickup": (5, 5), "DroneMission": (6, 5), "DroneUnit": (9, 5), "DroneDevice": (10, 5),
     "RefundRecord": (2, 6), "DronePickupOffer": (5, 6), "DroneDeliverySession": (6, 6), "DroneIncidentResolutionProposal": (8, 6),
     "DroneParcelIncident": (7, 6), "DroneMaintenanceLog": (9, 6), "DroneIotLog": (10, 6),
     "DroneLockerCommLog": (6, 7), "DroneIncidentEvidence": (7, 7), "DroneIncidentTimeline": (8, 7),
 }
+# the wallet (top-up, withdrawal, wallet payment) is no longer used by any client: left out of the report
+WALLET = ("Wallet", "WalletTransaction", "WithdrawalRecord")
+for _w in WALLET:
+    ENT.pop(_w, None)
+    POS.pop(_w, None)   # parse_entities.py still finds them in the backend code
 missing = set(ENT) - set(POS)
 assert not missing, missing
 
@@ -63,8 +68,7 @@ REL = [
     ("NotificationMessage", "user_id", "UserProfile", M), ("FcmToken", "user_id", "UserProfile", M),
     ("AssistantConversation", "user_id", "UserProfile", M), ("AssistantMessage", "conversation_id", "AssistantConversation", M),
     ("KbChunk", "document_id", "KbDocument", M),
-    ("UserBankAccount", "user_id", "UserProfile", M), ("Wallet", "user_id", "UserProfile", O),
-    ("WalletTransaction", "wallet_id", "Wallet", M), ("WithdrawalRecord", "user_id", "UserProfile", M),
+    ("UserBankAccount", "user_id", "UserProfile", M),
     ("LoyaltyAccount", "user_id", "UserProfile", O), ("PointTransaction", "user_id", "LoyaltyAccount", M),
     ("PointTransaction", "order_id", "LockerOrder", M),
     ("LockerUnit", "store_id", "StoreLocation", M), ("LockerUnit", "assigned_technician_id", "UserProfile", M),

@@ -658,7 +658,7 @@ feature("ble", "Bluetooth Open Test",
 feature("notify", "Notifications and Realtime Updates",
         "Services publish domain events to the RabbitMQ topic exchange laundry.events or call notification-service "
         "directly. notification-service stores in-app notifications, sends FCM push to registered devices and "
-        "pushes STOMP messages over /ws so that the app and admin web refresh orders, wallet, catalog and "
+        "pushes STOMP messages over /ws so that the app and admin web refresh orders, loyalty points, catalog and "
         "maintenance screens in real time.",
         {
             "NotificationController": C("controller", [
@@ -694,7 +694,7 @@ feature("notify", "Notifications and Realtime Updates",
           [("a", "src", "mq", "publish order.status.changed / payment.completed / ..."),
            ("a", "mq", "l", "notification.events"),
            ("m", "l", "s", "consumeDomainEvent(event)"),
-           ("alt", [("realtime-only event (wallet, catalog, maintenance, admin data)",
+           ("alt", [("realtime-only event (loyalty, catalog, maintenance, admin data)",
                      [("m", "s", "ws", "sendUserEvent / sendToDestination(topic)"),
                       ("a", "ws", "app", "STOMP /user/queue/events, /topic/public/catalog, /topic/staff/maintenance")]),
                     ("event needs a notification",

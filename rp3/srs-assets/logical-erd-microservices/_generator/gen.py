@@ -6,7 +6,7 @@ Sinh ra trong thư mục cha:
   01..10-<service>            mỗi service một sơ đồ: đủ cột của mọi bảng, quan hệ nội bộ nét liền,
                               thực thể tham chiếu (hộp xám nét đứt) cho dữ liệu thuộc service khác
 
-Dữ liệu: entities.json + REL + fk_notnull.json của bộ sinh Report 3 (../../drawio/_generator) – cùng 61 bảng, 73 quan hệ.
+Dữ liệu: entities.json + REL + fk_notnull.json của bộ sinh Report 3 (../../drawio/_generator) – cùng 58 bảng, 70 quan hệ.
 Chạy: python gen.py   (cần Chrome; viewer-static.min.js đặt cạnh file này, tải từ viewer.diagrams.net)
 """
 import html, json, os, subprocess, sys
@@ -44,7 +44,7 @@ COMM = {
     "locker-service": "Feign → iot, user · phát locker.box.*, locker.report.*, locker.schedule.due",
     "iot-service": "MQTT tới tủ · Feign → locker (sơ đồ ô), order",
     "order-service": "Feign → locker, user, notification · phát order.* · nhận order.payment.events",
-    "payment-service": "Feign → order · phát payment.*, wallet.updated",
+    "payment-service": "Feign → order · phát payment.*",
     "loyalty-service": "Feign → order · nhận loyalty.order.events (order.completed, payment.refunded)",
     "notification-service": "nhận notification.events (mọi service phát) → in-app, FCM, STOMP",
     "assistant-service": "Feign → order, locker · không dùng RabbitMQ",
@@ -237,7 +237,7 @@ LAYOUT = {
                       ["DroneMission", "DroneDeliverySession", "DroneLockerCommLog", "DronePickup", "DronePickupOffer"],
                       ["DroneParcelIncident", "DroneIncidentEvidence", "DroneIncidentTimeline", "DroneIncidentResolutionProposal"],
                       ["Promotion", "PromotionClaim"]],
-    "payment-service": [["PaymentRecord", "RefundRecord"], ["Wallet", "WalletTransaction"], ["WithdrawalRecord", "UserBankAccount"]],
+    "payment-service": [["PaymentRecord", "RefundRecord"], ["UserBankAccount"]],
     "loyalty-service": [["LoyaltyAccount"], ["PointTransaction"]],
     "notification-service": [["NotificationMessage"], ["FcmToken"]],
     "assistant-service": [["AssistantConversation", "AssistantMessage"], ["KbDocument", "KbChunk"], ["EvalCase"]],
@@ -403,7 +403,7 @@ OV = {
     "loyalty-service": ((1760, 640, 440, 660), [("LoyaltyAccount", 50, 90), ("PointTransaction", 50, 460)]),
     "iot-service": ((80, 1180, 800, 300), [("GatewayDevice", 40, 80), ("BoxAccessLog", 420, 80)]),
     "order-service": ((1080, 1060, 440, 640), [("LockerOrder", 50, 80), ("DroneMission", 50, 300), ("Promotion", 50, 490)]),
-    "payment-service": ((2340, 660, 440, 1000), [("Wallet", 50, 80), ("PaymentRecord", 50, 800)]),
+    "payment-service": ((2340, 1380, 440, 280), [("PaymentRecord", 50, 80)]),
 }
 CORE_W = 340
 # đường liên-service chọn lọc: (con, cột, cha, nhãn); đủ 33 tham chiếu: xem 01–10
@@ -411,7 +411,6 @@ OV_CROSS = [("AuthAccount", "user_id", "UserProfile", "auth_accounts.user_id"),
             ("NotificationMessage", "user_id", "UserProfile", "notifications.user_id"),
             ("AssistantConversation", "user_id", "UserProfile", "assistant_conversations.user_id"),
             ("LoyaltyAccount", "user_id", "UserProfile", "loyalty_accounts.user_id"),
-            ("Wallet", "user_id", "UserProfile", "wallets.user_id"),
             ("LockerOrder", "user_id", "UserProfile", "orders.user_id"),
             ("LockerReport", "user_id", "UserProfile", "locker_reports.user_id"),
             ("LockerUnit", "store_id", "StoreLocation", "lockers.store_id"),
@@ -423,14 +422,12 @@ OV_CROSS = [("AuthAccount", "user_id", "UserProfile", "auth_accounts.user_id"),
             ("GatewayDevice", "locker_id", "LockerUnit", "gateway_devices.locker_id"),
             ("BoxAccessLog", "box_id", "LockerBox", "box_access_logs.box_id")]
 # đường cần bẻ góc vòng ra lề trái (đi thẳng sẽ xuyên qua DroneUnit)
-OV_POINTS = {("GatewayDevice", "locker_id"): ([(50, 1320), (50, 650)], "exitX=0;exitY=0.5;", "entryX=0;entryY=0.5;"),
-             # đi thẳng sẽ cắt hộp PaymentRecord: vòng theo khe giữa order-service và payment-service
-             ("Wallet", "user_id"): ([(1640, 1484), (1640, 760)], "exitX=0;exitY=0.5;", "entryX=1;entryY=0.8;")}
+OV_POINTS = {("GatewayDevice", "locker_id"): ([(50, 1320), (50, 650)], "exitX=0;exitY=0.5;", "entryX=0;entryY=0.5;")}
 KEY_ATTR = {"UserProfile": ["email", "phone_number", "first_name", "last_name", "status", "roles"], "AuthAccount": ["email", "password_hash"], "StoreLocation": ["name", "latitude"],
             "LockerUnit": ["code", "status"], "LockerBox": ["box_number", "status"], "LockerReport": ["category", "status"],
             "DroneUnit": ["code", "status"], "GatewayDevice": ["mac_address", "setup_status"], "BoxAccessLog": ["credential_type", "result"],
             "LockerOrder": ["order_code", "status"], "DroneMission": ["status", "payload_weight_grams"], "Promotion": ["code", "discount_value"],
-            "PaymentRecord": ["amount", "reference_id"], "Wallet": ["balance", "version"], "LoyaltyAccount": ["points", "tier"],
+            "PaymentRecord": ["amount", "reference_id"], "LoyaltyAccount": ["points", "tier"],
             "PointTransaction": ["points", "type"], "NotificationMessage": ["title", "is_read"], "AssistantConversation": ["title"],
             "KbDocument": ["title", "allowed_roles"]}
 CORE = {c for _, items in OV.values() for c, _, _ in items}
