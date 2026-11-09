@@ -13,27 +13,34 @@ from docx.shared import Cm, RGBColor
 
 OUT_DIR = os.path.dirname(os.path.abspath(__file__))
 SRC = os.path.join(OUT_DIR, 'bieu-mau', 'SWP490_R2_BM01_Design_Brief_1.docx')
-OUT = os.path.join(OUT_DIR, 'SWP490_LockR_R2_DesignBrief.docx')
+OUT = os.path.join(OUT_DIR, 'SWP490_FA26SE002_R2_DesignBrief.docx')
 
 TODO = object()  # marker: the next text part is a placeholder (yellow)
 BODY = RGBColor(0x1F, 0x29, 0x37)
 
 # ---------------------------------------------------------------- content
 HEADER = [
-    [TODO, '[Project code from the registration form]'],
-    'Lock.R – Smart Locker System with Drone Delivery',
-    'Nguyễn Quốc Bảo Huy (SE180211, leader) · Trương Nguyễn Thái Bình (SE182370) · '
-    'Lê Thị Yến Vi (SE182544) · Trần Kim Nhã (SE182290)',
+    'FA26SE002 (group GFA26SE32)',
+    'Drone Delivery and Smart Locker Management System (DDSLMS) – product name Lock.R',
+    'Lê Thị Yến Vi (SE182544, leader) · Trương Nguyễn Thái Bình (SE182370) · '
+    'Nguyễn Quốc Bảo Huy (SE180211) · Trần Kim Nhã (SE182290)',
     'Đặng Ngọc Minh Đức (DucDNM) · Đỗ Hữu Tiến (TienDH)',
     ['https://github.com/LockR-Tech (backend, frontend, mobile, iot, docs) – ',
      TODO, 'tag review-2 to be created on all five repos'],
     '1.0',
-    '08/11/2026',
+    '09/11/2026',
 ]
 
 REG_CHANGES = [
-    [[TODO, '[Section]'], [TODO, '[Current text]'], [TODO, '[Proposed text]'],
-     [TODO, '[Reason – details in BM03, or "No changes"]']],
+    ['3.2 b–c, f–g; 3.3 Research', 'Battery-aware assignment, strategy comparison, experimental report, '
+     'conference paper', 'Removed; an idle drone with battery above the minimum is assigned',
+     'Iteration 1: one real drone (BM03 No. 1–3)'],
+    ['3.2 c) Module 4', 'AI summaries of operational reports', 'Removed', 'BM03 No. 4'],
+    ['3.2 d) NFR', 'p95 < 300 ms, availability > 95 %, telemetry 3–5 s', 'N1–N6 (§7)', 'BM03 No. 5'],
+    ['3.2 b), c) Module 2', 'Parcel collection by PIN/QR; generate PIN and QR codes',
+     'PIN at the kiosk; app opens by Bluetooth or after scanning the locker QR', 'BM03 No. 6'],
+    ['3.2 a–c, g; 3.3 b)', 'Modules 1–4 without a separate incident module',
+     'Module 3: Incident Reporting and Management added before Maintenance (now Modules 4–5)', 'BM03 No. 7'],
 ]
 
 OUT_OF_SCOPE = [
@@ -42,20 +49,25 @@ OUT_OF_SCOPE = [
     ['Payment gateways other than SePay VietQR (MoMo, VNPay, cards)',
      'One reconciled payment path; VietQR works with every Vietnamese bank app (BR-22).'],
     ['Publishing on Google Play / App Store', 'Pilot ships as an Android APK and mobile web.'],
+    ['Battery-aware drone assignment research and strategy comparison',
+     'Removed from the registration (BM03 No. 1–3): one real drone gives no meaningful comparison.'],
+    ['Physical drone flight control', 'The drone Pi only reads autopilot telemetry and drives the '
+     'release servo; it never arms or steers the drone.'],
     ['More than one physical cabinet',
      'One real cabinet (CAB-TU01, 7 boxes); other lockers run the same controller software simulated.'],
 ]
 
 GLANCE = (
-    'Lock.R lets people send and store parcels without meeting in person. A customer books a box in a '
-    'smart locker in the mobile app, pays by VietQR bank transfer and drops the parcel; the receiver opens '
-    'the box with a 6-digit PIN or QR at the kiosk or over Bluetooth from the phone. '
-    'Boxes can be rented by the hour, and parcels can travel between lockers by drone. '
-    'Users are customers and receivers (mobile app, mobile web, kiosk), locker and drone technicians '
-    '(mobile app) and administrators (admin web). Each locker is a Raspberry Pi that drives relays, door '
-    'sensors and a sliding landing lid and talks to the backend over MQTT; the backend is a set of Spring '
-    'Boot microservices behind an API gateway, with an AI assistant. Core value: 24/7 contact-free '
-    'hand-over in which every box state and payment is traceable. Architecture: SDD Figure 1.1.'
+    'Lock.R lets people send and store parcels without meeting in person. A customer rents a locker box or '
+    'books a drone delivery in the mobile app and pays by VietQR; for a drone delivery the nearest '
+    "technician on shift collects the parcel at home and the drone drops it into the receiver locker's drone "
+    'box. Boxes open with a 6-digit PIN at the kiosk, or from the phone over Bluetooth or by scanning the '
+    'locker QR. Users are customers and receivers (mobile app, mobile web, kiosk), locker and drone '
+    'technicians handling incidents and maintenance (mobile app), and administrators assigning work and '
+    'following revenue (admin web). Each locker is a Raspberry Pi driving relays, door sensors and the '
+    'drone-box lid over MQTT; Spring Boot microservices sit behind an API gateway, with an AI assistant. '
+    'Core value: 24/7 contact-free hand-over with every box state and payment traceable. '
+    'Architecture: SDD Figure 1.1.'
 )
 
 DECISIONS = [
@@ -72,12 +84,14 @@ DECISIONS = [
      'no merchant contract, works with every bank app.',
      'Bình', 'UC08; BR-02, BR-22'],
     ['D4', 'Drone delivery orchestration', 'Auto nearest-drone dispatch; technician accepts offer',
-     'Technician accepts, completes a loading checklist and launches; one delivery state machine fed by '
-     'MQTT telemetry; a person is responsible for every flight.',
+     'The nearest free technician on shift collects the parcel at home, picks an idle drone, completes the '
+     'loading checklist and launches; one delivery state machine fed by MQTT telemetry; a person answers '
+     'for every flight.',
      'Vi', 'UC10, UC32; BR-10, BR-11'],
-    ['D5', 'Box incident handling', 'Complaint to admin; box FAULT at once; ticket with SLA',
-     'Report puts the box in PENDING_CHECK; a technician on shift claims a ticket (SLA 4 h, max 2 '
-     'extensions); the scheduler escalates. No box is locked on a false report.',
+    ['D5', 'Incident and maintenance tickets', 'Complaint to admin; box FAULT at once; ticket with SLA',
+     'Reports, failed inspections and drone faults become tickets; a customer report sets the box '
+     'PENDING_CHECK, not FAULT; only a technician on shift claims (SLA 4 h, max 2 extensions); the '
+     'scheduler escalates.',
      'Nhã', 'UC13, UC28; BR-19, BR-24'],
 ]
 
@@ -88,8 +102,8 @@ RISKS = [
      'Huy'],
     ['R2', 'Real drone flight cannot be shown reliably (weather, battery, permits)',
      'Drone workflow not shown end to end',
-     'Weather check blocks bookings; indoor mode lands on the lid by ArUco with the same events; '
-     'recorded flight as backup',
+     'Weather check blocks bookings; without flight the drone Pi reads the locker ArUco marker, the lid '
+     'opens, the servo releases and the lid closes with the same events; recorded flight as backup',
      'Vi'],
     ['R3', 'External services throttle or delay (Firebase SMS, SePay webhook)',
      'Sign-in fails or orders stay UNPAID in the demo',
@@ -100,15 +114,19 @@ RISKS = [
 GAPS = [
     ['G1', 'SRS keeps the customer wallet; the app removed it (SePay only)',
      'SRS UC08, UC12, §3.2.24–26, BR-16', 'Remove wallet from SRS', 'Bình', '15/11/2026'],
-    ['G2', "Opening an order's box over Bluetooth (QR/OTP fallback) is built but not specified",
+    ['G2', "Opening an order's box over Bluetooth (fallback: locker QR scan or PIN) is built but not specified",
      'SRS UC16; SDD §3; backend #137', 'Add use case, rule, sequence diagram', 'Huy', '15/11/2026'],
-    ['G3', 'State machines and activity diagrams are not yet in Report 3/4',
-     'docs/diagrams/src, srs-assets/drawio', 'Insert 4 + 4 diagrams', 'Nhã', '15/11/2026'],
-    ['G4', 'No separate staging; demo seed script is outside the repo',
-     'Report 4; seed script', 'Declare staging, move script to repo', 'Huy', '22/11/2026'],
+    ['G3', 'State machines and activity diagrams not yet in Report 3/4; 06c lacks home pickup', 'docs/diagrams/src, srs-assets/drawio', 'Insert 5 + 5 diagrams; redraw 06c', 'Vi',
+     '15/11/2026'],
+    ['G4', 'Report 4 declares no environments; the Azure VM (api.locker-drone.tech) is used as staging / demo',
+     'Report 4; backend scripts/seed-*.sql', 'Declare VM as staging with seed and rollback steps', 'Huy',
+     '15/11/2026'],
     ['G5', 'Report 5 test cases not written; automated tests not mapped to TC IDs',
      'Report 5; test suites', 'Write Report 5 with §6 TC IDs', 'Nhã', '22/11/2026'],
-    ['G6', [TODO, '[High findings Kept / Planned in BM02]'], 'BM02', '', '', ''],
+    ['G6', 'SRS FRs have no testable acceptance criteria (BM02 SR-08; other High: SR-01 = G1, '
+     'SR-13 and SR-17 = G3)', 'SRS §3.2–3.6', 'Add acceptance criteria per FR from §6', 'Nhã', '22/11/2026'],
+    ['G7', 'Inspection activity 06g covers lockers only; drone schedules (MAINTENANCE, FAULT) are built',
+     'srs-assets/drawio/06g', 'Add the drone path to 06g', 'Nhã', '15/11/2026'],
 ]
 
 FEATURES = [
@@ -123,12 +141,12 @@ FEATURES = [
     ['F-04', 'Drop parcel, share code', 'Customer',
      'Box opens only if PAID; drop gives STORING / OCCUPIED and a 6-digit PIN to the receiver.', 'Done'],
     ['F-05', 'Pick up at kiosk', 'Receiver',
-     'Right PIN/QR opens and completes the order; 5 wrong PINs lock the box 15 min (MSG22).', 'Done'],
+     'Right PIN opens and completes the order; 5 wrong PINs lock the box 15 min (MSG22).', 'Done'],
     ['F-06', 'Rent box by hours', 'Customer',
      '1–720 h; multi-use PIN until the end; extension <= 24 h; ending frees the box.', 'Done'],
     ['F-07', 'Open box by Bluetooth', 'Customer, Receiver',
      "Token for the order's owner/receiver only, 120 s, single use; state changes once on the Pi report; "
-     'failure offers QR/OTP.', 'In progress'],
+     'failure offers locker QR or PIN.', 'Done'],
     ['F-08', 'Overdue fee, expiry', 'Customer, Scheduler',
      '500 VND/h, max 50,000 VND and 50 % of price; opens only after paying; > 72 h: EXPIRED.', 'Done'],
     ['F-09', 'Cabinet commands', 'Locker Controller',
@@ -136,14 +154,15 @@ FEATURES = [
     ['F-10', 'Book drone delivery', 'Customer',
      'Refused: no free DRONE box (MSG13), > 5,000 g, > 5,000 m, unsafe weather or > 3 open orders.',
      'Done'],
-    ['F-11', 'Dispatch, load, launch', 'Drone Technician',
-     'Accept only with an idle drone >= 20 % battery; launch needs the checklist; + 50 g re-prices.',
-     'In progress'],
-    ['F-12', 'Track drone, pickup ready', 'Customer, Receiver',
-     'Stage updates reach the app in 2 s; on arrival the lid opens and the order is STORING with a PIN.',
-     'In progress'],
+    ['F-11', 'Assign drone, load, launch', 'Drone Technician',
+     'Only an idle drone > 20 % battery is assigned; launch needs the checklist; + 50 g re-prices.',
+     'Done'],
+    ['F-12', 'Track drone, drop into locker', 'Customer, Receiver',
+     'Stage updates reach the app in 2 s; on arrival lid opens, servo releases, lid closes; order STORING '
+     'with a PIN.', 'Done'],
     ['F-13', 'Report box incident', 'Customer',
-     'Title and 1–5 photos required; box PENDING_CHECK, no new orders, overdue fee stops.', 'Done'],
+     'Title and description required, up to 5 photos; box PENDING_CHECK, no new orders, overdue fee stops.',
+     'Done'],
     ['F-14', 'Ticket within SLA', 'Locker Tech., Admin',
      'Claim only on shift; SLA 4 h, max 2 extensions with reason; 3 overdue tickets block claims.', 'Done'],
     ['F-15', 'Parcel drop and recovery', 'Drone/Locker Tech., Admin',
@@ -151,6 +170,18 @@ FEATURES = [
      'In progress'],
     ['F-16', 'AI assistant', 'User',
      'Answers cite sources; order questions see only own orders; reply within 10 s.', 'Done'],
+    ['F-17', 'Home pickup by technician', 'Drone Tech., Admin',
+     'Offered to the nearest free technician on shift; no answer in 180 s: next one; "Picked up" needs '
+     "the sender's code within 300 m.", 'Done'],
+    ['F-18', 'Maintenance schedule', 'Admin',
+     'One locker or drone; technician with the matching role; a new drone schedule sets MAINTENANCE (no '
+     'deliveries) until inspected.', 'Done'],
+    ['F-19', 'Inspection checklist', 'Locker / Drone Tech.',
+     'Assigned technician only; every item Pass / Fail / NA; all pass: next due date; a fail opens a '
+     'ticket, faulty box or drone FAULT.', 'Done'],
+    ['F-20', 'Dashboard, revenue report', 'Admin',
+     'Revenue = payments collected minus refunds in the period; each total opens the entries behind it.',
+     'Done'],
 ]
 
 NFRS = [
@@ -166,85 +197,105 @@ NFRS = [
     ['N6', 'Availability', 'Monthly API uptime', '>= 99 %', 'Health check every 5 min'],
 ]
 
+# Parts follow git authorship on origin/main (surviving lines, 08–09/11/2026); workflow owners were chosen by
+# the team on 09/11/2026 (Nhã owns WF-04 although most schedule code is Huy's and Bình's).
 OWNERS = [
-    ['Nguyễn Quốc Bảo Huy', 'Leader; backend, IoT, DevOps',
-     '1) Architecture, gateway/auth, CI/CD, VM; 2) Locker controller, MQTT, Bluetooth open; '
-     '3) AI assistant',
-     'WF-02', 'D1, D2; iot-service, iot repo'],
-    ['Trương Nguyễn Thái Bình', 'Mobile – customer, payment',
-     '1) Send / rent / order screens; 2) SePay VietQR payment; 3) Profile, notifications',
-     'WF-01', 'D3; payment-service, mobile'],
-    ['Lê Thị Yến Vi', 'Drone delivery, admin reports',
-     '1) Drone booking and tracking; 2) Admin dashboard, revenue; 3) Loyalty',
-     'WF-03', 'D4; order-service (drone)'],
-    ['Trần Kim Nhã', 'Maintenance, incidents, QA',
-     '1) Locker tickets, SLA, inspections; 2) Parcel drop recovery; 3) Test cases, CI tests',
-     'WF-04', 'D5; locker-service'],
+    ['Nguyễn Quốc Bảo Huy', 'Backend, IoT, DevOps',
+     '1) Architecture, gateway/auth, CI/CD, VM; 2) Locker controller, kiosk, MQTT, Bluetooth open, rental '
+     'overdue and expiry; 3) AI assistant, dashboard and revenue reports',
+     'WF-02', 'D1, D2; auth, iot, assistant services; iot repo'],
+    ['Trương Nguyễn Thái Bình', 'Mobile – customer, payment, incidents',
+     '1) Incident report and technician ticket screens; 2) SePay VietQR payment; '
+     '3) Send / rent / my-orders screens, rental rules',
+     'WF-03', 'D3; payment-service, mobile'],
+    ['Lê Thị Yến Vi', 'Leader; drone delivery',
+     '1) Drone booking, technician dispatch, home pickup; 2) Drone telemetry, drone Pi (ArUco, servo '
+     'release); 3) Mobile drone screens',
+     'WF-01', 'D4; order-service (drone), drone-iot'],
+    ['Trần Kim Nhã', 'Drone fleet, maintenance',
+     '1) Drone units, devices, IoT logs, admin drone tickets; 2) Maintenance schedules and inspections, '
+     'technician shifts; 3) Parcel drop and recovery',
+     'WF-04', 'D5; locker-service (drone), order-service (incident)'],
 ]
 
+# The four flows the team demos (06/11/2026): drone delivery, locker rental, incident report, maintenance.
+# Statistics and reports are feature F-20, shown at the end of DS-01a and DS-02a.
 WORKFLOWS = [
-    ['WF-01', 'Send parcel via locker, receiver picks up', 'Customer, Receiver, Locker Controller',
-     'Customer creates a SEND order', 'Parcel handed over; order COMPLETED',
-     'F-01–F-05, F-09, F-16',
-     'Order INITIALIZED → STORING → COMPLETED; Box AVAILABLE → RESERVED → OCCUPIED → AVAILABLE', 'Bình'],
-    ['WF-02', 'Rent a box by hours', 'Customer, Locker Controller, System Scheduler',
-     'Customer rents a box', 'Rental ended, or EXPIRED after the overdue fee',
-     'F-03, F-06–F-09',
-     'Order INITIALIZED → STORING → COMPLETED / EXPIRED; Box RESERVED → OCCUPIED → AVAILABLE', 'Huy'],
-    ['WF-03', 'Drone delivery between lockers', 'Customer, Drone Technician, Receiver, Locker Controller',
-     'Customer books a drone delivery', 'Parcel in the receiver locker and picked up',
-     'F-03, F-05, F-10–F-12, F-15',
-     'Order AWAITING_DISPATCH → STORING → COMPLETED; Stage ACCEPTED → … → READY_FOR_PICKUP; '
-     'Drone IDLE → RESERVED → IN_FLIGHT → IDLE', 'Vi'],
-    ['WF-04', 'Box incident to repair', 'Customer, Locker Technician, Admin',
-     'Customer reports a faulty box', 'Box back in service or locked',
-     'F-13, F-14',
-     'Box → PENDING_CHECK → FAULT → AVAILABLE; Ticket OPEN → IN_PROGRESS → RESOLVED / REJECTED', 'Nhã'],
+    ['WF-01', 'Drone delivery with home pickup', 'Customer, Drone Technician, Receiver, Locker Controller',
+     'Customer books a drone delivery', 'Parcel dropped into the receiver locker and picked up',
+     'F-03, F-05, F-10–F-12, F-15, F-17, F-20',
+     'Order AWAITING_DISPATCH → STORING → COMPLETED; Stage AWAITING_DISPATCH → PICKUP_ASSIGNED → PICKED_UP '
+     '→ … → READY_FOR_PICKUP; Drone IDLE → RESERVED → IN_FLIGHT → IDLE', 'Vi'],
+    ['WF-02', 'Rent a box or send a parcel via locker', 'Customer, Receiver, Locker Controller, System Scheduler',
+     'Customer rents a box or creates a send order', 'Items collected and box released, or EXPIRED after '
+     'the overdue fee', 'F-01–F-09, F-16, F-20',
+     'Order INITIALIZED → STORING → COMPLETED / EXPIRED; Box AVAILABLE → RESERVED → OCCUPIED → AVAILABLE',
+     'Huy'],
+    ['WF-03', 'Box incident to resolution', 'Customer, Locker Technician, Admin',
+     'Customer reports a faulty box', 'Ticket RESOLVED with the box back in service or locked, or REJECTED '
+     'with feedback', 'F-13, F-14',
+     'Box AVAILABLE / OCCUPIED → PENDING_CHECK → previous (rejected) or FAULT → previous (resolved); Ticket '
+     'OPEN → IN_PROGRESS → RESOLVED / REJECTED',
+     'Bình'],
+    ['WF-04', 'Maintenance of lockers and drones', 'Admin, Locker / Drone Technician',
+     'Admin creates a maintenance schedule or a drone ticket and assigns a technician',
+     'Inspection recorded; asset back in service, or a repair ticket opened', 'F-14, F-18, F-19',
+     'Drone IDLE → MAINTENANCE → IDLE / FAULT → IDLE; Box AVAILABLE → FAULT → AVAILABLE; Ticket OPEN → '
+     'IN_PROGRESS → RESOLVED', 'Nhã'],
 ]
 
 DEMOS = [
-    ['DS-01', 'WF-01', 'Main', 'CAB-TU01 has a free Standard box; customer account; receiver phone',
-     'Create order → pay by VietQR → open box and drop → receiver enters PIN at kiosk',
-     'Order COMPLETED, box AVAILABLE', 'Bình'],
-    ['DS-02', 'WF-01', 'Exception', 'Order DS-01 in STORING',
-     'Enter a wrong PIN 5 times at the kiosk', 'Box locked 15 min (MSG22); order stays STORING', 'Bình'],
-    ['DS-03', 'WF-02', 'Main', 'Customer near CAB-TU01 with Bluetooth on',
-     'Rent 2 h → pay → "Open box" (Bluetooth) → reopen → end rental',
-     'Box opens over Bluetooth; order COMPLETED, box AVAILABLE', 'Huy'],
-    ['DS-04', 'WF-02', 'Exception', 'Bluetooth off; a second rental past its end time',
-     'Tap "Open box" → choose OTP at kiosk; open the overdue rental',
-     'App offers QR/OTP; overdue box opens only after the fee is paid', 'Huy'],
-    ['DS-05', 'WF-03', 'Main', 'Two lockers with landing pads; idle drone >= 20 % battery; safe weather',
-     'Book → pay → technician accepts, loads, launches → arrival → receiver picks up',
-     'Lid opens; order STORING with PIN, then COMPLETED', 'Vi'],
-    ['DS-06', 'WF-03', 'Exception', 'Receiver locker with no free drone box; parcel of 6,000 g',
+    ['DS-01a', 'WF-01', 'Main',
+     'Receiver locker CAB-TU01 has a free drone box; idle drone > 20 % battery; technician on shift; safe '
+     'weather',
+     'Book with home pickup → pay → nearest technician accepts, collects at home (code, photo), loads, '
+     'launches → ArUco read, lid opens, servo releases, lid closes → receiver enters PIN → admin opens '
+     'revenue',
+     'Order STORING with PIN, then COMPLETED; log shows servo release; payment in revenue', 'Vi'],
+    ['DS-01b', 'WF-01', 'Exception', 'Receiver locker with no free drone box; parcel of 6,000 g',
      'Book a drone delivery', 'Booking refused (MSG13 / weight limit)', 'Vi'],
-    ['DS-07', 'WF-04', 'Main', 'Occupied box; locker technician on shift',
-     'Customer reports with a photo → technician claims → resolves',
-     'Box PENDING_CHECK → back in service; ticket RESOLVED', 'Nhã'],
-    ['DS-08', 'WF-04', 'Exception', 'Ticket already extended twice; technician with 3 overdue tickets',
-     'Extend the SLA a third time; claim a new ticket', 'Both refused with a message', 'Nhã'],
+    ['DS-02a', 'WF-02', 'Main', 'CAB-TU01 has a free Standard box; customer near it with Bluetooth on',
+     'Choose a box, rent 2 h → pay by VietQR → PIN issued → open with PIN at kiosk, close → reopen with '
+     '"Open box" (Bluetooth) → end rental → admin opens revenue',
+     'Order COMPLETED, box AVAILABLE; payment in revenue', 'Huy'],
+    ['DS-02b', 'WF-02', 'Exception', 'Rental DS-02a in STORING; a second rental past its end time',
+     'Enter a wrong PIN 5 times at the kiosk; open the overdue rental',
+     'Box locked 15 min (MSG22); overdue box opens only after the fee is paid', 'Huy'],
+    ['DS-03a', 'WF-03', 'Main', 'Occupied box on CAB-TU01; locker technician on shift',
+     'Customer reports with a photo → technician claims → inspects, fixes on site with a photo → resolves',
+     'Box PENDING_CHECK → back in service; ticket RESOLVED; customer notified', 'Bình'],
+    ['DS-03b', 'WF-03', 'Exception', 'Report on a box with no fault; technician X holds 3 overdue tickets',
+     'X claims it; a technician on shift claims, rejects without, then with feedback',
+     'Claim refused; reject needs feedback; ticket REJECTED, box back to its previous state', 'Bình'],
+    ['DS-04a', 'WF-04', 'Main', 'Drone DRONE-S550-07 idle, no mission; drone technician account',
+     'Admin creates a schedule with a checklist and assigns the technician → technician is notified, marks '
+     'every item Pass with a photo',
+     'Drone MAINTENANCE (no deliveries) until the inspection, then IDLE; next due date set', 'Nhã'],
+    ['DS-04b', 'WF-04', 'Exception', 'Schedule for CAB-TU01 assigned to technician A',
+     'Technician B completes it; A marks one item Fail on a box',
+     'B refused (assigned technician only); ticket for A, box FAULT, due date kept', 'Nhã'],
 ]
 
-# state transitions committed: Order 10, Box 18, Drone delivery stage 12, Ticket 4
+# state transitions of the main entities, counted on the state machine diagrams (docs/rp3/srs-assets/drawio):
+# Order 9 (06-1), Box 15 (06g), Drone delivery stage 18 (06c), Drone 11 (06i), Ticket 4 (06j) = 57
 TEST_TARGET = [
-    ['16', '3', '48'],
+    ['20', '3', '60'],
     ['4', '1', '4'],
-    ['44', '1', '44'],
+    ['57', '1', '57'],
     ['6', '1', '6'],
-    ['', '', '102'],
+    ['', '', '127'],
 ]
 
 # column widths (cm), page text width = 17 cm
 WIDTHS = {
-    3: [0.9, 2.4, 3.0, 7.0, 1.2, 2.5],      # decisions
+    3: [0.9, 2.3, 2.8, 7.6, 1.2, 2.2],      # decisions
     4: [0.9, 4.0, 3.4, 7.3, 1.4],            # risks
-    5: [0.9, 5.0, 3.6, 3.7, 1.2, 2.6],      # gaps
-    6: [1.1, 2.9, 2.4, 6.6, 2.3, 1.7],      # features
+    5: [0.9, 5.6, 3.4, 3.5, 1.3, 2.3],      # gaps
+    6: [1.0, 2.6, 2.2, 7.4, 2.3, 1.5],      # features
     9: [1.2, 2.4, 2.4, 2.0, 2.4, 1.9, 3.6, 1.1],  # workflows
-    10: [1.2, 1.4, 1.6, 3.2, 3.4, 3.2, 3.0],  # demos
+    10: [1.5, 1.4, 1.6, 3.2, 3.6, 3.2, 2.5],  # demos
     7: [0.9, 2.5, 4.0, 4.9, 4.7],            # NFRs
-    8: [3.6, 3.1, 6.2, 1.5, 2.6],            # ownership
+    8: [2.7, 3.0, 6.9, 1.6, 2.8],            # ownership
 }
 
 
@@ -337,6 +388,11 @@ for p in list(d.paragraphs):
         glance_done = True
     else:
         p._p.getparent().remove(p._p)
+# Empty template lines left after the System at a Glance text (keeps sections 0–8 within 4 pages).
+glance_p = next(p for p in d.paragraphs if p.text.startswith('Lock.R'))._p
+while glance_p.getnext() is not None and glance_p.getnext().tag.endswith('}p') \
+        and not ''.join(glance_p.getnext().itertext()).strip():
+    glance_p.getparent().remove(glance_p.getnext())
 
 # Rows never split across pages; heading + header row + first row stay together.
 for table in t:
@@ -349,10 +405,10 @@ for table in t:
                 for para in cell.paragraphs:
                     para.paragraph_format.keep_with_next = True
 
-# Headings that would otherwise be stranded at a page bottom start a new page.
+# Headings stay on the same page as the table that follows them.
 for para in d.paragraphs:
-    if para.text.strip() in ('3. Key Design Decisions', '7. Non-Functional Requirements'):
-        para.paragraph_format.page_break_before = True
+    if para.style.name.startswith('Heading'):
+        para.paragraph_format.keep_with_next = True
 
 os.makedirs(OUT_DIR, exist_ok=True)
 d.save(OUT)
