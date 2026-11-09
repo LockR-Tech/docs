@@ -236,10 +236,33 @@ toc('TOC \\h \\z \\t "TableCaption,1"', "List of tables.")
 page_break()
 
 H(1, "I. Record of Changes")
-roc = [["09/11/2026", "A", "Trương Nguyễn Thái Bình (SE182370)",
-        "Initial software test documentation: scope of testing, test strategy, test plan, unit test cases "
-        f"({len(D['funcs'])} functions) and integration / system test cases ({len(D['modules'])} modules) with their statistics."]]
-roc += [["", "", "", ""] for _ in range(4)]
+roc = [
+    ["28/09/2026", "A", "Nguyễn Quốc Bảo Huy",
+     "Initial test plan: defined Section 1 (Scope of Testing), Section 2 (Test Strategy: testing types, "
+     "test levels and supporting tools) and Section 3 (Human Resources, Test Environment and Test Milestones)."],
+    ["14/10/2026", "A", "Trương Nguyễn Thái Bình",
+     "Added integration and system test cases for Authentication, Profile Management, Store & Locker Search, "
+     "Locker Send, Locker Rental, Payment (SePay VietQR), Loyalty & Promotion and Order Management."],
+    ["21/10/2026", "A", "Lê Thị Yến Vi",
+     "Added unit test cases and integration/system test cases for Drone Delivery (booking, live tracking, "
+     "home pickup) and Drone Operation (dispatch, loading confirmation, launch, flight failure, fleet "
+     "management and parcel-drop incidents)."],
+    ["26/10/2026", "A", "Trần Kim Nhã",
+     "Added integration, system and hardware test cases for Locker & Drone Technician Maintenance (shifts, "
+     "incident tickets, periodic inspections), Locker Kiosk, IoT Cabinet Controller (MQTT, GPIO, sliding lid) "
+     "and Bluetooth Box Open."],
+    ["02/11/2026", "M", "Lê Thị Yến Vi",
+     "Added system test cases for Administration (dashboard, revenue report, accounts, stores/lockers/boxes, "
+     "refunds, promotions, business settings), Notification and AI Assistant (RAG); reviewed test coverage "
+     "across all modules."],
+    ["07/11/2026", "M", "Trần Kim Nhã",
+     "Updated test execution results for Round 1 system and hardware test cases on the deployed environment "
+     "and Raspberry Pi cabinet controller; updated test milestones."],
+    ["09/11/2026", "M", "Trương Nguyễn Thái Bình",
+     "Initial software test documentation finalised with Report 3 and Report 4 alignment: scope of testing, "
+     f"test strategy, test plan, unit test cases ({len(D['funcs'])} functions) and integration / system test "
+     f"cases ({len(D['modules'])} modules) with their statistics."],
+]
 table(["Date", "A*\nM, D", "In charge", "Change Description"], roc, [1300, 800, 2300, 4650], center_cols=(0, 1))
 P("*A - Added M - Modified D - Deleted")
 page_break()

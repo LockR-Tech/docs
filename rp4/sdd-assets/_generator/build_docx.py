@@ -134,10 +134,32 @@ toc('TOC \\h \\z \\t "TableCaption,1"', "List of tables.")
 page_break()
 
 H(1, "I. Record of Changes")
-roc = [["28/10/2026", "A", "", "Initial Software Design Document: system architecture, package diagrams of the backend "
-        "services, admin web, mobile app and IoT controller, database design of the 10 service databases, class "
-        "diagrams, sequence diagrams and class specifications of 26 features."]]
-roc += [["", "", "", ""] for _ in range(4)]
+roc = [
+    ["28/10/2026", "A", "Nguyễn Quốc Bảo Huy",
+     "Initial Software Design Document: system architecture, package diagrams of the backend services, "
+     "admin web, mobile app and IoT controller, database design of the 10 service databases, class "
+     "diagrams, sequence diagrams and class specifications of 26 features."],
+    ["30/10/2026", "M", "Lê Thị Yến Vi",
+     "Updated sequence and class diagrams of Drone Delivery and Drone Incident features: parcel-drop "
+     "compensation payout callback, redelivery order linkage and weather flight-control checks."],
+    ["01/11/2026", "M", "Trương Nguyễn Thái Bình",
+     "Updated Order Service and User Service database schemas and class specifications: added order status "
+     "coordinates, mandatory receiver email notifications, Terms of Service acceptance and admin soft-delete "
+     "with reason."],
+    ["03/11/2026", "M", "Trần Kim Nhã",
+     "Updated Section 1.2 (Package Diagrams) for the backend services, Admin Web, Mobile App (including "
+     "l10n localisation packages) and IoT Cabinet Controller (Raspberry Pi 4 and Kiosk React UI)."],
+    ["05/11/2026", "M", "Nguyễn Quốc Bảo Huy",
+     "Refined Section 2 (Database Design): updated the cross-service reference map and the 10 per-service "
+     "PostgreSQL ERDs with explicit foreign-key nullability and table specifications."],
+    ["07/11/2026", "M", "Lê Thị Yến Vi",
+     "Updated detailed designs of Parcel Deposit & Retrieval, Bluetooth Box Open and Locker Maintenance: "
+     "added counter storage handover (storage_handovers) for expired orders and order-bound BLE open tokens."],
+    ["09/11/2026", "M", "Trần Kim Nhã",
+     "Aligned with Report 1 and Report 3: removed the customer wallet feature and wallet tables from "
+     "payment_db; added system_settings and system_setting_audits to user_db; updated Figure 1.1 (System "
+     "Architecture) and Table 1.1; renumbered detailed design features to 26 features."],
+]
 table(["Date", "A*\nM, D", "In charge", "Change Description"], roc, [1200, 800, 1500, 5860])
 P("*A - Added M - Modified D - Deleted")
 page_break()
