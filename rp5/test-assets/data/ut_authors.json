@@ -1,0 +1,501 @@
+{
+"AuthServicePasswordTest": {
+"file": "auth-service/src/test/java/com/huynqb/laundrylocker/auth/service/AuthServicePasswordTest.java",
+"authors": [
+[
+"huynqbse180211",
+2
+]
+]
+},
+"EmailOtpServiceTest": {
+"file": "auth-service/src/test/java/com/huynqb/laundrylocker/auth/service/EmailOtpServiceTest.java",
+"authors": [
+[
+"huynqbse180211",
+2
+],
+[
+"binhtntse182370",
+1
+]
+]
+},
+"AuthServiceAdminAccessTest": {
+"file": "auth-service/src/test/java/com/huynqb/laundrylocker/auth/service/AuthServiceAdminAccessTest.java",
+"authors": [
+[
+"nhatkse182290",
+1
+],
+[
+"binhtntse182370",
+1
+],
+[
+"huynqbse180211",
+1
+]
+]
+},
+"KioskQrLoginServiceTest": {
+"file": "auth-service/src/test/java/com/huynqb/laundrylocker/auth/service/KioskQrLoginServiceTest.java",
+"authors": [
+[
+"binhtntse182370",
+1
+],
+[
+"huynqbse180211",
+1
+]
+]
+},
+"AuthServiceDeleteAccountTest": {
+"file": "auth-service/src/test/java/com/huynqb/laundrylocker/auth/service/AuthServiceDeleteAccountTest.java",
+"authors": [
+[
+"huynqbse180211",
+2
+]
+]
+},
+"UserControllerSelfServiceTest": {
+"file": "user-service/src/test/java/com/huynqb/laundrylocker/user/controller/UserControllerSelfServiceTest.java",
+"authors": [
+[
+"huynqbse180211",
+2
+]
+]
+},
+"UserProfileServiceAdminTest": {
+"file": "user-service/src/test/java/com/huynqb/laundrylocker/user/service/UserProfileServiceAdminTest.java",
+"authors": [
+[
+"viltyse182544",
+1
+],
+[
+"huynqbse180211",
+1
+]
+]
+},
+"StoreServiceWriteTest": {
+"file": "store-service/src/test/java/com/huynqb/laundrylocker/store/service/StoreServiceWriteTest.java",
+"authors": [
+[
+"binhtntse182370",
+1
+],
+[
+"huynqbse180211",
+1
+]
+]
+},
+"OrderServiceSendFlowTest": {
+"file": "order-service/src/test/java/com/huynqb/laundrylocker/order/service/OrderServiceSendFlowTest.java",
+"authors": [
+[
+"huynqbse180211",
+3
+]
+]
+},
+"OrderServiceRentalPaymentTest": {
+"file": "order-service/src/test/java/com/huynqb/laundrylocker/order/service/OrderServiceRentalPaymentTest.java",
+"authors": [
+[
+"huynqbse180211",
+7
+],
+[
+"binhtntse182370",
+2
+]
+]
+},
+"OrderServiceSendStorageTest": {
+"file": "order-service/src/test/java/com/huynqb/laundrylocker/order/service/OrderServiceSendStorageTest.java",
+"authors": [
+[
+"binhtntse182370",
+1
+]
+]
+},
+"OrderServiceHandoverAndCompletionTest": {
+"file": "order-service/src/test/java/com/huynqb/laundrylocker/order/service/OrderServiceHandoverAndCompletionTest.java",
+"authors": [
+[
+"huynqbse180211",
+2
+]
+]
+},
+"OrderBenefitServiceTest": {
+"file": "order-service/src/test/java/com/huynqb/laundrylocker/order/service/OrderBenefitServiceTest.java",
+"authors": [
+[
+"binhtntse182370",
+1
+],
+[
+"huynqbse180211",
+1
+]
+]
+},
+"OrderAccessGuardTest": {
+"file": "order-service/src/test/java/com/huynqb/laundrylocker/order/service/OrderAccessGuardTest.java",
+"authors": [
+[
+"binhtntse182370",
+1
+]
+]
+},
+"OrderPaymentEventListenerTest": {
+"file": "order-service/src/test/java/com/huynqb/laundrylocker/order/service/OrderPaymentEventListenerTest.java",
+"authors": [
+[
+"viltyse182544",
+5
+],
+[
+"huynqbse180211",
+4
+],
+[
+"binhtntse182370",
+2
+]
+]
+},
+"BleOrderAccessServiceTest": {
+"file": "order-service/src/test/java/com/huynqb/laundrylocker/order/service/BleOrderAccessServiceTest.java",
+"authors": [
+[
+"huynqbse180211",
+1
+]
+]
+},
+"StorageHandoverServiceTest": {
+"file": "order-service/src/test/java/com/huynqb/laundrylocker/order/service/StorageHandoverServiceTest.java",
+"authors": [
+[
+"binhtntse182370",
+1
+]
+]
+},
+"RevenueReportServiceTest": {
+"file": "order-service/src/test/java/com/huynqb/laundrylocker/order/service/RevenueReportServiceTest.java",
+"authors": [
+[
+"viltyse182544",
+2
+],
+[
+"huynqbse180211",
+1
+]
+]
+},
+"PaymentServiceCheckoutTest": {
+"file": "payment-service/src/test/java/com/huynqb/laundrylocker/payment/service/PaymentServiceCheckoutTest.java",
+"authors": [
+[
+"huynqbse180211",
+6
+],
+[
+"binhtntse182370",
+3
+],
+[
+"viltyse182544",
+2
+]
+]
+},
+"PaymentServiceMoneyRulesTest": {
+"file": "payment-service/src/test/java/com/huynqb/laundrylocker/payment/service/PaymentServiceMoneyRulesTest.java",
+"authors": [
+[
+"huynqbse180211",
+2
+],
+[
+"nhatkse182290",
+1
+],
+[
+"binhtntse182370",
+1
+]
+]
+},
+"SepayServiceTest": {
+"file": "payment-service/src/test/java/com/huynqb/laundrylocker/payment/service/SepayServiceTest.java",
+"authors": [
+[
+"binhtntse182370",
+4
+],
+[
+"huynqbse180211",
+2
+],
+[
+"viltyse182544",
+1
+]
+]
+},
+"WalletServiceWithdrawTest": {
+"file": "payment-service/src/test/java/com/huynqb/laundrylocker/payment/service/WalletServiceWithdrawTest.java",
+"authors": [
+[
+"binhtntse182370",
+3
+],
+[
+"huynqbse180211",
+1
+]
+]
+},
+"LoyaltyRedemptionTest": {
+"file": "loyalty-service/src/test/java/com/huynqb/laundrylocker/loyalty/service/LoyaltyRedemptionTest.java",
+"authors": [
+[
+"binhtntse182370",
+2
+],
+[
+"viltyse182544",
+1
+],
+[
+"huynqbse180211",
+1
+]
+]
+},
+"LoyaltyOrderPointsTest": {
+"file": "loyalty-service/src/test/java/com/huynqb/laundrylocker/loyalty/service/LoyaltyOrderPointsTest.java",
+"authors": [
+[
+"binhtntse182370",
+2
+],
+[
+"huynqbse180211",
+2
+],
+[
+"viltyse182544",
+1
+]
+]
+},
+"VoucherExchangeServiceTest": {
+"file": "order-service/src/test/java/com/huynqb/laundrylocker/order/service/VoucherExchangeServiceTest.java",
+"authors": [
+[
+"binhtntse182370",
+1
+]
+]
+},
+"NotificationServiceTest": {
+"file": "notification-service/src/test/java/com/huynqb/laundrylocker/notification/service/NotificationServiceTest.java",
+"authors": [
+[
+"binhtntse182370",
+3
+],
+[
+"huynqbse180211",
+2
+],
+[
+"viltyse182544",
+1
+]
+]
+},
+"GuestEmailSenderTest": {
+"file": "notification-service/src/test/java/com/huynqb/laundrylocker/notification/channel/GuestEmailSenderTest.java",
+"authors": [
+[
+"viltyse182544",
+1
+],
+[
+"huynqbse180211",
+1
+]
+]
+},
+"LockerServiceSlaAndQueueTest": {
+"file": "locker-service/src/test/java/com/huynqb/laundrylocker/locker/service/LockerServiceSlaAndQueueTest.java",
+"authors": [
+[
+"nhatkse182290",
+3
+],
+[
+"huynqbse180211",
+1
+]
+]
+},
+"LockerServiceInspectionTest": {
+"file": "locker-service/src/test/java/com/huynqb/laundrylocker/locker/service/LockerServiceInspectionTest.java",
+"authors": [
+[
+"nhatkse182290",
+5
+],
+[
+"binhtntse182370",
+1
+],
+[
+"huynqbse180211",
+1
+]
+]
+},
+"LockerServiceBoxBatchTest": {
+"file": "locker-service/src/test/java/com/huynqb/laundrylocker/locker/service/LockerServiceBoxBatchTest.java",
+"authors": [
+[
+"viltyse182544",
+1
+],
+[
+"binhtntse182370",
+1
+]
+]
+},
+"ReportAttachmentServiceTest": {
+"file": "locker-service/src/test/java/com/huynqb/laundrylocker/locker/service/ReportAttachmentServiceTest.java",
+"authors": [
+[
+"huynqbse180211",
+2
+]
+]
+},
+"IotServiceTest": {
+"file": "iot-service/src/test/java/com/huynqb/laundrylocker/iot/service/IotServiceTest.java",
+"authors": [
+[
+"huynqbse180211",
+5
+],
+[
+"binhtntse182370",
+3
+]
+]
+},
+"CabinetControlServiceTest": {
+"file": "iot-service/src/test/java/com/huynqb/laundrylocker/iot/service/CabinetControlServiceTest.java",
+"authors": [
+[
+"huynqbse180211",
+2
+],
+[
+"nhatkse182290",
+1
+]
+]
+},
+"LockerMqttServiceTest": {
+"file": "iot-service/src/test/java/com/huynqb/laundrylocker/iot/service/LockerMqttServiceTest.java",
+"authors": [
+[
+"huynqbse180211",
+5
+]
+]
+},
+"DronePickupServiceTest": {
+"file": "order-service/src/test/java/com/huynqb/laundrylocker/order/service/DronePickupServiceTest.java",
+"authors": [
+[
+"nhatkse182290",
+4
+],
+[
+"binhtntse182370",
+1
+],
+[
+"viltyse182544",
+1
+]
+]
+},
+"DroneRefundServiceTest": {
+"file": "order-service/src/test/java/com/huynqb/laundrylocker/order/service/DroneRefundServiceTest.java",
+"authors": [
+[
+"viltyse182544",
+4
+],
+[
+"nhatkse182290",
+1
+],
+[
+"huynqbse180211",
+1
+]
+]
+},
+"DroneWeatherServiceTest": {
+"file": "order-service/src/test/java/com/huynqb/laundrylocker/order/service/DroneWeatherServiceTest.java",
+"authors": [
+[
+"viltyse182544",
+3
+],
+[
+"binhtntse182370",
+1
+]
+]
+},
+"AssistantServiceTest": {
+"file": "assistant-service/src/test/java/com/huynqb/laundrylocker/assistant/chat/AssistantServiceTest.java",
+"authors": [
+[
+"huynqbse180211",
+1
+]
+]
+},
+"DroneHomePickupFlowPostgresTest": {
+"file": "order-service/src/test/java/com/huynqb/laundrylocker/order/it/DroneHomePickupFlowPostgresTest.java",
+"authors": [
+[
+"huynqbse180211",
+3
+],
+[
+"viltyse182544",
+3
+]
+]
+}
+}

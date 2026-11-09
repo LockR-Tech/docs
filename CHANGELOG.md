@@ -4,6 +4,32 @@ Mỗi thay đổi ở repo docs thêm **một dòng** vào ngày tương ứng (
 
 ## 2026-11-09
 
+- flow-3 § 8 + gap F3-G12 (mới): lắp đặt & nghiệm thu tủ — vòng đời tủ PLANNED → INSTALLING → COMMISSIONING → ACTIVE, checklist 8 bước (bước máy kiểm được do hệ thống tự xác nhận, ảnh bắt buộc cho bước làm tay), gán Pi bằng QR kiosk; tính năng mới nên không thêm hạng mục checklist, % giữ nguyên. architecture: endpoint + bảng + sự kiện mới; media-storage: purpose `INSTALLATION_PHOTO`; STATUS § 3: thêm dòng việc đang làm.
+- rp3/srs-assets/drawio: thêm activity diagram luồng bảo trì của KTV tủ (L3): `06f` xử lý phiếu sự cố (khách báo hỏng → định tuyến cho KTV phụ trách tủ → nhận phiếu, gia hạn SLA, từ chối hoặc dời hàng rồi sửa / khoá ô → RESOLVED, khách đánh giá) và `06g` kiểm tra định kỳ (nhắc khi tới hạn → checklist Đạt / Không đạt → mục không đạt mở phiếu cho chính KTV, xử lý xong mới dời hạn), sinh bằng `gen_activity.py`.
+- rp3 + rp4: bỏ toàn bộ phần ví (nạp ví, rút tiền, thanh toán bằng ví, điều chỉnh ví) vì khách, admin và các bên không dùng nữa (app khách đã gỡ ở mobile [#109](https://github.com/LockR-Tech/mobile/pull/109)). SRS: bỏ UC Manage Wallet, mục Top Up / Withdraw, BR-16, MSG15, 3 bảng ví; 3.2.24 thành Transaction History; đánh số lại UC, BR, MSG và mục 3.2.25–3.2.32. SDD: bỏ mục 3.12 Wallet, bảng ví của payment_db, class ví; đánh số lại 3.12–3.27. Vẽ lại use case, screen flow, ERD, class/sequence/package liên quan; Project Tracking bỏ 2 dòng WBS ví; rp5 đánh số lại BR/MSG theo SRS mới.
+- rp5/ (mới): Report 5 – Software Test Documentation theo form chương "Software Testing Documentation" của report mẫu: tài liệu Word + PDF, Unit Test (38 function, 428 unit test, kết quả chạy JUnit thật trên backend `main` 408d1fd: 414 pass, 14 untested vì không có Docker) và Test Report (45 module, 282 test case hệ thống, round 1); bỏ phần ví vì không còn dùng; script dựng lại trong `rp5/test-assets/_generator`.
+
+## 2026-11-08
+
+- review-2/ (mới): hướng dẫn và 4 biểu mẫu Review 2 của môn (BM01–BM04) gom vào `review-2/bieu-mau/`; Design Brief Lock.R bản nháp v1.0 điền trên BM01 kèm script dựng lại (`build_brief.py`, `to_pdf.ps1`) — còn chờ mã đề tài, thay đổi phiếu đăng ký và kết quả BM02.
+
+## 2026-11-07
+
+- STATUS § 5: màn "Đơn tủ" và màn thử Bluetooth của app khách dùng toast chung `AppToast` thay SnackBar đen (mobile [#132](https://github.com/LockR-Tech/mobile/pull/132), ADR-0010).
+- STATUS § 5: "Thanh toán bằng app ngân hàng" lưu mã VietQR vào Thư viện ảnh để app ngân hàng quét và tự điền — link `dl.vietqr.io` trên Android không mang dữ liệu (mobile [#131](https://github.com/LockR-Tech/mobile/pull/131), F2-G04).
+- STATUS § 5, ble-open-contract 1.1 (§ 7 mở ô theo đơn, một nút "Mở ô" Bluetooth trước rồi QR/OTP), mqtt-contract § 2.2 (`BOX_OPEN_BLE` kèm `nonce`/`userId`/`boxNumber`/`errorCode`): backend [#137](https://github.com/LockR-Tech/backend/pull/137), iot [#47](https://github.com/LockR-Tech/iot/pull/47), mobile [#130](https://github.com/LockR-Tech/mobile/pull/130) (F3-G11).
+- STATUS § 5: kiosk tự mở khi nhập đủ 6 số OTP (iot [#46](https://github.com/LockR-Tech/iot/pull/46), F2-G09).
+- STATUS § 5 + 03-hardware/pi-lockr-tu01 (việc còn mở): kiosk ẩn ô chọn tủ, chỉ hiện khi chạy thử `?chonTu=1` (iot [#45](https://github.com/LockR-Tech/iot/pull/45), F2-G09).
+- STATUS § 5: kiosk vẽ sơ đồ ô như tủ thật — thân tủ, cửa ô có đèn báo trạng thái, tấm màn hình, dải bãi đáp drone (iot [#44](https://github.com/LockR-Tech/iot/pull/44), F2-G09).
+- STATUS § 3, flow-2 F2.09, admin-reporting-api § 1.4–1.5, diagrams/order-status O11–O12: đơn EXPIRED (đồ ở kho) chỉ đóng bằng trao trả tại quầy — khách `complete`/`pickup-storage` và admin `PUT /status` bị chặn; app khách chỉ trả phí rồi được báo tới quầy nhận.
+- STATUS § 3, flow-2 F2.09, admin-reporting-api § 1.5, media-storage: trao đồ lưu kho tại quầy bắt buộc đối chiếu 4 số cuối SĐT người nhận, ảnh xác minh (`STORAGE_HANDOVER`) và khai đã thu khi khách còn nợ — `POST /api/admin/orders/{id}/storage-handover`, biên bản `storage_handovers`.
+- STATUS § 3, flow-2 F2.09, admin-reporting-api: trang admin "Đồ lưu kho" (`/admin/storage`) cho đơn quá hạn đã dời vào kho; `AdminOrderResponse.storage` (lúc vào kho, ai chuyển) và sắp xếp theo `pickupDeadline`.
+- STATUS § 5: sửa lỗi kiosk gửi lại OTP SĐT báo "reCAPTCHA has already been rendered in this element" (iot [#43](https://github.com/LockR-Tech/iot/pull/43), F2-G09).
+- STATUS § 5 + 04-engineering/cau-hinh-dich-vu-ngoai § 11c: SMS OTP Firebase bằng tiếng Việt (`languageCode = 'vi'`, iot [#42](https://github.com/LockR-Tech/iot/pull/42), mobile [#128](https://github.com/LockR-Tech/mobile/pull/128), F2-G09); câu chữ SMS không sửa được, tên trong tin lấy từ Public-facing name của project.
+- STATUS § 5 + 03-hardware/pi-lockr-tu01 (Cập nhật code): kiosk gửi lại OTP, reCAPTCHA tách khỏi nút, Pi tự cập nhật code qua timer `lockr-auto-update` (iot [#41](https://github.com/LockR-Tech/iot/pull/41), F2-G09); ghi lỗi OTP SMS web `INVALID_APP_CREDENTIAL` còn mở.
+
+## 2026-11-09
+
 - rp3 SRS khớp rp4 SDD: bỏ ví (nạp, rút, điều chỉnh ví, gói dịch vụ), đăng nhập khuôn mặt, SMS, khởi động lại bộ điều khiển, mobile web, landing page khỏi chữ, bảng màn hình, use case (UC12 cũ bỏ, đánh số lại), BR-16 / MSG15 (đánh số lại), mục 3.2.25–3.2.26 và hình 3.2.24.1, 3.6.8.5 (mục 3.2.27–3.2.34 thành 3.2.25–3.2.32); tủ dùng Raspberry Pi 4; sinh lại `01`, `02`, `03a`–`03d` (`gen_context.py`, `gen_usecase.py`, `gen_screens_bus.py`); ERD 3.1.5 thay bằng ERD khái niệm + 10 ERD logic theo database của rp4, bảng thực thể theo database (thêm `system_settings` / `system_setting_audits`, bỏ `wallets`, `wallet_transactions`, `withdrawal_requests`, `ble_test_grants`, `ble_signing_keys`, `drone_delivery_requests`); thêm dòng Record of Changes 09/11.
 
 ## 2026-11-06
@@ -12,6 +38,7 @@ Mỗi thay đổi ở repo docs thêm **một dòng** vào ngày tương ứng (
 
 ## 2026-11-05
 
+- rp3/srs-assets/drawio/06b-activity-rent-locker: nút gộp trước bước "Open box again" nhận luồng chính từ bên trái, vòng lặp [continue rental] từ trên (trước đó mũi tên đâm vào đáy hình thoi).
 - rp3/srs-assets/logical-erd-microservices `05`, `06`, `07`, `08`, `10`: bản gọn để chiếu slide ngang (sinh bằng `_generator/gen_slide.py`): tên bảng chỉ snake_case, bảng xếp sát, màu như user-service; thực thể tham chiếu ghi `(database gốc)` + kiểu thật của cột, mỗi bảng chỉ một hộp; riêng `orders` chỉ giữ 25 cột chính, các bảng khác giữ đủ cột.
 - flow-1 § cập nhật 2026-11-05 + STATUS § 3: app KTV drone tách "Vào ca" (online + toạ độ) khỏi công tắc nhận việc lấy hàng (chỉ bật mới thấy lời mời), sửa xác nhận nạp xong vẫn hiện nút "Xác nhận nạp".
 

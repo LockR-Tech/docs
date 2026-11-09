@@ -128,7 +128,7 @@ Sự cố 1–18 xảy ra trên bản cài USB flash đầu tiên; 19–21 khi d
 | Xem trạng thái | `systemctl status lockr-controller lockr-kiosk postgresql --no-pager` |
 | Log | `journalctl -u lockr-controller -f` · `journalctl -u lockr-kiosk -f` |
 | Tắt máy | `sudo sync && sudo poweroff` — **không rút nguồn ngang** |
-| Cập nhật code | `cd ~/iot && git pull && uv sync`, rồi `cd ui && npm ci --no-audit --no-fund && npm run build && sync` (~40 giây), `sudo systemctl restart lockr-controller lockr-kiosk lightdm` |
+| Cập nhật code | **Tự động** từ [iot#41](https://github.com/LockR-Tech/iot/pull/41): timer `lockr-auto-update` mỗi 5 phút kéo fast-forward `main`; `ui/` đổi ⇒ build `ui/dist.new`, thành công mới thay bản chạy, khởi động lại `lockr-kiosk` và tải lại Chromium (build lỗi giữ bản cũ); code Python đổi ⇒ khởi động lại `lockr-controller`. Bỏ qua khi `~/iot` có thay đổi chưa commit hoặc không ở `main`. Cài một lần: `cd ~/iot && git pull && sudo bash scripts/install-pi-auto-update.sh` · log: `journalctl -u lockr-auto-update -n 50` · chạy ngay: `sudo systemctl start lockr-auto-update` · tắt: `sudo systemctl disable --now lockr-auto-update.timer`. Cập nhật tay (khi tắt timer): `cd ~/iot && git pull && uv sync`, rồi `cd ui && npm ci --no-audit --no-fund && npm run build && sync`, `sudo systemctl restart lockr-controller lockr-kiosk lightdm` |
 | Cập nhật hệ thống | `sudo apt update && sudo apt full-upgrade -y` |
 | Đổi tủ trên kiosk | sửa `VITE_LOCKER_ID`, `VITE_LOCKER_CODE` trong `~/iot/ui/.env.local` → `npm run build && sync` → `sudo systemctl restart lockr-kiosk lightdm` |
 | Xem kiosk khi chưa có màn hình | `ssh -N -L 3002:127.0.0.1:3002 -L 8000:127.0.0.1:8000 lockr@lockr-tu01.local`, mở `http://localhost:3002` trên laptop |
@@ -141,7 +141,7 @@ Sự cố 1–18 xảy ra trên bản cài USB flash đầu tiên; 19–21 khi d
 |---|---|
 | Nối dây theo [hướng dẫn có ảnh](tu01-wiring-photos.md) (jumper relay **H**, `PUL+`/`DIR+` về **3,3 V**, đo dây tín hiệu khoá trước; 6 điểm ảnh chưa trả lời được ở § 8 của hướng dẫn), bring-up theo guide § 5 | Code GPIO đã thử trên chip thật nhưng chưa có phần cứng tủ nối vào |
 | Lắp màn vào tủ, cố định đầu chuyển micro-HDMI | Đầu chuyển lỏng làm HDMI chập chờn (sự cố 22) |
-| Cân nhắc ẩn ô chọn tủ trên kiosk thật | Khách đứng trước tủ chọn được tủ khác trong danh sách |
+| ~~Cân nhắc ẩn ô chọn tủ trên kiosk thật~~ | Xong 07/11 ([iot #45](https://github.com/LockR-Tech/iot/pull/45)): ẩn mặc định, chạy thử thêm `?chonTu=1` |
 | Khi nối relay: kiểm K1, K2 không nháy lúc cấp điện cho Pi | GPIO5, GPIO6 (`IN1`, `IN2`) kéo lên lúc khởi động; đã ép mức thấp từ firmware, nhưng vài giây đầu trước khi firmware đọc `config.txt` chưa đo được ([spec § 6.1](cabinet-wiring-spec.md#61-tủ-lockr-tu01-chân-theo-người-làm-tủ)) |
 | Hỏi người làm tủ: chân của nắp trượt (TB6600, 2 công tắc hành trình), vị trí jumper relay, dây nâu thứ bảy | Hướng dẫn 2026-10-01 mới nêu relay và dây tín hiệu khoá |
 | Nối dây xong: gán Pi vào tủ `CAB-TU01` (id 7) trên admin ([guide § 5.8](controller-wiring-guide.md#5-kiểm-tra-từng-bước-bring-up)), rồi chuyển tủ từ `MAINTENANCE` sang `ACTIVE`. **Không** đặt `LOCKER_ID=1` — tủ #1 `CAB-DEMO-01` do giả lập demo trả lời, hai bên cùng trả lời thì demo lỗi | Code hợp đồng MQTT đã có trên Pi (`137d945`, [ADR-0008](../adr/0008-hop-dong-mqtt-backend-tu.md)) |

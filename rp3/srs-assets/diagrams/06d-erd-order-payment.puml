@@ -65,20 +65,6 @@ entity "refunds" as RF {
   bank_name, account_number
   proof_image_url
 }
-entity "wallets" as WL {
-  *id <<PK>>
-  user_id, balance, currency
-}
-entity "wallet_transactions" as WT {
-  *id <<PK>>
-  wallet_id <<FK>>
-  type, amount, balance_after
-}
-entity "withdrawal_requests" as WR {
-  *id <<PK>>
-  user_id, amount, status
-  bank_name, account_number
-}
 entity "user_bank_accounts" as UBA {
   *id <<PK>>
   user_id, bank_name
@@ -92,10 +78,7 @@ PR ||--o{ PC
 PR ||--o{ PU
 OR ||--o{ PU
 PM ||--o{ RF
-WL ||--o{ WT
 UP ||..o{ OR
 OR ||..o{ PM
-UP ||..o| WL
-UP ||..o{ WR
 UP ||..o{ UBA
 @enduml

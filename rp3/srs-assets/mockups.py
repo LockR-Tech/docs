@@ -229,12 +229,6 @@ SCREENS["m13-assistant"] = phone("Trợ lý AI", "<div class='bubble me'>Đơn O
     "<div class='bubble bot'>Phí quá hạn là 500 đ mỗi giờ, tối đa 50.000 đ và không vượt 50 % giá đơn.<div class='cite'>[1] Quy định gửi hàng</div></div>"
     "<div style='position:absolute;bottom:66px;left:14px;right:14px' class='row'><div class='in' style='flex:5'>Nhập câu hỏi…</div><div class='btn' style='margin:0;flex:1'>Gửi</div></div>", nav=3, back=False)
 
-# 14 Wallet withdraw
-SCREENS["m14-withdraw"] = phone("Rút tiền", "<div class='card' style='text-align:center'><span class='muted'>Số dư ví</span><div style='font-size:24px;font-weight:bold;color:#D84315'>120.000 đ</div></div>" +
-    field("Ngân hàng", "MB Bank", sel=True) + field("Số tài khoản", "0123456789") + field("Tên chủ tài khoản", "NGUYEN VAN A") + field("Số tiền", "50.000") +
-    "<div class='muted' style='margin-top:6px'>Số tiền rút tối thiểu là 10.000 đ. Ví bị trừ ngay, yêu cầu chờ admin duyệt.</div>"
-    "<div class='btn'>Gửi yêu cầu rút tiền</div><div class='btn3'>Yêu cầu rút tiền</div>")
-
 # K1 Kiosk
 SCREENS["k01-kiosk-pin"] = ("<div class='kiosk'><div style='display:flex;height:100%'>"
     "<div style='flex:1;padding:30px'><div style='font-size:26px;font-weight:bold;color:#D84315'>LOCK.R</div><div class='muted'>CAB-TU01 · Lock.R FPT University</div>"
@@ -262,7 +256,7 @@ SCREENS["a01-locker-layout"] = browser("/admin/lockers/7", "Lockers",
 
 # A2 Admin refunds
 SCREENS["a02-refunds"] = browser("/admin/refunds", "Refunds",
-    "<h2>Refunds &amp; Withdrawals</h2><div class='toolbar'><span class='chip on'>Pending (4)</span><span class='chip'>Approved</span><span class='chip'>Rejected</span><span class='chip'>Withdrawals</span><div class='in' style='margin-left:auto'>Search order / phone…</div></div>"
+    "<h2>Refunds</h2><div class='toolbar'><span class='chip on'>Pending (4)</span><span class='chip'>Approved</span><span class='chip'>Rejected</span><div class='in' style='margin-left:auto'>Search order / phone…</div></div>"
     "<div style='display:flex;gap:20px'><div style='flex:1'><table><tr><th>Order</th><th>Customer</th><th>Amount</th><th>Reason</th><th>Requested</th><th>Status</th></tr>"
     "<tr style='background:#FFF8F5'><td>ORD-…0033</td><td>0901 234 567</td><td>18.000 đ</td><td>Drone flight failed</td><td>21/10 10:40</td><td><span class='badge b-o'>PENDING</span></td></tr>"
     "<tr><td>ORD-…0029</td><td>0912 000 111</td><td>15.000 đ</td><td>Tủ lỗi không mở được</td><td>21/10 09:12</td><td><span class='badge b-o'>PENDING</span></td></tr>"

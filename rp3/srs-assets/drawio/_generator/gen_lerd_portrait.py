@@ -35,7 +35,7 @@ PAGES = [
     ("05c-logical-erd-order", "Logical ERD (3/4) — Orders, Payments, Promotions &amp; Loyalty", {
         "OrderStatusHistory": (0, 0), "OrderDetail": (0, 1), "OrderRating": (0, 2), "OrderComplaint": (0, 3),
         "PaymentRecord": (0, 4), "RefundRecord": (0, 5),
-        "LockerOrder": (1, 1), "Wallet": (1, 3), "WalletTransaction": (1, 4), "WithdrawalRecord": (1, 5),
+        "LockerOrder": (1, 1),
         "Promotion": (2, 2), "PromotionUsage": (2, 3), "PointTransaction": (2, 4), "LoyaltyAccount": (2, 5),
         "PromotionClaim": (2, 6), "UserBankAccount": (2, 7),
     }, {"LockerBox": (1, 0), "UserProfile": (1, 2, 6), "StoreLocation": (2, 0), "LockerUnit": (2, 1)}, 14),

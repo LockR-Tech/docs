@@ -68,6 +68,8 @@ Thư mục trên Cloudinary: `<root>/avatars|reports|stores|promotions/u<userId>
 | `AVATAR` | Mọi tài khoản | Ảnh đại diện |
 | `STORE_IMAGE` | ADMIN | Ảnh cửa hàng |
 | `PROMOTION_IMAGE` | ADMIN | Ảnh khuyến mãi |
+| `STORAGE_HANDOVER` | ADMIN | Ảnh xác minh khi trao đồ lưu kho tại quầy (`POST /api/admin/orders/{id}/storage-handover`) |
+| `INSTALLATION_PHOTO` | Mọi tài khoản (server chỉ nhận ảnh của KTV được giao hoặc ADMIN) | Ảnh hồ sơ lắp đặt tủ: theo bước (`MOUNTING`, `KIOSK`…) hoặc ảnh hiện trường — `POST /api/locker-technician/installations/{id}/photos`, thư mục `installations/u{userId}/` (F3-G12) |
 
 ## 4. API
 

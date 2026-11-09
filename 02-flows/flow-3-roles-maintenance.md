@@ -78,6 +78,7 @@ V = xem · T = kích hoạt chuyển trạng thái. **Chữ đậm = lỗ hổng
 | **F3-G09** | Dọn UI chết + role guard mobile: enum vai trò web, Partner portal, `BoxSettingModal` ghi `MAINTENANCE`, `LockerCard.tsx:50`; route legacy `features/maintenance/*` | `frontend/fe/src/…`, `mobile/lib/core/routing/app_router.dart` | F3.01, F3.04 |
 | **F3-G10** | Một enum `Role` dùng chung trong `common-lib`, validate ở auth + user-service | `backend/common-lib` | F3.01 |
 | **F3-G11** | Thử mở ô qua Bluetooth: admin cho từng tài khoản khách thử trên từng tủ (trang chi tiết tủ), app có nút ở Hồ sơ, chọn ô bất kỳ, Pi kiểm mã Ed25519 rồi kích relay — [ble-open-contract](../01-overview/ble-open-contract.md). Công cụ thử phần cứng, không tính vào checklist | `backend/iot-service/…/BleTestService.java`, `iot/services/ble_gatt_service.py`, `mobile/lib/features/locker_ops/presentation/pages/ble_test_page.dart`, `frontend/fe/src/pages/Admin/lockers/components/BluetoothTestPanel.tsx` | — |
+| **F3-G12** | **Lắp đặt & nghiệm thu tủ**: admin lập hồ sơ (KTV lắp đặt, lịch, hiện trường, phần cứng) ⇒ tủ `PLANNED → INSTALLING → COMMISSIONING → ACTIVE`, khách chỉ thấy tủ ACTIVE; checklist 8 bước — bước máy kiểm được do hệ thống tự xác nhận, bước làm tay KTV xác nhận kèm ảnh; gán Pi bằng QR kiosk — [§ 8](#8-lắp-đặt--nghiệm-thu-tủ-f3-g12). Tính năng mới, không tính vào checklist. PR mở 09/11: [backend #138](https://github.com/LockR-Tech/backend/pull/138), [frontend #101](https://github.com/LockR-Tech/frontend/pull/101), [mobile #134](https://github.com/LockR-Tech/mobile/pull/134), [iot #48](https://github.com/LockR-Tech/iot/pull/48) | `backend/locker-service/…/service/LockerInstallationService.java`, `backend/iot-service/…/service/CabinetCommissioningService.java`, `frontend/fe/src/pages/Admin/lockers/components/InstallationPanel.tsx`, `mobile/lib/features/locker_ops/presentation/pages/installation_detail_page.dart`, `iot/ui/src/screens/SetupScreen.jsx` | — |
 
 ## 7. Xoá mềm ở trang admin
 
@@ -93,3 +94,38 @@ Quyết định: [ADR-0009](../adr/0009-xoa-mem-co-ly-do-o-trang-admin.md). Khô
 Mọi trường hợp đều trả `DELETE_REASON_REQUIRED` khi thiếu lý do. Hộp nhập lý do dùng chung: `frontend/fe/src/components/shared/data-table/DeleteReasonDialog.tsx:32`.
 
 Phân biệt với ma trận vai trò ở § 4: chỉ ADMIN gọi được các API này (`/api/admin/**`).
+
+## 8. Lắp đặt & nghiệm thu tủ (F3-G12)
+
+Trước đây admin tạo tủ là khách thấy ngay, không có thông tin lắp đặt cho admin hay KTV. Nay tủ mới đi qua một **hồ sơ lắp đặt**. Tính năng mới nên không thêm hạng mục checklist, % giữ nguyên. PR mở 09/11, chưa merge: [backend #138](https://github.com/LockR-Tech/backend/pull/138), [frontend #101](https://github.com/LockR-Tech/frontend/pull/101), [mobile #134](https://github.com/LockR-Tech/mobile/pull/134), [iot #48](https://github.com/LockR-Tech/iot/pull/48).
+
+**Vòng đời** (trạng thái tủ đổi theo hồ sơ, admin không đổi tay được khi hồ sơ còn mở — `LOCKER_INSTALLATION_OPEN`):
+
+| Hồ sơ | Tủ | Ai chuyển | Khách |
+|---|---|---|---|
+| `SCHEDULED` | `PLANNED` | Admin lập hồ sơ (tủ không được có ô giữ hàng / giữ chỗ) | Không thấy, không đặt được |
+| `IN_PROGRESS` | `INSTALLING` | KTV bấm Bắt đầu; admin trả lại cũng về đây | Không thấy |
+| `SUBMITTED` | `COMMISSIONING` | KTV gửi duyệt khi đủ | Không thấy |
+| `APPROVED` | `ACTIVE` | Admin duyệt (server kiểm lại dữ liệu tủ) | Thấy và đặt được |
+| `CANCELLED` | trạng thái trước khi lập hồ sơ (hoặc `INACTIVE`) | Admin huỷ kèm lý do | Như trạng thái đó |
+
+Danh sách tủ cho khách / kiosk (`GET /api/lockers`, `/api/iot/lockers`) bỏ tủ đang lắp đặt; đặt ô chỉ nhận tủ `ACTIVE` (trước đây chỉ loại `MAINTENANCE`/`INACTIVE`) — `backend/locker-service/…/service/LockerService.java` `isBookable`, `customerVisible`.
+
+**Checklist** — KTV không chỉ tích ô:
+
+| Bước | Ai xác nhận | Cách |
+|---|---|---|
+| Lắp khung (`MOUNTING`) | KTV | Chụp ảnh (bắt buộc) rồi xác nhận |
+| Mạng (`NETWORK`) | Hệ thống | Bộ điều khiển của tủ online (heartbeat) |
+| Gán bộ điều khiển (`CONTROLLER`) | Hệ thống | Pi báo cài sơ đồ ô `COMPLETED` sau khi KTV quét QR |
+| Cấu hình phần cứng (`HARDWARE_CONFIG`) | Hệ thống | Admin áp cấu hình từ web, tủ xác nhận (áp vẫn chỉ ADMIN) |
+| Mở thử từng ô (`BOX_TEST`) | Hệ thống | Lệnh mở thử mới nhất của **từng ô** từ khi bắt đầu lắp (`cabinet_control_logs`) |
+| Nắp (`LID`) | Hệ thống / KTV | Mở + đóng nắp thành công; tủ không có nắp thì KTV đánh dấu không áp dụng kèm lý do |
+| Kiosk (`KIOSK`) | KTV | Chụp ảnh (bắt buộc) rồi xác nhận |
+| Bluetooth (`BLUETOOTH`) | KTV | Xác nhận hoặc không áp dụng |
+
+Gửi duyệt cần mọi bước đạt / không áp dụng và **ít nhất 2 ảnh hiện trường**. Ảnh dùng purpose `INSTALLATION_PHOTO` ([media-storage](../01-overview/media-storage.md)).
+
+**Gán Pi bằng QR:** Pi chưa phục vụ tủ nào (`/system/state` → `isConfigured = false`) thì kiosk hiện QR `LOCKR-PI:<MAC>` (`iot/ui/src/screens/SetupScreen.jsx`). App KTV quét ⇒ `POST /api/locker-technician/cabinet/{lockerId}/controller` ⇒ iot-service kiểm Pi đã tự khai báo, online, không thuộc tủ khác rồi gửi lệnh setup + mở thử từng ô như admin gán trên web. Quét không được thì chọn trong `GET …/controller/candidates`.
+
+**Thông báo:** `locker.installation.assigned` (giao hồ sơ) và `locker.installation.reviewed` (duyệt / trả lại / huỷ) tới KTV, `referenceType = LOCKER_INSTALLATION`; app mở `/technician-installations?id=`.

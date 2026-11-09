@@ -158,7 +158,13 @@ Backend ghi `device_statuses` với `deviceId` = `macAddress` (nếu thiếu th�
   "message": "Kích relay ô 4 trong 3000 ms (lệnh từ hệ thống)", "occurredAt": "…" }
 ```
 
-- `action` ∈ `BOX_OPEN | BOX_TEST | LID_OPEN | LID_CLOSE | LID_HOME | LID_JOG`; `status` ∈ `OK | STOPPED | FAILED`. Trường không có giá trị thì bỏ hẳn.
+- `action` ∈ `BOX_OPEN | BOX_TEST | BOX_OPEN_BLE | BLE_REJECTED | LID_OPEN | LID_CLOSE | LID_HOME | LID_JOG`; `status` ∈ `OK | STOPPED | FAILED`. Trường không có giá trị thì bỏ hẳn.
+- **Mở ô qua Bluetooth** (`BOX_OPEN_BLE`, `BLE_REJECTED`) kèm `nonce` (hex 16 ký tự của mã), `userId`, `boxNumber`; mở được nhưng cửa vẫn đóng ⇒ `status: FAILED`, `errorCode: JAMMED`. Nonce thuộc mã **theo đơn** ⇒ iot-service chuyển trạng thái đơn như mở bằng PIN/QR ([ble-open-contract § 7](ble-open-contract.md#7-mở-ô-theo-đơn)); nonce của mã thử ⇒ chỉ ghi nhật ký.
+
+```json
+{ "eventId": "a71e…", "action": "BOX_OPEN_BLE", "status": "OK", "slotIndex": 0, "boxNumber": 1,
+  "nonce": "9f3c2a1b0d4e5f67", "userId": 42, "message": "Mở ô 1 qua Bluetooth (tài khoản #42)", "occurredAt": "…" }
+```
 - **Không mất khi tủ mất mạng:** Pi ghi sự kiện vào `config/control_log_outbox.jsonl` (`CONTROL_LOG_FILE`, fsync) **trước**, rồi mới gửi theo thứ tự; chỉ xoá dòng khi broker xác nhận (PUBACK). Mất mạng hoặc Pi khởi động lại thì gửi tiếp khi có mạng. File giữ tối đa 5000 dòng (bỏ dòng cũ nhất).
 - Có thể tới **muộn hoặc lặp**: backend giữ `occurredAt` làm giờ xảy ra (đồng hồ Pi lệch về tương lai quá 5 phút thì lấy giờ nhận) và bỏ trùng theo `eventId` (cột `UNIQUE`). `slotIndex` ⇒ `boxNumber = slotIndex + 1`.
 - iot-service lưu vào `cabinet_control_logs` (source `CABINET`), cùng bảng với lệnh admin/KTV gửi từ trang "Điều khiển tủ" (source `WEB`, ghi ngay kể cả khi `TIMEOUT`; lệnh `panel` không ghi vì trang hỏi 4 giây một lần). Đọc: `GET /api/locker-technician/cabinet/{lockerId}/logs?limit=100` (tối đa 200, mới nhất trước, cùng phân quyền với điều khiển tủ).
