@@ -77,6 +77,22 @@ PKG = ("shape=folder;tabWidth=32;tabHeight=14;tabPosition=left;html=1;whiteSpace
 DEP = ("edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;dashed=1;endArrow=open;endSize=9;strokeColor=#333333;"
        "jettySize=auto;orthogonalLoop=1;")
 
+# UML notation: a package that shows its contents carries its name in the tab; a package shown without
+# contents carries its name in the body; a file / module inside a package is a plain packaged element.
+TAB_H, TAB_H_FRAME = 22, 30
+
+
+def pkg_tab_style(label, frame=False):
+    size, th = (16, TAB_H_FRAME) if frame else (13, TAB_H)
+    fill, stroke = ("#dae8fc", "#6c8ebf") if frame else ("#fff2cc", "#d6b656")
+    tab = int(tw(label, size, True) + 22)
+    return (f"shape=folder;tabWidth={tab};tabHeight={th};tabPosition=left;html=1;whiteSpace=nowrap;fillColor={fill};"
+            f"strokeColor={stroke};verticalAlign=top;align=left;spacingLeft=9;spacingTop={2 if frame else 1};"
+            f"fontStyle=1;fontSize={size};")
+
+
+ELEM = ("rounded=0;html=1;whiteSpace=wrap;fillColor=#ffffff;strokeColor=#d6b656;fontSize=12;")
+
 
 def package_diagram(name, title, groups, singles, deps, cell_w=150, cell_h=56):
     """groups: [(gid, label, x, y, cols, [pkg names])]; singles: [(pid, label, x, y)]; deps: [(from, to)]
@@ -110,112 +126,358 @@ def package_diagram(name, title, groups, singles, deps, cell_w=150, cell_h=56):
 
 
 # ---------------------------------------------------------------- classes
-CLS_FILL = {"controller": "#7EA6E0", "service": "#7EA6E0", "interface": "#A9C4EB", "repository": "#A9C4EB",
-            "entity": "#B9E0A5", "client": "#FFE6CC", "external": "#F5F5F5", "component": "#7EA6E0", "dto": "#E1D5E7"}
+CLS_BLUE = "#94B6E7"        # one colour for every class box
 STEREO = {"controller": "Controller", "service": "Service", "interface": "Interface", "repository": "Repository",
           "entity": "Entity", "client": "FeignClient", "external": "External", "component": "Component", "dto": "DTO"}
+CLS_HEAD = 40
+
+
+try:
+    from PIL import ImageFont
+    _F11, _F12B = ImageFont.truetype("arial.ttf", 11), ImageFont.truetype("arialbd.ttf", 12)
+
+    def _text_w(s, bold=False):
+        return (_F12B if bold else _F11).getlength(s)
+except Exception:                                   # no Pillow / font: rough estimate
+    def _text_w(s, bold=False):
+        return tw(s, 12 if bold else 11, bold) * 1.07
+
+
+def class_size(name, attrs, methods):
+    la, lm = attrs or [], methods or []
+    # text + spacingLeft 6 + spacingRight 4 + a small safety margin
+    w = max(120, _text_w(name, True) + 24, *(_text_w(s) + 20 for s in la + lm))
+    w = float(int(w + 0.999))
+    ha = round(len(la) * 13.2) + 8 if la else 10      # html text, fontSize 11 -> 13.2 px per line
+    hm = round(len(lm) * 13.2) + 8 if lm else 10
+    return w, CLS_HEAD + ha + 8 + hm, ha, hm
 
 
 def class_box(d, name, kind, attrs, methods, x, y, w=None):
-    lines_a = attrs or []
-    lines_m = methods or []
-    w = w or max(170, tw(name, 12, True) + 30, *(tw(s, 11) * 1.07 + 24 for s in lines_a + lines_m))
-    head = 40
-    ha = max(1, len(lines_a)) * 15 + 8 if lines_a else 10
-    hm = max(1, len(lines_m)) * 15 + 8 if lines_m else 10
-    h = head + ha + 8 + hm
-    fill = CLS_FILL[kind]
-    st = (f"swimlane;fontStyle=0;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize={head};"
+    lines_a, lines_m = attrs or [], methods or []
+    w0, h, ha, hm = class_size(name, lines_a, lines_m)
+    w = w or w0
+    st = (f"swimlane;fontStyle=0;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize={CLS_HEAD};"
           f"horizontalStack=0;resizeParent=1;resizeLast=0;collapsible=0;marginBottom=0;html=1;whiteSpace=wrap;"
-          f"fillColor={fill};swimlaneFillColor={fill};strokeColor=#36393d;fontSize=12;")
+          f"fillColor={CLS_BLUE};swimlaneFillColor={CLS_BLUE};strokeColor=#36393d;fontSize=12;")
     cid = d.v(f"&lt;&lt;{STEREO[kind]}&gt;&gt;<br><b>{esc(name)}</b>", x, y, w, h, st)
     txt = ("text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=6;spacingRight=4;"
            "overflow=hidden;rotatable=0;html=1;whiteSpace=nowrap;fontSize=11;")
-    d.v("<br>".join(esc(s) for s in lines_a), 0, head, w, ha, txt, parent=cid)
-    d.v("", 0, head + ha, w, 8, "line;strokeWidth=1;fillColor=none;align=left;verticalAlign=middle;spacingTop=-1;"
+    d.v("<br>".join(esc(s) for s in lines_a), 0, CLS_HEAD, w, ha, txt, parent=cid)
+    d.v("", 0, CLS_HEAD + ha, w, 8, "line;strokeWidth=1;fillColor=none;align=left;verticalAlign=middle;spacingTop=-1;"
         "spacingLeft=3;spacingRight=3;rotatable=0;labelPosition=right;points=[];portConstraint=eastwest;", parent=cid)
-    d.v("<br>".join(esc(s) for s in lines_m), 0, head + ha + 8, w, hm, txt, parent=cid)
+    d.v("<br>".join(esc(s) for s in lines_m), 0, CLS_HEAD + ha + 8, w, hm, txt, parent=cid)
     return cid, w, h
 
 
+_E = "edgeStyle=none;rounded=0;html=1;fontSize=10;labelBackgroundColor=#ffffff;strokeColor=#000000;"
 EDGE = {
-    "uses": "edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;dashed=1;endArrow=open;endSize=10;fontSize=10;labelBackgroundColor=#ffffff;",
-    "impl": "edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;dashed=1;endArrow=block;endFill=0;endSize=12;fontSize=10;labelBackgroundColor=#ffffff;",
-    "ext": "edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=0;endSize=12;fontSize=10;labelBackgroundColor=#ffffff;",
-    "assoc": "edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=none;fontSize=10;labelBackgroundColor=#ffffff;",
-    "async": "edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;dashed=1;dashPattern=1 3;endArrow=open;endSize=10;fontSize=10;labelBackgroundColor=#ffffff;",
+    "uses": _E + "dashed=1;endArrow=open;endSize=10;",
+    "impl": _E + "dashed=1;endArrow=block;endFill=0;endSize=12;",
+    "ext": _E + "endArrow=block;endFill=0;endSize=12;",
+    "assoc": _E + "endArrow=none;",
+    "async": _E + "dashed=1;dashPattern=1 3;endArrow=open;endSize=10;",
 }
+HIDDEN_LABELS = {"Uses", "Manages", "Feign", "Implements"}   # the arrow / stereotype already says it
 
 
-def class_diagram(name, rows, classes, edges, hgap=50, vgap=70):
+class _Router:
+    """Orthogonal routes between class boxes: straight when the boxes face each other, otherwise
+    vertical - horizontal - vertical through the free band between two rows. No segment crosses a box,
+    no two arrows run on top of each other."""
+
+    def __init__(self, geo):
+        self.geo, self.segs = geo, []
+
+    def blocked(self, seg, a, b, tight=False):
+        (x1, y1), (x2, y2) = seg
+        lx, hx, ly, hy = min(x1, x2), max(x1, x2), min(y1, y2), max(y1, y2)
+        for n, (rx, ry, rw, rh) in self.geo.items():
+            m = 0 if n in (a, b) else 8
+            if n in (a, b):
+                # a segment may only touch its own boxes at the end points
+                if lx < rx + rw - 1 and hx > rx + 1 and ly < ry + rh - 1 and hy > ry + 1:
+                    return True
+                continue
+            if lx < rx + rw + m and hx > rx - m and ly < ry + rh + m and hy > ry - m:
+                return True
+        for (p1, p2) in self.segs:
+            if x1 == x2 and p1[0] == p2[0] and abs(p1[0] - x1) < 20 and \
+                    min(hy, max(p1[1], p2[1])) - max(ly, min(p1[1], p2[1])) > -6:
+                return True
+            if y1 == y2 and p1[1] == p2[1] and abs(p1[1] - y1) < 20 and \
+                    min(hx, max(p1[0], p2[0])) - max(lx, min(p1[0], p2[0])) > -6:
+                return True
+        return False
+
+    def clear(self, segs, a, b):
+        return all(not self.blocked(s, a, b) for s in segs)
+
+    def crossings(self, segs):
+        n = 0
+        for (p1, p2) in segs:
+            for (q1, q2) in self.segs:
+                if p1[0] == p2[0] and q1[1] == q2[1]:
+                    x, y = p1[0], q1[1]
+                    if min(q1[0], q2[0]) + 2 < x < max(q1[0], q2[0]) - 2 and min(p1[1], p2[1]) + 2 < y < max(p1[1], p2[1]) - 2:
+                        n += 1
+                elif p1[1] == p2[1] and q1[0] == q2[0]:
+                    x, y = q1[0], p1[1]
+                    if min(p1[0], p2[0]) + 2 < x < max(p1[0], p2[0]) - 2 and min(q1[1], q2[1]) + 2 < y < max(q1[1], q2[1]) - 2:
+                        n += 1
+        return n
+
+    @staticmethod
+    def cands(lo, hi, pref, step=6, margin=16):
+        lo, hi = lo + margin, hi - margin
+        if hi < lo:
+            return []
+        pref = min(max(pref, lo), hi)
+        out = [pref]
+        k = 1
+        while pref - k * step >= lo or pref + k * step <= hi:
+            for v in (pref - k * step, pref + k * step):
+                if lo <= v <= hi:
+                    out.append(v)
+            k += 1
+        return out
+
+    def route(self, a, b, bands):
+        ax, ay, aw, ah = self.geo[a]
+        bx, by, bw, bh = self.geo[b]
+        acx, bcx = ax + aw / 2, bx + bw / 2
+        # 1. straight vertical
+        if ay + ah <= by or by + bh <= ay:
+            down = ay + ah <= by
+            lo, hi = max(ax, bx), min(ax + aw, bx + bw)
+            pref = (lo + hi) / 2
+            for x in self.cands(lo, hi, pref):
+                s = [((x, ay + ah if down else ay), (x, by if down else by + bh))]
+                if self.clear(s, a, b):
+                    return s
+        # 2. straight horizontal
+        if ax + aw <= bx or bx + bw <= ax:
+            right = ax + aw <= bx
+            lo, hi = max(ay + CLS_HEAD * 0.4, by + CLS_HEAD * 0.4), min(ay + ah, by + bh)
+            for y in self.cands(lo, hi, lo + 4, margin=0):
+                s = [((ax + aw if right else ax, y), (bx if right else bx + bw, y))]
+                if self.clear(s, a, b):
+                    return s
+        # 3. vertical - horizontal - vertical through a free band
+        if by >= ay + ah:                      # b below a
+            ea, eb, opts = ay + ah, by, [bd for bd in bands if bd[0] >= ay + ah - 1 and bd[1] <= by + 1]
+        elif ay >= by + bh:                    # b above a
+            ea, eb, opts = ay, by + bh, [bd for bd in bands if bd[0] >= by + bh - 1 and bd[1] <= ay + 1]
+        else:                                  # same row: leave and enter from below
+            ea, eb = ay + ah, by + bh
+            opts = [bd for bd in bands if bd[0] >= max(ay + ah, by + bh) - 1][:1]
+        fallback = None
+        for band in opts:
+            for yc in self.cands(band[0], band[1], (band[0] + band[1]) / 2, step=8, margin=12):
+                for xa in self.cands(ax, ax + aw, min(max(bcx, ax), ax + aw)):
+                    s1 = ((xa, ea), (xa, yc))
+                    if self.blocked(s1, a, b):
+                        continue
+                    for xb in self.cands(bx, bx + bw, bcx if abs(bcx - xa) > 1 else bcx):
+                        segs = [s1, ((xa, yc), (xb, yc)), ((xb, yc), (xb, eb))]
+                        if abs(xb - xa) < 1:
+                            segs = [((xa, ea), (xa, eb))]
+                        if self.clear(segs[1:] if len(segs) == 3 else segs, a, b):
+                            if not self.crossings(segs):
+                                return segs
+                            fallback = fallback or segs
+        if fallback:
+            alt = self.astar(a, b)
+            return alt if alt and not self.crossings(alt) else fallback
+        return self.astar(a, b)
+
+    def astar(self, a, b, step=10):
+        """Orthogonal path on a grid avoiding every box (with a margin) and the arrows already drawn."""
+        import heapq
+        xs0 = min(g[0] for g in self.geo.values()) - 80
+        ys0 = min(g[1] for g in self.geo.values()) - 80
+        X1 = max(g[0] + g[2] for g in self.geo.values()) + 80
+        Y1 = max(g[1] + g[3] for g in self.geo.values()) + 80
+        nx, ny = int((X1 - xs0) / step) + 1, int((Y1 - ys0) / step) + 1
+        P = lambda i, j: (xs0 + i * step, ys0 + j * step)
+
+        def inside(n, x, y, m):
+            rx, ry, rw, rh = self.geo[n]
+            return rx - m < x < rx + rw + m and ry - m < y < ry + rh + m
+        free = {}
+
+        def ok(i, j):
+            if (i, j) not in free:
+                x, y = P(i, j)
+                free[(i, j)] = 0 <= i < nx and 0 <= j < ny and not any(
+                    inside(n, x, y, 1 if n in (a, b) else 10) for n in self.geo)
+            return free[(i, j)]
+        used, near = set(), set()
+        for (p1, p2) in self.segs:
+            for t in range(0, int(max(abs(p2[0] - p1[0]), abs(p2[1] - p1[1])) / step) + 1):
+                x = p1[0] + (step * t if p2[0] > p1[0] else -step * t if p2[0] < p1[0] else 0)
+                y = p1[1] + (step * t if p2[1] > p1[1] else -step * t if p2[1] < p1[1] else 0)
+                i0, j0, v = round((x - xs0) / step), round((y - ys0) / step), p1[0] == p2[0]
+                used.add((i0, j0, v))
+                for k in (-1, 1):                # keep a free lane on both sides of an arrow
+                    near.add((i0 + k, j0, v) if v else (i0, j0 + k, v))
+
+        def ports(n):
+            rx, ry, rw, rh = self.geo[n]
+            out = []
+            for i in range(int((rx + 16 - xs0) / step) + 1, int((rx + rw - 16 - xs0) / step)):
+                out.append(((i, int((ry - xs0 * 0 - ys0) / step) - 1), (0, -1), (P(i, 0)[0], ry)))
+                out.append(((i, int((ry + rh - ys0) / step) + 1), (0, 1), (P(i, 0)[0], ry + rh)))
+            for j in range(int((ry + 30 - ys0) / step) + 1, int((ry + rh - 10 - ys0) / step)):
+                out.append(((int((rx - xs0) / step) - 1, j), (-1, 0), (rx, P(0, j)[1])))
+                out.append(((int((rx + rw - xs0) / step) + 1, j), (1, 0), (rx + rw, P(0, j)[1])))
+            return out
+        goal = {}
+        for cell, d, pt in ports(b):
+            goal[(cell, (-d[0], -d[1]))] = pt
+        pq, best, prev = [], {}, {}
+        for cell, d, pt in ports(a):
+            if ok(*cell):
+                st = (cell, d)
+                best[st] = 0
+                prev[st] = ("start", pt)
+                heapq.heappush(pq, (0, cell, d))
+        end = None
+        while pq:
+            c, cell, d = heapq.heappop(pq)
+            if best.get((cell, d), 1e18) < c:
+                continue
+            if (cell, d) in goal:
+                end = (cell, d)
+                break
+            for nd in ((1, 0), (-1, 0), (0, 1), (0, -1)):
+                if nd == (-d[0], -d[1]):
+                    continue
+                nc = (cell[0] + nd[0], cell[1] + nd[1])
+                if not ok(*nc):
+                    continue
+                vert = nd[0] == 0
+                cost = c + step + (300 if nd != d else 0) + (5000 if (nc[0], nc[1], vert) in used else 0) + (2000 if (nc[0], nc[1], vert) in near else 0) + (60 if (nc[0], nc[1], not vert) in used else 0)
+                if cost < best.get((nc, nd), 1e18):
+                    best[(nc, nd)] = cost
+                    prev[(nc, nd)] = (cell, d)
+                    heapq.heappush(pq, (cost, nc, nd))
+        if end is None:
+            return None
+        cells, st = [], end
+        while prev[st][0] != "start":
+            cells.append(P(*st[0]))
+            st = prev[st]
+        cells.append(P(*st[0]))
+        start_pt = prev[st][1]
+        cells = [start_pt] + cells[::-1] + [goal[end]]
+        pts = [cells[0]]                        # keep only the corners
+        for k in range(1, len(cells) - 1):
+            p0, p1, p2 = pts[-1], cells[k], cells[k + 1]
+            if not ((p0[0] == p1[0] == p2[0]) or (p0[1] == p1[1] == p2[1])):
+                pts.append(p1)
+        pts.append(cells[-1])
+        return [(pts[k], pts[k + 1]) for k in range(len(pts) - 1)]
+
+
+def class_diagram(name, rows, classes, edges, hgap=60, vgap=90, max_w=1700):
     """rows: list of lists of class names; classes: name -> (kind, attrs, methods); edges: (a, b, kind, label)"""
     d = Diagram(name)
-    sizes = {}
-    for n, (kind, attrs, methods) in classes.items():
-        la, lm = attrs or [], methods or []
-        w = max(170, tw(n, 12, True) + 30, *(tw(s, 11) * 1.07 + 24 for s in la + lm))
-        sizes[n] = w
-    widths = [sum(sizes[n] for n in r) + hgap * (len(r) - 1) for r in rows]
-    total = max(widths)
-    y = 0
-    ids, geo, rowof, rowtop, rowbot = {}, {}, {}, [], []
-    for ri, (r, rw) in enumerate(zip(rows, widths)):
-        x = (total - rw) / 2
-        hmax = 0
-        for n in r:
-            kind, attrs, methods = classes[n]
-            cid, w, h = class_box(d, n, kind, attrs, methods, x, y, sizes[n])
-            ids[n], geo[n], rowof[n] = cid, (x, y, w, h), ri
-            x += w + hgap
-            hmax = max(hmax, h)
+    size = {n: class_size(n, a, m)[:2] for n, (k, a, m) in classes.items()}
+    wrapped = []                                 # a row wider than max_w continues on the next line
+    for row in rows:
+        cur, wsum = [], 0
+        for n in row:
+            if cur and wsum + hgap + size[n][0] > max_w:
+                wrapped.append(cur)
+                cur, wsum = [], 0
+            wsum += (hgap if cur else 0) + size[n][0]
+            cur.append(n)
+        wrapped.append(cur)
+    rows = wrapped
+    rowof = {n: r for r, row in enumerate(rows) for n in row}
+    nb = {n: set() for n in rowof}
+    for a, b, _, _ in edges:
+        nb[a].add(b)
+        nb[b].add(a)
+    # vertical positions
+    rowtop, y = [], 0
+    for row in rows:
         rowtop.append(y)
-        rowbot.append(y + hmax)
-        y += hmax + vgap
-    # spread the exit points of each source and the entry points of each target
-    outs, ins = {}, {}
-    for a, b, kind, label in edges:
-        outs.setdefault(a, []).append(b)
-        ins.setdefault(b, []).append(a)
-
-    def frac(lst, item):
-        k = lst.index(item)
-        return (k + 1) / (len(lst) + 1)
-
-    corridor = [0]
-    for a, b, kind, label in edges:
+        y += max(size[n][1] for n in row) + vgap
+    # horizontal positions: start packed, then pull every box towards the boxes it is connected to
+    cx = {}
+    for row in rows:
+        tot = sum(size[n][0] for n in row) + hgap * (len(row) - 1)
+        x = -tot / 2
+        for n in row:
+            cx[n] = x + size[n][0] / 2
+            x += size[n][0] + hgap
+    for it in range(12):
+        for row in (rows if it % 2 == 0 else rows[::-1]):
+            want = {n: sum(cx[m] for m in nb[n]) / len(nb[n]) for n in row if nb[n]}
+            xs, prev = {}, None
+            for n in row:
+                w = size[n][0]
+                left = (want[n] if n in want else (cx[n])) - w / 2
+                if prev is not None:
+                    left = max(left, prev + hgap)
+                xs[n] = left + w / 2
+                prev = left + w
+            if want:                             # shift the row back so that it sits around its targets
+                sh = sum(want[n] - xs[n] for n in want) / len(want)
+                xs = {n: v + sh for n, v in xs.items()}
+            cx.update(xs)
+    # close empty vertical strips (e.g. between two groups of classes that are not connected)
+    while True:
+        iv = sorted((cx[n] - size[n][0] / 2, cx[n] + size[n][0] / 2) for n in rowof)
+        reach, cut = iv[0][1], None
+        for x0, x1 in iv[1:]:
+            if x0 - reach > hgap + 1:
+                cut = (reach, x0)
+                break
+            reach = max(reach, x1)
+        if not cut:
+            break
+        for n in rowof:
+            if cx[n] > cut[1]:
+                cx[n] -= cut[1] - cut[0] - hgap
+    minx = min(cx[n] - size[n][0] / 2 for n in rowof)
+    geo, ids = {}, {}
+    for r, row in enumerate(rows):
+        for n in row:
+            w, h = size[n]
+            x0 = cx[n] - w / 2 - minx + 20
+            kind, attrs, methods = classes[n]
+            ids[n], w, h = class_box(d, n, kind, attrs, methods, x0, rowtop[r] + 20, w)
+            geo[n] = (x0, rowtop[r] + 20, w, h)
+    rowbot = [max(geo[n][1] + geo[n][3] for n in row) for row in rows]
+    bands = [(rowbot[r], rowtop[r + 1] + 20) for r in range(len(rows) - 1)] + [(rowbot[-1], rowbot[-1] + vgap)]
+    total_w = max(g[0] + g[2] for g in geo.values())
+    router = _Router(geo)
+    # short / straight edges first so that they get the best places
+    order = sorted(edges, key=lambda e: (abs(rowof[e[0]] - rowof[e[1]]),
+                                         abs(geo[e[0]][0] + geo[e[0]][2] / 2 - geo[e[1]][0] - geo[e[1]][2] / 2)))
+    corridor = 0
+    for a, b, kind, label in order:
+        segs = router.route(a, b, bands)
+        assert segs, f"{name}: no route for {a} -> {b}"
+        router.segs += segs
+        (sx, sy), (tx, ty) = segs[0][0], segs[-1][1]
         ax, ay, aw, ah = geo[a]
         bx, by, bw, bh = geo[b]
-        ra, rb = rowof[a], rowof[b]
-        st = EDGE[kind]
-        lbl = "" if label == "Uses" else label
-        fa = frac(sorted(outs[a], key=lambda n: geo[n][0]), b)
-        fb = frac(sorted(ins[b], key=lambda n: geo[n][0]), a)
-        if ra == rb:
-            between = [n for n in rows[ra] if min(ax, bx) < geo[n][0] < max(ax, bx)]
-            if not between:
-                right = bx > ax
-                st += (f"exitX={1 if right else 0};exitY={30 / ah:.4f};exitDx=0;exitDy=0;"
-                       f"entryX={0 if right else 1};entryY={30 / bh:.4f};entryDx=0;entryDy=0;")
-                d.e(ids[a], ids[b], st, lbl)
-            else:
-                gy = rowbot[ra] + vgap * 0.3
-                st += f"exitX={fa:.3f};exitY=1;exitDx=0;exitDy=0;entryX={fb:.3f};entryY=1;entryDx=0;entryDy=0;"
-                d.e(ids[a], ids[b], st, lbl, pts=[(ax + aw * fa, gy), (bx + bw * fb, gy)])
-        elif abs(rb - ra) == 1:
-            down = rb > ra
-            gy = (rowbot[ra] if down else rowtop[ra]) + (1 if down else -1) * vgap * (0.25 + 0.5 * fb)
-            st += (f"exitX={fa:.3f};exitY={1 if down else 0};exitDx=0;exitDy=0;"
-                   f"entryX={fb:.3f};entryY={0 if down else 1};entryDx=0;entryDy=0;")
-            d.e(ids[a], ids[b], st, lbl, pts=[(ax + aw * fa, gy), (bx + bw * fb, gy)])
+        st = EDGE[kind] + (f"exitX={(sx - ax) / aw:.4f};exitY={(sy - ay) / ah:.4f};exitDx=0;exitDy=0;exitPerimeter=0;"
+                           f"entryX={(tx - bx) / bw:.4f};entryY={(ty - by) / bh:.4f};entryDx=0;entryDy=0;entryPerimeter=0;")
+        pts = [s[1] for s in segs[:-1]]
+        if kind == "assoc" and " .. " in label:     # multiplicities at the two ends of the association
+            eid = d.e(ids[a], ids[b], st, "", pts=pts)
+            for txt, pos in zip(label.split(" .. "), (-0.75, 0.75)):
+                d.cells.append(
+                    f'<mxCell id="{d.nid()}" value="{esc(txt.strip())}" style="edgeLabel;html=1;resizable=0;'
+                    f'labelBackgroundColor=#ffffff;fontSize=11;" vertex="1" connectable="0" parent="{eid}">'
+                    f'<mxGeometry x="{pos}" relative="1" as="geometry"><mxPoint y="-9" as="offset"/></mxGeometry></mxCell>')
         else:
-            down = rb > ra
-            cx = total + 30 + 16 * corridor[0]
-            corridor[0] += 1
-            g1 = (rowbot[ra] + vgap * 0.5) if down else (rowtop[ra] - vgap * 0.5)
-            g2 = (rowtop[rb] - vgap * 0.5) if down else (rowbot[rb] + vgap * 0.5)
-            st += (f"exitX={fa:.3f};exitY={1 if down else 0};exitDx=0;exitDy=0;"
-                   f"entryX={fb:.3f};entryY={0 if down else 1};entryDx=0;entryDy=0;")
-            d.e(ids[a], ids[b], st, lbl, pts=[(ax + aw * fa, g1), (cx, g1), (cx, g2), (bx + bw * fb, g2)])
+            d.e(ids[a], ids[b], st, "" if label in HIDDEN_LABELS else label, pts=pts)
     d.save()
     return d
 

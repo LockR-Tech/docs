@@ -8,29 +8,121 @@ ARCH_INTRO = (
     "lockers are driven by a Raspberry Pi that exchanges commands and events with iot-service over MQTT. The whole "
     "backend runs with Docker Compose on one Azure VM behind Nginx; the web front-ends are deployed on Cloudflare Workers.")
 
+ARCH_LEGEND = (
+    "The table below explains each component of the architecture diagram, grouped by sub-system. In the diagram a "
+    "solid arrow is a call, a dashed arrow is its return and a dotted arrow is an asynchronous message (RabbitMQ "
+    "event or MQTT).")
+
+# (component, type, description); a list description is rendered as several paragraphs.
 ARCH_COMPONENTS = [
-    ("Mobile App", "Flutter application for customers, receivers, locker technicians and drone technicians (Android and iOS). Uses dio for REST, STOMP for realtime events, Firebase Auth for phone / Google sign-in and FCM for push."),
-    ("Admin Web", "React 19 + Vite + RTK Query single-page app for administrators: dashboard, users, stores, lockers, cabinet control, maintenance, drones, orders, payments, refunds, promotions, loyalty, settings and knowledge base."),
-    ("Kiosk UI", "React web app shown on the touch screen of each locker. Customers pick up with PIN / QR, sign in by QR, send and rent; it calls /api/iot/* and the local API of the Pi."),
-    ("Nginx", "TLS termination (Let's Encrypt) for api.locker-drone.tech; forwards HTTP and WebSocket traffic to the API gateway and MQTT over WSS to the broker."),
-    ("API Gateway", "Spring Cloud Gateway. Verifies the JWT, applies role-based access by path prefix, blocks /internal/**, adds X-User-Id / X-Account-Id / X-User-Roles headers and routes to services through Eureka (lb://)."),
-    ("Discovery Server", "Eureka registry where every service registers and the gateway / Feign clients resolve service instances."),
-    ("auth-service", "Credentials, password / OTP / Firebase / kiosk-QR sign-in, admin 2FA, JWT and refresh tokens."),
-    ("user-service", "User profiles, roles and status; admin user management; signed Cloudinary upload parameters."),
-    ("order-service", "SEND / RENTAL / DRONE_DELIVERY orders, pricing, vouchers and points, ratings and complaints, drone missions, pickups, telemetry, incidents, revenue reports and scheduled jobs."),
-    ("locker-service", "Lockers, boxes and layouts, tickets and repair logs, periodic inspections, technician presence, drones and drone devices."),
-    ("payment-service", "Payments (SePay VietQR), SePay webhook and refunds."),
-    ("notification-service", "In-app notifications, FCM push, STOMP /ws broker, SMS / email to receivers without an account."),
-    ("iot-service", "MQTT bridge to lockers: open / lid / setup commands, heartbeats and door states, PIN / QR verification, controller provisioning, BLE open tokens."),
-    ("store-service", "Stores (locations hosting lockers) and nearby search."),
-    ("loyalty-service", "Loyalty accounts, points, tiers, redemption and voucher exchange."),
-    ("assistant-service", "RAG assistant: knowledge base indexing, vector search on pgvector, answers from Claude with citations."),
-    ("common-lib", "Shared library: ApiResponse / PageResponse DTOs, domain events, exceptions, business settings framework, Cloudinary media, security and utilities."),
-    ("PostgreSQL / pgvector", "One PostgreSQL 16 database per service (Flyway migrations, ddl validate); a separate pgvector database for the assistant."),
-    ("RabbitMQ", "Topic exchange laundry.events with queues order.payment.events, loyalty.order.events and notification.events."),
-    ("MQTT Broker", "Mosquitto broker for cabinet/{lockerId}/command/*, heartbeat, status and iot/{mac}/* topics, and drone telemetry."),
-    ("Raspberry Pi Controller", "Python controller in each locker: drives relays, door sensors and the sliding lid through GPIO / Arduino RS485, sends heartbeats and results, verifies BLE tokens offline."),
-    ("External services", "Firebase (Auth, FCM), SePay (VietQR + webhook), Cloudinary (images), SMTP and Twilio (OTP, pickup codes), Anthropic Claude and Voyage AI (assistant), OpenStreetMap / OSRM (maps), Open-Meteo (flight weather)."),
+    # ---- Client Applications
+    ("Client Applications", "Sub-system",
+     "Front-end layer through which every actor uses Lock.R. The three clients call the backend over HTTPS "
+     "(REST / JSON) through Nginx and receive realtime updates over STOMP / WebSocket."),
+    ("Mobile App", "Client module",
+     "Flutter application for Android and iOS used by customers, receivers, locker technicians and drone "
+     "technicians: send, rental and drone delivery orders, payment, loyalty, order tracking and maintenance "
+     "tasks. Uses Firebase Auth for phone / Google sign-in, FCM for push and OpenStreetMap / OSRM for maps."),
+    ("Admin Web", "Client module",
+     "React single-page application for administrators: dashboard, users, stores, lockers and cabinet control, "
+     "maintenance, drones, orders, payments, refunds, promotions, loyalty, business settings and knowledge base."),
+    ("Kiosk Screen", "Client module",
+     "React web application shown on the touch screen of each cabinet. Customers pick up with PIN / QR, sign in by "
+     "QR, send and rent at the locker; it calls the backend (/api/iot/*) and the local API of the Raspberry Pi 4."),
+    ("OpenStreetMap / OSRM", "External system (Maps & Routing)",
+     "Map tiles and OSRM routing used directly by the client applications to show stores and lockers on the map and "
+     "to draw directions and drone routes."),
+    # ---- Backend
+    ("Backend - Azure VM (Docker Compose)", "Sub-system",
+     "Server side of Lock.R. Every backend component runs as a Docker container started by Docker Compose on one "
+     "Azure virtual machine; only Nginx is exposed to the Internet."),
+    ("Nginx", "Module",
+     "Reverse proxy with TLS termination (Let's Encrypt) for api.locker-drone.tech. Forwards HTTPS and WebSocket "
+     "traffic from the clients to the API Gateway and returns the responses."),
+    ("API Gateway", "Module",
+     "Spring Cloud Gateway, the single entry point of the backend. Verifies the JWT, applies role-based access by "
+     "path prefix, blocks /internal/**, adds the X-User-Id / X-User-Roles headers and routes each request to the "
+     "right microservice."),
+    ("Discovery (Eureka)", "Module",
+     "Service registry. Every microservice registers itself here; the API Gateway and the OpenFeign clients look up "
+     "service instances by name (lb://) instead of fixed addresses."),
+    ("Microservices", "Module group",
+     ["10 Spring Boot services, each owning its own database and sharing common-lib. They call each other "
+      "synchronously with OpenFeign and exchange events asynchronously through RabbitMQ:",
+      "- auth-service: password / OTP / Firebase / kiosk-QR sign-in, admin 2FA, JWT and refresh tokens.",
+      "- user-service: user profiles, roles and status; signed Cloudinary upload parameters.",
+      "- order-service: send, rental and drone delivery orders, pricing, promotions, drone missions, incidents, "
+      "revenue reports and scheduled jobs.",
+      "- locker-service: lockers, boxes, tickets, inspections, technicians, drones and drone devices.",
+      "- payment-service: SePay payments and refunds.",
+      "- notification-service: in-app notifications, FCM push, email and the STOMP realtime channel.",
+      "- iot-service: MQTT bridge to the cabinets (commands, heartbeats, door states, PIN / QR verification).",
+      "- store-service: stores hosting the lockers and nearby search.",
+      "- loyalty-service: points, tiers, redemption and voucher exchange.",
+      "- assistant-service: RAG assistant answering from the knowledge base."]),
+    ("MQTT Broker", "Module (message broker)",
+     "Mosquitto broker that connects the backend with the IoT devices: commands, heartbeats and results between "
+     "iot-service and the cabinets, signed telemetry and delivery commands between order-service and the drones."),
+    ("PostgreSQL", "Data store",
+     "PostgreSQL 16 server holding one database per service (database-per-service); schemas are managed by Flyway "
+     "migrations."),
+    ("pgvector", "Data store",
+     "assistant-db, a PostgreSQL database with the pgvector extension that stores knowledge-base chunks and their "
+     "1024-dimension embeddings for semantic search."),
+    ("RabbitMQ", "Module (message broker)",
+     "Topic exchange laundry.events. Services publish domain events (e.g. order paid, order completed) and consume "
+     "them asynchronously in payment, loyalty and notification queues."),
+    # ---- IoT Devices
+    ("IoT Devices", "Sub-system",
+     "Physical devices in the field: the smart locker cabinets and the delivery drones. They reach the backend only "
+     "through the MQTT broker."),
+    ("Smart Locker Cabinet", "Sub-system",
+     "A locker with 7 compartments and a motorised sliding lid on top for drone drop-off, controlled by a "
+     "Raspberry Pi 4."),
+    ("Raspberry Pi 4", "Hardware module (cabinet controller)",
+     "Python controller of the cabinet. Receives open / lid / setup commands over MQTT and sends heartbeats and "
+     "results; drives the relays through GPIO and reads lock feedback; drives the lid motors with PUL / DIR pulses; "
+     "serves the local API used by the Kiosk Screen."),
+    ("Relay & 7 Locks", "Hardware",
+     "Relay board that switches the 7 electronic locks of the compartments; the lock feedback signal reports whether "
+     "each door is open or closed."),
+    ("Lid Motors (TB6600)", "Hardware",
+     "Stepper motors driven by TB6600 drivers that open and close the sliding lid, with limit switches at both ends."),
+    ("Drone", "Sub-system",
+     "Delivery drone that carries a parcel to a destination cabinet and releases it through the open lid."),
+    ("Raspberry Pi 5", "Hardware module (drone controller)",
+     "Companion computer of the drone. Reads MAVLink from the Pixhawk (read-only), publishes HMAC-signed telemetry "
+     "and delivery events over MQTT, follows delivery commands from the backend, detects ArUco markers in the camera "
+     "frames and triggers the drop servo with PWM."),
+    ("Pixhawk 6C (ArduPilot)", "Hardware (flight controller)",
+     "Autopilot that flies the drone and reports position, altitude, speed, battery and flight mode over MAVLink."),
+    ("Pi Camera", "Hardware",
+     "CSI camera that streams frames to the Raspberry Pi 5 for ArUco marker detection above the target cabinet and "
+     "for the live view."),
+    ("Drop Servo (MG996R)", "Hardware",
+     "Servo latch holding the parcel; the Raspberry Pi 5 releases it with a PWM signal once the drone is above the "
+     "open lid."),
+    # ---- External systems
+    ("Claude", "External system (AI Services)",
+     "Anthropic large language model called by assistant-service to generate answers with citations from the "
+     "retrieved knowledge-base chunks."),
+    ("Voyage AI", "External system (AI Services)",
+     "Embedding API that turns knowledge-base chunks and user questions into 1024-dimension vectors stored and "
+     "searched in pgvector."),
+    ("Firebase", "External system (Authentication & Notification)",
+     "Firebase Auth for phone OTP and Google sign-in (tokens verified by auth-service) and Firebase Cloud Messaging "
+     "for push notifications sent by notification-service."),
+    ("SMTP", "External system (Authentication & Notification)",
+     "Mail server used to send email OTP and notification emails, including pickup information for receivers "
+     "without an account."),
+    ("Cloudinary", "External system (File Storage)",
+     "Image storage. Clients upload avatars, store, locker, parcel and incident photos directly with signed upload "
+     "parameters issued by the backend."),
+    ("SePay", "External system (Payment Gateway)",
+     "VietQR bank transfer gateway. payment-service creates the QR payment and SePay confirms it through a webhook."),
+    ("Open-Meteo", "External system (Weather API)",
+     "Weather API that order-service queries (wind, rain) to check whether a drone flight is safe before booking and "
+     "dispatch."),
 ]
 
 SERVICE_DESC = {
@@ -49,8 +141,8 @@ SERVICE_DESC = {
 PKG_DESC = {
     "controller": "REST controllers (@RestController). Receive requests routed by the gateway, read the X-User-Id / X-User-Roles headers, validate the input and wrap results in ApiResponse.",
     "dto": "Request and response records exchanged with clients and other services.",
-    "admin": "Response DTOs used by the admin web lists and reports.",
-    "internal": "DTOs of the /internal/** API that only other services call.",
+    "dto.admin": "Response DTOs used by the admin web lists and reports.",
+    "dto.internal": "DTOs of the /internal/** API that only other services call.",
     "service": "Business logic (@Service / @Component): use cases, business-rule checks, transactions, scheduled jobs and publishing of domain events.",
     "client": "OpenFeign clients that call other services through Eureka on their /internal/** endpoints.",
     "settings": "Rules and SettingsCatalog of the service: business settings editable on the admin web (common-lib BusinessSettings).",
@@ -84,7 +176,7 @@ ADMIN_WEB_PKGS = [
     ("routes", "app-router, protected-route (role check) and routes-config of every admin page (lazy loaded)."),
     ("pages", "Screens: auth (2FA login) and Admin/* feature folders - dashboard, revenue, users, technicians, stores, lockers, cabinet-control, maintenance, drones, drone-orders, drone-incidents, drone-logs, orders, payments, refunds, promotions, loyalty, feedback, notifications, scheduler, services, settings, knowledge."),
     ("components", "ui (shadcn-style primitives: button, dialog, table, form...) and shared (data-table, layout, page-header, media, status tabs, charts)."),
-    ("stores", "Redux store and RTK Query: baseApi (auth header, refresh, error handling) and apis (adminApi, authApi, loyaltyApi, notificationApi, media)."),
+    ("stores", "Redux store and RTK Query: baseAPi.ts (auth header, refresh, error handling), apis (adminApi, authApi, loyaltyApi, notificationApi, media) and store.ts."),
     ("hooks", "useAdminRealtimeSync (STOMP -> cache invalidation), useWebSocket, useImageUpload, use-toast."),
     ("context", "AuthContext (session and role), sidebar and theme contexts."),
     ("lib", "Helpers: admin realtime tag map, Cloudinary upload, date/time, locker layout helper, report formatting, validation."),
@@ -95,14 +187,15 @@ ADMIN_WEB_PKGS = [
 ]
 
 MOBILE_PKGS = [
-    ("main.dart / injection_container", "Application entry, Firebase initialisation and provider factories that wire data sources, repositories and use cases (per-feature *_injection providers)."),
-    ("features", "One folder per business feature: auth, home, stores, locker, orders, payment, transactions, promotions, vouchers, delegations, qr_login, notifications, profile, drone_delivery, drone_mission, drone_telemetry, maintenance (locker technician), locker_ops, assistant."),
+    ("main.dart", "Application entry: Firebase initialisation and the root providers, wired through the per-feature *_injection factories that create data sources, repositories and use cases."),
+    ("features", "One folder per business feature: assistant, auth, delegations, drone_delivery, drone_mission, drone_telemetry, home, locker, locker_ops, maintenance (locker technician), notifications, orders, payment, profile, promotions, qr_login, stores, transactions, vouchers."),
     ("core/network", "dio ApiClient, AuthInterceptor (token refresh), gateway client."),
     ("core/routing", "go_router configuration, role-based routes, main navigation wrapper, notification deep links."),
     ("core/services", "Session and token storage, Firebase auth / messaging, BLE open service, biometric, app event bus."),
-    ("core/config, constants, theme", "Environment config, business config loaded from /api/settings/*/public, colours, strings, themes."),
+    ("core/config, constants, theme, l10n", "Environment config, business config loaded from /api/settings/*/public, colours, strings, themes, locale provider and language switch."),
     ("core/domain, enums, errors, utils, media, presentation", "Shared entities, enums, failures, formatters, media upload and common pages."),
-    ("shared", "Reusable widgets, icons and utilities."),
+    ("shared", "icons, utils and widgets reused by the features."),
+    ("l10n", "Localisation resources: ARB files and the generated AppLocalizations."),
 ]
 
 MOBILE_FEATURE_PKGS = [
@@ -112,6 +205,11 @@ MOBILE_FEATURE_PKGS = [
     ("infrastructure", "data_sources (remote calls through ApiClient), models (JSON serializable, *.g.dart) and repository implementations."),
 ]
 
+BACKEND_EDGE = [
+    ("api-gateway", "Spring Cloud Gateway: JWT validation, RBAC by path, routing, correlation id."),
+    ("discovery-server", "Eureka service registry."),
+]
+
 IOT_PKGS = [
     ("main.py", "Starts the controller: loads config, connects MQTT, starts heartbeat, discovery / setup handlers, BLE service and local API."),
     ("services", "locker_service (open / lid / sync commands), heartbeat_service, discovery_service and setup_handler (provisioning), ble_service / ble_gatt_service / ble_open_token (offline open), control_log."),
@@ -119,7 +217,7 @@ IOT_PKGS = [
     ("hardware", "factory selecting the driver, gpio_locker / rpi_locker (relays and reed sensors through gpiod), lid_controller (sliding lid), gpio_pins."),
     ("domain", "Models and enums of boxes, commands and results."),
     ("config", "settings (environment), wiring_default.json and hardware_config."),
-    ("ui (Kiosk React)", "KioskScreen and AdminScreen, components (virtual keyboard, animations) and api.js calling the backend and the Pi."),
+    ("ui", "Kiosk React app: screens (KioskScreen, AdminScreen), components (virtual keyboard, animations) and api.js calling the backend and the Pi."),
     ("arduino/locker_controller", "Arduino sketch driving relays and reading sensors over RS485."),
     ("drone-iot/lockr_drone", "Companion computer on the drone: reads MAVLink and publishes signed telemetry to MQTT."),
 ]

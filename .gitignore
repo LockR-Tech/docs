@@ -5,5 +5,8 @@ Thumbs.db
 
 # Báo cáo mẫu của nhóm khác (chỉ để tham khảo, không đưa lên repo công khai)
 rp3/Copy of *.docx
-# File khoá tạm của Word khi đang mở tài liệu
+# File khoá tạm của Word khi đang mở tài liệu và cache Python
 ~$*
+~*.tmp
+__pycache__/
+

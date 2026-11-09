@@ -194,7 +194,7 @@ def build(page_id, title, hub, chain, blocks):
     print(d.save(OUT, scale=2.0))
 
 
-AUTH_KIDS = [T("Phone OTP (dialog)", T("Complete Profile (dialog)")), T("Forgot Password"), T("Face Verify Login"),
+AUTH_KIDS = [T("Phone OTP (dialog)", T("Complete Profile (dialog)")), T("Forgot Password"),
              T("Terms &amp; Policy")]
 HOME_TAB = T("Home (tab)",
              T("QR Scan / Kiosk Login", T("Kiosk Login Confirm (sheet)"), T("Manual Kiosk Code (sheet)")),
@@ -219,16 +219,16 @@ ORDERS_TAB = T("Orders (tab)",
                T("Locker Reports", T("Report Detail (sheet)")))
 PROFILE_TAB = T("Profile (tab)",
                 T("Profile Detail", T("Edit Profile"), T("Security")),
-                T("Face Registration"), T("Refund Bank Account"),
+                T("Refund Bank Account"),
                 T("Refund Requests", T("Create Refund (sheet)"), T("Refund Detail (sheet)")),
-                T("Loyalty"), T("Plans"),
+                T("Loyalty"),
                 T("My Vouchers", T("Voucher Detail")),
                 T("Transactions", T("Transaction Detail (sheet)")),
                 T("My Delegations"), T("Bluetooth Open Test"), T("Location Permission"))
 
-TECH_LOGIN = T("Login Screen", T("Face Verify Login"), T("Forgot Password"))
+TECH_LOGIN = T("Login Screen", T("Forgot Password"))
 SHIFT = T("Shift Card (Start / End)", T("Location Permission (sheet)"), T("End Shift Confirm (dialog)"))
-PROFILE_TECH = T("Technician Profile", T("Face Registration"), T("Logout (dialog)"))
+PROFILE_TECH = T("Technician Profile", T("Logout (dialog)"))
 
 PAGES = {
     "03a-screen-flow-mobile-customer": dict(
@@ -242,7 +242,7 @@ PAGES = {
                   T("Cell Actions (sheet)", T("Report Box Fault (dialog)"), T("Out of Service (dialog)"),
                     T("Emergency Open (dialog)"), T("Mark Fixed / Reopen Box"), T("Clean / Restore Box"))),
                 T("Periodic (tab)", T("Schedule Detail (sheet)", T("Inspection Checklist (sheet)"))),
-                T("IoT Devices (tab)", T("IoT Device (sheet)", T("Change Device Status (dialog)"), T("Restart Controller"))),
+                T("IoT Devices (tab)", T("IoT Device (sheet)", T("Change Device Status (dialog)"))),
                 T("Notifications"),
                 T("Incidents (tab)", T("Claim Ticket (dialog)"),
                   T("Ticket Detail (sheet)",

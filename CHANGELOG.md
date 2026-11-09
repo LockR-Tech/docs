@@ -28,9 +28,18 @@ Mỗi thay đổi ở repo docs thêm **một dòng** vào ngày tương ứng (
 - STATUS § 5 + 04-engineering/cau-hinh-dich-vu-ngoai § 11c: SMS OTP Firebase bằng tiếng Việt (`languageCode = 'vi'`, iot [#42](https://github.com/LockR-Tech/iot/pull/42), mobile [#128](https://github.com/LockR-Tech/mobile/pull/128), F2-G09); câu chữ SMS không sửa được, tên trong tin lấy từ Public-facing name của project.
 - STATUS § 5 + 03-hardware/pi-lockr-tu01 (Cập nhật code): kiosk gửi lại OTP, reCAPTCHA tách khỏi nút, Pi tự cập nhật code qua timer `lockr-auto-update` (iot [#41](https://github.com/LockR-Tech/iot/pull/41), F2-G09); ghi lỗi OTP SMS web `INVALID_APP_CREDENTIAL` còn mở.
 
+## 2026-11-09
+
+- rp3 SRS khớp rp4 SDD: bỏ ví (nạp, rút, điều chỉnh ví, gói dịch vụ), đăng nhập khuôn mặt, SMS, khởi động lại bộ điều khiển, mobile web, landing page khỏi chữ, bảng màn hình, use case (UC12 cũ bỏ, đánh số lại), BR-16 / MSG15 (đánh số lại), mục 3.2.25–3.2.26 và hình 3.2.24.1, 3.6.8.5 (mục 3.2.27–3.2.34 thành 3.2.25–3.2.32); tủ dùng Raspberry Pi 4; sinh lại `01`, `02`, `03a`–`03d` (`gen_context.py`, `gen_usecase.py`, `gen_screens_bus.py`); ERD 3.1.5 thay bằng ERD khái niệm + 10 ERD logic theo database của rp4, bảng thực thể theo database (thêm `system_settings` / `system_setting_audits`, bỏ `wallets`, `wallet_transactions`, `withdrawal_requests`, `ble_test_grants`, `ble_signing_keys`, `drone_delivery_requests`); thêm dòng Record of Changes 09/11.
+
+## 2026-11-06
+
+- rp3/srs-assets/drawio: thêm activity diagram `06f-activity-report-incident` (khách báo sự cố ô → KTV tủ nhận, kiểm tra, xác nhận/từ chối, xử lý đồ trong ô, nghiệm thu → khách đánh giá) và `06g-activity-periodic-maintenance` (admin lập lịch → nhắc 07:00 → KTV kiểm tra → đạt / không đạt mở phiếu tủ / drone FAULT) theo luồng trong `locker-service` (`LockerService.report`, `rejectReport`, `completeSchedule`); mỗi sơ đồ 1 điểm kết thúc; `06f` một hàng (bậc thang chéo giữa các làn cho ngắn), `06g` 2 giai đoạn xếp chồng cho slide ngang.
+
 ## 2026-11-05
 
 - rp3/srs-assets/drawio/06b-activity-rent-locker: nút gộp trước bước "Open box again" nhận luồng chính từ bên trái, vòng lặp [continue rental] từ trên (trước đó mũi tên đâm vào đáy hình thoi).
+- rp3/srs-assets/logical-erd-microservices `05`, `06`, `07`, `08`, `10`: bản gọn để chiếu slide ngang (sinh bằng `_generator/gen_slide.py`): tên bảng chỉ snake_case, bảng xếp sát, màu như user-service; thực thể tham chiếu ghi `(database gốc)` + kiểu thật của cột, mỗi bảng chỉ một hộp; riêng `orders` chỉ giữ 25 cột chính, các bảng khác giữ đủ cột.
 - flow-1 § cập nhật 2026-11-05 + STATUS § 3: app KTV drone tách "Vào ca" (online + toạ độ) khỏi công tắc nhận việc lấy hàng (chỉ bật mới thấy lời mời), sửa xác nhận nạp xong vẫn hiện nút "Xác nhận nạp".
 
 ## 2026-11-05

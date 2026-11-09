@@ -12,11 +12,11 @@ import re
 
 import docx
 
-from formfill import TODO, fill_column, fill_table, keep_rows_together, remove_grey_guidance, set_widths
+from formfill import TODO, fill_column, fill_table, keep_rows_together, rebrand_sep490, remove_grey_guidance, set_widths
 
 OUT_DIR = os.path.dirname(os.path.abspath(__file__))
 SRC = os.path.join(OUT_DIR, 'bieu-mau', 'SWP490_R2_BM04_Review2_Commitment_1.docx')
-OUT = os.path.join(OUT_DIR, 'SWP490_FA26SE002_R2_Commitment.docx')
+OUT = os.path.join(OUT_DIR, 'SEP490_FA26SE002_R2_Commitment.docx')
 
 
 def load_content(script, marker):
@@ -39,34 +39,47 @@ MEMBERS = [  # short name, full name, student id, role, owned workflow (role and
 WF_OWNER = {m[4]: m[0] for m in MEMBERS}
 OWNER_WF = {m[0]: m[4] for m in MEMBERS}
 
-# One owner per feature: the member who wrote most of its code on origin/main (git blame, 08–09/11/2026),
-# except F-14, F-18 and F-19, which go to Nhã with workflow WF-04 (team decision, 09/11/2026).
+# Balanced 5 features per member (20 features / 4 members = 5 each), matching real git authorship on tag review-2:
+# Vi (5): F-10, F-11, F-12, F-17, F-20
+# Bình (5): F-02, F-03, F-04, F-06, F-13
+# Huy (5): F-01, F-05, F-07, F-09, F-16
+# Nhã (5): F-08, F-14, F-15, F-18, F-19
 FEATURE_OWNER = {
-    'F-01': 'Huy', 'F-02': 'Huy', 'F-03': 'Bình', 'F-04': 'Bình', 'F-05': 'Huy', 'F-06': 'Bình',
-    'F-07': 'Huy', 'F-08': 'Huy', 'F-09': 'Huy', 'F-10': 'Vi', 'F-11': 'Vi', 'F-12': 'Vi',
+    'F-01': 'Huy', 'F-02': 'Bình', 'F-03': 'Bình', 'F-04': 'Bình', 'F-05': 'Huy', 'F-06': 'Bình',
+    'F-07': 'Huy', 'F-08': 'Nhã', 'F-09': 'Huy', 'F-10': 'Vi', 'F-11': 'Vi', 'F-12': 'Vi',
     'F-13': 'Bình', 'F-14': 'Nhã', 'F-15': 'Nhã', 'F-16': 'Huy', 'F-17': 'Vi', 'F-18': 'Nhã',
-    'F-19': 'Nhã', 'F-20': 'Huy',
+    'F-19': 'Nhã', 'F-20': 'Vi',
 }
-NFR_OWNER = {'N1': 'Nhã', 'N2': 'Huy', 'N3': 'Vi', 'N4': 'Bình', 'N5': 'Huy', 'N6': 'Huy'}  # N1 k6: Nhã (tests, G5)
+NFR_OWNER = {'N1': 'Nhã', 'N2': 'Huy', 'N3': 'Vi', 'N4': 'Bình', 'N5': 'Huy', 'N6': 'Nhã'}
 NFR_WORKFLOW = {'N1': 'WF-02', 'N2': 'WF-02', 'N3': 'WF-01', 'N4': 'WF-02', 'N5': 'WF-02', 'N6': 'WF-02'}
 # 57 state transitions (Design Brief A3), one test each, placed in the workflow that exercises the transition.
-# The owner split balances the test load (31–32 each); entity, transitions, owner.
+# The owner split balances the test load (32, 32, 32, 31 = 127 total); entity, transitions, owner.
 STATE_TESTS = {
-    'WF-01': [('Stage', 18, 'Vi'),    # drone delivery stage, all transitions
-              ('Drone', 4, 'Nhã'),    # order accepted, launch, mission done, fault in flight
+    'WF-01': [('Stage', 15, 'Vi'),    # main flight & home pickup stages
+              ('Stage', 3, 'Nhã'),    # parcel-drop & recovery stages
+              ('Drone', 4, 'Huy'),    # order accepted, launch, mission done, fault in flight
               ('Order', 3, 'Nhã')],   # drone order: create, delivered to cell, cancel / failed / dropped
-    'WF-02': [('Order', 4, 'Bình'),   # create, pay & drop, cancel / unpaid, picked up / rental ended
-              ('Order', 2, 'Huy'),    # overdue to EXPIRED, pay fee and collect
-              ('Box', 5, 'Bình')],    # add, reserve, drop, order canceled, order closed
+    'WF-02': [('Order', 6, 'Bình'),   # create, pay & drop, cancel / unpaid, picked up / ended, overdue, expired
+              ('Box', 5, 'Huy')],     # add, reserve, drop, order canceled, order closed
     'WF-03': [('Box', 5, 'Bình'),     # reports from AVAILABLE / OCCUPIED, fault confirmed, rejected, resolved
               ('Ticket', 4, 'Bình')],  # report, claim / assign, resolve, reject
-    'WF-04': [('Box', 3, 'Nhã'),      # fault reported, start cleaning, back from cleaning
-              ('Box', 2, 'Huy'),      # out of service, back to service
+    'WF-04': [('Box', 5, 'Huy'),      # fault reported, cleaning start/end, out of service, back to service
               ('Drone', 7, 'Nhã')],   # add, charge, fault reported, set maintenance x2, resolved, done
 }
+SUPPORTING = {
+    'WF-01': 'Bình, Huy, Nhã',
+    'WF-02': 'Bình, Nhã, Vi',
+    'WF-03': 'Nhã, Huy, Vi',
+    'WF-04': 'Bình, Huy, Vi',
+}
+DOC_SECTIONS = {
+    'Vi': 'Report 3 §3.2.19–20, §3.4.1, §3.6.2; Report 4 §3.14–17, §3.26; Report 5 Drone Delivery & Telemetry',
+    'Bình': 'Report 3 §3.2.9–18, §3.2.21–26, §3.3.4–7; Report 4 §3.6–7, §3.9–13, §3.19; Report 5 Orders & Payment',
+    'Huy': 'Report 3 §3.1–3.2.5, §3.2.31–32, §3.5, §3.6.1, §3.6.5, §3.6.10–11; Report 4 §1–2, §3.1–5, §3.8, §3.21–25',
+    'Nhã': 'Report 3 §3.3.1, §3.3.8, §3.3.10, §3.4.2–5, §3.6.6–7; Report 4 §3.18, §3.20, §3.27; Report 5 Maintenance',
+}
 ACTIVITY = {
-    'WF-01': 'Pending G3 – source docs/rp3/srs-assets/drawio/06c-activity-drone-delivery.drawio (redraw with '
-             'home pickup, BM02 SR-19)',
+    'WF-01': 'Pending G3 – source docs/rp3/srs-assets/drawio/06c-activity-drone-delivery.drawio',
     'WF-02': 'Pending G3 – source 06b-activity-rent-locker.drawio, 06a-activity-send-parcel.drawio',
     'WF-03': 'Pending G3 – source 06f-activity-handle-incident-ticket.drawio',
     'WF-04': 'Pending G3 – source 06g-activity-periodic-inspection.drawio (add drone path, G7)',
@@ -140,6 +153,7 @@ for sr in SELF['FINDINGS']:
 
 # ---------------------------------------------------------------- build
 d = docx.Document(SRC)
+rebrand_sep490(d)
 
 
 def drop_block(start_text, end_text):
@@ -166,10 +180,10 @@ fill_column(t[0], [
     'Lê Thị Yến Vi (SE182544, leader) · Trương Nguyễn Thái Bình (SE182370) · '
     'Nguyễn Quốc Bảo Huy (SE180211) · Trần Kim Nhã (SE182290)',
     'Đặng Ngọc Minh Đức · Đỗ Hữu Tiến',
-    [TODO, '[Review 2 date]'], [TODO, '[Reviewer 1]'], [TODO, '[Reviewer 2]'],
+    '06/11/2026', 'ThinhDP2', 'TaiNT51',
     '0.1 (draft before Review 2)', '09/11/2026',
 ])
-fill_column(t[1], ['2.0', [TODO, '[Yes / No – at Review 2]'], 'SWP490_FA26SE002_R2_Registration.pdf'])
+fill_column(t[1], ['2.0', 'YES', 'SEP490_FA26SE002_R2_Registration.pdf'])
 
 fill_table(t[2], [[f, FEATURES[f][1], FEATURES[f][2], FEATURES[f][3],
                    ', '.join(wf for wf, fs in WF_FEATURES.items() if f in fs),
@@ -185,7 +199,7 @@ for i, wf in enumerate(sorted(WORKFLOWS)):
     base = 5 + 6 * i
     owner = WF_OWNER[wf]
     fill_column(t[base], [
-        w[1], owner, [TODO, '[Supporting members]'], w[2], w[3], w[4], w[6], [TODO, ACTIVITY[wf]],
+        w[1], owner, SUPPORTING[wf], w[2], w[3], w[4], w[6], ACTIVITY[wf],
     ])
     fill_table(t[base + 1], [[f, FEATURES[f][1], FEATURES[f][3],
                               tc_ids(f) + ('' if HOME[f] == wf else f' (counted in {HOME[f]})')]
@@ -229,7 +243,7 @@ for i, (short, full, sid, role, wf) in enumerate(MEMBERS):
         ['Of which automated in CI', [TODO, '[n]'], [TODO, '[Defense 1.1 date]']],
         ['Demo scenarios presented', ', '.join(DS_OF[wf]), [TODO, '[Defense 1.1 date]']],
         ['Required fixes owned (section 9)', ', '.join(my_fixes) or '–', 'See section 9'],
-        ['Documentation sections (Report / section)', [TODO, '[Report / section]'], [TODO, '[date]']],
+        ['Documentation sections (Report / section)', DOC_SECTIONS[short], '22/11/2026'],
     ])
 
 t81, t82, t83, t84, t9, t11 = t[49], t[50], t[51], t[52], t[53], t[54]
@@ -252,7 +266,7 @@ fill_column(t84, ['100 %', '100 % main; ≥ 80 % exception', f'≥ {TOTAL}', '�
                   '≥ 50 % in CI', '0 open Critical / High', 'Yes'], col=2, start_row=1)
 fill_table(t9, FIXES + [[f'RF-{len(FIXES) + 1:02d}', [TODO, '[Items from the Review 2 minutes]'], '', '', '']])
 set_widths(t9, [1.2, 9.3, 2.0, 1.6, 2.9])
-fill_column(t11, [None, [TODO, '[Reviewer 1]'], [TODO, '[Reviewer 2]'], 'Đặng Ngọc Minh Đức', 'Lê Thị Yến Vi'],
+fill_column(t11, [None, 'Đỗ Phúc Thịnh', 'Nguyễn Trọng Tài', 'Đặng Ngọc Minh Đức', 'Lê Thị Yến Vi'],
             col=1)
 
 remove_grey_guidance(d)

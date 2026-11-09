@@ -1,0 +1,2819 @@
+[
+ {
+  "id": "auth",
+  "title": "Authentication",
+  "intro": "Customers and technicians sign in with email or phone and password, with a Firebase ID token (phone OTP / Google) or with an email OTP; administrators sign in with a password followed by an email OTP (2FA). auth-service owns the credentials and issues a JWT access token (24 h) and a hashed, revocable refresh token (30 days); roles are read from user-service.",
+  "class_image": "cls_auth",
+  "classes": [
+   {
+    "name": "AuthController",
+    "kind": "controller"
+   },
+   {
+    "name": "AuthService",
+    "kind": "service"
+   },
+   {
+    "name": "JwtService",
+    "kind": "component"
+   },
+   {
+    "name": "EmailOtpService",
+    "kind": "service"
+   },
+   {
+    "name": "UserClient",
+    "kind": "client"
+   },
+   {
+    "name": "AuthAccountRepository",
+    "kind": "repository"
+   },
+   {
+    "name": "RefreshTokenRepository",
+    "kind": "repository"
+   },
+   {
+    "name": "SocialIdentityRepository",
+    "kind": "repository"
+   },
+   {
+    "name": "AuthAccount",
+    "kind": "entity"
+   },
+   {
+    "name": "RefreshToken",
+    "kind": "entity"
+   }
+  ],
+  "specs": [
+   {
+    "cls": "AuthController",
+    "methods": [
+     [
+      "login(request: LoginRequest): AuthResponse",
+      "Signs in a customer or technician by email / phone and password."
+     ],
+     [
+      "firebaseLogin(request: FirebaseLoginRequest): AuthResponse",
+      "Exchanges a verified Firebase ID token (phone OTP, Google) for Lock.R tokens."
+     ],
+     [
+      "sendEmailOtp(request: Map<String, Object>): void",
+      "Sends a 6-digit login / registration OTP to an email address."
+     ],
+     [
+      "verifyEmailOtp(request: Map<String, Object>): Map<String, Object>",
+      "Verifies the email OTP; returns tokens, or a temp token when the account still has to be registered."
+     ],
+     [
+      "adminLogin(request: Map<String, Object>): Map<String, Object>",
+      "Admin step 1: checks password and ADMIN role, sends the 2FA OTP and returns a temp token."
+     ],
+     [
+      "adminVerify2fa(request: Map<String, Object>): Map<String, Object>",
+      "Admin step 2: verifies the OTP bound to the temp token and issues tokens."
+     ],
+     [
+      "refresh(request: RefreshTokenRequest): AuthResponse",
+      "Rotates the refresh token and issues a new access token."
+     ],
+     [
+      "logout(request: LogoutRequest): void",
+      "Revokes the refresh token of the device."
+     ]
+    ]
+   },
+   {
+    "cls": "AuthService",
+    "methods": [
+     [
+      "login(request: LoginRequest): AuthResponse",
+      "Finds the account by identifier, checks ACTIVE status and the BCrypt hash, loads roles and issues tokens."
+     ],
+     [
+      "firebaseLogin(idToken: String): AuthResponse",
+      "Verifies the ID token with Firebase Admin, links or provisions the account through SocialIdentity and issues tokens."
+     ],
+     [
+      "verifyEmailOtp(request: Map<String, Object>): Map<String, Object>",
+      "Checks the OTP with EmailOtpService; known email -> tokens, new email -> temp token."
+     ],
+     [
+      "adminLogin(request: Map<String, Object>): Map<String, Object>",
+      "Validates admin credentials, sends the ADMIN_2FA OTP and creates a short-lived temp token."
+     ],
+     [
+      "verifyAdmin2fa(request: Map<String, Object>): Map<String, Object>",
+      "Verifies the OTP (limited attempts), consumes the temp token and issues tokens."
+     ],
+     [
+      "refresh(request: RefreshTokenRequest): AuthResponse",
+      "Validates the stored refresh-token hash, revokes it and issues a new pair."
+     ],
+     [
+      "logout(request: LogoutRequest): void",
+      "Marks the refresh token as revoked."
+     ]
+    ]
+   },
+   {
+    "cls": "JwtService",
+    "methods": [
+     [
+      "issue(accountId: Long, userId: Long, roles: Set<String>): TokenPair",
+      "Signs the access token (sub, accountId, roles, tokenUse) and creates a random refresh token."
+     ],
+     [
+      "parse(token: String): Claims",
+      "Verifies the HS signature and returns the claims."
+     ]
+    ]
+   },
+   {
+    "cls": "EmailOtpService",
+    "methods": [
+     [
+      "sendOtp(email: String, purpose: String): boolean",
+      "Generates an OTP, stores its hash with expiry and sends it by SMTP."
+     ],
+     [
+      "verifyOtp(email: String, purpose: String, code: String): boolean",
+      "Matches the latest unused OTP of the purpose and marks it used."
+     ]
+    ]
+   }
+  ],
+  "seqs": [
+   {
+    "title": "Sign in with Password",
+    "image": "seq_auth_1"
+   },
+   {
+    "title": "Sign in with Phone Number (Firebase OTP)",
+    "image": "seq_auth_2"
+   },
+   {
+    "title": "Administrator Sign in with 2FA",
+    "image": "seq_auth_3"
+   },
+   {
+    "title": "Refresh Token and Sign out",
+    "image": "seq_auth_4"
+   }
+  ]
+ },
+ {
+  "id": "kioskqr",
+  "title": "Kiosk Login by QR",
+  "intro": "A customer signs in at the locker kiosk by scanning a QR code with the mobile app. The kiosk creates a short-lived session, the logged-in app confirms it with the short code, and the kiosk polls until it receives a kiosk-scoped login grant.",
+  "class_image": "cls_kioskqr",
+  "classes": [
+   {
+    "name": "KioskQrLoginController",
+    "kind": "controller"
+   },
+   {
+    "name": "KioskQrLoginService",
+    "kind": "service"
+   },
+   {
+    "name": "AuthService",
+    "kind": "service"
+   },
+   {
+    "name": "KioskQrLoginService.Session",
+    "kind": "dto"
+   }
+  ],
+  "specs": [
+   {
+    "cls": "KioskQrLoginController",
+    "methods": [
+     [
+      "create(request: CreateRequest): SessionCreated",
+      "Kiosk opens a QR login session for its locker."
+     ],
+     [
+      "poll(sessionId: String, pollToken: String): SessionStatus",
+      "Kiosk polls the session; returns tokens once confirmed."
+     ],
+     [
+      "confirm(sessionId: String, userId: Long, request: ConfirmRequest): ConfirmResult",
+      "Logged-in app confirms the session with the confirm code."
+     ],
+     [
+      "cancel(sessionId: String, pollToken: String): SessionStatus",
+      "Kiosk cancels the session."
+     ]
+    ]
+   },
+   {
+    "cls": "KioskQrLoginService",
+    "methods": [
+     [
+      "create(lockerId: Long, clientIp: String): SessionCreated",
+      "Rate-limits per locker and creates an in-memory session with a random poll token (stored hashed) and a confirm code."
+     ],
+     [
+      "poll(sessionId: String, pollToken: String): SessionStatus",
+      "Checks the poll token, expires old sessions and, when CONFIRMED, issues the kiosk login once."
+     ],
+     [
+      "confirm(sessionId: String, userId: Long, confirmCode: String): ConfirmResult",
+      "Matches the confirm code, requires an active account and binds the user to the session."
+     ],
+     [
+      "cancel(sessionId: String, pollToken: String): SessionStatus",
+      "Ends the session as CANCELLED."
+     ],
+     [
+      "cleanup(): void",
+      "Scheduled removal of expired sessions."
+     ]
+    ]
+   }
+  ],
+  "seqs": [
+   {
+    "title": "Kiosk Login by QR",
+    "image": "seq_kioskqr_1"
+   }
+  ]
+ },
+ {
+  "id": "users",
+  "title": "Profile and User Management",
+  "intro": "Every user keeps a profile (name, email, phone, avatar) in user-service. Images are uploaded straight to Cloudinary with a signature issued by the backend and verified before the URL is stored. Administrators create users and technicians, lock accounts and change roles; credential changes are pushed to auth-service through Feign.",
+  "class_image": "cls_users",
+  "classes": [
+   {
+    "name": "UserController",
+    "kind": "controller"
+   },
+   {
+    "name": "MediaController",
+    "kind": "controller"
+   },
+   {
+    "name": "UserProfileService",
+    "kind": "service"
+   },
+   {
+    "name": "CloudinaryMediaStorage",
+    "kind": "component"
+   },
+   {
+    "name": "AuthClient",
+    "kind": "client"
+   },
+   {
+    "name": "UserProfileRepository",
+    "kind": "repository"
+   },
+   {
+    "name": "UserProfile",
+    "kind": "entity"
+   }
+  ],
+  "specs": [
+   {
+    "cls": "UserController",
+    "methods": [
+     [
+      "profile(userId: Long): UserProfileView",
+      "Returns the profile of the signed-in user."
+     ],
+     [
+      "updateProfile(userId: Long, request: UserProfileRequest): UserSummary",
+      "Updates name, email, phone (checked for uniqueness)."
+     ],
+     [
+      "updateAvatar(userId: Long, request: Map<String, Object>): UserSummary",
+      "Stores a verified Cloudinary avatar."
+     ],
+     [
+      "adminCreate(request: AdminCreateUserRequest): UserSummary",
+      "Admin creates a customer or technician account."
+     ],
+     [
+      "adminStatus(id: Long, status: String, request: Map<String, Object>): UserSummary",
+      "Admin deactivates / reactivates a user."
+     ],
+     [
+      "adminRoles(id: Long, request: Map<String, Set<String>>): UserSummary",
+      "Admin changes the roles of a user."
+     ]
+    ]
+   },
+   {
+    "cls": "MediaController",
+    "methods": [
+     [
+      "uploadSignatures(request: SignatureRequest, userId: Long, roles: String): UploadSignatureResponse",
+      "Issues signed Cloudinary upload parameters for a media purpose."
+     ]
+    ]
+   },
+   {
+    "cls": "UserProfileService",
+    "methods": [
+     [
+      "create(request: UserProfileRequest): UserSummary",
+      "Validates unique email / phone and saves the profile."
+     ],
+     [
+      "update(id: Long, request: UserProfileRequest): UserSummary",
+      "Updates profile fields after uniqueness checks."
+     ],
+     [
+      "updateAvatar(id: Long, upload: MediaUpload, actorUserId: Long): UserSummary",
+      "Verifies the Cloudinary upload and replaces the old image after commit."
+     ],
+     [
+      "updateStatus(id: Long, status: String): UserSummary",
+      "Changes ACTIVE / INACTIVE status."
+     ],
+     [
+      "updateRoles(id: Long, roles: Set<String>): UserSummary",
+      "Replaces the role set."
+     ]
+    ]
+   }
+  ],
+  "seqs": [
+   {
+    "title": "Update Profile Avatar",
+    "image": "seq_users_1"
+   },
+   {
+    "title": "Administrator Creates and Deactivates a User",
+    "image": "seq_users_2"
+   }
+  ]
+ },
+ {
+  "id": "stores",
+  "title": "Store Management and Nearby Stores",
+  "intro": "Stores are the places that host lockers. Customers and guests list stores, find the nearest ones by GPS and see their lockers and ratings; administrators create, edit, deactivate stores and set their image.",
+  "class_image": "cls_stores",
+  "classes": [
+   {
+    "name": "StoreController",
+    "kind": "controller"
+   },
+   {
+    "name": "StoreService",
+    "kind": "service"
+   },
+   {
+    "name": "LockerClient",
+    "kind": "client"
+   },
+   {
+    "name": "OrderClient",
+    "kind": "client"
+   },
+   {
+    "name": "StoreRepository",
+    "kind": "repository"
+   },
+   {
+    "name": "StoreLocation",
+    "kind": "entity"
+   }
+  ],
+  "specs": [
+   {
+    "cls": "StoreController",
+    "methods": [
+     [
+      "list(latitude: Double, longitude: Double, radiusKm: Double): List<StoreResponse>",
+      "Lists active stores."
+     ],
+     [
+      "nearby(latitude: Double, longitude: Double, radiusKm: Double): List<StoreResponse>",
+      "Lists active stores within a radius ordered by distance."
+     ],
+     [
+      "get(id: Long): StoreResponse",
+      "Store detail with its lockers."
+     ],
+     [
+      "ratings(storeId: Long): List<Map<String, Object>>",
+      "Ratings of orders made at the store."
+     ],
+     [
+      "adminCreate(request: StoreRequest): StoreResponse",
+      "Admin creates a store."
+     ],
+     [
+      "adminUpdate(id: Long, request: StoreRequest): StoreResponse",
+      "Admin edits a store."
+     ],
+     [
+      "adminStatus(id: Long, status: String, request: Map<String, Object>): StoreResponse",
+      "Admin activates / deactivates a store."
+     ]
+    ]
+   },
+   {
+    "cls": "StoreService",
+    "methods": [
+     [
+      "nearby(latitude: Double, longitude: Double, radiusKm: Double): List<StoreResponse>",
+      "Filters active stores by haversine distance and sorts them."
+     ],
+     [
+      "get(id: Long): StoreResponse",
+      "Loads one store."
+     ],
+     [
+      "delete(id: Long): void",
+      "Deletes a store after checking with locker-service that no locker still belongs to it."
+     ],
+     [
+      "create(request: StoreRequest): StoreResponse",
+      "Validates and saves a store, publishes catalog.changed."
+     ],
+     [
+      "update(id: Long, request: StoreRequest): StoreResponse",
+      "Updates fields and publishes catalog.changed."
+     ],
+     [
+      "updateStatus(id: Long, status: String): StoreResponse",
+      "Changes the store status."
+     ],
+     [
+      "ratings(storeId: Long): List<Map<String, Object>>",
+      "Reads store ratings from order-service."
+     ]
+    ]
+   }
+  ],
+  "seqs": [
+   {
+    "title": "Find Nearby Stores",
+    "image": "seq_stores_1"
+   }
+  ]
+ },
+ {
+  "id": "lockers",
+  "title": "Locker and Box Management",
+  "intro": "Administrators register locker cabinets for a store and define the box grid (number, size, cell type STANDARD / XL / DRONE, row / column). The locker layout combines the box states kept by locker-service with the door states and controller reported by iot-service, and is shown on the app, the kiosk and the admin web.",
+  "class_image": "cls_lockers",
+  "classes": [
+   {
+    "name": "LockerController",
+    "kind": "controller"
+   },
+   {
+    "name": "LockerService",
+    "kind": "service"
+   },
+   {
+    "name": "IotClient",
+    "kind": "client"
+   },
+   {
+    "name": "RabbitTemplate",
+    "kind": "external"
+   },
+   {
+    "name": "LockerUnitRepository",
+    "kind": "repository"
+   },
+   {
+    "name": "LockerBoxRepository",
+    "kind": "repository"
+   },
+   {
+    "name": "LockerUnit",
+    "kind": "entity"
+   },
+   {
+    "name": "LockerBox",
+    "kind": "entity"
+   }
+  ],
+  "specs": [
+   {
+    "cls": "LockerController",
+    "methods": [
+     [
+      "createLocker(request: LockerRequest): LockerResponse",
+      "Admin creates a locker cabinet."
+     ],
+     [
+      "adminAddBoxesBatch(id: Long, request: BatchCreateBoxesRequest): List<CellResponse>",
+      "Admin adds several boxes to a locker grid."
+     ],
+     [
+      "listLockers(storeId: Long): List<LockerResponse>",
+      "Lists lockers (optionally of a store) with free-box counts."
+     ],
+     [
+      "layout(id: Long): LockerLayoutResponse",
+      "Returns the box grid with state, size and door state."
+     ],
+     [
+      "listAvailableBoxes(lockerId: Long): List<LockerBoxSummary>",
+      "Lists AVAILABLE boxes of a locker."
+     ]
+    ]
+   },
+   {
+    "cls": "LockerService",
+    "methods": [
+     [
+      "createLocker(request: LockerRequest): LockerResponse",
+      "Saves the locker, applies the admin status and publishes catalog.changed."
+     ],
+     [
+      "createBoxesBatch(lockerId: Long, request: BatchCreateBoxesRequest): List<CellResponse>",
+      "Validates numbers (no duplicates), saves all boxes and publishes locker.layout.updated."
+     ],
+     [
+      "layout(lockerId: Long): LockerLayoutResponse",
+      "Builds the grid from boxes + hardware statuses + gateway of the locker."
+     ],
+     [
+      "reserveBox(boxId: Long, channel: String): LockerBoxSummary",
+      "Marks a box RESERVED for a new order."
+     ],
+     [
+      "occupyBox(boxId: Long): LockerBoxSummary",
+      "Marks a box OCCUPIED after the parcel is dropped."
+     ],
+     [
+      "releaseBox(boxId: Long): LockerBoxSummary",
+      "Returns a box to AVAILABLE."
+     ]
+    ]
+   }
+  ],
+  "seqs": [
+   {
+    "title": "Create Locker and Box Grid",
+    "image": "seq_lockers_1"
+   },
+   {
+    "title": "View Locker Layout",
+    "image": "seq_lockers_2"
+   }
+  ]
+ },
+ {
+  "id": "send",
+  "title": "Send Parcel",
+  "intro": "A customer chooses a locker and a box size, enters the receiver (phone, name, optional email), applies vouchers or loyalty points and creates a SEND order. order-service reserves a box in locker-service, generates the order code and the 6-digit PIN, records the status history and notifies the sender and, when the receiver has an account, the receiver.",
+  "class_image": "cls_send",
+  "classes": [
+   {
+    "name": "OrderController",
+    "kind": "controller"
+   },
+   {
+    "name": "OrderService",
+    "kind": "service"
+   },
+   {
+    "name": "OrderBenefitService",
+    "kind": "service"
+   },
+   {
+    "name": "PaidOrderEffects",
+    "kind": "component"
+   },
+   {
+    "name": "LockerClient",
+    "kind": "client"
+   },
+   {
+    "name": "LockerCellClient",
+    "kind": "client"
+   },
+   {
+    "name": "UserClient",
+    "kind": "client"
+   },
+   {
+    "name": "NotificationClient",
+    "kind": "client"
+   },
+   {
+    "name": "LockerOrderRepository",
+    "kind": "repository"
+   },
+   {
+    "name": "OrderStatusHistoryRepository",
+    "kind": "repository"
+   },
+   {
+    "name": "LockerOrder",
+    "kind": "entity"
+   },
+   {
+    "name": "OrderStatusHistory",
+    "kind": "entity"
+   }
+  ],
+  "specs": [
+   {
+    "cls": "OrderController",
+    "methods": [
+     [
+      "createSend(request: SendOrderRequest, userId: Long): OrderResponse",
+      "Creates a SEND order for the signed-in customer."
+     ],
+     [
+      "get(id: Long, userId: Long, roles: String): OrderResponse",
+      "Order detail with PIN / QR for the owner."
+     ],
+     [
+      "myOrders(userId: Long): List<OrderResponse>",
+      "Orders of the customer."
+     ],
+     [
+      "timeline(orderId: Long, userId: Long, roles: String): List<OrderTimelineEvent>",
+      "Status history of an order."
+     ]
+    ]
+   },
+   {
+    "cls": "OrderService",
+    "methods": [
+     [
+      "createSend(request: SendOrderRequest, userId: Long): OrderResponse",
+      "Finds a free cell when no box is given, creates the order with the SEND base fee and links the receiver account."
+     ],
+     [
+      "create(request: CreateOrderRequest, serverPrice: BigDecimal): OrderResponse",
+      "Generates code and PIN, reserves the box, saves details, applies vouchers / points, writes history, publishes order.created and notifies."
+     ],
+     [
+      "confirm(id: Long, userId: Long): OrderResponse",
+      "Sender confirms the drop: occupies the box, issues a new PIN and notifies the receiver."
+     ],
+     [
+      "complete(id: Long, userId: Long): OrderResponse",
+      "Completes the order after pickup and releases the box."
+     ],
+     [
+      "cancel(id: Long, reason: Integer, userId: Long): OrderResponse",
+      "Cancels an unpaid / undropped order and releases the box and benefits."
+     ]
+    ]
+   },
+   {
+    "cls": "OrderBenefitService",
+    "methods": [
+     [
+      "applyVouchers(order: LockerOrder, codes: List<String>, eligibleLockerId: Long): void",
+      "Validates vouchers for the locker and writes promotion usages."
+     ],
+     [
+      "redeemPoints(order: LockerOrder, pointsToUse: Integer): void",
+      "Redeems loyalty points as a discount through loyalty-service."
+     ]
+    ]
+   },
+   {
+    "cls": "PaidOrderEffects",
+    "methods": [
+     [
+      "settleIfFree(order: LockerOrder): boolean",
+      "Marks a zero-price order as paid immediately."
+     ]
+    ]
+   }
+  ],
+  "seqs": [
+   {
+    "title": "Create Send Order",
+    "image": "seq_send_1"
+   }
+  ]
+ },
+ {
+  "id": "payment",
+  "title": "VietQR Payment (SePay)",
+  "intro": "Orders are paid by bank transfer through SePay. payment-service creates a PENDING payment with a unique reference and returns a VietQR image and transfer details. When the bank transfer arrives, SePay calls the webhook; the payment becomes COMPLETED only from that verified webhook, then payment.completed is published and order-service marks the order PAID.",
+  "class_image": "cls_payment",
+  "classes": [
+   {
+    "name": "PaymentController",
+    "kind": "controller"
+   },
+   {
+    "name": "PaymentService",
+    "kind": "service"
+   },
+   {
+    "name": "SepayService",
+    "kind": "component"
+   },
+   {
+    "name": "OrderClient",
+    "kind": "client"
+   },
+   {
+    "name": "PaymentRepository",
+    "kind": "repository"
+   },
+   {
+    "name": "OrderPaymentEventListener",
+    "kind": "component"
+   },
+   {
+    "name": "PaidOrderEffects",
+    "kind": "component"
+   },
+   {
+    "name": "PaymentRecord",
+    "kind": "entity"
+   }
+  ],
+  "specs": [
+   {
+    "cls": "PaymentController",
+    "methods": [
+     [
+      "checkout(request: CheckoutRequest, userId: Long): PaymentResponse",
+      "Creates / reuses the pending SePay payment of an order."
+     ],
+     [
+      "sepayWebhook(body: Map<String, Object>, authHeader: String): Map<String, Object>",
+      "Receives the SePay bank-transfer webhook."
+     ],
+     [
+      "get(id: Long, userId: Long, roles: String): PaymentResponse",
+      "Payment status polled by the app."
+     ],
+     [
+      "listByOrder(orderId: Long, userId: Long, roles: String): List<PaymentResponse>",
+      "Payments of an order."
+     ]
+    ]
+   },
+   {
+    "cls": "PaymentService",
+    "methods": [
+     [
+      "checkout(userId: Long, request: CheckoutRequest): PaymentResponse",
+      "Checks method and order, computes the outstanding amount, builds the transfer content and creates a PENDING payment."
+     ],
+     [
+      "handleSepayWebhook(body: Map<String, Object>, authHeader: String): PaymentResponse",
+      "Verifies API key, ignores outgoing transfers and duplicates, finds the payment by reference and completes it."
+     ],
+     [
+      "completeTransfer(payment: PaymentRecord, received: BigDecimal, refId: String): PaymentResponse",
+      "Marks the payment COMPLETED and publishes payment.completed."
+     ]
+    ]
+   },
+   {
+    "cls": "SepayService",
+    "methods": [
+     [
+      "generateVietQrUrl(payment: PaymentRecord): String",
+      "Builds the VietQR image URL (bank BIN, account, amount, content)."
+     ],
+     [
+      "verifyWebhook(body: Map<String, Object>, authHeader: String): boolean",
+      "Checks the SePay API key."
+     ],
+     [
+      "extractReferenceId(body: Map<String, Object>): String",
+      "Reads the payment reference from the transfer content."
+     ]
+    ]
+   },
+   {
+    "cls": "OrderPaymentEventListener",
+    "methods": [
+     [
+      "onPaymentEvent(event: DomainEvent): void",
+      "Consumes payment.completed in order-service and marks the order PAID."
+     ]
+    ]
+   },
+   {
+    "cls": "PaidOrderEffects",
+    "methods": [
+     [
+      "afterPaid(order: LockerOrder): void",
+      "Publishes order.status.changed, notifies the customer and starts drone pickup for paid drone orders."
+     ]
+    ]
+   }
+  ],
+  "seqs": [
+   {
+    "title": "Checkout with VietQR",
+    "image": "seq_payment_1"
+   },
+   {
+    "title": "SePay Webhook Completes the Payment",
+    "image": "seq_payment_2"
+   }
+  ]
+ },
+ {
+  "id": "kiosk",
+  "title": "Drop and Pick Up Parcel at the Kiosk",
+  "intro": "At the locker the sender enters the order PIN / scans the QR to open the reserved box and drop the parcel; the receiver uses the PIN sent by SMS / email to open the box and take it. iot-service validates the code against order-service, enforces the wrong-PIN lockout, sends the open command over MQTT to the Raspberry Pi and waits for the result before updating the order and the box.",
+  "class_image": "cls_kiosk",
+  "classes": [
+   {
+    "name": "IotController",
+    "kind": "controller"
+   },
+   {
+    "name": "IotService",
+    "kind": "service"
+   },
+   {
+    "name": "LockerMqttService",
+    "kind": "component"
+   },
+   {
+    "name": "OrderClient",
+    "kind": "client"
+   },
+   {
+    "name": "LockerClient",
+    "kind": "client"
+   },
+   {
+    "name": "BoxAccessLogRepository",
+    "kind": "repository"
+   },
+   {
+    "name": "AccessAttemptRepository",
+    "kind": "repository"
+   },
+   {
+    "name": "BoxAccessLog",
+    "kind": "entity"
+   },
+   {
+    "name": "AccessAttempt",
+    "kind": "entity"
+   }
+  ],
+  "specs": [
+   {
+    "cls": "IotController",
+    "methods": [
+     [
+      "verifyAccess(request: VerifyPinRequest): VerifyPinResponse",
+      "Checks a PIN / QR code for a box (public kiosk route)."
+     ],
+     [
+      "unlockWithCode(request: UnlockWithCodeRequest): Map<String, Object>",
+      "Opens the box of the order identified by the code."
+     ],
+     [
+      "confirmDropWithCode(request: UnlockWithCodeRequest): Map<String, Object>",
+      "Confirms the parcel was dropped after the door was opened."
+     ],
+     [
+      "endRentalWithCode(request: UnlockWithCodeRequest): Map<String, Object>",
+      "Ends a rental after the customer took the items."
+     ]
+    ]
+   },
+   {
+    "cls": "IotService",
+    "methods": [
+     [
+      "unlockWithCode(request: UnlockWithCodeRequest): Map<String, Object>",
+      "Looks up the order by access code, verifies the box and code, sends the unlock command and records the access."
+     ],
+     [
+      "verifyAccess(boxId: Long, code: String): VerifyPinResponse",
+      "Checks the code, payment rules and the wrong-attempt lockout (AccessAttempt)."
+     ],
+     [
+      "confirmDropWithCode(request: UnlockWithCodeRequest): Map<String, Object>",
+      "Requires a recent successful open, then confirms the order in order-service."
+     ],
+     [
+      "endRentalWithCode(request: UnlockWithCodeRequest): Map<String, Object>",
+      "Requires a recent open, then calls pickupStorage to end the rental."
+     ]
+    ]
+   },
+   {
+    "cls": "LockerMqttService",
+    "methods": [
+     [
+      "sendUnlockCommandAsync(lockerId: Long, boxId: Long): CompletableFuture<JsonNode>",
+      "Publishes cabinet/{lockerId}/command/open and completes when /result arrives."
+     ],
+     [
+      "messageArrived(topic: String, message: MqttMessage): void",
+      "Handles results, heartbeats and door status from the Pi."
+     ]
+    ]
+   }
+  ],
+  "seqs": [
+   {
+    "title": "Open Box with PIN at the Kiosk",
+    "image": "seq_kiosk_1"
+   },
+   {
+    "title": "Confirm Parcel Drop",
+    "image": "seq_kiosk_2"
+   }
+  ]
+ },
+ {
+  "id": "rental",
+  "title": "Rent Locker, Extend and End Rental",
+  "intro": "A customer rents a box for a number of hours (price by cell type and hours from business settings), extends the rental from the app and ends it at the kiosk or on the phone. Overtime is assessed before the box can be opened again.",
+  "class_image": "cls_rental",
+  "classes": [
+   {
+    "name": "OrderController",
+    "kind": "controller"
+   },
+   {
+    "name": "OrderService",
+    "kind": "service"
+   },
+   {
+    "name": "OrderRules",
+    "kind": "component"
+   },
+   {
+    "name": "LockerCellClient",
+    "kind": "client"
+   },
+   {
+    "name": "LockerOrderRepository",
+    "kind": "repository"
+   },
+   {
+    "name": "LockerOrder",
+    "kind": "entity"
+   }
+  ],
+  "specs": [
+   {
+    "cls": "OrderController",
+    "methods": [
+     [
+      "createRental(request: RentalOrderRequest, userId: Long): OrderResponse",
+      "Creates a RENTAL order."
+     ],
+     [
+      "extendRental(orderId: Long, request: Map<String, Object>, userId: Long): OrderResponse",
+      "Adds hours to an active rental."
+     ],
+     [
+      "assessOvertime(orderId: Long, userId: Long): OrderResponse",
+      "Computes overtime fee before reopening."
+     ],
+     [
+      "pickupStorage(orderId: Long, userId: Long): OrderResponse",
+      "Ends the rental after the items are taken."
+     ]
+    ]
+   },
+   {
+    "cls": "OrderService",
+    "methods": [
+     [
+      "createRental(request: RentalOrderRequest, userId: Long): OrderResponse",
+      "Rejects DRONE cells, checks min / max hours, prices by cell type and hours and creates the order."
+     ],
+     [
+      "extendRental(id: Long, userId: Long, hours: int): OrderResponse",
+      "Checks owner, status, open incidents and max hours, settles overtime and adds the extension price."
+     ],
+     [
+      "assessOvertime(id: Long, userId: Long): OrderResponse",
+      "Adds the overtime fee that must be paid before unlocking."
+     ],
+     [
+      "pickupStorage(id: Long, userId: Long): OrderResponse",
+      "Completes the rental and releases the box."
+     ]
+    ]
+   }
+  ],
+  "seqs": [
+   {
+    "title": "Create Rental Order",
+    "image": "seq_rental_1"
+   },
+   {
+    "title": "Extend Rental",
+    "image": "seq_rental_2"
+   },
+   {
+    "title": "End Rental at the Kiosk",
+    "image": "seq_rental_3"
+   }
+  ]
+ },
+ {
+  "id": "delegate",
+  "title": "Delegate Pickup and Reset PIN",
+  "intro": "The owner of an order may hand the pickup over to another person (phone, name, note) or request a new PIN. A new PIN is generated, the old one stops working, and the delegate is notified when the phone belongs to an account.",
+  "class_image": "cls_delegate",
+  "classes": [
+   {
+    "name": "OrderController",
+    "kind": "controller"
+   },
+   {
+    "name": "OrderService",
+    "kind": "service"
+   },
+   {
+    "name": "QrTokenService",
+    "kind": "component"
+   },
+   {
+    "name": "UserClient",
+    "kind": "client"
+   },
+   {
+    "name": "NotificationClient",
+    "kind": "client"
+   },
+   {
+    "name": "LockerOrderRepository",
+    "kind": "repository"
+   },
+   {
+    "name": "LockerOrder",
+    "kind": "entity"
+   }
+  ],
+  "specs": [
+   {
+    "cls": "OrderController",
+    "methods": [
+     [
+      "delegate(orderId: Long, request: DelegateOrderRequest, userId: Long): OrderResponse",
+      "Delegates pickup to another person."
+     ],
+     [
+      "resetPin(orderId: Long, userId: Long): OrderResponse",
+      "Issues a new PIN for the order."
+     ],
+     [
+      "delegatedToMe(userId: Long, activeOnly: boolean, limit: Integer): List<ReceiverOrderResponse>",
+      "Orders delegated to the current user."
+     ]
+    ]
+   },
+   {
+    "cls": "OrderService",
+    "methods": [
+     [
+      "delegate(id: Long, userId: Long, request: DelegateOrderRequest): OrderResponse",
+      "Checks owner and status, stores delegate data, generates a new PIN, writes history and notifies both sides."
+     ],
+     [
+      "resetPin(id: Long, userId: Long): OrderResponse",
+      "Checks owner and status and generates a new PIN."
+     ]
+    ]
+   },
+   {
+    "cls": "QrTokenService",
+    "methods": [
+     [
+      "issue(orderId: Long, pinCode: String): String",
+      "Signs the QR token that encodes the order access."
+     ]
+    ]
+   }
+  ],
+  "seqs": [
+   {
+    "title": "Delegate Pickup",
+    "image": "seq_delegate_1"
+   },
+   {
+    "title": "Reset PIN",
+    "image": "seq_delegate_2"
+   }
+  ]
+ },
+ {
+  "id": "feedback",
+  "title": "Rate Order, Complaint and Feedback Handling",
+  "intro": "After an order is completed the customer rates it (1-5 stars, comment) or files a complaint. Administrators read the feedback, see satisfaction analytics and reply; the customer is notified of the reply.",
+  "class_image": "cls_feedback",
+  "classes": [
+   {
+    "name": "OrderController",
+    "kind": "controller"
+   },
+   {
+    "name": "AdminFeedbackController",
+    "kind": "controller"
+   },
+   {
+    "name": "OrderService",
+    "kind": "service"
+   },
+   {
+    "name": "AdminFeedbackService",
+    "kind": "service"
+   },
+   {
+    "name": "NotificationClient",
+    "kind": "client"
+   },
+   {
+    "name": "OrderRatingRepository",
+    "kind": "repository"
+   },
+   {
+    "name": "OrderComplaintRepository",
+    "kind": "repository"
+   },
+   {
+    "name": "OrderRating",
+    "kind": "entity"
+   },
+   {
+    "name": "OrderComplaint",
+    "kind": "entity"
+   }
+  ],
+  "specs": [
+   {
+    "cls": "OrderController",
+    "methods": [
+     [
+      "rate(orderId: Long, request: OrderRatingRequest, userId: Long): OrderRatingResponse",
+      "Customer rates a completed order."
+     ],
+     [
+      "complaint(orderId: Long, request: OrderComplaintRequest, userId: Long): OrderComplaintResponse",
+      "Customer files a complaint."
+     ]
+    ]
+   },
+   {
+    "cls": "AdminFeedbackController",
+    "methods": [
+     [
+      "list(page: int, size: int, minRating: Integer, maxRating: Integer, isResolved: Boolean, userId: Long): PageResponse<FeedbackResponse>",
+      "Admin lists ratings and complaints."
+     ],
+     [
+      "reply(id: Long, request: FeedbackReplyRequest, adminId: Long): FeedbackDetailResponse",
+      "Admin replies to a rating."
+     ],
+     [
+      "satisfaction(): SatisfactionMetricsResponse",
+      "Satisfaction analytics."
+     ]
+    ]
+   },
+   {
+    "cls": "OrderService",
+    "methods": [
+     [
+      "rate(orderId: Long, request: OrderRatingRequest, userId: Long): OrderRatingResponse",
+      "Checks owner and COMPLETED status, creates or updates the rating."
+     ],
+     [
+      "complain(orderId: Long, request: OrderComplaintRequest, userId: Long): OrderComplaintResponse",
+      "Checks owner and saves the complaint."
+     ]
+    ]
+   },
+   {
+    "cls": "AdminFeedbackService",
+    "methods": [
+     [
+      "reply(id: Long, reply: String, adminId: Long): FeedbackDetailResponse",
+      "Saves the admin reply and notifies the customer."
+     ],
+     [
+      "analytics(period: String): FeedbackAnalyticsResponse",
+      "Counts ratings, complaint types and averages by order type."
+     ]
+    ]
+   }
+  ],
+  "seqs": [
+   {
+    "title": "Rate an Order",
+    "image": "seq_feedback_1"
+   },
+   {
+    "title": "Administrator Replies to Feedback",
+    "image": "seq_feedback_2"
+   }
+  ]
+ },
+ {
+  "id": "refund",
+  "title": "Refund Requests",
+  "intro": "A customer asks for a refund of a paid order within the allowed days, to a saved bank account. The order is marked REFUND_PENDING; an administrator transfers the money, enters the bank transfer reference and approves (or rejects). payment.refunded lets loyalty-service take back the points earned.",
+  "class_image": "cls_refund",
+  "classes": [
+   {
+    "name": "PaymentController",
+    "kind": "controller"
+   },
+   {
+    "name": "AdminPaymentController",
+    "kind": "controller"
+   },
+   {
+    "name": "PaymentService",
+    "kind": "service"
+   },
+   {
+    "name": "PaymentRules",
+    "kind": "component"
+   },
+   {
+    "name": "OrderClient",
+    "kind": "client"
+   },
+   {
+    "name": "RefundRepository",
+    "kind": "repository"
+   },
+   {
+    "name": "UserBankAccountRepository",
+    "kind": "repository"
+   },
+   {
+    "name": "RefundRecord",
+    "kind": "entity"
+   },
+   {
+    "name": "UserBankAccount",
+    "kind": "entity"
+   }
+  ],
+  "specs": [
+   {
+    "cls": "PaymentController",
+    "methods": [
+     [
+      "requestRefund(userId: Long, request: CreateRefundRequest): RefundResponse",
+      "Customer requests a refund."
+     ],
+     [
+      "myRefunds(userId: Long): List<RefundResponse>",
+      "Refunds of the customer."
+     ]
+    ]
+   },
+   {
+    "cls": "AdminPaymentController",
+    "methods": [
+     [
+      "approveRefund(id: Long, adminUserId: Long, request: ProcessRefundRequest): RefundResponse",
+      "Admin approves a refund after the bank transfer."
+     ],
+     [
+      "rejectRefund(id: Long, adminUserId: Long, request: ProcessRefundRequest): RefundResponse",
+      "Admin rejects a refund with a reason."
+     ],
+     [
+      "refunds(page: int, size: int, status: List<String>, from: String, to: String, orderId: Long, paymentId: Long, userId: Long, sort: String): PageResponse<AdminRefundResponse>",
+      "Admin lists refund requests."
+     ]
+    ]
+   },
+   {
+    "cls": "PaymentService",
+    "methods": [
+     [
+      "requestRefund(userId: Long, request: CreateRefundRequest): RefundResponse",
+      "Checks the refund policy (enabled, max days, amount), bank account and duplicates, saves the refund and marks the order REFUND_PENDING."
+     ],
+     [
+      "adminApproveRefund(refundId: Long, adminUserId: Long, request: ProcessRefundRequest): RefundResponse",
+      "Requires the transfer reference, completes the refund, syncs the order and publishes payment.refunded."
+     ],
+     [
+      "adminRejectRefund(refundId: Long, adminUserId: Long, request: ProcessRefundRequest): RefundResponse",
+      "Rejects with a reason and restores the order payment status."
+     ]
+    ]
+   }
+  ],
+  "seqs": [
+   {
+    "title": "Request and Approve a Refund",
+    "image": "seq_refund_1"
+   }
+  ]
+ },
+ {
+  "id": "loyalty",
+  "title": "Promotions, Vouchers and Loyalty Points",
+  "intro": "Administrators define promotions (code, discount, period, limits, locker scope, point price). Customers save free vouchers or exchange loyalty points for vouchers and apply them when ordering. loyalty-service awards 10 % of the paid amount as points when order.completed is received and reverses them on refunds.",
+  "class_image": "cls_loyalty",
+  "classes": [
+   {
+    "name": "OrderController",
+    "kind": "controller"
+   },
+   {
+    "name": "VoucherExchangeService",
+    "kind": "service"
+   },
+   {
+    "name": "LoyaltyController",
+    "kind": "controller"
+   },
+   {
+    "name": "LoyaltyService",
+    "kind": "service"
+   },
+   {
+    "name": "OrderCompletedPointsListener",
+    "kind": "component"
+   },
+   {
+    "name": "LoyaltyClient",
+    "kind": "client"
+   },
+   {
+    "name": "PromotionRepository",
+    "kind": "repository"
+   },
+   {
+    "name": "PromotionClaimRepository",
+    "kind": "repository"
+   },
+   {
+    "name": "LoyaltyAccountRepository",
+    "kind": "repository"
+   },
+   {
+    "name": "PointTransactionRepository",
+    "kind": "repository"
+   },
+   {
+    "name": "Promotion",
+    "kind": "entity"
+   },
+   {
+    "name": "LoyaltyAccount",
+    "kind": "entity"
+   }
+  ],
+  "specs": [
+   {
+    "cls": "OrderController",
+    "methods": [
+     [
+      "activePromotions(lockerId: Long): List<PromotionView>",
+      "Active promotions for the customer."
+     ],
+     [
+      "claimPromotion(promotionId: Long, userId: Long): Map<String, Object>",
+      "Saves a free voucher."
+     ],
+     [
+      "exchangeVoucher(promotionId: Long, userId: Long): VoucherExchangeResult",
+      "Exchanges points for a voucher."
+     ],
+     [
+      "myVouchers(userId: Long, status: String, lockerId: Long): List<Map<String, Object>>",
+      "Vouchers held by the customer."
+     ]
+    ]
+   },
+   {
+    "cls": "VoucherExchangeService",
+    "methods": [
+     [
+      "exchangeable(userId: Long): List<ExchangeableVoucherView>",
+      "Promotions that can be bought with points."
+     ],
+     [
+      "exchange(promotionId: Long, userId: Long): VoucherExchangeResult",
+      "Locks the promotion, checks eligibility, spends points in loyalty-service and saves the claim (refunds points on rollback)."
+     ]
+    ]
+   },
+   {
+    "cls": "LoyaltyController",
+    "methods": [
+     [
+      "summary(userId: Long): LoyaltyAccountResponse",
+      "Points, lifetime points and tier."
+     ],
+     [
+      "history(userId: Long): List<PointTransactionResponse>",
+      "Point transactions."
+     ],
+     [
+      "exchangeForVoucher(request: VoucherExchangeRequest): VoucherExchangeResponse",
+      "Internal: spends points for a voucher."
+     ]
+    ]
+   },
+   {
+    "cls": "LoyaltyService",
+    "methods": [
+     [
+      "awardOrderPoints(orderId: Long, userId: Long, paidAmount: BigDecimal): Optional<LoyaltyAccountResponse>",
+      "Adds earn points once per order and updates the tier."
+     ],
+     [
+      "exchangeForVoucher(request: VoucherExchangeRequest): VoucherExchangeResponse",
+      "Deducts points with a reference for idempotency."
+     ],
+     [
+      "reverseOrderEarn(orderId: Long, refundedAmount: BigDecimal, paidAmount: BigDecimal): int",
+      "Takes back points proportionally to a refund."
+     ],
+     [
+      "redeemForOrder(request: OrderRedemptionRequest): OrderRedemptionResponse",
+      "Uses points as an order discount."
+     ]
+    ]
+   },
+   {
+    "cls": "OrderCompletedPointsListener",
+    "methods": [
+     [
+      "onOrderCompleted(event: DomainEvent): void",
+      "Consumes order.completed / payment.refunded and calls LoyaltyService."
+     ]
+    ]
+   }
+  ],
+  "seqs": [
+   {
+    "title": "Exchange Points for a Voucher",
+    "image": "seq_loyalty_1"
+   },
+   {
+    "title": "Earn Points when an Order Completes",
+    "image": "seq_loyalty_2"
+   }
+  ]
+ },
+ {
+  "id": "dronebook",
+  "title": "Drone Delivery Booking",
+  "intro": "A customer books a drone delivery between two lockers with a landing pad or from a pickup address to a locker. order-service quotes the price, checks flight availability, open-order limit, parcel weight and weather, selects the source locker, reserves a DRONE box at the destination and creates a DRONE_DELIVERY order (idempotent by key).",
+  "class_image": "cls_dronebook",
+  "classes": [
+   {
+    "name": "OrderController",
+    "kind": "controller"
+   },
+   {
+    "name": "DroneOrderBookingService",
+    "kind": "service"
+   },
+   {
+    "name": "DroneSourceLockerSelector",
+    "kind": "component"
+   },
+   {
+    "name": "DroneWeatherService",
+    "kind": "service"
+   },
+   {
+    "name": "OrderBenefitService",
+    "kind": "service"
+   },
+   {
+    "name": "LockerCellClient",
+    "kind": "client"
+   },
+   {
+    "name": "LockerClient",
+    "kind": "client"
+   },
+   {
+    "name": "UserClient",
+    "kind": "client"
+   },
+   {
+    "name": "LockerOrderRepository",
+    "kind": "repository"
+   },
+   {
+    "name": "LockerOrder",
+    "kind": "entity"
+   }
+  ],
+  "specs": [
+   {
+    "cls": "OrderController",
+    "methods": [
+     [
+      "quoteDroneDelivery(request: DroneDeliveryQuoteRequest, userId: Long): DroneDeliveryQuoteResponse",
+      "Price, distance and ETA before booking."
+     ],
+     [
+      "createDroneDelivery(request: CreateDroneDeliveryOrderRequest, userId: Long, idempotencyKey: String): DroneDeliveryOrderResponse",
+      "Books a drone delivery."
+     ],
+     [
+      "getDroneDelivery(orderId: Long, userId: Long): DroneDeliveryOrderResponse",
+      "Booking and flight status."
+     ]
+    ]
+   },
+   {
+    "cls": "DroneOrderBookingService",
+    "methods": [
+     [
+      "quote(request: DroneDeliveryQuoteRequest): DroneDeliveryQuoteResponse",
+      "Computes distance, price and availability."
+     ],
+     [
+      "create(request: CreateDroneDeliveryOrderRequest, userId: Long, idempotencyKey: String): DroneDeliveryOrderResponse",
+      "Validates limits, weight, parcel and weather, selects the source locker, reserves the destination box and saves the order."
+     ]
+    ]
+   },
+   {
+    "cls": "DroneSourceLockerSelector",
+    "methods": [
+     [
+      "select(pickupLatitude: double, pickupLongitude: double, destinationLockerId: Long, excludedSourceLockerId: Long): Selection",
+      "Chooses the source locker / station for the flight."
+     ]
+    ]
+   },
+   {
+    "cls": "DroneWeatherService",
+    "methods": [
+     [
+      "assessJourney(pickupLatitude: Double, pickupLongitude: Double, source: LockerInfo, destination: LockerInfo): DroneWeatherAssessment",
+      "Wind / rain check from Open-Meteo (fallback MET Norway)."
+     ]
+    ]
+   }
+  ],
+  "seqs": [
+   {
+    "title": "Book a Drone Delivery",
+    "image": "seq_dronebook_1"
+   }
+  ]
+ },
+ {
+  "id": "dronepickup",
+  "title": "Drone Home Pickup",
+  "intro": "When a drone order that starts at the customer's address is paid, a pickup is opened and offered to the nearest on-duty drone technician who is not busy. The technician accepts (or declines, then the next one is offered), meets the customer, checks the pickup code and takes a photo; the parcel is then ready to load.",
+  "class_image": "cls_dronepickup",
+  "classes": [
+   {
+    "name": "OrderController",
+    "kind": "controller"
+   },
+   {
+    "name": "DronePickupService",
+    "kind": "service"
+   },
+   {
+    "name": "CloudinaryMediaStorage",
+    "kind": "component"
+   },
+   {
+    "name": "NotificationClient",
+    "kind": "client"
+   },
+   {
+    "name": "DronePickupRepository",
+    "kind": "repository"
+   },
+   {
+    "name": "DronePickupOfferRepository",
+    "kind": "repository"
+   },
+   {
+    "name": "DroneTechnicianPresenceRepository",
+    "kind": "repository"
+   },
+   {
+    "name": "DronePickup",
+    "kind": "entity"
+   },
+   {
+    "name": "DronePickupOffer",
+    "kind": "entity"
+   }
+  ],
+  "specs": [
+   {
+    "cls": "OrderController",
+    "methods": [
+     [
+      "acceptDronePickup(orderId: Long, userId: Long): DroneDeliveryOrderResponse",
+      "Technician accepts the pickup offer."
+     ],
+     [
+      "declineDronePickup(orderId: Long, userId: Long): void",
+      "Technician declines the offer."
+     ],
+     [
+      "confirmDronePickup(orderId: Long, request: DronePickupConfirmRequest, userId: Long): DroneDeliveryOrderResponse",
+      "Technician confirms the parcel was collected."
+     ],
+     [
+      "assignDronePickup(orderId: Long, request: AssignDronePickupRequest, userId: Long): DroneDeliveryOrderResponse",
+      "Admin assigns a technician manually."
+     ]
+    ]
+   },
+   {
+    "cls": "DronePickupService",
+    "methods": [
+     [
+      "startForPaidOrder(orderId: Long): void",
+      "Creates the pickup and offers it to the next free technician."
+     ],
+     [
+      "accept(orderId: Long, technicianId: Long): void",
+      "Closes the offer and assigns the technician to the order."
+     ],
+     [
+      "decline(orderId: Long, technicianId: Long): void",
+      "Declines and offers the pickup to the next technician."
+     ],
+     [
+      "confirmPickedUp(orderId: Long, technicianId: Long, pickupCode: String, parcelMatched: boolean, note: String, pickupPhoto: MediaUpload): void",
+      "Checks the pickup code, verifies the photo and moves the order to the loading step."
+     ],
+     [
+      "sweep(now: LocalDateTime): void",
+      "Scheduled: expires unanswered offers and re-offers."
+     ]
+    ]
+   }
+  ],
+  "seqs": [
+   {
+    "title": "Offer, Accept and Confirm a Home Pickup",
+    "image": "seq_dronepickup_1"
+   }
+  ]
+ },
+ {
+  "id": "dronedispatch",
+  "title": "Drone Dispatch, Loading and Launch",
+  "intro": "A drone technician accepts a paid drone order and reserves a drone that passes the pre-flight checks (status, battery, landing pad and destination box). The parcel is weighed and sealed in the loading step (surcharge when heavier than declared), then the drone is launched after a weather check. The drone status is changed in locker-service.",
+  "class_image": "cls_dronedispatch",
+  "classes": [
+   {
+    "name": "OrderController",
+    "kind": "controller"
+   },
+   {
+    "name": "DroneOrderMaintenanceService",
+    "kind": "service"
+   },
+   {
+    "name": "LockerDroneClient",
+    "kind": "client"
+   },
+   {
+    "name": "DroneWeatherService",
+    "kind": "service"
+   },
+   {
+    "name": "DroneDeliveryMailer",
+    "kind": "component"
+   },
+   {
+    "name": "NotificationClient",
+    "kind": "client"
+   },
+   {
+    "name": "DroneMissionRepository",
+    "kind": "repository"
+   },
+   {
+    "name": "LockerOrderRepository",
+    "kind": "repository"
+   },
+   {
+    "name": "DroneMission",
+    "kind": "entity"
+   }
+  ],
+  "specs": [
+   {
+    "cls": "OrderController",
+    "methods": [
+     [
+      "maintenanceDroneOrders(deliveryStage: String, userId: Long): List<DroneDeliveryOrderResponse>",
+      "Dispatch queue of drone orders."
+     ],
+     [
+      "acceptDroneOrder(orderId: Long, request: AcceptDroneOrderRequest, userId: Long, idempotencyKey: String): DroneMissionResponse",
+      "Accepts an order with a drone."
+     ],
+     [
+      "confirmDroneLoading(orderId: Long, request: ConfirmDroneLoadingRequest, userId: Long, idempotencyKey: String): DroneMissionResponse",
+      "Confirms weight, seal and checklist."
+     ],
+     [
+      "launchDroneOrder(orderId: Long, userId: Long, idempotencyKey: String): DroneMissionResponse",
+      "Launches the flight."
+     ],
+     [
+      "cancelDroneOrder(orderId: Long, request: CancelDroneOrderRequest, userId: Long): DroneMissionResponse",
+      "Cancels before launch."
+     ]
+    ]
+   },
+   {
+    "cls": "DroneOrderMaintenanceService",
+    "methods": [
+     [
+      "queue(deliveryStage: String): List<DroneMissionResponse>",
+      "Orders waiting for dispatch / in progress."
+     ],
+     [
+      "accept(orderId: Long, userId: Long, idempotencyKey: String, request: AcceptDroneOrderRequest): DroneMissionResponse",
+      "Checks paid status, parcel in hand, flights open, drone and locker pre-flight; reserves the drone and creates the mission."
+     ],
+     [
+      "confirmLoading(orderId: Long, userId: Long, idempotencyKey: String, request: ConfirmDroneLoadingRequest): DroneMissionResponse",
+      "Checks operator and reservation, generates the seal code, applies a weight surcharge and releases the source box."
+     ],
+     [
+      "launch(orderId: Long, userId: Long, idempotencyKey: String): DroneMissionResponse",
+      "Re-checks pre-flight and weather, sets the drone IN_FLIGHT and the mission LAUNCHED, emails / notifies."
+     ],
+     [
+      "cancel(orderId: Long, userId: Long, request: CancelDroneOrderRequest): DroneMissionResponse",
+      "Cancels the mission and frees the drone."
+     ]
+    ]
+   }
+  ],
+  "seqs": [
+   {
+    "title": "Accept Drone Order and Confirm Loading",
+    "image": "seq_dronedispatch_1"
+   },
+   {
+    "title": "Launch the Drone",
+    "image": "seq_dronedispatch_2"
+   }
+  ]
+ },
+ {
+  "id": "dronetrack",
+  "title": "Drone Flight Tracking and Stage Progress",
+  "intro": "During the flight the dispatcher confirms the STANDARD stages (or the simulator advances DEMO orders) and the drone companion Pi sends HMAC-signed telemetry over MQTT. order-service updates the mission, writes the journey and broadcasts the live position to /topic/deliveries/{orderId}/position.",
+  "class_image": "cls_dronetrack",
+  "classes": [
+   {
+    "name": "OrderController",
+    "kind": "controller"
+   },
+   {
+    "name": "DroneMissionProgressService",
+    "kind": "service"
+   },
+   {
+    "name": "DroneTelemetryMqttListener",
+    "kind": "component"
+   },
+   {
+    "name": "DroneTelemetryService",
+    "kind": "service"
+   },
+   {
+    "name": "DroneTelemetrySigner",
+    "kind": "component"
+   },
+   {
+    "name": "DroneTelemetryRegistry",
+    "kind": "component"
+   },
+   {
+    "name": "DronePositionBroadcaster",
+    "kind": "component"
+   },
+   {
+    "name": "DronePositionClient",
+    "kind": "client"
+   },
+   {
+    "name": "DroneMissionRepository",
+    "kind": "repository"
+   }
+  ],
+  "specs": [
+   {
+    "cls": "OrderController",
+    "methods": [
+     [
+      "advanceDroneOrder(orderId: Long, request: AdvanceDroneOrderRequest, userId: Long): DroneDeliveryOrderResponse",
+      "Dispatcher confirms the next flight stage."
+     ]
+    ]
+   },
+   {
+    "cls": "DroneMissionProgressService",
+    "methods": [
+     [
+      "nextStage(missionStatus: String): String",
+      "Next stage of the STANDARD journey."
+     ],
+     [
+      "advanceByOperator(orderId: Long, userId: Long, expectedStage: String): String",
+      "Validates the expected stage and advances it."
+     ],
+     [
+      "advanceToStage(order: LockerOrder, mission: DroneMission, targetStage: String, actorUserId: Long, note: String): void",
+      "Saves mission / order stage and history, notifies and frees the drone at the end."
+     ]
+    ]
+   },
+   {
+    "cls": "DroneTelemetryMqttListener",
+    "methods": [
+     [
+      "messageArrived(topic: String, message: MqttMessage): void",
+      "Receives lockr/drones/+/telemetry."
+     ]
+    ]
+   },
+   {
+    "cls": "DroneTelemetryService",
+    "methods": [
+     [
+      "ingest(droneCode: String, frame: DroneTelemetryFrame): void",
+      "Verifies the HMAC signature, stores the latest sample and forwards the position."
+     ]
+    ]
+   }
+  ],
+  "seqs": [
+   {
+    "title": "Advance Flight Stage and Live Position",
+    "image": "seq_dronetrack_1"
+   }
+  ]
+ },
+ {
+  "id": "droneincident",
+  "title": "Drone Parcel Drop Incident",
+  "intro": "If a parcel falls during a flight the technician reports a drop incident with location, telemetry and photos. The drone is grounded, incident tickets are created, a return-to-launch is requested, a recovery technician is assigned, and the admin proposes free redelivery or compensation that the customer accepts or disputes.",
+  "class_image": "cls_droneincident",
+  "classes": [
+   {
+    "name": "DroneParcelIncidentController",
+    "kind": "controller"
+   },
+   {
+    "name": "DroneParcelIncidentService",
+    "kind": "service"
+   },
+   {
+    "name": "DroneTelemetryRegistry",
+    "kind": "component"
+   },
+   {
+    "name": "LockerDroneClient",
+    "kind": "client"
+   },
+   {
+    "name": "DroneReturnCommandGateway",
+    "kind": "interface"
+   },
+   {
+    "name": "IncidentCompensationGateway",
+    "kind": "interface"
+   },
+   {
+    "name": "IncidentRedeliveryGateway",
+    "kind": "interface"
+   },
+   {
+    "name": "DroneParcelIncidentRepository",
+    "kind": "repository"
+   },
+   {
+    "name": "DroneIncidentTimelineRepository",
+    "kind": "repository"
+   },
+   {
+    "name": "DroneParcelIncident",
+    "kind": "entity"
+   }
+  ],
+  "specs": [
+   {
+    "cls": "DroneParcelIncidentController",
+    "methods": [
+     [
+      "report(orderId: Long, userId: Long, roles: String, idempotencyKey: String, request: ReportDroppedParcelRequest): DroneParcelIncidentResponse",
+      "Technician reports a dropped parcel."
+     ],
+     [
+      "assignRecovery(id: Long, userId: Long, roles: String, request: AssignDroneRecoveryRequest): DroneParcelIncidentResponse",
+      "Admin assigns a recovery technician."
+     ],
+     [
+      "submitRecovery(id: Long, userId: Long, request: DroneRecoverySubmitRequest): DroneParcelIncidentResponse",
+      "Technician submits the recovery result."
+     ],
+     [
+      "propose(id: Long, userId: Long, roles: String, request: DroneIncidentProposalRequest): DroneParcelIncidentResponse",
+      "Admin proposes redelivery / compensation."
+     ],
+     [
+      "customerRespond(id: Long, userId: Long, request: DroneIncidentCustomerResponseRequest): DroneParcelIncidentResponse",
+      "Customer accepts or disputes the proposal."
+     ]
+    ]
+   },
+   {
+    "cls": "DroneParcelIncidentService",
+    "methods": [
+     [
+      "report(orderId: Long, actorUserId: Long, roles: String, idempotencyKey: String, request: ReportDroppedParcelRequest): DroneParcelIncidentResponse",
+      "Idempotent report: stores location / evidence, marks mission and order, grounds the drone, creates tickets and requests return-to-launch."
+     ],
+     [
+      "assignRecovery(incidentId: Long, adminUserId: Long, roles: String, request: AssignDroneRecoveryRequest): DroneParcelIncidentResponse",
+      "Checks the technician is valid and not busy and assigns the recovery."
+     ],
+     [
+      "submitRecovery(incidentId: Long, actorUserId: Long, request: DroneRecoverySubmitRequest): DroneParcelIncidentResponse",
+      "Saves outcome, parcel condition and evidence."
+     ],
+     [
+      "propose(incidentId: Long, adminUserId: Long, request: DroneIncidentProposalRequest): DroneParcelIncidentResponse",
+      "Creates a versioned redelivery / compensation proposal according to the policy."
+     ],
+     [
+      "customerRespond(incidentId: Long, customerUserId: Long, request: DroneIncidentCustomerResponseRequest): DroneParcelIncidentResponse",
+      "Accept -> create redelivery or submit compensation refund; dispute -> admin review."
+     ]
+    ]
+   }
+  ],
+  "seqs": [
+   {
+    "title": "Report a Dropped Parcel",
+    "image": "seq_droneincident_1"
+   },
+   {
+    "title": "Recovery, Proposal and Customer Decision",
+    "image": "seq_droneincident_2"
+   }
+  ]
+ },
+ {
+  "id": "ticket",
+  "title": "Locker Incident Ticket",
+  "intro": "A customer who cannot use a box reports it from the order. The box goes to PENDING_CHECK, a ticket is created and routed to the technician responsible for the locker, and the order is paused (no overtime). The technician claims the ticket within the SLA, adds notes and before / after photos, then resolves (box returns to service) or rejects it.",
+  "class_image": "cls_ticket",
+  "classes": [
+   {
+    "name": "OrderController",
+    "kind": "controller"
+   },
+   {
+    "name": "LockerController",
+    "kind": "controller"
+   },
+   {
+    "name": "OrderService",
+    "kind": "service"
+   },
+   {
+    "name": "LockerService",
+    "kind": "service"
+   },
+   {
+    "name": "ReportAttachmentService",
+    "kind": "service"
+   },
+   {
+    "name": "LockerClient",
+    "kind": "client"
+   },
+   {
+    "name": "OrderClient",
+    "kind": "client"
+   },
+   {
+    "name": "LockerReportRepository",
+    "kind": "repository"
+   },
+   {
+    "name": "LockerReport",
+    "kind": "entity"
+   },
+   {
+    "name": "ReportAttachment",
+    "kind": "entity"
+   }
+  ],
+  "specs": [
+   {
+    "cls": "OrderController",
+    "methods": [
+     [
+      "reportBoxFault(orderId: Long, request: Map<String, Object>, userId: Long): OrderResponse",
+      "Customer reports the box of an order."
+     ]
+    ]
+   },
+   {
+    "cls": "LockerController",
+    "methods": [
+     [
+      "markFaultInternal(id: Long, body: BoxFaultRequest, userId: Long): CellResponse",
+      "Internal: opens a ticket for a box."
+     ],
+     [
+      "maintenanceReports(mine: boolean, routed: boolean, all: boolean, userId: Long): List<LockerReportResponse>",
+      "Technician ticket queue."
+     ],
+     [
+      "maintenanceClaim(id: Long, userId: Long): LockerReportResponse",
+      "Technician claims a ticket."
+     ],
+     [
+      "maintenanceAddReportAttachments(id: Long, body: ReportAttachmentsRequest, userId: Long, roles: String): List<ReportAttachmentResponse>",
+      "Adds before / during / after photos."
+     ],
+     [
+      "maintenanceResolve(id: Long, body: ResolveReportRequest, userId: Long, roles: String): LockerReportResponse",
+      "Resolves the ticket and clears the fault."
+     ],
+     [
+      "maintenanceRejectReport(id: Long, body: RejectReportRequest, userId: Long, roles: String): LockerReportResponse",
+      "Rejects a wrong report with feedback."
+     ]
+    ]
+   },
+   {
+    "cls": "OrderService",
+    "methods": [
+     [
+      "reportBoxFault(id: Long, userId: Long, reason: String, attachments: List<Object>): OrderResponse",
+      "Checks owner / status, calls locker-service and opens the box incident on the order (or auto-cancels)."
+     ]
+    ]
+   },
+   {
+    "cls": "LockerService",
+    "methods": [
+     [
+      "markFault(boxId: Long, reason: String, userId: Long, attachments: List<ReportAttachmentRequest>, rolesHeader: String): CellResponse",
+      "Sets the box PENDING_CHECK, creates the LockerReport, routes it to the locker technician and publishes locker.report.routed."
+     ],
+     [
+      "claimReport(reportId: Long, userId: Long): LockerReportResponse",
+      "Assigns the ticket (SLA) and publishes locker.report.claimed."
+     ],
+     [
+      "resolveReport(reportId: Long, userId: Long, request: ResolveReportRequest): LockerReportResponse",
+      "Requires the after photo, closes the ticket, clears the fault and notifies the order."
+     ]
+    ]
+   }
+  ],
+  "seqs": [
+   {
+    "title": "Customer Reports a Box Fault",
+    "image": "seq_ticket_1"
+   },
+   {
+    "title": "Technician Claims and Resolves a Ticket",
+    "image": "seq_ticket_2"
+   }
+  ]
+ },
+ {
+  "id": "inspection",
+  "title": "Periodic Inspection",
+  "intro": "Administrators plan periodic inspections of a locker or a drone (checklist, interval, time slot, technician). A scheduler reminds the technician when an inspection is due; the technician records Pass / Fail for each item with photos, and failed items create a ticket.",
+  "class_image": "cls_inspection",
+  "classes": [
+   {
+    "name": "LockerController",
+    "kind": "controller"
+   },
+   {
+    "name": "LockerService",
+    "kind": "service"
+   },
+   {
+    "name": "LockerScheduler",
+    "kind": "component"
+   },
+   {
+    "name": "UserClient",
+    "kind": "client"
+   },
+   {
+    "name": "MaintenanceScheduleRepository",
+    "kind": "repository"
+   },
+   {
+    "name": "MaintenanceInspectionLogRepository",
+    "kind": "repository"
+   },
+   {
+    "name": "MaintenanceSchedule",
+    "kind": "entity"
+   },
+   {
+    "name": "MaintenanceInspectionLog",
+    "kind": "entity"
+   }
+  ],
+  "specs": [
+   {
+    "cls": "LockerController",
+    "methods": [
+     [
+      "adminCreateSchedule(request: MaintenanceScheduleRequest): MaintenanceScheduleResponse",
+      "Admin creates an inspection plan."
+     ],
+     [
+      "assignTechnicianToSchedule(id: Long, request: AssignTechnicianScheduleRequest): MaintenanceScheduleResponse",
+      "Admin assigns the technician."
+     ],
+     [
+      "maintenanceSchedules(mine: boolean, target: String, userId: Long, roles: String): List<MaintenanceScheduleResponse>",
+      "Technician's due inspections."
+     ],
+     [
+      "maintenanceCompleteSchedule(id: Long, body: CompleteScheduleRequest, actorUserId: Long, roles: String): MaintenanceScheduleResponse",
+      "Technician submits the inspection result."
+     ]
+    ]
+   },
+   {
+    "cls": "LockerService",
+    "methods": [
+     [
+      "createSchedule(request: MaintenanceScheduleRequest): MaintenanceScheduleResponse",
+      "Validates the target and technician role, saves the plan and notifies the technician."
+     ],
+     [
+      "completeSchedule(id: Long, req: CompleteScheduleRequest, actorUserId: Long): MaintenanceScheduleResponse",
+      "Saves the inspection log, moves next due date and creates a ticket for failed items."
+     ]
+    ]
+   },
+   {
+    "cls": "LockerScheduler",
+    "methods": [
+     [
+      "remindDueSchedules(): void",
+      "Scheduled: publishes locker.schedule.due for plans that became due."
+     ]
+    ]
+   }
+  ],
+  "seqs": [
+   {
+    "title": "Plan and Perform a Periodic Inspection",
+    "image": "seq_inspection_1"
+   }
+  ]
+ },
+ {
+  "id": "iotctl",
+  "title": "Locker Controller Provisioning and Cabinet Control",
+  "intro": "A Raspberry Pi controller announces itself over MQTT (iot/{mac}/discovery). The administrator assigns it to a locker; iot-service sends the setup with the box layout and tracks progress. Technicians and administrators open boxes, move the sliding lid and read the panel status remotely; every action is written to cabinet_control_logs.",
+  "class_image": "cls_iotctl",
+  "classes": [
+   {
+    "name": "GatewayController",
+    "kind": "controller"
+   },
+   {
+    "name": "CabinetControlController",
+    "kind": "controller"
+   },
+   {
+    "name": "GatewayProvisioningService",
+    "kind": "service"
+   },
+   {
+    "name": "CabinetControlService",
+    "kind": "service"
+   },
+   {
+    "name": "LockerMqttService",
+    "kind": "component"
+   },
+   {
+    "name": "CabinetLayoutLookup",
+    "kind": "component"
+   },
+   {
+    "name": "CabinetControlLogService",
+    "kind": "service"
+   },
+   {
+    "name": "GatewayDeviceRepository",
+    "kind": "repository"
+   },
+   {
+    "name": "GatewayDevice",
+    "kind": "entity"
+   },
+   {
+    "name": "CabinetControlLog",
+    "kind": "entity"
+   }
+  ],
+  "specs": [
+   {
+    "cls": "GatewayController",
+    "methods": [
+     [
+      "list(): List<GatewayDeviceResponse>",
+      "Controllers discovered / assigned."
+     ],
+     [
+      "assign(id: Long, request: AssignGatewayRequest): GatewayDeviceResponse",
+      "Assigns a controller to a locker."
+     ],
+     [
+      "unassign(id: Long): GatewayDeviceResponse",
+      "Clears the setup on the Pi."
+     ]
+    ]
+   },
+   {
+    "cls": "CabinetControlController",
+    "methods": [
+     [
+      "openBox(lockerId: Long, boxId: Long, userId: Long, roles: String): Map<String, Object>",
+      "Remote box open by technician / admin."
+     ],
+     [
+      "lid(lockerId: Long, axis: int, action: String, userId: Long, roles: String): Map<String, Object>",
+      "Moves the sliding lid of a drone box."
+     ],
+     [
+      "panel(lockerId: Long, userId: Long, roles: String): Map<String, Object>",
+      "Live panel status from the Pi."
+     ],
+     [
+      "logs(lockerId: Long, limit: Integer, userId: Long, roles: String): List<CabinetControlLogResponse>",
+      "Control log of the cabinet."
+     ]
+    ]
+   },
+   {
+    "cls": "GatewayProvisioningService",
+    "methods": [
+     [
+      "onDiscovery(topicMac: String, data: JsonNode): void",
+      "Creates / updates the GatewayDevice from a discovery message."
+     ],
+     [
+      "assign(id: Long, request: AssignGatewayRequest): GatewayDeviceResponse",
+      "Requires the broker, checks the locker is free, validates cells and publishes iot/{mac}/command/setup after commit."
+     ],
+     [
+      "onSetupResult(topicMac: String, data: JsonNode): void",
+      "Stores the setup result."
+     ]
+    ]
+   },
+   {
+    "cls": "CabinetControlService",
+    "methods": [
+     [
+      "openBox(lockerId: Long, boxId: Long, userId: Long, roles: String): Map<String, Object>",
+      "Logs the web action and sends the unlock command."
+     ],
+     [
+      "lid(lockerId: Long, axis: int, action: String, userId: Long, roles: String): Map<String, Object>",
+      "Sends a lid command."
+     ],
+     [
+      "panel(lockerId: Long, userId: Long, roles: String): Map<String, Object>",
+      "Queries the Pi panel."
+     ]
+    ]
+   }
+  ],
+  "seqs": [
+   {
+    "title": "Assign a Controller to a Locker",
+    "image": "seq_iotctl_1"
+   },
+   {
+    "title": "Remote Open Box from the Admin Web",
+    "image": "seq_iotctl_2"
+   }
+  ]
+ },
+ {
+  "id": "notify",
+  "title": "Notifications and Realtime Updates",
+  "intro": "Services publish domain events to the RabbitMQ topic exchange laundry.events or call notification-service directly. notification-service stores in-app notifications, sends FCM push to registered devices and pushes STOMP messages over /ws so that the app and admin web refresh orders, catalog and maintenance screens in real time.",
+  "class_image": "cls_notify",
+  "classes": [
+   {
+    "name": "NotificationController",
+    "kind": "controller"
+   },
+   {
+    "name": "NotificationEventListener",
+    "kind": "component"
+   },
+   {
+    "name": "NotificationService",
+    "kind": "service"
+   },
+   {
+    "name": "WebSocketNotificationService",
+    "kind": "service"
+   },
+   {
+    "name": "FcmPushNotificationService",
+    "kind": "service"
+   },
+   {
+    "name": "NotificationRepository",
+    "kind": "repository"
+   },
+   {
+    "name": "FcmTokenRepository",
+    "kind": "repository"
+   },
+   {
+    "name": "NotificationMessage",
+    "kind": "entity"
+   }
+  ],
+  "specs": [
+   {
+    "cls": "NotificationController",
+    "methods": [
+     [
+      "getCurrentUser(userId: Long): List<NotificationResponse>",
+      "Notifications of the user."
+     ],
+     [
+      "unreadCount(userId: Long): Long",
+      "Unread badge."
+     ],
+     [
+      "markRead(id: Long, userId: Long): NotificationResponse",
+      "Marks one as read."
+     ],
+     [
+      "createInternal(request: NotificationRequest): NotificationResponse",
+      "Internal: create and deliver a notification."
+     ],
+     [
+      "adminBroadcast(request: AdminBroadcastRequest): List<NotificationResponse>",
+      "Admin broadcast."
+     ]
+    ]
+   },
+   {
+    "cls": "NotificationEventListener",
+    "methods": [
+     [
+      "onEvent(event: DomainEvent): void",
+      "Consumes notification.events from RabbitMQ."
+     ]
+    ]
+   },
+   {
+    "cls": "NotificationService",
+    "methods": [
+     [
+      "consumeDomainEvent(event: DomainEvent): void",
+      "Maps an event to realtime destinations and, when needed, to a stored notification."
+     ],
+     [
+      "create(request: NotificationRequest): NotificationResponse",
+      "Saves the notification, sends FCM push and STOMP to the user."
+     ],
+     [
+      "markRead(id: Long, userId: Long): NotificationResponse",
+      "Marks as read."
+     ],
+     [
+      "adminBroadcast(request: AdminBroadcastRequest): List<NotificationResponse>",
+      "Creates notifications for a group of users."
+     ]
+    ]
+   }
+  ],
+  "seqs": [
+   {
+    "title": "Deliver a Domain Event to Users",
+    "image": "seq_notify_1"
+   }
+  ]
+ },
+ {
+  "id": "assistant",
+  "title": "AI Assistant (RAG)",
+  "intro": "Users ask questions in Vietnamese about Lock.R. assistant-service normalises the question, embeds it with Voyage AI, searches the kb_chunks vector index (pgvector, cosine) limited to documents allowed for the user's roles, adds the user's own order context when relevant and asks Claude for an answer with citations; it refuses when nothing relevant is found. Administrators upload knowledge documents that are chunked and embedded in the background.",
+  "class_image": "cls_assistant",
+  "classes": [
+   {
+    "name": "AssistantController",
+    "kind": "controller"
+   },
+   {
+    "name": "KnowledgeAdminController",
+    "kind": "controller"
+   },
+   {
+    "name": "AssistantService",
+    "kind": "service"
+   },
+   {
+    "name": "KnowledgeService",
+    "kind": "service"
+   },
+   {
+    "name": "KnowledgeIndexer",
+    "kind": "component"
+   },
+   {
+    "name": "QuestionPreparer",
+    "kind": "component"
+   },
+   {
+    "name": "EmbeddingProvider",
+    "kind": "interface"
+   },
+   {
+    "name": "AnswerGenerator",
+    "kind": "interface"
+   },
+   {
+    "name": "OrderContextService",
+    "kind": "service"
+   },
+   {
+    "name": "ChunkRepository",
+    "kind": "repository"
+   },
+   {
+    "name": "ConversationRepository",
+    "kind": "repository"
+   }
+  ],
+  "specs": [
+   {
+    "cls": "AssistantController",
+    "methods": [
+     [
+      "ask(request: AskRequest, userId: Long, roles: String): AskResponse",
+      "Asks a question in a new or existing conversation."
+     ],
+     [
+      "conversations(userId: Long): List<ConversationView>",
+      "Conversations of the user."
+     ],
+     [
+      "status(): AssistantStatus",
+      "Whether the providers are configured."
+     ]
+    ]
+   },
+   {
+    "cls": "KnowledgeAdminController",
+    "methods": [
+     [
+      "upload(file: MultipartFile, title: String, allowedRoles: List<String>, userId: Long): KnowledgeDocument",
+      "Uploads a knowledge document."
+     ],
+     [
+      "reindex(id: long): KnowledgeDocument",
+      "Re-indexes a document."
+     ]
+    ]
+   },
+   {
+    "cls": "AssistantService",
+    "methods": [
+     [
+      "ask(userId: long, roles: List<String>, request: AskRequest): AskResponse",
+      "Rate-limits, prepares the question, retrieves chunks, adds order context, generates the answer and stores both messages."
+     ],
+     [
+      "myConversations(userId: long): List<ConversationView>",
+      "Lists conversations."
+     ]
+    ]
+   },
+   {
+    "cls": "KnowledgeService",
+    "methods": [
+     [
+      "upload(fileName: String, mimeType: String, content: byte[], title: String, allowedRoles: List<String>, actorUserId: Long): KnowledgeDocument",
+      "Validates size / duplicates (checksum) and inserts a PENDING document."
+     ]
+    ]
+   },
+   {
+    "cls": "KnowledgeIndexer",
+    "methods": [
+     [
+      "indexPending(): void",
+      "Scheduled: claims the next PENDING document, parses, chunks, embeds and stores chunks."
+     ]
+    ]
+   }
+  ],
+  "seqs": [
+   {
+    "title": "Ask the AI Assistant",
+    "image": "seq_assistant_1"
+   },
+   {
+    "title": "Upload and Index a Knowledge Document",
+    "image": "seq_assistant_2"
+   }
+  ]
+ },
+ {
+  "id": "settings",
+  "title": "Business Settings",
+  "intro": "Business rules (prices, time limits, SLA, refund policy, payment methods, loyalty rate...) are defined in a SettingsCatalog of each service and can be changed by the administrator without redeploying. Values are validated, stored in the service's system_settings table with an audit trail, and public values are readable by the app at /api/settings/{scope}/public.",
+  "class_image": "cls_settings",
+  "classes": [
+   {
+    "name": "BusinessSettingsController",
+    "kind": "controller"
+   },
+   {
+    "name": "BusinessSettings",
+    "kind": "component"
+   },
+   {
+    "name": "SettingsCatalog",
+    "kind": "interface"
+   },
+   {
+    "name": "SettingsStore",
+    "kind": "interface"
+   },
+   {
+    "name": "JdbcSettingsStore",
+    "kind": "repository"
+   },
+   {
+    "name": "OrderRules",
+    "kind": "component"
+   }
+  ],
+  "specs": [
+   {
+    "cls": "BusinessSettingsController",
+    "methods": [
+     [
+      "list(): List<SettingView>",
+      "All settings of the service scope."
+     ],
+     [
+      "update(request: UpdateSettingsRequest, userId: Long): List<SettingView>",
+      "Updates several settings."
+     ],
+     [
+      "reset(key: String, userId: Long): List<SettingView>",
+      "Returns a setting to its default."
+     ],
+     [
+      "audits(key: String, limit: int): List<SettingAuditView>",
+      "Change history."
+     ],
+     [
+      "publicValues(): Map<String, Object>",
+      "Public values for clients."
+     ]
+    ]
+   },
+   {
+    "cls": "BusinessSettings",
+    "methods": [
+     [
+      "update(values: Map<String, ?>, actorUserId: Long): List<SettingView>",
+      "Validates every key against the catalog, normalises values, upserts changed ones, writes audits and refreshes the cache."
+     ],
+     [
+      "getInt(key: String): int",
+      "Typed reads used by the *Rules classes."
+     ],
+     [
+      "getDecimal(key: String): BigDecimal",
+      "Typed reads used by the *Rules classes."
+     ],
+     [
+      "getBoolean(key: String): boolean",
+      "Typed reads used by the *Rules classes."
+     ],
+     [
+      "getString(key: String): String",
+      "Typed reads used by the *Rules classes."
+     ],
+     [
+      "publicValues(): Map<String, Object>",
+      "Values flagged public."
+     ]
+    ]
+   }
+  ],
+  "seqs": [
+   {
+    "title": "Administrator Changes a Business Rule",
+    "image": "seq_settings_1"
+   }
+  ]
+ },
+ {
+  "id": "revenue",
+  "title": "Admin Dashboard and Revenue Reports",
+  "intro": "The admin dashboard shows revenue by day, service, payment method, locker, store and customer for a date range. order-service combines its orders with the money actually collected from payment-service and resolves locker, store and customer names.",
+  "class_image": "cls_revenue",
+  "classes": [
+   {
+    "name": "AdminRevenueController",
+    "kind": "controller"
+   },
+   {
+    "name": "RevenueReportService",
+    "kind": "service"
+   },
+   {
+    "name": "AdminReferenceResolver",
+    "kind": "component"
+   },
+   {
+    "name": "PaymentReportClient",
+    "kind": "client"
+   },
+   {
+    "name": "LockerOrderRepository",
+    "kind": "repository"
+   }
+  ],
+  "specs": [
+   {
+    "cls": "AdminRevenueController",
+    "methods": [
+     [
+      "summary(from: String, to: String): RevenueSummaryResponse",
+      "Totals and change vs the previous period."
+     ],
+     [
+      "daily(from: String, to: String): DailyRevenueResponse",
+      "Revenue per day."
+     ],
+     [
+      "byService(from: String, to: String): ServiceRevenueResponse",
+      "Revenue per order type."
+     ],
+     [
+      "byLocker(from: String, to: String, storeId: Long): LockerRevenueResponse",
+      "Revenue per locker."
+     ],
+     [
+      "byCustomer(from: String, to: String, page: int, size: int, sort: String, q: String): PageResponse<CustomerRevenue>",
+      "Top customers."
+     ]
+    ]
+   },
+   {
+    "cls": "RevenueReportService",
+    "methods": [
+     [
+      "summary(from: String, to: String): RevenueSummaryResponse",
+      "Loads orders and collected payments of the period and the previous one and computes totals and changes."
+     ],
+     [
+      "daily(from: String, to: String): DailyRevenueResponse",
+      "Groups by business day."
+     ],
+     [
+      "byLocker(from: String, to: String, storeId: Long): LockerRevenueResponse",
+      "Groups by locker with names."
+     ]
+    ]
+   }
+  ],
+  "seqs": [
+   {
+    "title": "View Revenue Summary",
+    "image": "seq_revenue_1"
+   }
+  ]
+ },
+ {
+  "id": "scheduler",
+  "title": "System Scheduled Jobs",
+  "intro": "Background jobs keep orders and boxes consistent: cancel unpaid orders, release boxes of completed orders, remind receivers before the pickup deadline, move overdue parcels to storage (EXPIRED), reconcile box states with locker-service and retry point refunds. Administrators can trigger them manually and see their status.",
+  "class_image": "cls_scheduler",
+  "classes": [
+   {
+    "name": "OrderScheduler",
+    "kind": "component"
+   },
+   {
+    "name": "OrderController",
+    "kind": "controller"
+   },
+   {
+    "name": "OrderService",
+    "kind": "service"
+   },
+   {
+    "name": "LockerClient",
+    "kind": "client"
+   },
+   {
+    "name": "NotificationClient",
+    "kind": "client"
+   },
+   {
+    "name": "LockerOrderRepository",
+    "kind": "repository"
+   }
+  ],
+  "specs": [
+   {
+    "cls": "OrderScheduler",
+    "methods": [
+     [
+      "sweepUnconfirmedReservations(): void",
+      "Cancels orders not paid / dropped in time and releases boxes."
+     ],
+     [
+      "releaseCompletedBoxes(): void",
+      "Releases boxes of completed orders."
+     ],
+     [
+      "remindOverduePickups(): void",
+      "Sends pickup reminders."
+     ],
+     [
+      "releaseOverdueOrders(): void",
+      "Moves overdue parcels to storage (EXPIRED) and frees their boxes."
+     ],
+     [
+      "reconcileBoxStates(): void",
+      "Aligns box states with active orders."
+     ],
+     [
+      "retryPointRefunds(): void",
+      "Retries loyalty refunds that failed."
+     ]
+    ]
+   },
+   {
+    "cls": "OrderController",
+    "methods": [
+     [
+      "autoCancel(): Map<String, Object>",
+      "Admin triggers the auto-cancel job."
+     ],
+     [
+      "releaseOverdue(): Map<String, Object>",
+      "Admin triggers overdue release."
+     ],
+     [
+      "schedulerStatus(): Map<String, Object>",
+      "Last run of each job."
+     ]
+    ]
+   }
+  ],
+  "seqs": [
+   {
+    "title": "Expire Overdue Orders",
+    "image": "seq_scheduler_1"
+   }
+  ]
+ }
+]

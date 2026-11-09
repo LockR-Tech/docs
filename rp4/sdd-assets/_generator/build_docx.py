@@ -136,7 +136,7 @@ page_break()
 H(1, "I. Record of Changes")
 roc = [["28/10/2026", "A", "", "Initial Software Design Document: system architecture, package diagrams of the backend "
         "services, admin web, mobile app and IoT controller, database design of the 10 service databases, class "
-        "diagrams, sequence diagrams and class specifications of 28 features."]]
+        "diagrams, sequence diagrams and class specifications of 26 features."]]
 roc += [["", "", "", ""] for _ in range(4)]
 table(["Date", "A*\nM, D", "In charge", "Change Description"], roc, [1200, 800, 1500, 5860])
 P("*A - Added M - Modified D - Deleted")
@@ -147,16 +147,18 @@ H(2, "1. System Design")
 H(3, "1.1 System Architecture")
 P(T.ARCH_INTRO)
 figure("arch_system", "Figure 1.1: System architecture of Lock.R")
-P("The table below explains each component of the architecture diagram.")
-table(["No", "Component", "Description"],
-      [[f"{i:02d}", n, d] for i, (n, d) in enumerate(T.ARCH_COMPONENTS, 1)], [600, 2200, 6560],
+P(T.ARCH_LEGEND)
+table(["No", "Component", "Type", "Description"],
+      [[f"{i:02d}", n, k, d] for i, (n, k, d) in enumerate(T.ARCH_COMPONENTS, 1)], [600, 1900, 1600, 5260],
       "Table 1.1: Components of the system architecture")
 
 # ---------------------------------------------------------------------- packages
 H(3, "1.2 Package Diagram")
-P("The package diagrams show how the source code of each sub-system is organised. The backend is a Maven "
-  "multi-module project; every business service follows the same layered structure (API, application, domain, "
-  "infrastructure) and depends on common-lib.")
+P("The package diagrams show how the source code of each sub-system is organised; every package and folder "
+  "name is taken from the code (source files are not drawn). The backend is a Maven multi-module project in which the api-gateway and "
+  "every business service depend on common-lib. A dashed arrow is a dependency found in the import statements of the "
+  "code; to keep the diagrams readable only the main dependencies are drawn, and the table under each diagram "
+  "lists all dependencies of every package.")
 pk = 0
 tno = [1]
 
@@ -170,34 +172,18 @@ def pkg_section(title, img, caption, rows, tcaption):
           [600, 2300, 6460], f"Table 1.2.{pk}: {tcaption}")
 
 
-ov = [("api-gateway", "Spring Cloud Gateway: JWT validation, RBAC by path, routing, correlation id."),
-      ("discovery-server", "Eureka service registry.")]
+ov = [r for r in T.BACKEND_EDGE if r[0] != "discovery-server"]
 ov += [(s, T.SERVICE_DESC[s]) for s in T.SERVICE_DESC]
 ov += [("common-lib/" + n, d) for n, d in T.COMMON_LIB]
 pkg_section("Backend Package Diagram", "pkg_backend_overview", "Backend package diagram (modules)", ov,
             "Backend modules and common-lib packages")
 
-for svc in ["auth-service", "user-service", "order-service", "locker-service", "payment-service",
-            "notification-service", "iot-service", "store-service", "loyalty-service", "assistant-service"]:
-    classes = SCAN[svc]
-    rows = []
-    for pname in sorted({c["pkg"] for c in classes} - {svc.split("-")[0]}):
-        names = sorted(c["name"] for c in classes if c["pkg"] == pname)
-        shown = ", ".join(names[:8]) + (f" … ({len(names)} classes)" if len(names) > 8 else "")
-        rows.append((pname, f"{T.PKG_DESC.get(pname, '')} Main classes: {shown}."))
-    nice = svc.replace("-", " ").title().replace("Iot", "IoT")
-    pkg_section(f"{nice} Package Diagram", "pkg_" + svc.replace("-service", ""), f"{nice} package diagram", rows,
-                f"Packages of {svc}")
-
 pkg_section("Admin Web Application Package Diagram", "pkg_admin_web", "Admin web application package diagram",
-            T.ADMIN_WEB_PKGS, "Packages of the admin web application")
+            [r for r in T.ADMIN_WEB_PKGS if r[0] not in ("main.tsx", "App.tsx")], "Packages of the admin web application")
 pkg_section("Mobile Application Package Diagram", "pkg_mobile_app", "Mobile application package diagram",
-            T.MOBILE_PKGS, "Packages of the mobile application")
-pkg_section("Mobile Feature Module Package Diagram", "pkg_mobile_feature",
-            "Package structure inside one mobile feature module", T.MOBILE_FEATURE_PKGS,
-            "Layers of a mobile feature module")
+            [r for r in T.MOBILE_PKGS if r[0] != "main.dart"], "Packages of the mobile application")
 pkg_section("IoT Locker Controller Package Diagram", "pkg_iot_controller", "IoT locker controller package diagram",
-            T.IOT_PKGS, "Packages of the IoT locker controller")
+            [r for r in T.IOT_PKGS if r[0] != "main.py"], "Packages of the IoT locker controller")
 
 # ---------------------------------------------------------------------- database
 H(2, "2. Database Design")
@@ -239,11 +225,11 @@ for fi, f in enumerate(FEATURES, 1):
     sub = 1
     H(4, f"3.{fi}.{sub} Class Diagram")
     figure(f["class_image"], f"Figure 3.{fi}.{sub}: Class diagram - {f['title']}")
+    H(4, f"3.{fi}.2 Sequence Diagram")
     for s in f["seqs"]:
         sub += 1
-        H(4, f"3.{fi}.{sub} {s['title']}")
         figure(s["image"], f"Figure 3.{fi}.{sub}: Sequence diagram - {s['title']}")
-    sub += 1
+    sub = 3
     H(4, f"3.{fi}.{sub} Class Specification")
     for si, sp in enumerate(f["specs"]):
         letter = "abcdefghijklmnop"[si]

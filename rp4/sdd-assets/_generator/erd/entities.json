@@ -1,0 +1,5840 @@
+{
+ "AuthAccount": {
+  "service": "auth-service",
+  "table": "auth_accounts",
+  "fields": [
+   {
+    "name": "id",
+    "type": "bigint",
+    "pk": true,
+    "rel": null,
+    "field": "id"
+   },
+   {
+    "name": "user_id",
+    "type": "bigint",
+    "pk": false,
+    "rel": null,
+    "field": "userId"
+   },
+   {
+    "name": "email",
+    "type": "varchar(255)",
+    "pk": false,
+    "rel": null,
+    "field": "email"
+   },
+   {
+    "name": "phone_number",
+    "type": "varchar(255)",
+    "pk": false,
+    "rel": null,
+    "field": "phoneNumber"
+   },
+   {
+    "name": "password_hash",
+    "type": "varchar(500)",
+    "pk": false,
+    "rel": null,
+    "field": "passwordHash"
+   },
+   {
+    "name": "password_set",
+    "type": "boolean",
+    "pk": false,
+    "rel": null,
+    "field": "passwordSet"
+   },
+   {
+    "name": "auth_provider",
+    "type": "varchar(30)",
+    "pk": false,
+    "rel": null,
+    "field": "authProvider"
+   },
+   {
+    "name": "email_verified",
+    "type": "boolean",
+    "pk": false,
+    "rel": null,
+    "field": "emailVerified"
+   },
+   {
+    "name": "phone_verified",
+    "type": "boolean",
+    "pk": false,
+    "rel": null,
+    "field": "phoneVerified"
+   },
+   {
+    "name": "status",
+    "type": "varchar(30)",
+    "pk": false,
+    "rel": null,
+    "field": "status"
+   },
+   {
+    "name": "last_login_at",
+    "type": "timestamp",
+    "pk": false,
+    "rel": null,
+    "field": "lastLoginAt"
+   },
+   {
+    "name": "created_at",
+    "type": "timestamp",
+    "pk": false,
+    "rel": null,
+    "field": "createdAt"
+   },
+   {
+    "name": "updated_at",
+    "type": "timestamp",
+    "pk": false,
+    "rel": null,
+    "field": "updatedAt"
+   }
+  ]
+ },
+ "EmailOtp": {
+  "service": "auth-service",
+  "table": "email_otps",
+  "fields": [
+   {
+    "name": "id",
+    "type": "bigint",
+    "pk": true,
+    "rel": null,
+    "field": "id"
+   },
+   {
+    "name": "email",
+    "type": "varchar(255)",
+    "pk": false,
+    "rel": null,
+    "field": "email"
+   },
+   {
+    "name": "otp_hash",
+    "type": "varchar(500)",
+    "pk": false,
+    "rel": null,
+    "field": "otpHash"
+   },
+   {
+    "name": "purpose",
+    "type": "varchar(50)",
+    "pk": false,
+    "rel": null,
+    "field": "purpose"
+   },
+   {
+    "name": "expires_at",
+    "type": "timestamp",
+    "pk": false,
+    "rel": null,
+    "field": "expiresAt"
+   },
+   {
+    "name": "used",
+    "type": "boolean",
+    "pk": false,
+    "rel": null,
+    "field": "used"
+   },
+   {
+    "name": "created_at",
+    "type": "timestamp",
+    "pk": false,
+    "rel": null,
+    "field": "createdAt"
+   }
+  ]
+ },
+ "RefreshToken": {
+  "service": "auth-service",
+  "table": "refresh_tokens",
+  "fields": [
+   {
+    "name": "id",
+    "type": "bigint",
+    "pk": true,
+    "rel": null,
+    "field": "id"
+   },
+   {
+    "name": "account_id",
+    "type": "bigint",
+    "pk": false,
+    "rel": null,
+    "field": "accountId"
+   },
+   {
+    "name": "token_hash",
+    "type": "varchar(500)",
+    "pk": false,
+    "rel": null,
+    "field": "tokenHash"
+   },
+   {
+    "name": "expires_at",
+    "type": "timestamp",
+    "pk": false,
+    "rel": null,
+    "field": "expiresAt"
+   },
+   {
+    "name": "revoked",
+    "type": "boolean",
+    "pk": false,
+    "rel": null,
+    "field": "revoked"
+   },
+   {
+    "name": "created_at",
+    "type": "timestamp",
+    "pk": false,
+    "rel": null,
+    "field": "createdAt"
+   }
+  ]
+ },
+ "SocialIdentity": {
+  "service": "auth-service",
+  "table": "social_identities",
+  "fields": [
+   {
+    "name": "id",
+    "type": "bigint",
+    "pk": true,
+    "rel": null,
+    "field": "id"
+   },
+   {
+    "name": "account_id",
+    "type": "bigint",
+    "pk": false,
+    "rel": null,
+    "field": "accountId"
+   },
+   {
+    "name": "provider",
+    "type": "varchar(40)",
+    "pk": false,
+    "rel": null,
+    "field": "provider"
+   },
+   {
+    "name": "provider_user_id",
+    "type": "varchar(255)",
+    "pk": false,
+    "rel": null,
+    "field": "providerUserId"
+   },
+   {
+    "name": "created_at",
+    "type": "timestamp",
+    "pk": false,
+    "rel": null,
+    "field": "createdAt"
+   }
+  ]
+ },
+ "AccessAttempt": {
+  "service": "iot-service",
+  "table": "access_attempts",
+  "fields": [
+   {
+    "name": "box_id",
+    "type": "bigint",
+    "pk": true,
+    "rel": null,
+    "field": "boxId"
+   },
+   {
+    "name": "failed_count",
+    "type": "int",
+    "pk": false,
+    "rel": null,
+    "field": "failedCount"
+   },
+   {
+    "name": "locked_until",
+    "type": "timestamp",
+    "pk": false,
+    "rel": null,
+    "field": "lockedUntil"
+   },
+   {
+    "name": "updated_at",
+    "type": "timestamp",
+    "pk": false,
+    "rel": null,
+    "field": "updatedAt"
+   }
+  ]
+ },
+ "BleSigningKey": {
+  "service": "iot-service",
+  "table": "ble_signing_keys",
+  "fields": [
+   {
+    "name": "id",
+    "type": "bigint",
+    "pk": true,
+    "rel": null,
+    "field": "id"
+   },
+   {
+    "name": "algorithm",
+    "type": "varchar(20)",
+    "pk": false,
+    "rel": null,
+    "field": "algorithm"
+   },
+   {
+    "name": "private_key",
+    "type": "text",
+    "pk": false,
+    "rel": null,
+    "field": "privateKey"
+   },
+   {
+    "name": "public_key",
+    "type": "varchar(64)",
+    "pk": false,
+    "rel": null,
+    "field": "publicKey"
+   },
+   {
+    "name": "created_at",
+    "type": "timestamp",
+    "pk": false,
+    "rel": null,
+    "field": "createdAt"
+   }
+  ]
+ },
+ "BleTestGrant": {
+  "service": "iot-service",
+  "table": "ble_test_grants",
+  "fields": [
+   {
+    "name": "id",
+    "type": "bigint",
+    "pk": true,
+    "rel": null,
+    "field": "id"
+   },
+   {
+    "name": "locker_id",
+    "type": "bigint",
+    "pk": false,
+    "rel": null,
+    "field": "lockerId"
+   },
+   {
+    "name": "user_id",
+    "type": "bigint",
+    "pk": false,
+    "rel": null,
+    "field": "userId"
+   },
+   {
+    "name": "granted_by",
+    "type": "bigint",
+    "pk": false,
+    "rel": null,
+    "field": "grantedBy"
+   },
+   {
+    "name": "created_at",
+    "type": "timestamp",
+    "pk": false,
+    "rel": null,
+    "field": "createdAt"
+   }
+  ]
+ },
+ "BoxAccessLog": {
+  "service": "iot-service",
+  "table": "box_access_logs",
+  "fields": [
+   {
+    "name": "id",
+    "type": "bigint",
+    "pk": true,
+    "rel": null,
+    "field": "id"
+   },
+   {
+    "name": "box_id",
+    "type": "bigint",
+    "pk": false,
+    "rel": null,
+    "field": "boxId"
+   },
+   {
+    "name": "locker_id",
+    "type": "bigint",
+    "pk": false,
+    "rel": null,
+    "field": "lockerId"
+   },
+   {
+    "name": "order_id",
+    "type": "bigint",
+    "pk": false,
+    "rel": null,
+    "field": "orderId"
+   },
+   {
+    "name": "actor_user_id",
+    "type": "bigint",
+    "pk": false,
+    "rel": null,
+    "field": "actorUserId"
+   },
+   {
+    "name": "credential_type",
+    "type": "varchar(20)",
+    "pk": false,
+    "rel": null,
+    "field": "credentialType"
+   },
+   {
+    "name": "result",
+    "type": "varchar(20)",
+    "pk": false,
+    "rel": null,
+    "field": "result"
+   },
+   {
+    "name": "message",
+    "type": "varchar(255)",
+    "pk": false,
+    "rel": null,
+    "field": "message"
+   },
+   {
+    "name": "created_at",
+    "type": "timestamp",
+    "pk": false,
+    "rel": null,
+    "field": "createdAt"
+   }
+  ]
+ },
+ "BoxHardwareStatus": {
+  "service": "iot-service",
+  "table": "box_hardware_status",
+  "fields": [
+   {
+    "name": "box_id",
+    "type": "bigint",
+    "pk": true,
+    "rel": null,
+    "field": "boxId"
+   },
+   {
+    "name": "locker_id",
+    "type": "bigint",
+    "pk": false,
+    "rel": null,
+    "field": "lockerId"
+   },
+   {
+    "name": "hw_state",
+    "type": "varchar(30)",
+    "pk": false,
+    "rel": null,
+    "field": "hwState"
+   },
+   {
+    "name": "last_reported_at",
+    "type": "timestamp",
+    "pk": false,
+    "rel": null,
+    "field": "lastReportedAt"
+   },
+   {
+    "name": "updated_at",
+    "type": "timestamp",
+    "pk": false,
+    "rel": null,
+    "field": "updatedAt"
+   }
+  ]
+ },
+ "CabinetControlLog": {
+  "service": "iot-service",
+  "table": "cabinet_control_logs",
+  "fields": [
+   {
+    "name": "id",
+    "type": "bigint",
+    "pk": true,
+    "rel": null,
+    "field": "id"
+   },
+   {
+    "name": "locker_id",
+    "type": "bigint",
+    "pk": false,
+    "rel": null,
+    "field": "lockerId"
+   },
+   {
+    "name": "event_id",
+    "type": "varchar(64)",
+    "pk": false,
+    "rel": null,
+    "field": "eventId"
+   },
+   {
+    "name": "source",
+    "type": "varchar(20)",
+    "pk": false,
+    "rel": null,
+    "field": "source"
+   },
+   {
+    "name": "actor_user_id",
+    "type": "bigint",
+    "pk": false,
+    "rel": null,
+    "field": "actorUserId"
+   },
+   {
+    "name": "action",
+    "type": "varchar(30)",
+    "pk": false,
+    "rel": null,
+    "field": "action"
+   },
+   {
+    "name": "axis",
+    "type": "int",
+    "pk": false,
+    "rel": null,
+    "field": "axis"
+   },
+   {
+    "name": "box_id",
+    "type": "bigint",
+    "pk": false,
+    "rel": null,
+    "field": "boxId"
+   },
+   {
+    "name": "box_number",
+    "type": "int",
+    "pk": false,
+    "rel": null,
+    "field": "boxNumber"
+   },
+   {
+    "name": "revolutions",
+    "type": "double",
+    "pk": false,
+    "rel": null,
+    "field": "revolutions"
+   },
+   {
+    "name": "status",
+    "type": "varchar(20)",
+    "pk": false,
+    "rel": null,
+    "field": "status"
+   },
+   {
+    "name": "message",
+    "type": "varchar(500)",
+    "pk": false,
+    "rel": null,
+    "field": "message"
+   },
+   {
+    "name": "occurred_at",
+    "type": "timestamp",
+    "pk": false,
+    "rel": null,
+    "field": "occurredAt"
+   },
+   {
+    "name": "created_at",
+    "type": "timestamp",
+    "pk": false,
+    "rel": null,
+    "field": "createdAt"
+   }
+  ]
+ },
+ "DeviceStatus": {
+  "service": "iot-service",
+  "table": "device_statuses",
+  "fields": [
+   {
+    "name": "id",
+    "type": "bigint",
+    "pk": true,
+    "rel": null,
+    "field": "id"
+   },
+   {
+    "name": "device_id",
+    "type": "varchar(255)",
+    "pk": false,
+    "rel": null,
+    "field": "deviceId"
+   },
+   {
+    "name": "locker_id",
+    "type": "bigint",
+    "pk": false,
+    "rel": null,
+    "field": "lockerId"
+   },
+   {
+    "name": "status",
+    "type": "varchar(30)",
+    "pk": false,
+    "rel": null,
+    "field": "status"
+   },
+   {
+    "name": "last_seen_at",
+    "type": "timestamp",
+    "pk": false,
+    "rel": null,
+    "field": "lastSeenAt"
+   },
+   {
+    "name": "created_at",
+    "type": "timestamp",
+    "pk": false,
+    "rel": null,
+    "field": "createdAt"
+   },
+   {
+    "name": "updated_at",
+    "type": "timestamp",
+    "pk": false,
+    "rel": null,
+    "field": "updatedAt"
+   }
+  ]
+ },
+ "GatewayDevice": {
+  "service": "iot-service",
+  "table": "gateway_devices",
+  "fields": [
+   {
+    "name": "id",
+    "type": "bigint",
+    "pk": true,
+    "rel": null,
+    "field": "id"
+   },
+   {
+    "name": "mac_address",
+    "type": "varchar(17)",
+    "pk": false,
+    "rel": null,
+    "field": "macAddress"
+   },
+   {
+    "name": "ip_address",
+    "type": "varchar(45)",
+    "pk": false,
+    "rel": null,
+    "field": "ipAddress"
+   },
+   {
+    "name": "hardware",
+    "type": "varchar(30)",
+    "pk": false,
+    "rel": null,
+    "field": "hardware"
+   },
+   {
+    "name": "firmware_version",
+    "type": "varchar(50)",
+    "pk": false,
+    "rel": null,
+    "field": "firmwareVersion"
+   },
+   {
+    "name": "slave_id",
+    "type": "int",
+    "pk": false,
+    "rel": null,
+    "field": "slaveId"
+   },
+   {
+    "name": "available_slots",
+    "type": "int",
+    "pk": false,
+    "rel": null,
+    "field": "availableSlots"
+   },
+   {
+    "name": "reported_locker_id",
+    "type": "bigint",
+    "pk": false,
+    "rel": null,
+    "field": "reportedLockerId"
+   },
+   {
+    "name": "locker_id",
+    "type": "bigint",
+    "pk": false,
+    "rel": null,
+    "field": "lockerId"
+   },
+   {
+    "name": "setup_status",
+    "type": "varchar(20)",
+    "pk": false,
+    "rel": null,
+    "field": "setupStatus"
+   },
+   {
+    "name": "setup_command_id",
+    "type": "varchar(64)",
+    "pk": false,
+    "rel": null,
+    "field": "setupCommandId"
+   },
+   {
+    "name": "setup_progress",
+    "type": "varchar(20)",
+    "pk": false,
+    "rel": null,
+    "field": "setupProgress"
+   },
+   {
+    "name": "setup_result",
+    "type": "text",
+    "pk": false,
+    "rel": null,
+    "field": "setupResult"
+   },
+   {
+    "name": "setup_requested_at",
+    "type": "timestamp",
+    "pk": false,
+    "rel": null,
+    "field": "setupRequestedAt"
+   },
+   {
+    "name": "setup_finished_at",
+    "type": "timestamp",
+    "pk": false,
+    "rel": null,
+    "field": "setupFinishedAt"
+   },
+   {
+    "name": "last_seen_at",
+    "type": "timestamp",
+    "pk": false,
+    "rel": null,
+    "field": "lastSeenAt"
+   },
+   {
+    "name": "created_at",
+    "type": "timestamp",
+    "pk": false,
+    "rel": null,
+    "field": "createdAt"
+   },
+   {
+    "name": "updated_at",
+    "type": "timestamp",
+    "pk": false,
+    "rel": null,
+    "field": "updatedAt"
+   }
+  ]
+ },
+ "DroneDeliveryRequest": {
+  "service": "locker-service",
+  "table": "drone_delivery_requests",
+  "fields": [
+   {
+    "name": "id",
+    "type": "bigint",
+    "pk": true,
+    "rel": null,
+    "field": "id"
+   },
+   {
+    "name": "locker_id",
+    "type": "bigint",
+    "pk": false,
+    "rel": null,
+    "field": "lockerId"
+   },
+   {
+    "name": "box_id",
+    "type": "bigint",
+    "pk": false,
+    "rel": null,
+    "field": "boxId"
+   },
+   {
+    "name": "box_number",
+    "type": "int",
+    "pk": false,
+    "rel": null,
+    "field": "boxNumber"
+   },
+   {
+    "name": "requester_user_id",
+    "type": "bigint",
+    "pk": false,
+    "rel": null,
+    "field": "requesterUserId"
+   },
+   {
+    "name": "receiver_phone",
+    "type": "varchar(50)",
+    "pk": false,
+    "rel": null,
+    "field": "receiverPhone"
+   },
+   {
+    "name": "description",
+    "type": "varchar(500)",
+    "pk": false,
+    "rel": null,
+    "field": "description"
+   },
+   {
+    "name": "status",
+    "type": "varchar(30)",
+    "pk": false,
+    "rel": null,
+    "field": "status"
+   },
+   {
+    "name": "drone_unit_id",
+    "type": "bigint",
+    "pk": false,
+    "rel": null,
+    "field": "droneUnitId"
+   },
+   {
+    "name": "dispatched_by",
+    "type": "bigint",
+    "pk": false,
+    "rel": null,
+    "field": "dispatchedBy"
+   },
+   {
+    "name": "created_at",
+    "type": "timestamp",
+    "pk": false,
+    "rel": null,
+    "field": "createdAt"
+   },
+   {
+    "name": "updated_at",
+    "type": "timestamp",
+    "pk": false,
+    "rel": null,
+    "field": "updatedAt"
+   }
+  ]
+ },
+ "DroneDevice": {
+  "service": "locker-service",
+  "table": "drone_devices",
+  "fields": [
+   {
+    "name": "id",
+    "type": "bigint",
+    "pk": true,
+    "rel": null,
+    "field": "id"
+   },
+   {
+    "name": "mac_address",
+    "type": "varchar(17)",
+    "pk": false,
+    "rel": null,
+    "field": "macAddress"
+   },
+   {
+    "name": "drone_id",
+    "type": "bigint",
+    "pk": false,
+    "rel": null,
+    "field": "droneId"
+   },
+   {
+    "name": "drone_code",
+    "type": "varchar(50)",
+    "pk": false,
+    "rel": null,
+    "field": "droneCode"
+   },
+   {
+    "name": "ip_address",
+    "type": "varchar(45)",
+    "pk": false,
+    "rel": null,
+    "field": "ipAddress"
+   },
+   {
+    "name": "firmware_version",
+    "type": "varchar(50)",
+    "pk": false,
+    "rel": null,
+    "field": "firmwareVersion"
+   },
+   {
+    "name": "mavlink_status",
+    "type": "varchar(30)",
+    "pk": false,
+    "rel": null,
+    "field": "mavlinkStatus"
+   },
+   {
+    "name": "flight_mode",
+    "type": "varchar(30)",
+    "pk": false,
+    "rel": null,
+    "field": "flightMode"
+   },
+   {
+    "name": "armed",
+    "type": "boolean",
+    "pk": false,
+    "rel": null,
+    "field": "armed"
+   },
+   {
+    "name": "landed_state",
+    "type": "varchar(30)",
+    "pk": false,
+    "rel": null,
+    "field": "landedState"
+   },
+   {
+    "name": "gps_fix_type",
+    "type": "int",
+    "pk": false,
+    "rel": null,
+    "field": "gpsFixType"
+   },
+   {
+    "name": "gps_satellites",
+    "type": "int",
+    "pk": false,
+    "rel": null,
+    "field": "gpsSatellites"
+   },
+   {
+    "name": "battery_percent",
+    "type": "int",
+    "pk": false,
+    "rel": null,
+    "field": "batteryPercent"
+   },
+   {
+    "name": "voltage_v",
+    "type": "decimal(5,2)",
+    "pk": false,
+    "rel": null,
+    "field": "voltageV"
+   },
+   {
+    "name": "current_a",
+    "type": "decimal(5,2)",
+    "pk": false,
+    "rel": null,
+    "field": "currentA"
+   },
+   {
+    "name": "camera_status",
+    "type": "varchar(30)",
+    "pk": false,
+    "rel": null,
+    "field": "cameraStatus"
+   },
+   {
+    "name": "camera_stream_url",
+    "type": "varchar(255)",
+    "pk": false,
+    "rel": null,
+    "field": "cameraStreamUrl"
+   },
+   {
+    "name": "last_seen_at",
+    "type": "timestamp",
+    "pk": false,
+    "rel": null,
+    "field": "lastSeenAt"
+   },
+   {
+    "name": "created_at",
+    "type": "timestamp",
+    "pk": false,
+    "rel": null,
+    "field": "createdAt"
+   },
+   {
+    "name": "updated_at",
+    "type": "timestamp",
+    "pk": false,
+    "rel": null,
+    "field": "updatedAt"
+   }
+  ]
+ },
+ "DroneIotLog": {
+  "service": "locker-service",
+  "table": "drone_iot_logs",
+  "fields": [
+   {
+    "name": "id",
+    "type": "bigint",
+    "pk": true,
+    "rel": null,
+    "field": "id"
+   },
+   {
+    "name": "drone_id",
+    "type": "bigint",
+    "pk": false,
+    "rel": null,
+    "field": "droneId"
+   },
+   {
+    "name": "drone_code",
+    "type": "varchar(50)",
+    "pk": false,
+    "rel": null,
+    "field": "droneCode"
+   },
+   {
+    "name": "component",
+    "type": "varchar(50)",
+    "pk": false,
+    "rel": null,
+    "field": "component"
+   },
+   {
+    "name": "event_type",
+    "type": "varchar(50)",
+    "pk": false,
+    "rel": null,
+    "field": "eventType"
+   },
+   {
+    "name": "result",
+    "type": "varchar(30)",
+    "pk": false,
+    "rel": null,
+    "field": "result"
+   },
+   {
+    "name": "actor_type",
+    "type": "varchar(30)",
+    "pk": false,
+    "rel": null,
+    "field": "actorType"
+   },
+   {
+    "name": "actor_id",
+    "type": "varchar(100)",
+    "pk": false,
+    "rel": null,
+    "field": "actorId"
+   },
+   {
+    "name": "order_id",
+    "type": "bigint",
+    "pk": false,
+    "rel": null,
+    "field": "orderId"
+   },
+   {
+    "name": "message",
+    "type": "text",
+    "pk": false,
+    "rel": null,
+    "field": "message"
+   },
+   {
+    "name": "created_at",
+    "type": "timestamp",
+    "pk": false,
+    "rel": null,
+    "field": "createdAt"
+   }
+  ]
+ },
+ "DroneMaintenanceLog": {
+  "service": "locker-service",
+  "table": "drone_maintenance_logs",
+  "fields": [
+   {
+    "name": "id",
+    "type": "bigint",
+    "pk": true,
+    "rel": null,
+    "field": "id"
+   },
+   {
+    "name": "drone_unit_id",
+    "type": "bigint",
+    "pk": false,
+    "rel": null,
+    "field": "droneUnitId"
+   },
+   {
+    "name": "actor_user_id",
+    "type": "bigint",
+    "pk": false,
+    "rel": null,
+    "field": "actorUserId"
+   },
+   {
+    "name": "note",
+    "type": "varchar(2000)",
+    "pk": false,
+    "rel": null,
+    "field": "note"
+   },
+   {
+    "name": "created_at",
+    "type": "timestamp",
+    "pk": false,
+    "rel": null,
+    "field": "createdAt"
+   }
+  ]
+ },
+ "DroneUnit": {
+  "service": "locker-service",
+  "table": "drone_units",
+  "fields": [
+   {
+    "name": "id",
+    "type": "bigint",
+    "pk": true,
+    "rel": null,
+    "field": "id"
+   },
+   {
+    "name": "locker_id",
+    "type": "bigint",
+    "pk": false,
+    "rel": null,
+    "field": "lockerId"
+   },
+   {
+    "name": "code",
+    "type": "varchar(50)",
+    "pk": false,
+    "rel": null,
+    "field": "code"
+   },
+   {
+    "name": "status",
+    "type": "varchar(30)",
+    "pk": false,
+    "rel": null,
+    "field": "status"
+   },
+   {
+    "name": "battery_percent",
+    "type": "int",
+    "pk": false,
+    "rel": null,
+    "field": "batteryPercent"
+   },
+   {
+    "name": "fault_reason",
+    "type": "varchar(255)",
+    "pk": false,
+    "rel": null,
+    "field": "faultReason"
+   },
+   {
+    "name": "assigned_technician_id",
+    "type": "bigint",
+    "pk": false,
+    "rel": null,
+    "field": "assignedTechnicianId"
+   },
+   {
+    "name": "last_charged_at",
+    "type": "timestamp",
+    "pk": false,
+    "rel": null,
+    "field": "lastChargedAt"
+   },
+   {
+    "name": "active",
+    "type": "boolean",
+    "pk": false,
+    "rel": null,
+    "field": "active"
+   },
+   {
+    "name": "created_at",
+    "type": "timestamp",
+    "pk": false,
+    "rel": null,
+    "field": "createdAt"
+   },
+   {
+    "name": "updated_at",
+    "type": "timestamp",
+    "pk": false,
+    "rel": null,
+    "field": "updatedAt"
+   }
+  ]
+ },
+ "LockerBox": {
+  "service": "locker-service",
+  "table": "locker_boxes",
+  "fields": [
+   {
+    "name": "id",
+    "type": "bigint",
+    "pk": true,
+    "rel": null,
+    "field": "id"
+   },
+   {
+    "name": "locker_id",
+    "type": "bigint",
+    "pk": false,
+    "rel": null,
+    "field": "lockerId"
+   },
+   {
+    "name": "box_number",
+    "type": "int",
+    "pk": false,
+    "rel": null,
+    "field": "boxNumber"
+   },
+   {
+    "name": "size",
+    "type": "varchar(30)",
+    "pk": false,
+    "rel": null,
+    "field": "size"
+   },
+   {
+    "name": "cell_type",
+    "type": "varchar(30)",
+    "pk": false,
+    "rel": null,
+    "field": "cellType"
+   },
+   {
+    "name": "row_index",
+    "type": "int",
+    "pk": false,
+    "rel": null,
+    "field": "rowIndex"
+   },
+   {
+    "name": "col_index",
+    "type": "int",
+    "pk": false,
+    "rel": null,
+    "field": "colIndex"
+   },
+   {
+    "name": "fault_reason",
+    "type": "varchar(500)",
+    "pk": false,
+    "rel": null,
+    "field": "faultReason"
+   },
+   {
+    "name": "is_active",
+    "type": "boolean",
+    "pk": false,
+    "rel": null,
+    "field": "active"
+   },
+   {
+    "name": "description",
+    "type": "varchar(500)",
+    "pk": false,
+    "rel": null,
+    "field": "description"
+   },
+   {
+    "name": "status",
+    "type": "varchar(30)",
+    "pk": false,
+    "rel": null,
+    "field": "status"
+   },
+   {
+    "name": "reserved_until",
+    "type": "timestamp",
+    "pk": false,
+    "rel": null,
+    "field": "reservedUntil"
+   },
+   {
+    "name": "pre_fault_status",
+    "type": "varchar(30)",
+    "pk": false,
+    "rel": null,
+    "field": "preFaultStatus"
+   },
+   {
+    "name": "aruco_dictionary",
+    "type": "varchar(50)",
+    "pk": false,
+    "rel": null,
+    "field": "arucoDictionary"
+   },
+   {
+    "name": "aruco_marker_id",
+    "type": "int",
+    "pk": false,
+    "rel": null,
+    "field": "arucoMarkerId"
+   },
+   {
+    "name": "aruco_marker_size_cm",
+    "type": "decimal",
+    "pk": false,
+    "rel": null,
+    "field": "arucoMarkerSizeCm"
+   },
+   {
+    "name": "aruco_assigned_at",
+    "type": "timestamp",
+    "pk": false,
+    "rel": null,
+    "field": "arucoAssignedAt"
+   },
+   {
+    "name": "aruco_assigned_by",
+    "type": "varchar(100)",
+    "pk": false,
+    "rel": null,
+    "field": "arucoAssignedBy"
+   },
+   {
+    "name": "created_at",
+    "type": "timestamp",
+    "pk": false,
+    "rel": null,
+    "field": "createdAt"
+   },
+   {
+    "name": "updated_at",
+    "type": "timestamp",
+    "pk": false,
+    "rel": null,
+    "field": "updatedAt"
+   }
+  ]
+ },
+ "LockerReport": {
+  "service": "locker-service",
+  "table": "locker_reports",
+  "fields": [
+   {
+    "name": "id",
+    "type": "bigint",
+    "pk": true,
+    "rel": null,
+    "field": "id"
+   },
+   {
+    "name": "locker_id",
+    "type": "bigint",
+    "pk": false,
+    "rel": null,
+    "field": "lockerId"
+   },
+   {
+    "name": "user_id",
+    "type": "bigint",
+    "pk": false,
+    "rel": null,
+    "field": "userId"
+   },
+   {
+    "name": "title",
+    "type": "varchar(255)",
+    "pk": false,
+    "rel": null,
+    "field": "title"
+   },
+   {
+    "name": "description",
+    "type": "varchar(2000)",
+    "pk": false,
+    "rel": null,
+    "field": "description"
+   },
+   {
+    "name": "status",
+    "type": "varchar(30)",
+    "pk": false,
+    "rel": null,
+    "field": "status"
+   },
+   {
+    "name": "box_id",
+    "type": "bigint",
+    "pk": false,
+    "rel": null,
+    "field": "boxId"
+   },
+   {
+    "name": "order_id",
+    "type": "bigint",
+    "pk": false,
+    "rel": null,
+    "field": "orderId"
+   },
+   {
+    "name": "order_code",
+    "type": "varchar(64)",
+    "pk": false,
+    "rel": null,
+    "field": "orderCode"
+   },
+   {
+    "name": "drone_unit_id",
+    "type": "bigint",
+    "pk": false,
+    "rel": null,
+    "field": "droneUnitId"
+   },
+   {
+    "name": "external_incident_id",
+    "type": "bigint",
+    "pk": false,
+    "rel": null,
+    "field": "externalIncidentId"
+   },
+   {
+    "name": "incident_code",
+    "type": "varchar(64)",
+    "pk": false,
+    "rel": null,
+    "field": "incidentCode"
+   },
+   {
+    "name": "ticket_type",
+    "type": "varchar(40)",
+    "pk": false,
+    "rel": null,
+    "field": "ticketType"
+   },
+   {
+    "name": "assigned_to_user_id",
+    "type": "bigint",
+    "pk": false,
+    "rel": null,
+    "field": "assignedToUserId"
+   },
+   {
+    "name": "assigned_at",
+    "type": "timestamp",
+    "pk": false,
+    "rel": null,
+    "field": "assignedAt"
+   },
+   {
+    "name": "resolved_by_user_id",
+    "type": "bigint",
+    "pk": false,
+    "rel": null,
+    "field": "resolvedByUserId"
+   },
+   {
+    "name": "resolved_at",
+    "type": "timestamp",
+    "pk": false,
+    "rel": null,
+    "field": "resolvedAt"
+   },
+   {
+    "name": "sla_due_at",
+    "type": "timestamp",
+    "pk": false,
+    "rel": null,
+    "field": "slaDueAt"
+   },
+   {
+    "name": "sla_extended_hours",
+    "type": "int",
+    "pk": false,
+    "rel": null,
+    "field": "slaExtendedHours"
+   },
+   {
+    "name": "sla_extension_reason",
+    "type": "varchar(1000)",
+    "pk": false,
+    "rel": null,
+    "field": "slaExtensionReason"
+   },
+   {
+    "name": "sla_extension_count",
+    "type": "int",
+    "pk": false,
+    "rel": null,
+    "field": "slaExtensionCount"
+   },
+   {
+    "name": "routed_to_user_id",
+    "type": "bigint",
+    "pk": false,
+    "rel": null,
+    "field": "routedToUserId"
+   },
+   {
+    "name": "schedule_id",
+    "type": "bigint",
+    "pk": false,
+    "rel": null,
+    "field": "scheduleId"
+   },
+   {
+    "name": "category",
+    "type": "varchar(20)",
+    "pk": false,
+    "rel": null,
+    "field": "category"
+   },
+   {
+    "name": "blocks_locker",
+    "type": "boolean",
+    "pk": false,
+    "rel": null,
+    "field": "blocksLocker"
+   },
+   {
+    "name": "created_at",
+    "type": "timestamp",
+    "pk": false,
+    "rel": null,
+    "field": "createdAt"
+   },
+   {
+    "name": "updated_at",
+    "type": "timestamp",
+    "pk": false,
+    "rel": null,
+    "field": "updatedAt"
+   }
+  ]
+ },
+ "LockerReportRating": {
+  "service": "locker-service",
+  "table": "locker_report_ratings",
+  "fields": [
+   {
+    "name": "id",
+    "type": "bigint",
+    "pk": true,
+    "rel": null,
+    "field": "id"
+   },
+   {
+    "name": "report_id",
+    "type": "bigint",
+    "pk": false,
+    "rel": null,
+    "field": "reportId"
+   },
+   {
+    "name": "user_id",
+    "type": "bigint",
+    "pk": false,
+    "rel": null,
+    "field": "userId"
+   },
+   {
+    "name": "rating",
+    "type": "int",
+    "pk": false,
+    "rel": null,
+    "field": "rating"
+   },
+   {
+    "name": "comment",
+    "type": "varchar(1000)",
+    "pk": false,
+    "rel": null,
+    "field": "comment"
+   },
+   {
+    "name": "created_at",
+    "type": "timestamp",
+    "pk": false,
+    "rel": null,
+    "field": "createdAt"
+   },
+   {
+    "name": "updated_at",
+    "type": "timestamp",
+    "pk": false,
+    "rel": null,
+    "field": "updatedAt"
+   }
+  ]
+ },
+ "LockerUnit": {
+  "service": "locker-service",
+  "table": "lockers",
+  "fields": [
+   {
+    "name": "id",
+    "type": "bigint",
+    "pk": true,
+    "rel": null,
+    "field": "id"
+   },
+   {
+    "name": "store_id",
+    "type": "bigint",
+    "pk": false,
+    "rel": null,
+    "field": "storeId"
+   },
+   {
+    "name": "code",
+    "type": "varchar(255)",
+    "pk": false,
+    "rel": null,
+    "field": "code"
+   },
+   {
+    "name": "name",
+    "type": "varchar(255)",
+    "pk": false,
+    "rel": null,
+    "field": "name"
+   },
+   {
+    "name": "status",
+    "type": "varchar(30)",
+    "pk": false,
+    "rel": null,
+    "field": "status"
+   },
+   {
+    "name": "address",
+    "type": "varchar(255)",
+    "pk": false,
+    "rel": null,
+    "field": "address"
+   },
+   {
+    "name": "latitude",
+    "type": "double",
+    "pk": false,
+    "rel": null,
+    "field": "latitude"
+   },
+   {
+    "name": "longitude",
+    "type": "double",
+    "pk": false,
+    "rel": null,
+    "field": "longitude"
+   },
+   {
+    "name": "landing_pad",
+    "type": "boolean",
+    "pk": false,
+    "rel": null,
+    "field": "landingPad"
+   },
+   {
+    "name": "landing_marker_id",
+    "type": "varchar(50)",
+    "pk": false,
+    "rel": null,
+    "field": "landingMarkerId"
+   },
+   {
+    "name": "landing_pad_status",
+    "type": "varchar(20)",
+    "pk": false,
+    "rel": null,
+    "field": "landingPadStatus"
+   },
+   {
+    "name": "description",
+    "type": "varchar(2000)",
+    "pk": false,
+    "rel": null,
+    "field": "description"
+   },
+   {
+    "name": "assigned_technician_id",
+    "type": "bigint",
+    "pk": false,
+    "rel": null,
+    "field": "assignedTechnicianId"
+   },
+   {
+    "name": "maintenance_source",
+    "type": "varchar(20)",
+    "pk": false,
+    "rel": null,
+    "field": "maintenanceSource"
+   },
+   {
+    "name": "created_at",
+    "type": "timestamp",
+    "pk": false,
+    "rel": null,
+    "field": "createdAt"
+   },
+   {
+    "name": "updated_at",
+    "type": "timestamp",
+    "pk": false,
+    "rel": null,
+    "field": "updatedAt"
+   }
+  ]
+ },
+ "MaintenanceInspectionLog": {
+  "service": "locker-service",
+  "table": "maintenance_inspection_logs",
+  "fields": [
+   {
+    "name": "id",
+    "type": "bigint",
+    "pk": true,
+    "rel": null,
+    "field": "id"
+   },
+   {
+    "name": "schedule_id",
+    "type": "bigint",
+    "pk": false,
+    "rel": null,
+    "field": "scheduleId"
+   },
+   {
+    "name": "locker_id",
+    "type": "bigint",
+    "pk": false,
+    "rel": null,
+    "field": "lockerId"
+   },
+   {
+    "name": "drone_unit_id",
+    "type": "bigint",
+    "pk": false,
+    "rel": null,
+    "field": "droneUnitId"
+   },
+   {
+    "name": "technician_id",
+    "type": "bigint",
+    "pk": false,
+    "rel": null,
+    "field": "technicianId"
+   },
+   {
+    "name": "technician_name",
+    "type": "varchar(255)",
+    "pk": false,
+    "rel": null,
+    "field": "technicianName"
+   },
+   {
+    "name": "status",
+    "type": "varchar(50)",
+    "pk": false,
+    "rel": null,
+    "field": "status"
+   },
+   {
+    "name": "note",
+    "type": "varchar(2000)",
+    "pk": false,
+    "rel": null,
+    "field": "note"
+   },
+   {
+    "name": "photo_urls",
+    "type": "text",
+    "pk": false,
+    "rel": null,
+    "field": "photoUrls"
+   },
+   {
+    "name": "checklist_results",
+    "type": "text",
+    "pk": false,
+    "rel": null,
+    "field": "checklistResults"
+   },
+   {
+    "name": "created_report_id",
+    "type": "bigint",
+    "pk": false,
+    "rel": null,
+    "field": "createdReportId"
+   },
+   {
+    "name": "created_at",
+    "type": "timestamp",
+    "pk": false,
+    "rel": null,
+    "field": "createdAt"
+   }
+  ]
+ },
+ "MaintenanceSchedule": {
+  "service": "locker-service",
+  "table": "maintenance_schedules",
+  "fields": [
+   {
+    "name": "id",
+    "type": "bigint",
+    "pk": true,
+    "rel": null,
+    "field": "id"
+   },
+   {
+    "name": "locker_id",
+    "type": "bigint",
+    "pk": false,
+    "rel": null,
+    "field": "lockerId"
+   },
+   {
+    "name": "drone_unit_id",
+    "type": "bigint",
+    "pk": false,
+    "rel": null,
+    "field": "droneUnitId"
+   },
+   {
+    "name": "assigned_technician_id",
+    "type": "bigint",
+    "pk": false,
+    "rel": null,
+    "field": "assignedTechnicianId"
+   },
+   {
+    "name": "priority",
+    "type": "varchar(20)",
+    "pk": false,
+    "rel": null,
+    "field": "priority"
+   },
+   {
+    "name": "description",
+    "type": "varchar(2000)",
+    "pk": false,
+    "rel": null,
+    "field": "description"
+   },
+   {
+    "name": "location_note",
+    "type": "varchar(500)",
+    "pk": false,
+    "rel": null,
+    "field": "locationNote"
+   },
+   {
+    "name": "scheduled_time_slot",
+    "type": "varchar(100)",
+    "pk": false,
+    "rel": null,
+    "field": "scheduledTimeSlot"
+   },
+   {
+    "name": "checklist",
+    "type": "text",
+    "pk": false,
+    "rel": null,
+    "field": "checklist"
+   },
+   {
+    "name": "title",
+    "type": "varchar(255)",
+    "pk": false,
+    "rel": null,
+    "field": "title"
+   },
+   {
+    "name": "interval_days",
+    "type": "int",
+    "pk": false,
+    "rel": null,
+    "field": "intervalDays"
+   },
+   {
+    "name": "last_done_at",
+    "type": "timestamp",
+    "pk": false,
+    "rel": null,
+    "field": "lastDoneAt"
+   },
+   {
+    "name": "next_due_at",
+    "type": "timestamp",
+    "pk": false,
+    "rel": null,
+    "field": "nextDueAt"
+   },
+   {
+    "name": "active",
+    "type": "boolean",
+    "pk": false,
+    "rel": null,
+    "field": "active"
+   },
+   {
+    "name": "pending_report_id",
+    "type": "bigint",
+    "pk": false,
+    "rel": null,
+    "field": "pendingReportId"
+   },
+   {
+    "name": "last_result",
+    "type": "varchar(20)",
+    "pk": false,
+    "rel": null,
+    "field": "lastResult"
+   },
+   {
+    "name": "last_due_notified_at",
+    "type": "timestamp",
+    "pk": false,
+    "rel": null,
+    "field": "lastDueNotifiedAt"
+   },
+   {
+    "name": "created_at",
+    "type": "timestamp",
+    "pk": false,
+    "rel": null,
+    "field": "createdAt"
+   },
+   {
+    "name": "updated_at",
+    "type": "timestamp",
+    "pk": false,
+    "rel": null,
+    "field": "updatedAt"
+   }
+  ]
+ },
+ "RepairLog": {
+  "service": "locker-service",
+  "table": "repair_logs",
+  "fields": [
+   {
+    "name": "id",
+    "type": "bigint",
+    "pk": true,
+    "rel": null,
+    "field": "id"
+   },
+   {
+    "name": "report_id",
+    "type": "bigint",
+    "pk": false,
+    "rel": null,
+    "field": "reportId"
+   },
+   {
+    "name": "actor_user_id",
+    "type": "bigint",
+    "pk": false,
+    "rel": null,
+    "field": "actorUserId"
+   },
+   {
+    "name": "note",
+    "type": "varchar(2000)",
+    "pk": false,
+    "rel": null,
+    "field": "note"
+   },
+   {
+    "name": "created_at",
+    "type": "timestamp",
+    "pk": false,
+    "rel": null,
+    "field": "createdAt"
+   }
+  ]
+ },
+ "ReportAttachment": {
+  "service": "locker-service",
+  "table": "report_attachments",
+  "fields": [
+   {
+    "name": "id",
+    "type": "bigint",
+    "pk": true,
+    "rel": null,
+    "field": "id"
+   },
+   {
+    "name": "report_id",
+    "type": "bigint",
+    "pk": false,
+    "rel": null,
+    "field": "reportId"
+   },
+   {
+    "name": "repair_log_id",
+    "type": "bigint",
+    "pk": false,
+    "rel": null,
+    "field": "repairLogId"
+   },
+   {
+    "name": "stage",
+    "type": "varchar(20)",
+    "pk": false,
+    "rel": null,
+    "field": "stage"
+   },
+   {
+    "name": "public_id",
+    "type": "varchar(255)",
+    "pk": false,
+    "rel": null,
+    "field": "publicId"
+   },
+   {
+    "name": "secure_url",
+    "type": "varchar(1000)",
+    "pk": false,
+    "rel": null,
+    "field": "secureUrl"
+   },
+   {
+    "name": "format",
+    "type": "varchar(20)",
+    "pk": false,
+    "rel": null,
+    "field": "format"
+   },
+   {
+    "name": "bytes",
+    "type": "bigint",
+    "pk": false,
+    "rel": null,
+    "field": "bytes"
+   },
+   {
+    "name": "width",
+    "type": "int",
+    "pk": false,
+    "rel": null,
+    "field": "width"
+   },
+   {
+    "name": "height",
+    "type": "int",
+    "pk": false,
+    "rel": null,
+    "field": "height"
+   },
+   {
+    "name": "caption",
+    "type": "varchar(500)",
+    "pk": false,
+    "rel": null,
+    "field": "caption"
+   },
+   {
+    "name": "latitude",
+    "type": "double",
+    "pk": false,
+    "rel": null,
+    "field": "latitude"
+   },
+   {
+    "name": "longitude",
+    "type": "double",
+    "pk": false,
+    "rel": null,
+    "field": "longitude"
+   },
+   {
+    "name": "captured_at",
+    "type": "timestamp",
+    "pk": false,
+    "rel": null,
+    "field": "capturedAt"
+   },
+   {
+    "name": "uploaded_by_user_id",
+    "type": "bigint",
+    "pk": false,
+    "rel": null,
+    "field": "uploadedByUserId"
+   },
+   {
+    "name": "created_at",
+    "type": "timestamp",
+    "pk": false,
+    "rel": null,
+    "field": "createdAt"
+   }
+  ]
+ },
+ "TechnicianPresence": {
+  "service": "locker-service",
+  "table": "technician_presences",
+  "fields": [
+   {
+    "name": "user_id",
+    "type": "bigint",
+    "pk": true,
+    "rel": null,
+    "field": "userId"
+   },
+   {
+    "name": "technician_type",
+    "type": "varchar(50)",
+    "pk": false,
+    "rel": null,
+    "field": "technicianType"
+   },
+   {
+    "name": "on_duty",
+    "type": "boolean",
+    "pk": false,
+    "rel": null,
+    "field": "onDuty"
+   },
+   {
+    "name": "latitude",
+    "type": "double",
+    "pk": false,
+    "rel": null,
+    "field": "latitude"
+   },
+   {
+    "name": "longitude",
+    "type": "double",
+    "pk": false,
+    "rel": null,
+    "field": "longitude"
+   },
+   {
+    "name": "accuracy_m",
+    "type": "double",
+    "pk": false,
+    "rel": null,
+    "field": "accuracyM"
+   },
+   {
+    "name": "heading_deg",
+    "type": "double",
+    "pk": false,
+    "rel": null,
+    "field": "headingDeg"
+   },
+   {
+    "name": "speed_ms",
+    "type": "double",
+    "pk": false,
+    "rel": null,
+    "field": "speedMs"
+   },
+   {
+    "name": "altitude_m",
+    "type": "double",
+    "pk": false,
+    "rel": null,
+    "field": "altitudeM"
+   },
+   {
+    "name": "battery_level",
+    "type": "int",
+    "pk": false,
+    "rel": null,
+    "field": "batteryLevel"
+   },
+   {
+    "name": "device_info",
+    "type": "varchar(255)",
+    "pk": false,
+    "rel": null,
+    "field": "deviceInfo"
+   },
+   {
+    "name": "shift_started_at",
+    "type": "timestamp",
+    "pk": false,
+    "rel": null,
+    "field": "shiftStartedAt"
+   },
+   {
+    "name": "shift_ended_at",
+    "type": "timestamp",
+    "pk": false,
+    "rel": null,
+    "field": "shiftEndedAt"
+   },
+   {
+    "name": "last_located_at",
+    "type": "timestamp",
+    "pk": false,
+    "rel": null,
+    "field": "lastLocatedAt"
+   },
+   {
+    "name": "created_at",
+    "type": "timestamp",
+    "pk": false,
+    "rel": null,
+    "field": "createdAt"
+   },
+   {
+    "name": "updated_at",
+    "type": "timestamp",
+    "pk": false,
+    "rel": null,
+    "field": "updatedAt"
+   }
+  ]
+ },
+ "LoyaltyAccount": {
+  "service": "loyalty-service",
+  "table": "loyalty_accounts",
+  "fields": [
+   {
+    "name": "id",
+    "type": "bigint",
+    "pk": true,
+    "rel": null,
+    "field": "id"
+   },
+   {
+    "name": "user_id",
+    "type": "bigint",
+    "pk": false,
+    "rel": null,
+    "field": "userId"
+   },
+   {
+    "name": "points",
+    "type": "int",
+    "pk": false,
+    "rel": null,
+    "field": "points"
+   },
+   {
+    "name": "stamps",
+    "type": "int",
+    "pk": false,
+    "rel": null,
+    "field": "stamps"
+   },
+   {
+    "name": "tier",
+    "type": "varchar(30)",
+    "pk": false,
+    "rel": null,
+    "field": "tier"
+   },
+   {
+    "name": "lifetime_points",
+    "type": "int",
+    "pk": false,
+    "rel": null,
+    "field": "lifetimePoints"
+   },
+   {
+    "name": "created_at",
+    "type": "timestamp",
+    "pk": false,
+    "rel": null,
+    "field": "createdAt"
+   },
+   {
+    "name": "updated_at",
+    "type": "timestamp",
+    "pk": false,
+    "rel": null,
+    "field": "updatedAt"
+   }
+  ]
+ },
+ "PointTransaction": {
+  "service": "loyalty-service",
+  "table": "point_transactions",
+  "fields": [
+   {
+    "name": "id",
+    "type": "bigint",
+    "pk": true,
+    "rel": null,
+    "field": "id"
+   },
+   {
+    "name": "user_id",
+    "type": "bigint",
+    "pk": false,
+    "rel": null,
+    "field": "userId"
+   },
+   {
+    "name": "order_id",
+    "type": "bigint",
+    "pk": false,
+    "rel": null,
+    "field": "orderId"
+   },
+   {
+    "name": "points",
+    "type": "int",
+    "pk": false,
+    "rel": null,
+    "field": "points"
+   },
+   {
+    "name": "type",
+    "type": "varchar(30)",
+    "pk": false,
+    "rel": null,
+    "field": "type"
+   },
+   {
+    "name": "amount",
+    "type": "decimal(14,2)",
+    "pk": false,
+    "rel": null,
+    "field": "amount"
+   },
+   {
+    "name": "reference",
+    "type": "varchar(64)",
+    "pk": false,
+    "rel": null,
+    "field": "reference"
+   },
+   {
+    "name": "created_at",
+    "type": "timestamp",
+    "pk": false,
+    "rel": null,
+    "field": "createdAt"
+   }
+  ]
+ },
+ "FcmToken": {
+  "service": "notification-service",
+  "table": "fcm_tokens",
+  "fields": [
+   {
+    "name": "id",
+    "type": "bigint",
+    "pk": true,
+    "rel": null,
+    "field": "id"
+   },
+   {
+    "name": "user_id",
+    "type": "bigint",
+    "pk": false,
+    "rel": null,
+    "field": "userId"
+   },
+   {
+    "name": "token",
+    "type": "varchar(512)",
+    "pk": false,
+    "rel": null,
+    "field": "token"
+   },
+   {
+    "name": "device_type",
+    "type": "varchar(30)",
+    "pk": false,
+    "rel": null,
+    "field": "deviceType"
+   },
+   {
+    "name": "created_at",
+    "type": "timestamp",
+    "pk": false,
+    "rel": null,
+    "field": "createdAt"
+   },
+   {
+    "name": "updated_at",
+    "type": "timestamp",
+    "pk": false,
+    "rel": null,
+    "field": "updatedAt"
+   }
+  ]
+ },
+ "NotificationMessage": {
+  "service": "notification-service",
+  "table": "notifications",
+  "fields": [
+   {
+    "name": "id",
+    "type": "bigint",
+    "pk": true,
+    "rel": null,
+    "field": "id"
+   },
+   {
+    "name": "user_id",
+    "type": "bigint",
+    "pk": false,
+    "rel": null,
+    "field": "userId"
+   },
+   {
+    "name": "title",
+    "type": "varchar(255)",
+    "pk": false,
+    "rel": null,
+    "field": "title"
+   },
+   {
+    "name": "message",
+    "type": "text",
+    "pk": false,
+    "rel": null,
+    "field": "message"
+   },
+   {
+    "name": "type",
+    "type": "varchar(50)",
+    "pk": false,
+    "rel": null,
+    "field": "type"
+   },
+   {
+    "name": "reference_id",
+    "type": "bigint",
+    "pk": false,
+    "rel": null,
+    "field": "referenceId"
+   },
+   {
+    "name": "reference_type",
+    "type": "varchar(50)",
+    "pk": false,
+    "rel": null,
+    "field": "referenceType"
+   },
+   {
+    "name": "status",
+    "type": "varchar(20)",
+    "pk": false,
+    "rel": null,
+    "field": "status"
+   },
+   {
+    "name": "is_read",
+    "type": "boolean",
+    "pk": false,
+    "rel": null,
+    "field": "isRead"
+   },
+   {
+    "name": "read_at",
+    "type": "timestamp",
+    "pk": false,
+    "rel": null,
+    "field": "readAt"
+   },
+   {
+    "name": "created_at",
+    "type": "timestamp",
+    "pk": false,
+    "rel": null,
+    "field": "createdAt"
+   }
+  ]
+ },
+ "DroneDeliverySession": {
+  "service": "order-service",
+  "table": "drone_delivery_sessions",
+  "fields": [
+   {
+    "name": "session_id",
+    "type": "varchar(64)",
+    "pk": true,
+    "rel": null,
+    "field": "sessionId"
+   },
+   {
+    "name": "correlation_id",
+    "type": "varchar(64)",
+    "pk": false,
+    "rel": null,
+    "field": "correlationId"
+   },
+   {
+    "name": "order_id",
+    "type": "bigint",
+    "pk": false,
+    "rel": null,
+    "field": "orderId"
+   },
+   {
+    "name": "mission_id",
+    "type": "bigint",
+    "pk": false,
+    "rel": null,
+    "field": "missionId"
+   },
+   {
+    "name": "drone_id",
+    "type": "varchar(50)",
+    "pk": false,
+    "rel": null,
+    "field": "droneId"
+   },
+   {
+    "name": "drone_unit_id",
+    "type": "bigint",
+    "pk": false,
+    "rel": null,
+    "field": "droneUnitId"
+   },
+   {
+    "name": "locker_id",
+    "type": "bigint",
+    "pk": false,
+    "rel": null,
+    "field": "lockerId"
+   },
+   {
+    "name": "compartment_id",
+    "type": "bigint",
+    "pk": false,
+    "rel": null,
+    "field": "compartmentId"
+   },
+   {
+    "name": "target_marker_id",
+    "type": "int",
+    "pk": false,
+    "rel": null,
+    "field": "targetMarkerId"
+   },
+   {
+    "name": "target_dictionary",
+    "type": "varchar(50)",
+    "pk": false,
+    "rel": null,
+    "field": "targetDictionary"
+   },
+   {
+    "name": "mode",
+    "type": "varchar(30)",
+    "pk": false,
+    "rel": null,
+    "field": "mode"
+   },
+   {
+    "name": "state",
+    "type": "varchar(30)",
+    "pk": false,
+    "rel": null,
+    "field": "state"
+   },
+   {
+    "name": "open_command_id",
+    "type": "varchar(64)",
+    "pk": false,
+    "rel": null,
+    "field": "openCommandId"
+   },
+   {
+    "name": "close_command_id",
+    "type": "varchar(64)",
+    "pk": false,
+    "rel": null,
+    "field": "closeCommandId"
+   },
+   {
+    "name": "lid_opened_at",
+    "type": "timestamp",
+    "pk": false,
+    "rel": null,
+    "field": "lidOpenedAt"
+   },
+   {
+    "name": "completed_at",
+    "type": "timestamp",
+    "pk": false,
+    "rel": null,
+    "field": "completedAt"
+   },
+   {
+    "name": "error_code",
+    "type": "varchar(50)",
+    "pk": false,
+    "rel": null,
+    "field": "errorCode"
+   },
+   {
+    "name": "error_message",
+    "type": "varchar(500)",
+    "pk": false,
+    "rel": null,
+    "field": "errorMessage"
+   },
+   {
+    "name": "created_at",
+    "type": "timestamp",
+    "pk": false,
+    "rel": null,
+    "field": "createdAt"
+   },
+   {
+    "name": "updated_at",
+    "type": "timestamp",
+    "pk": false,
+    "rel": null,
+    "field": "updatedAt"
+   }
+  ]
+ },
+ "DroneIncidentEvidence": {
+  "service": "order-service",
+  "table": "drone_incident_evidence",
+  "fields": [
+   {
+    "name": "id",
+    "type": "bigint",
+    "pk": true,
+    "rel": null,
+    "field": "id"
+   },
+   {
+    "name": "incident_id",
+    "type": "bigint",
+    "pk": false,
+    "rel": null,
+    "field": "incidentId"
+   },
+   {
+    "name": "stage",
+    "type": "varchar(30)",
+    "pk": false,
+    "rel": null,
+    "field": "stage"
+   },
+   {
+    "name": "public_id",
+    "type": "varchar(255)",
+    "pk": false,
+    "rel": null,
+    "field": "publicId"
+   },
+   {
+    "name": "secure_url",
+    "type": "varchar(1000)",
+    "pk": false,
+    "rel": null,
+    "field": "secureUrl"
+   },
+   {
+    "name": "caption",
+    "type": "varchar(500)",
+    "pk": false,
+    "rel": null,
+    "field": "caption"
+   },
+   {
+    "name": "latitude",
+    "type": "double",
+    "pk": false,
+    "rel": null,
+    "field": "latitude"
+   },
+   {
+    "name": "longitude",
+    "type": "double",
+    "pk": false,
+    "rel": null,
+    "field": "longitude"
+   },
+   {
+    "name": "gps_accuracy_m",
+    "type": "double",
+    "pk": false,
+    "rel": null,
+    "field": "gpsAccuracyM"
+   },
+   {
+    "name": "captured_at",
+    "type": "timestamp",
+    "pk": false,
+    "rel": null,
+    "field": "capturedAt"
+   },
+   {
+    "name": "uploaded_by_user_id",
+    "type": "bigint",
+    "pk": false,
+    "rel": null,
+    "field": "uploadedByUserId"
+   },
+   {
+    "name": "created_at",
+    "type": "timestamp",
+    "pk": false,
+    "rel": null,
+    "field": "createdAt"
+   }
+  ]
+ },
+ "DroneIncidentResolutionProposal": {
+  "service": "order-service",
+  "table": "drone_incident_resolution_proposals",
+  "fields": [
+   {
+    "name": "id",
+    "type": "bigint",
+    "pk": true,
+    "rel": null,
+    "field": "id"
+   },
+   {
+    "name": "incident_id",
+    "type": "bigint",
+    "pk": false,
+    "rel": null,
+    "field": "incidentId"
+   },
+   {
+    "name": "proposal_version",
+    "type": "int",
+    "pk": false,
+    "rel": null,
+    "field": "proposalVersion"
+   },
+   {
+    "name": "resolution_type",
+    "type": "varchar(50)",
+    "pk": false,
+    "rel": null,
+    "field": "resolutionType"
+   },
+   {
+    "name": "redelivery_offered",
+    "type": "boolean",
+    "pk": false,
+    "rel": null,
+    "field": "redeliveryOffered"
+   },
+   {
+    "name": "compensation_amount",
+    "type": "decimal(12,2)",
+    "pk": false,
+    "rel": null,
+    "field": "compensationAmount"
+   },
+   {
+    "name": "refund_shipping_fee",
+    "type": "boolean",
+    "pk": false,
+    "rel": null,
+    "field": "refundShippingFee"
+   },
+   {
+    "name": "policy_version",
+    "type": "varchar(64)",
+    "pk": false,
+    "rel": null,
+    "field": "policyVersion"
+   },
+   {
+    "name": "override_reason",
+    "type": "varchar(1000)",
+    "pk": false,
+    "rel": null,
+    "field": "overrideReason"
+   },
+   {
+    "name": "proposed_by_user_id",
+    "type": "bigint",
+    "pk": false,
+    "rel": null,
+    "field": "proposedByUserId"
+   },
+   {
+    "name": "status",
+    "type": "varchar(40)",
+    "pk": false,
+    "rel": null,
+    "field": "status"
+   },
+   {
+    "name": "customer_response_note",
+    "type": "varchar(1000)",
+    "pk": false,
+    "rel": null,
+    "field": "customerResponseNote"
+   },
+   {
+    "name": "responded_at",
+    "type": "timestamp",
+    "pk": false,
+    "rel": null,
+    "field": "respondedAt"
+   },
+   {
+    "name": "created_at",
+    "type": "timestamp",
+    "pk": false,
+    "rel": null,
+    "field": "createdAt"
+   }
+  ]
+ },
+ "DroneIncidentTimeline": {
+  "service": "order-service",
+  "table": "drone_incident_timeline",
+  "fields": [
+   {
+    "name": "id",
+    "type": "bigint",
+    "pk": true,
+    "rel": null,
+    "field": "id"
+   },
+   {
+    "name": "incident_id",
+    "type": "bigint",
+    "pk": false,
+    "rel": null,
+    "field": "incidentId"
+   },
+   {
+    "name": "event_type",
+    "type": "varchar(60)",
+    "pk": false,
+    "rel": null,
+    "field": "eventType"
+   },
+   {
+    "name": "from_status",
+    "type": "varchar(50)",
+    "pk": false,
+    "rel": null,
+    "field": "fromStatus"
+   },
+   {
+    "name": "to_status",
+    "type": "varchar(50)",
+    "pk": false,
+    "rel": null,
+    "field": "toStatus"
+   },
+   {
+    "name": "actor_user_id",
+    "type": "bigint",
+    "pk": false,
+    "rel": null,
+    "field": "actorUserId"
+   },
+   {
+    "name": "note",
+    "type": "varchar(2000)",
+    "pk": false,
+    "rel": null,
+    "field": "note"
+   },
+   {
+    "name": "metadata_json",
+    "type": "text",
+    "pk": false,
+    "rel": null,
+    "field": "metadataJson"
+   },
+   {
+    "name": "created_at",
+    "type": "timestamp",
+    "pk": false,
+    "rel": null,
+    "field": "createdAt"
+   }
+  ]
+ },
+ "DroneLockerCommLog": {
+  "service": "order-service",
+  "table": "drone_locker_comm_logs",
+  "fields": [
+   {
+    "name": "id",
+    "type": "bigint",
+    "pk": true,
+    "rel": null,
+    "field": "id"
+   },
+   {
+    "name": "timestamp",
+    "type": "timestamp",
+    "pk": false,
+    "rel": null,
+    "field": "timestamp"
+   },
+   {
+    "name": "message_id",
+    "type": "varchar(64)",
+    "pk": false,
+    "rel": null,
+    "field": "messageId"
+   },
+   {
+    "name": "correlation_id",
+    "type": "varchar(64)",
+    "pk": false,
+    "rel": null,
+    "field": "correlationId"
+   },
+   {
+    "name": "session_id",
+    "type": "varchar(64)",
+    "pk": false,
+    "rel": null,
+    "field": "sessionId"
+   },
+   {
+    "name": "order_id",
+    "type": "bigint",
+    "pk": false,
+    "rel": null,
+    "field": "orderId"
+   },
+   {
+    "name": "journey_id",
+    "type": "bigint",
+    "pk": false,
+    "rel": null,
+    "field": "journeyId"
+   },
+   {
+    "name": "drone_id",
+    "type": "varchar(50)",
+    "pk": false,
+    "rel": null,
+    "field": "droneId"
+   },
+   {
+    "name": "locker_id",
+    "type": "bigint",
+    "pk": false,
+    "rel": null,
+    "field": "lockerId"
+   },
+   {
+    "name": "compartment_id",
+    "type": "bigint",
+    "pk": false,
+    "rel": null,
+    "field": "compartmentId"
+   },
+   {
+    "name": "marker_id",
+    "type": "int",
+    "pk": false,
+    "rel": null,
+    "field": "markerId"
+   },
+   {
+    "name": "marker_dictionary",
+    "type": "varchar(50)",
+    "pk": false,
+    "rel": null,
+    "field": "markerDictionary"
+   },
+   {
+    "name": "source_device",
+    "type": "varchar(50)",
+    "pk": false,
+    "rel": null,
+    "field": "sourceDevice"
+   },
+   {
+    "name": "destination_device",
+    "type": "varchar(50)",
+    "pk": false,
+    "rel": null,
+    "field": "destinationDevice"
+   },
+   {
+    "name": "mqtt_topic",
+    "type": "varchar(255)",
+    "pk": false,
+    "rel": null,
+    "field": "mqttTopic"
+   },
+   {
+    "name": "event_type",
+    "type": "varchar(50)",
+    "pk": false,
+    "rel": null,
+    "field": "eventType"
+   },
+   {
+    "name": "direction",
+    "type": "varchar(10)",
+    "pk": false,
+    "rel": null,
+    "field": "direction"
+   },
+   {
+    "name": "payload",
+    "type": "text",
+    "pk": false,
+    "rel": null,
+    "field": "payload"
+   },
+   {
+    "name": "publish_status",
+    "type": "varchar(30)",
+    "pk": false,
+    "rel": null,
+    "field": "publishStatus"
+   },
+   {
+    "name": "ack_status",
+    "type": "varchar(30)",
+    "pk": false,
+    "rel": null,
+    "field": "ackStatus"
+   },
+   {
+    "name": "processing_status",
+    "type": "varchar(30)",
+    "pk": false,
+    "rel": null,
+    "field": "processingStatus"
+   },
+   {
+    "name": "error_code",
+    "type": "varchar(50)",
+    "pk": false,
+    "rel": null,
+    "field": "errorCode"
+   },
+   {
+    "name": "error_message",
+    "type": "varchar(500)",
+    "pk": false,
+    "rel": null,
+    "field": "errorMessage"
+   },
+   {
+    "name": "retry_count",
+    "type": "int",
+    "pk": false,
+    "rel": null,
+    "field": "retryCount"
+   },
+   {
+    "name": "processing_duration_ms",
+    "type": "bigint",
+    "pk": false,
+    "rel": null,
+    "field": "processingDurationMs"
+   },
+   {
+    "name": "created_at",
+    "type": "timestamp",
+    "pk": false,
+    "rel": null,
+    "field": "createdAt"
+   }
+  ]
+ },
+ "DroneMission": {
+  "service": "order-service",
+  "table": "drone_missions",
+  "fields": [
+   {
+    "name": "id",
+    "type": "bigint",
+    "pk": true,
+    "rel": null,
+    "field": "id"
+   },
+   {
+    "name": "order_id",
+    "type": "bigint",
+    "pk": false,
+    "rel": null,
+    "field": "orderId"
+   },
+   {
+    "name": "drone_unit_id",
+    "type": "bigint",
+    "pk": false,
+    "rel": null,
+    "field": "droneUnitId"
+   },
+   {
+    "name": "drone_code",
+    "type": "varchar(80)",
+    "pk": false,
+    "rel": null,
+    "field": "droneCode"
+   },
+   {
+    "name": "source_locker_id",
+    "type": "bigint",
+    "pk": false,
+    "rel": null,
+    "field": "sourceLockerId"
+   },
+   {
+    "name": "destination_locker_id",
+    "type": "bigint",
+    "pk": false,
+    "rel": null,
+    "field": "destinationLockerId"
+   },
+   {
+    "name": "status",
+    "type": "varchar(40)",
+    "pk": false,
+    "rel": null,
+    "field": "status"
+   },
+   {
+    "name": "assigned_by_user_id",
+    "type": "bigint",
+    "pk": false,
+    "rel": null,
+    "field": "assignedByUserId"
+   },
+   {
+    "name": "last_accept_idempotency_key",
+    "type": "varchar(120)",
+    "pk": false,
+    "rel": null,
+    "field": "lastAcceptIdempotencyKey"
+   },
+   {
+    "name": "last_loading_idempotency_key",
+    "type": "varchar(120)",
+    "pk": false,
+    "rel": null,
+    "field": "lastLoadingIdempotencyKey"
+   },
+   {
+    "name": "last_launch_idempotency_key",
+    "type": "varchar(120)",
+    "pk": false,
+    "rel": null,
+    "field": "lastLaunchIdempotencyKey"
+   },
+   {
+    "name": "payload_weight_grams",
+    "type": "int",
+    "pk": false,
+    "rel": null,
+    "field": "payloadWeightGrams"
+   },
+   {
+    "name": "seal_code",
+    "type": "varchar(80)",
+    "pk": false,
+    "rel": null,
+    "field": "sealCode"
+   },
+   {
+    "name": "parcel_matched",
+    "type": "boolean",
+    "pk": false,
+    "rel": null,
+    "field": "parcelMatched"
+   },
+   {
+    "name": "payload_secured",
+    "type": "boolean",
+    "pk": false,
+    "rel": null,
+    "field": "payloadSecured"
+   },
+   {
+    "name": "compartment_locked",
+    "type": "boolean",
+    "pk": false,
+    "rel": null,
+    "field": "compartmentLocked"
+   },
+   {
+    "name": "weight_surcharge",
+    "type": "decimal(12,2)",
+    "pk": false,
+    "rel": null,
+    "field": "weightSurcharge"
+   },
+   {
+    "name": "loading_note",
+    "type": "varchar(500)",
+    "pk": false,
+    "rel": null,
+    "field": "loadingNote"
+   },
+   {
+    "name": "loaded_by_user_id",
+    "type": "bigint",
+    "pk": false,
+    "rel": null,
+    "field": "loadedByUserId"
+   },
+   {
+    "name": "loaded_at",
+    "type": "timestamp",
+    "pk": false,
+    "rel": null,
+    "field": "loadedAt"
+   },
+   {
+    "name": "ready_to_launch_at",
+    "type": "timestamp",
+    "pk": false,
+    "rel": null,
+    "field": "readyToLaunchAt"
+   },
+   {
+    "name": "launching_at",
+    "type": "timestamp",
+    "pk": false,
+    "rel": null,
+    "field": "launchingAt"
+   },
+   {
+    "name": "battery_percent_at_launch",
+    "type": "int",
+    "pk": false,
+    "rel": null,
+    "field": "batteryPercentAtLaunch"
+   },
+   {
+    "name": "landed_at",
+    "type": "timestamp",
+    "pk": false,
+    "rel": null,
+    "field": "landedAt"
+   },
+   {
+    "name": "deposited_at",
+    "type": "timestamp",
+    "pk": false,
+    "rel": null,
+    "field": "depositedAt"
+   },
+   {
+    "name": "deposited_by_user_id",
+    "type": "bigint",
+    "pk": false,
+    "rel": null,
+    "field": "depositedByUserId"
+   },
+   {
+    "name": "ended_at",
+    "type": "timestamp",
+    "pk": false,
+    "rel": null,
+    "field": "endedAt"
+   },
+   {
+    "name": "ended_by_user_id",
+    "type": "bigint",
+    "pk": false,
+    "rel": null,
+    "field": "endedByUserId"
+   },
+   {
+    "name": "end_reason",
+    "type": "int",
+    "pk": false,
+    "rel": null,
+    "field": "endReason"
+   },
+   {
+    "name": "end_note",
+    "type": "varchar(500)",
+    "pk": false,
+    "rel": null,
+    "field": "endNote"
+   },
+   {
+    "name": "failed_stage",
+    "type": "varchar(40)",
+    "pk": false,
+    "rel": null,
+    "field": "failedStage"
+   },
+   {
+    "name": "created_at",
+    "type": "timestamp",
+    "pk": false,
+    "rel": null,
+    "field": "createdAt"
+   },
+   {
+    "name": "updated_at",
+    "type": "timestamp",
+    "pk": false,
+    "rel": null,
+    "field": "updatedAt"
+   }
+  ]
+ },
+ "DroneParcelIncident": {
+  "service": "order-service",
+  "table": "drone_parcel_incidents",
+  "fields": [
+   {
+    "name": "id",
+    "type": "bigint",
+    "pk": true,
+    "rel": null,
+    "field": "id"
+   },
+   {
+    "name": "incident_code",
+    "type": "varchar(64)",
+    "pk": false,
+    "rel": null,
+    "field": "incidentCode"
+   },
+   {
+    "name": "order_id",
+    "type": "bigint",
+    "pk": false,
+    "rel": null,
+    "field": "orderId"
+   },
+   {
+    "name": "mission_id",
+    "type": "bigint",
+    "pk": false,
+    "rel": null,
+    "field": "missionId"
+   },
+   {
+    "name": "drone_unit_id",
+    "type": "bigint",
+    "pk": false,
+    "rel": null,
+    "field": "droneUnitId"
+   },
+   {
+    "name": "drone_code",
+    "type": "varchar(80)",
+    "pk": false,
+    "rel": null,
+    "field": "droneCode"
+   },
+   {
+    "name": "reported_by_user_id",
+    "type": "bigint",
+    "pk": false,
+    "rel": null,
+    "field": "reportedByUserId"
+   },
+   {
+    "name": "idempotency_key",
+    "type": "varchar(120)",
+    "pk": false,
+    "rel": null,
+    "field": "idempotencyKey"
+   },
+   {
+    "name": "reason",
+    "type": "varchar(1000)",
+    "pk": false,
+    "rel": null,
+    "field": "reason"
+   },
+   {
+    "name": "status",
+    "type": "varchar(50)",
+    "pk": false,
+    "rel": null,
+    "field": "status"
+   },
+   {
+    "name": "parcel_status",
+    "type": "varchar(40)",
+    "pk": false,
+    "rel": null,
+    "field": "parcelStatus"
+   },
+   {
+    "name": "recovery_status",
+    "type": "varchar(40)",
+    "pk": false,
+    "rel": null,
+    "field": "recoveryStatus"
+   },
+   {
+    "name": "inspection_status",
+    "type": "varchar(40)",
+    "pk": false,
+    "rel": null,
+    "field": "inspectionStatus"
+   },
+   {
+    "name": "redelivery_status",
+    "type": "varchar(40)",
+    "pk": false,
+    "rel": null,
+    "field": "redeliveryStatus"
+   },
+   {
+    "name": "compensation_status",
+    "type": "varchar(40)",
+    "pk": false,
+    "rel": null,
+    "field": "compensationStatus"
+   },
+   {
+    "name": "return_flight_status",
+    "type": "varchar(50)",
+    "pk": false,
+    "rel": null,
+    "field": "returnFlightStatus"
+   },
+   {
+    "name": "drop_latitude",
+    "type": "double",
+    "pk": false,
+    "rel": null,
+    "field": "dropLatitude"
+   },
+   {
+    "name": "drop_longitude",
+    "type": "double",
+    "pk": false,
+    "rel": null,
+    "field": "dropLongitude"
+   },
+   {
+    "name": "gps_accuracy_m",
+    "type": "double",
+    "pk": false,
+    "rel": null,
+    "field": "gpsAccuracyM"
+   },
+   {
+    "name": "gps_source",
+    "type": "varchar(30)",
+    "pk": false,
+    "rel": null,
+    "field": "gpsSource"
+   },
+   {
+    "name": "telemetry_observed_at",
+    "type": "timestamp",
+    "pk": false,
+    "rel": null,
+    "field": "telemetryObservedAt"
+   },
+   {
+    "name": "telemetry_stale",
+    "type": "boolean",
+    "pk": false,
+    "rel": null,
+    "field": "telemetryStale"
+   },
+   {
+    "name": "telemetry_json",
+    "type": "text",
+    "pk": false,
+    "rel": null,
+    "field": "telemetryJson"
+   },
+   {
+    "name": "camera_status",
+    "type": "varchar(30)",
+    "pk": false,
+    "rel": null,
+    "field": "cameraStatus"
+   },
+   {
+    "name": "camera_snapshot_url",
+    "type": "varchar(1000)",
+    "pk": false,
+    "rel": null,
+    "field": "cameraSnapshotUrl"
+   },
+   {
+    "name": "inspection_report_id",
+    "type": "bigint",
+    "pk": false,
+    "rel": null,
+    "field": "inspectionReportId"
+   },
+   {
+    "name": "recovery_assigned_to_user_id",
+    "type": "bigint",
+    "pk": false,
+    "rel": null,
+    "field": "recoveryAssignedToUserId"
+   },
+   {
+    "name": "recovery_locker_id",
+    "type": "bigint",
+    "pk": false,
+    "rel": null,
+    "field": "recoveryLockerId"
+   },
+   {
+    "name": "recovery_started_at",
+    "type": "timestamp",
+    "pk": false,
+    "rel": null,
+    "field": "recoveryStartedAt"
+   },
+   {
+    "name": "recovery_submitted_at",
+    "type": "timestamp",
+    "pk": false,
+    "rel": null,
+    "field": "recoverySubmittedAt"
+   },
+   {
+    "name": "recovery_verified_at",
+    "type": "timestamp",
+    "pk": false,
+    "rel": null,
+    "field": "recoveryVerifiedAt"
+   },
+   {
+    "name": "recovery_outcome",
+    "type": "varchar(30)",
+    "pk": false,
+    "rel": null,
+    "field": "recoveryOutcome"
+   },
+   {
+    "name": "parcel_condition",
+    "type": "varchar(30)",
+    "pk": false,
+    "rel": null,
+    "field": "parcelCondition"
+   },
+   {
+    "name": "recovery_note",
+    "type": "varchar(2000)",
+    "pk": false,
+    "rel": null,
+    "field": "recoveryNote"
+   },
+   {
+    "name": "recovered_latitude",
+    "type": "double",
+    "pk": false,
+    "rel": null,
+    "field": "recoveredLatitude"
+   },
+   {
+    "name": "recovered_longitude",
+    "type": "double",
+    "pk": false,
+    "rel": null,
+    "field": "recoveredLongitude"
+   },
+   {
+    "name": "recovered_gps_accuracy_m",
+    "type": "double",
+    "pk": false,
+    "rel": null,
+    "field": "recoveredGpsAccuracyM"
+   },
+   {
+    "name": "returned_to_hub_at",
+    "type": "timestamp",
+    "pk": false,
+    "rel": null,
+    "field": "returnedToHubAt"
+   },
+   {
+    "name": "returned_to_hub_by_user_id",
+    "type": "bigint",
+    "pk": false,
+    "rel": null,
+    "field": "returnedToHubByUserId"
+   },
+   {
+    "name": "redelivery_order_id",
+    "type": "bigint",
+    "pk": false,
+    "rel": null,
+    "field": "redeliveryOrderId"
+   },
+   {
+    "name": "compensation_reference",
+    "type": "varchar(160)",
+    "pk": false,
+    "rel": null,
+    "field": "compensationReference"
+   },
+   {
+    "name": "resolved_at",
+    "type": "timestamp",
+    "pk": false,
+    "rel": null,
+    "field": "resolvedAt"
+   },
+   {
+    "name": "closed_at",
+    "type": "timestamp",
+    "pk": false,
+    "rel": null,
+    "field": "closedAt"
+   },
+   {
+    "name": "created_at",
+    "type": "timestamp",
+    "pk": false,
+    "rel": null,
+    "field": "createdAt"
+   },
+   {
+    "name": "updated_at",
+    "type": "timestamp",
+    "pk": false,
+    "rel": null,
+    "field": "updatedAt"
+   },
+   {
+    "name": "version",
+    "type": "bigint",
+    "pk": false,
+    "rel": null,
+    "field": "version"
+   }
+  ]
+ },
+ "DronePickup": {
+  "service": "order-service",
+  "table": "drone_pickups",
+  "fields": [
+   {
+    "name": "id",
+    "type": "bigint",
+    "pk": true,
+    "rel": null,
+    "field": "id"
+   },
+   {
+    "name": "order_id",
+    "type": "bigint",
+    "pk": false,
+    "rel": null,
+    "field": "orderId"
+   },
+   {
+    "name": "status",
+    "type": "varchar(30)",
+    "pk": false,
+    "rel": null,
+    "field": "status"
+   },
+   {
+    "name": "technician_id",
+    "type": "bigint",
+    "pk": false,
+    "rel": null,
+    "field": "technicianId"
+   },
+   {
+    "name": "technician_distance_meters",
+    "type": "int",
+    "pk": false,
+    "rel": null,
+    "field": "technicianDistanceMeters"
+   },
+   {
+    "name": "pickup_code",
+    "type": "varchar(6)",
+    "pk": false,
+    "rel": null,
+    "field": "pickupCode"
+   },
+   {
+    "name": "offered_at",
+    "type": "timestamp",
+    "pk": false,
+    "rel": null,
+    "field": "offeredAt"
+   },
+   {
+    "name": "offer_expires_at",
+    "type": "timestamp",
+    "pk": false,
+    "rel": null,
+    "field": "offerExpiresAt"
+   },
+   {
+    "name": "accepted_at",
+    "type": "timestamp",
+    "pk": false,
+    "rel": null,
+    "field": "acceptedAt"
+   },
+   {
+    "name": "picked_up_at",
+    "type": "timestamp",
+    "pk": false,
+    "rel": null,
+    "field": "pickedUpAt"
+   },
+   {
+    "name": "assigned_by_user_id",
+    "type": "bigint",
+    "pk": false,
+    "rel": null,
+    "field": "assignedByUserId"
+   },
+   {
+    "name": "failed_at",
+    "type": "timestamp",
+    "pk": false,
+    "rel": null,
+    "field": "failedAt"
+   },
+   {
+    "name": "failure_reason",
+    "type": "varchar(40)",
+    "pk": false,
+    "rel": null,
+    "field": "failureReason"
+   },
+   {
+    "name": "failure_note",
+    "type": "varchar(500)",
+    "pk": false,
+    "rel": null,
+    "field": "failureNote"
+   },
+   {
+    "name": "pickup_note",
+    "type": "varchar(500)",
+    "pk": false,
+    "rel": null,
+    "field": "pickupNote"
+   },
+   {
+    "name": "pickup_photo_public_id",
+    "type": "varchar(255)",
+    "pk": false,
+    "rel": null,
+    "field": "pickupPhotoPublicId"
+   },
+   {
+    "name": "pickup_photo_url",
+    "type": "varchar(1000)",
+    "pk": false,
+    "rel": null,
+    "field": "pickupPhotoUrl"
+   },
+   {
+    "name": "pickup_photo_captured_at",
+    "type": "timestamp",
+    "pk": false,
+    "rel": null,
+    "field": "pickupPhotoCapturedAt"
+   },
+   {
+    "name": "created_at",
+    "type": "timestamp",
+    "pk": false,
+    "rel": null,
+    "field": "createdAt"
+   },
+   {
+    "name": "updated_at",
+    "type": "timestamp",
+    "pk": false,
+    "rel": null,
+    "field": "updatedAt"
+   }
+  ]
+ },
+ "DronePickupOffer": {
+  "service": "order-service",
+  "table": "drone_pickup_offers",
+  "fields": [
+   {
+    "name": "id",
+    "type": "bigint",
+    "pk": true,
+    "rel": null,
+    "field": "id"
+   },
+   {
+    "name": "pickup_id",
+    "type": "bigint",
+    "pk": false,
+    "rel": null,
+    "field": "pickupId"
+   },
+   {
+    "name": "technician_id",
+    "type": "bigint",
+    "pk": false,
+    "rel": null,
+    "field": "technicianId"
+   },
+   {
+    "name": "status",
+    "type": "varchar(20)",
+    "pk": false,
+    "rel": null,
+    "field": "status"
+   },
+   {
+    "name": "distance_meters",
+    "type": "int",
+    "pk": false,
+    "rel": null,
+    "field": "distanceMeters"
+   },
+   {
+    "name": "offered_at",
+    "type": "timestamp",
+    "pk": false,
+    "rel": null,
+    "field": "offeredAt"
+   },
+   {
+    "name": "responded_at",
+    "type": "timestamp",
+    "pk": false,
+    "rel": null,
+    "field": "respondedAt"
+   }
+  ]
+ },
+ "DroneTechnicianPresence": {
+  "service": "order-service",
+  "table": "drone_technician_presence",
+  "fields": [
+   {
+    "name": "user_id",
+    "type": "bigint",
+    "pk": true,
+    "rel": null,
+    "field": "userId"
+   },
+   {
+    "name": "on_duty",
+    "type": "boolean",
+    "pk": false,
+    "rel": null,
+    "field": "onDuty"
+   },
+   {
+    "name": "latitude",
+    "type": "double",
+    "pk": false,
+    "rel": null,
+    "field": "latitude"
+   },
+   {
+    "name": "longitude",
+    "type": "double",
+    "pk": false,
+    "rel": null,
+    "field": "longitude"
+   },
+   {
+    "name": "location_at",
+    "type": "timestamp",
+    "pk": false,
+    "rel": null,
+    "field": "locationAt"
+   },
+   {
+    "name": "duty_changed_at",
+    "type": "timestamp",
+    "pk": false,
+    "rel": null,
+    "field": "dutyChangedAt"
+   },
+   {
+    "name": "updated_at",
+    "type": "timestamp",
+    "pk": false,
+    "rel": null,
+    "field": "updatedAt"
+   }
+  ]
+ },
+ "LockerOrder": {
+  "service": "order-service",
+  "table": "orders",
+  "fields": [
+   {
+    "name": "id",
+    "type": "bigint",
+    "pk": true,
+    "rel": null,
+    "field": "id"
+   },
+   {
+    "name": "order_code",
+    "type": "varchar(255)",
+    "pk": false,
+    "rel": null,
+    "field": "orderCode"
+   },
+   {
+    "name": "user_id",
+    "type": "bigint",
+    "pk": false,
+    "rel": null,
+    "field": "userId"
+   },
+   {
+    "name": "receiver_id",
+    "type": "bigint",
+    "pk": false,
+    "rel": null,
+    "field": "receiverId"
+   },
+   {
+    "name": "receiver_user_id",
+    "type": "bigint",
+    "pk": false,
+    "rel": null,
+    "field": "receiverUserId"
+   },
+   {
+    "name": "receiver_phone",
+    "type": "varchar(255)",
+    "pk": false,
+    "rel": null,
+    "field": "receiverPhone"
+   },
+   {
+    "name": "receiver_name",
+    "type": "varchar(255)",
+    "pk": false,
+    "rel": null,
+    "field": "receiverName"
+   },
+   {
+    "name": "receiver_email",
+    "type": "varchar(255)",
+    "pk": false,
+    "rel": null,
+    "field": "receiverEmail"
+   },
+   {
+    "name": "delegate_phone",
+    "type": "varchar(255)",
+    "pk": false,
+    "rel": null,
+    "field": "delegatePhone"
+   },
+   {
+    "name": "delegate_name",
+    "type": "varchar(255)",
+    "pk": false,
+    "rel": null,
+    "field": "delegateName"
+   },
+   {
+    "name": "delegate_note",
+    "type": "varchar(500)",
+    "pk": false,
+    "rel": null,
+    "field": "delegateNote"
+   },
+   {
+    "name": "delegated_at",
+    "type": "timestamp",
+    "pk": false,
+    "rel": null,
+    "field": "delegatedAt"
+   },
+   {
+    "name": "locker_id",
+    "type": "bigint",
+    "pk": false,
+    "rel": null,
+    "field": "lockerId"
+   },
+   {
+    "name": "destination_locker_id",
+    "type": "bigint",
+    "pk": false,
+    "rel": null,
+    "field": "destinationLockerId"
+   },
+   {
+    "name": "source_locker_id",
+    "type": "bigint",
+    "pk": false,
+    "rel": null,
+    "field": "sourceLockerId"
+   },
+   {
+    "name": "source_box_id",
+    "type": "bigint",
+    "pk": false,
+    "rel": null,
+    "field": "sourceBoxId"
+   },
+   {
+    "name": "send_box_id",
+    "type": "bigint",
+    "pk": false,
+    "rel": null,
+    "field": "sendBoxId"
+   },
+   {
+    "name": "reserved_box_id",
+    "type": "bigint",
+    "pk": false,
+    "rel": null,
+    "field": "reservedBoxId"
+   },
+   {
+    "name": "receive_box_id",
+    "type": "bigint",
+    "pk": false,
+    "rel": null,
+    "field": "receiveBoxId"
+   },
+   {
+    "name": "store_id",
+    "type": "bigint",
+    "pk": false,
+    "rel": null,
+    "field": "storeId"
+   },
+   {
+    "name": "staff_id",
+    "type": "bigint",
+    "pk": false,
+    "rel": null,
+    "field": "staffId"
+   },
+   {
+    "name": "type",
+    "type": "varchar(30)",
+    "pk": false,
+    "rel": null,
+    "field": "type"
+   },
+   {
+    "name": "service_category",
+    "type": "varchar(30)",
+    "pk": false,
+    "rel": null,
+    "field": "serviceCategory"
+   },
+   {
+    "name": "status",
+    "type": "varchar(30)",
+    "pk": false,
+    "rel": null,
+    "field": "status"
+   },
+   {
+    "name": "payment_status",
+    "type": "varchar(20)",
+    "pk": false,
+    "rel": null,
+    "field": "paymentStatus"
+   },
+   {
+    "name": "delivery_stage",
+    "type": "varchar(40)",
+    "pk": false,
+    "rel": null,
+    "field": "deliveryStage"
+   },
+   {
+    "name": "fulfillment_mode",
+    "type": "varchar(20)",
+    "pk": false,
+    "rel": null,
+    "field": "fulfillmentMode"
+   },
+   {
+    "name": "paid_at",
+    "type": "timestamp",
+    "pk": false,
+    "rel": null,
+    "field": "paidAt"
+   },
+   {
+    "name": "actual_weight",
+    "type": "decimal(10,2)",
+    "pk": false,
+    "rel": null,
+    "field": "actualWeight"
+   },
+   {
+    "name": "parcel_weight_grams",
+    "type": "int",
+    "pk": false,
+    "rel": null,
+    "field": "parcelWeightGrams"
+   },
+   {
+    "name": "weight_unit",
+    "type": "varchar(20)",
+    "pk": false,
+    "rel": null,
+    "field": "weightUnit"
+   },
+   {
+    "name": "rental_cell_type",
+    "type": "varchar(20)",
+    "pk": false,
+    "rel": null,
+    "field": "rentalCellType"
+   },
+   {
+    "name": "extra_fee",
+    "type": "decimal(12,2)",
+    "pk": false,
+    "rel": null,
+    "field": "extraFee"
+   },
+   {
+    "name": "discount",
+    "type": "decimal(12,2)",
+    "pk": false,
+    "rel": null,
+    "field": "discount"
+   },
+   {
+    "name": "reservation_fee",
+    "type": "decimal(12,2)",
+    "pk": false,
+    "rel": null,
+    "field": "reservationFee"
+   },
+   {
+    "name": "storage_price",
+    "type": "decimal(12,2)",
+    "pk": false,
+    "rel": null,
+    "field": "storagePrice"
+   },
+   {
+    "name": "shipping_fee",
+    "type": "decimal(12,2)",
+    "pk": false,
+    "rel": null,
+    "field": "shippingFee"
+   },
+   {
+    "name": "total_price",
+    "type": "decimal(12,2)",
+    "pk": false,
+    "rel": null,
+    "field": "totalPrice"
+   },
+   {
+    "name": "original_price",
+    "type": "decimal(12,2)",
+    "pk": false,
+    "rel": null,
+    "field": "originalPrice"
+   },
+   {
+    "name": "paid_amount",
+    "type": "decimal(19,2)",
+    "pk": false,
+    "rel": null,
+    "field": "paidAmount"
+   },
+   {
+    "name": "points_used",
+    "type": "int",
+    "pk": false,
+    "rel": null,
+    "field": "pointsUsed"
+   },
+   {
+    "name": "points_discount",
+    "type": "decimal(12,2)",
+    "pk": false,
+    "rel": null,
+    "field": "pointsDiscount"
+   },
+   {
+    "name": "points_refunded_at",
+    "type": "timestamp",
+    "pk": false,
+    "rel": null,
+    "field": "pointsRefundedAt"
+   },
+   {
+    "name": "promotion_code",
+    "type": "varchar(255)",
+    "pk": false,
+    "rel": null,
+    "field": "promotionCode"
+   },
+   {
+    "name": "applied_promotion_codes",
+    "type": "varchar(255)",
+    "pk": false,
+    "rel": null,
+    "field": "appliedPromotionCodes"
+   },
+   {
+    "name": "pin_code",
+    "type": "varchar(255)",
+    "pk": false,
+    "rel": null,
+    "field": "pinCode"
+   },
+   {
+    "name": "pin_code_issued_at",
+    "type": "timestamp",
+    "pk": false,
+    "rel": null,
+    "field": "pinCodeIssuedAt"
+   },
+   {
+    "name": "receive_at",
+    "type": "timestamp",
+    "pk": false,
+    "rel": null,
+    "field": "receiveAt"
+   },
+   {
+    "name": "intended_receive_at",
+    "type": "timestamp",
+    "pk": false,
+    "rel": null,
+    "field": "intendedReceiveAt"
+   },
+   {
+    "name": "completed_at",
+    "type": "timestamp",
+    "pk": false,
+    "rel": null,
+    "field": "completedAt"
+   },
+   {
+    "name": "returned_at",
+    "type": "timestamp",
+    "pk": false,
+    "rel": null,
+    "field": "returnedAt"
+   },
+   {
+    "name": "pickup_deadline",
+    "type": "timestamp",
+    "pk": false,
+    "rel": null,
+    "field": "pickupDeadline"
+   },
+   {
+    "name": "box_incident_opened_at",
+    "type": "timestamp",
+    "pk": false,
+    "rel": null,
+    "field": "boxIncidentOpenedAt"
+   },
+   {
+    "name": "box_incident_blocks_access",
+    "type": "boolean",
+    "pk": false,
+    "rel": null,
+    "field": "boxIncidentBlocksAccess"
+   },
+   {
+    "name": "drop_opened_at",
+    "type": "timestamp",
+    "pk": false,
+    "rel": null,
+    "field": "dropOpenedAt"
+   },
+   {
+    "name": "rental_duration_hours",
+    "type": "int",
+    "pk": false,
+    "rel": null,
+    "field": "rentalDurationHours"
+   },
+   {
+    "name": "last_reminder_at",
+    "type": "timestamp",
+    "pk": false,
+    "rel": null,
+    "field": "lastReminderAt"
+   },
+   {
+    "name": "description",
+    "type": "varchar(2000)",
+    "pk": false,
+    "rel": null,
+    "field": "description"
+   },
+   {
+    "name": "customer_note",
+    "type": "varchar(1000)",
+    "pk": false,
+    "rel": null,
+    "field": "customerNote"
+   },
+   {
+    "name": "staff_note",
+    "type": "varchar(1000)",
+    "pk": false,
+    "rel": null,
+    "field": "staffNote"
+   },
+   {
+    "name": "cancel_reason",
+    "type": "int",
+    "pk": false,
+    "rel": null,
+    "field": "cancelReason"
+   },
+   {
+    "name": "delivery_address",
+    "type": "varchar(255)",
+    "pk": false,
+    "rel": null,
+    "field": "deliveryAddress"
+   },
+   {
+    "name": "parcel_length_cm",
+    "type": "int",
+    "pk": false,
+    "rel": null,
+    "field": "parcelLengthCm"
+   },
+   {
+    "name": "parcel_width_cm",
+    "type": "int",
+    "pk": false,
+    "rel": null,
+    "field": "parcelWidthCm"
+   },
+   {
+    "name": "parcel_height_cm",
+    "type": "int",
+    "pk": false,
+    "rel": null,
+    "field": "parcelHeightCm"
+   },
+   {
+    "name": "parcel_category",
+    "type": "varchar(30)",
+    "pk": false,
+    "rel": null,
+    "field": "parcelCategory"
+   },
+   {
+    "name": "parcel_declared_value",
+    "type": "decimal(12,2)",
+    "pk": false,
+    "rel": null,
+    "field": "parcelDeclaredValue"
+   },
+   {
+    "name": "parcel_fragile",
+    "type": "boolean",
+    "pk": false,
+    "rel": null,
+    "field": "parcelFragile"
+   },
+   {
+    "name": "prohibited_items_declared_at",
+    "type": "timestamp",
+    "pk": false,
+    "rel": null,
+    "field": "prohibitedItemsDeclaredAt"
+   },
+   {
+    "name": "route_distance_meters",
+    "type": "int",
+    "pk": false,
+    "rel": null,
+    "field": "routeDistanceMeters"
+   },
+   {
+    "name": "parcel_dropped_at",
+    "type": "timestamp",
+    "pk": false,
+    "rel": null,
+    "field": "parcelDroppedAt"
+   },
+   {
+    "name": "parcel_returned_at",
+    "type": "timestamp",
+    "pk": false,
+    "rel": null,
+    "field": "parcelReturnedAt"
+   },
+   {
+    "name": "parcel_returned_by_user_id",
+    "type": "bigint",
+    "pk": false,
+    "rel": null,
+    "field": "parcelReturnedByUserId"
+   },
+   {
+    "name": "parcel_return_note",
+    "type": "varchar(500)",
+    "pk": false,
+    "rel": null,
+    "field": "parcelReturnNote"
+   },
+   {
+    "name": "last_payment_id",
+    "type": "bigint",
+    "pk": false,
+    "rel": null,
+    "field": "lastPaymentId"
+   },
+   {
+    "name": "incident_policy_version",
+    "type": "varchar(64)",
+    "pk": false,
+    "rel": null,
+    "field": "incidentPolicyVersion"
+   },
+   {
+    "name": "incident_compensation_enabled",
+    "type": "boolean",
+    "pk": false,
+    "rel": null,
+    "field": "incidentCompensationEnabled"
+   },
+   {
+    "name": "incident_compensation_rate",
+    "type": "decimal(5,2)",
+    "pk": false,
+    "rel": null,
+    "field": "incidentCompensationRate"
+   },
+   {
+    "name": "incident_compensation_cap",
+    "type": "decimal(12,2)",
+    "pk": false,
+    "rel": null,
+    "field": "incidentCompensationCap"
+   },
+   {
+    "name": "incident_free_redelivery",
+    "type": "boolean",
+    "pk": false,
+    "rel": null,
+    "field": "incidentFreeRedelivery"
+   },
+   {
+    "name": "incident_refund_shipping_fee",
+    "type": "boolean",
+    "pk": false,
+    "rel": null,
+    "field": "incidentRefundShippingFee"
+   },
+   {
+    "name": "incident_recovery_sla_hours",
+    "type": "int",
+    "pk": false,
+    "rel": null,
+    "field": "incidentRecoverySlaHours"
+   },
+   {
+    "name": "incident_approval_required",
+    "type": "boolean",
+    "pk": false,
+    "rel": null,
+    "field": "incidentApprovalRequired"
+   },
+   {
+    "name": "incident_dispute_allowed",
+    "type": "boolean",
+    "pk": false,
+    "rel": null,
+    "field": "incidentDisputeAllowed"
+   },
+   {
+    "name": "sender_name",
+    "type": "varchar(120)",
+    "pk": false,
+    "rel": null,
+    "field": "senderName"
+   },
+   {
+    "name": "sender_phone",
+    "type": "varchar(20)",
+    "pk": false,
+    "rel": null,
+    "field": "senderPhone"
+   },
+   {
+    "name": "sender_email",
+    "type": "varchar(255)",
+    "pk": false,
+    "rel": null,
+    "field": "senderEmail"
+   },
+   {
+    "name": "pickup_address",
+    "type": "varchar(500)",
+    "pk": false,
+    "rel": null,
+    "field": "pickupAddress"
+   },
+   {
+    "name": "pickup_latitude",
+    "type": "double",
+    "pk": false,
+    "rel": null,
+    "field": "pickupLatitude"
+   },
+   {
+    "name": "pickup_longitude",
+    "type": "double",
+    "pk": false,
+    "rel": null,
+    "field": "pickupLongitude"
+   },
+   {
+    "name": "pickup_note",
+    "type": "varchar(500)",
+    "pk": false,
+    "rel": null,
+    "field": "pickupNote"
+   },
+   {
+    "name": "pickup_distance_meters",
+    "type": "int",
+    "pk": false,
+    "rel": null,
+    "field": "pickupDistanceMeters"
+   },
+   {
+    "name": "delivery_block_reason",
+    "type": "varchar(40)",
+    "pk": false,
+    "rel": null,
+    "field": "deliveryBlockReason"
+   },
+   {
+    "name": "delivery_blocked_at",
+    "type": "timestamp",
+    "pk": false,
+    "rel": null,
+    "field": "deliveryBlockedAt"
+   },
+   {
+    "name": "delivery_block_ticket_id",
+    "type": "bigint",
+    "pk": false,
+    "rel": null,
+    "field": "deliveryBlockTicketId"
+   },
+   {
+    "name": "delivery_block_note",
+    "type": "varchar(500)",
+    "pk": false,
+    "rel": null,
+    "field": "deliveryBlockNote"
+   },
+   {
+    "name": "failure_reason",
+    "type": "varchar(40)",
+    "pk": false,
+    "rel": null,
+    "field": "failureReason"
+   },
+   {
+    "name": "failure_ticket_id",
+    "type": "bigint",
+    "pk": false,
+    "rel": null,
+    "field": "failureTicketId"
+   },
+   {
+    "name": "failed_at",
+    "type": "timestamp",
+    "pk": false,
+    "rel": null,
+    "field": "failedAt"
+   },
+   {
+    "name": "idempotency_key",
+    "type": "varchar(120)",
+    "pk": false,
+    "rel": null,
+    "field": "idempotencyKey"
+   },
+   {
+    "name": "created_at",
+    "type": "timestamp",
+    "pk": false,
+    "rel": null,
+    "field": "createdAt"
+   },
+   {
+    "name": "updated_at",
+    "type": "timestamp",
+    "pk": false,
+    "rel": null,
+    "field": "updatedAt"
+   }
+  ]
+ },
+ "OrderComplaint": {
+  "service": "order-service",
+  "table": "order_complaints",
+  "fields": [
+   {
+    "name": "id",
+    "type": "bigint",
+    "pk": true,
+    "rel": null,
+    "field": "id"
+   },
+   {
+    "name": "order_id",
+    "type": "bigint",
+    "pk": false,
+    "rel": null,
+    "field": "orderId"
+   },
+   {
+    "name": "user_id",
+    "type": "bigint",
+    "pk": false,
+    "rel": null,
+    "field": "userId"
+   },
+   {
+    "name": "type",
+    "type": "varchar(50)",
+    "pk": false,
+    "rel": null,
+    "field": "type"
+   },
+   {
+    "name": "description",
+    "type": "varchar(2000)",
+    "pk": false,
+    "rel": null,
+    "field": "description"
+   },
+   {
+    "name": "status",
+    "type": "varchar(30)",
+    "pk": false,
+    "rel": null,
+    "field": "status"
+   },
+   {
+    "name": "created_at",
+    "type": "timestamp",
+    "pk": false,
+    "rel": null,
+    "field": "createdAt"
+   }
+  ]
+ },
+ "OrderDetail": {
+  "service": "order-service",
+  "table": "order_details",
+  "fields": [
+   {
+    "name": "id",
+    "type": "bigint",
+    "pk": true,
+    "rel": null,
+    "field": "id"
+   },
+   {
+    "name": "order_id",
+    "type": "bigint",
+    "pk": false,
+    "rel": null,
+    "field": "orderId"
+   },
+   {
+    "name": "service_id",
+    "type": "bigint",
+    "pk": false,
+    "rel": null,
+    "field": "serviceId"
+   },
+   {
+    "name": "quantity",
+    "type": "decimal(10,2)",
+    "pk": false,
+    "rel": null,
+    "field": "quantity"
+   },
+   {
+    "name": "price",
+    "type": "decimal(12,2)",
+    "pk": false,
+    "rel": null,
+    "field": "price"
+   },
+   {
+    "name": "description",
+    "type": "varchar(1000)",
+    "pk": false,
+    "rel": null,
+    "field": "description"
+   }
+  ]
+ },
+ "OrderRating": {
+  "service": "order-service",
+  "table": "order_ratings",
+  "fields": [
+   {
+    "name": "id",
+    "type": "bigint",
+    "pk": true,
+    "rel": null,
+    "field": "id"
+   },
+   {
+    "name": "order_id",
+    "type": "bigint",
+    "pk": false,
+    "rel": null,
+    "field": "orderId"
+   },
+   {
+    "name": "user_id",
+    "type": "bigint",
+    "pk": false,
+    "rel": null,
+    "field": "userId"
+   },
+   {
+    "name": "rating",
+    "type": "int",
+    "pk": false,
+    "rel": null,
+    "field": "rating"
+   },
+   {
+    "name": "comment",
+    "type": "varchar(1000)",
+    "pk": false,
+    "rel": null,
+    "field": "comment"
+   },
+   {
+    "name": "admin_reply",
+    "type": "varchar(2000)",
+    "pk": false,
+    "rel": null,
+    "field": "adminReply"
+   },
+   {
+    "name": "replied_at",
+    "type": "timestamp",
+    "pk": false,
+    "rel": null,
+    "field": "repliedAt"
+   },
+   {
+    "name": "replied_by",
+    "type": "bigint",
+    "pk": false,
+    "rel": null,
+    "field": "repliedBy"
+   },
+   {
+    "name": "resolved",
+    "type": "boolean",
+    "pk": false,
+    "rel": null,
+    "field": "resolved"
+   },
+   {
+    "name": "resolved_at",
+    "type": "timestamp",
+    "pk": false,
+    "rel": null,
+    "field": "resolvedAt"
+   },
+   {
+    "name": "resolved_by",
+    "type": "bigint",
+    "pk": false,
+    "rel": null,
+    "field": "resolvedBy"
+   },
+   {
+    "name": "created_at",
+    "type": "timestamp",
+    "pk": false,
+    "rel": null,
+    "field": "createdAt"
+   },
+   {
+    "name": "updated_at",
+    "type": "timestamp",
+    "pk": false,
+    "rel": null,
+    "field": "updatedAt"
+   }
+  ]
+ },
+ "OrderStatusHistory": {
+  "service": "order-service",
+  "table": "order_status_history",
+  "fields": [
+   {
+    "name": "id",
+    "type": "bigint",
+    "pk": true,
+    "rel": null,
+    "field": "id"
+   },
+   {
+    "name": "order_id",
+    "type": "bigint",
+    "pk": false,
+    "rel": null,
+    "field": "orderId"
+   },
+   {
+    "name": "old_status",
+    "type": "varchar(30)",
+    "pk": false,
+    "rel": null,
+    "field": "oldStatus"
+   },
+   {
+    "name": "new_status",
+    "type": "varchar(30)",
+    "pk": false,
+    "rel": null,
+    "field": "newStatus"
+   },
+   {
+    "name": "changed_by_user_id",
+    "type": "bigint",
+    "pk": false,
+    "rel": null,
+    "field": "changedByUserId"
+   },
+   {
+    "name": "note",
+    "type": "varchar(1000)",
+    "pk": false,
+    "rel": null,
+    "field": "note"
+   },
+   {
+    "name": "created_at",
+    "type": "timestamp",
+    "pk": false,
+    "rel": null,
+    "field": "createdAt"
+   }
+  ]
+ },
+ "Promotion": {
+  "service": "order-service",
+  "table": "promotions",
+  "fields": [
+   {
+    "name": "id",
+    "type": "bigint",
+    "pk": true,
+    "rel": null,
+    "field": "id"
+   },
+   {
+    "name": "code",
+    "type": "varchar(100)",
+    "pk": false,
+    "rel": null,
+    "field": "code"
+   },
+   {
+    "name": "name",
+    "type": "varchar(255)",
+    "pk": false,
+    "rel": null,
+    "field": "name"
+   },
+   {
+    "name": "discount_type",
+    "type": "varchar(30)",
+    "pk": false,
+    "rel": null,
+    "field": "discountType"
+   },
+   {
+    "name": "discount_value",
+    "type": "decimal(12,2)",
+    "pk": false,
+    "rel": null,
+    "field": "discountValue"
+   },
+   {
+    "name": "max_discount_amount",
+    "type": "decimal(12,2)",
+    "pk": false,
+    "rel": null,
+    "field": "maxDiscountAmount"
+   },
+   {
+    "name": "min_order_amount",
+    "type": "decimal(12,2)",
+    "pk": false,
+    "rel": null,
+    "field": "minOrderAmount"
+   },
+   {
+    "name": "stackable",
+    "type": "boolean",
+    "pk": false,
+    "rel": null,
+    "field": "stackable"
+   },
+   {
+    "name": "locker_id",
+    "type": "bigint",
+    "pk": false,
+    "rel": null,
+    "field": "lockerId"
+   },
+   {
+    "name": "total_usage_limit",
+    "type": "int",
+    "pk": false,
+    "rel": null,
+    "field": "totalUsageLimit"
+   },
+   {
+    "name": "per_user_limit",
+    "type": "int",
+    "pk": false,
+    "rel": null,
+    "field": "perUserLimit"
+   },
+   {
+    "name": "status",
+    "type": "varchar(30)",
+    "pk": false,
+    "rel": null,
+    "field": "status"
+   },
+   {
+    "name": "start_at",
+    "type": "timestamp",
+    "pk": false,
+    "rel": null,
+    "field": "startAt"
+   },
+   {
+    "name": "end_at",
+    "type": "timestamp",
+    "pk": false,
+    "rel": null,
+    "field": "endAt"
+   },
+   {
+    "name": "usage_count",
+    "type": "int",
+    "pk": false,
+    "rel": null,
+    "field": "usageCount"
+   },
+   {
+    "name": "image_url",
+    "type": "varchar(500)",
+    "pk": false,
+    "rel": null,
+    "field": "imageUrl"
+   },
+   {
+    "name": "description",
+    "type": "varchar(1000)",
+    "pk": false,
+    "rel": null,
+    "field": "description"
+   },
+   {
+    "name": "points_cost",
+    "type": "int",
+    "pk": false,
+    "rel": null,
+    "field": "pointsCost"
+   },
+   {
+    "name": "created_by_user_id",
+    "type": "bigint",
+    "pk": false,
+    "rel": null,
+    "field": "createdByUserId"
+   },
+   {
+    "name": "created_at",
+    "type": "timestamp",
+    "pk": false,
+    "rel": null,
+    "field": "createdAt"
+   },
+   {
+    "name": "updated_at",
+    "type": "timestamp",
+    "pk": false,
+    "rel": null,
+    "field": "updatedAt"
+   }
+  ]
+ },
+ "PromotionClaim": {
+  "service": "order-service",
+  "table": "promotion_claims",
+  "fields": [
+   {
+    "name": "id",
+    "type": "bigint",
+    "pk": true,
+    "rel": null,
+    "field": "id"
+   },
+   {
+    "name": "promotion_id",
+    "type": "bigint",
+    "pk": false,
+    "rel": null,
+    "field": "promotionId"
+   },
+   {
+    "name": "user_id",
+    "type": "bigint",
+    "pk": false,
+    "rel": null,
+    "field": "userId"
+   },
+   {
+    "name": "status",
+    "type": "varchar(20)",
+    "pk": false,
+    "rel": null,
+    "field": "status"
+   },
+   {
+    "name": "used_at",
+    "type": "timestamp",
+    "pk": false,
+    "rel": null,
+    "field": "usedAt"
+   },
+   {
+    "name": "created_at",
+    "type": "timestamp",
+    "pk": false,
+    "rel": null,
+    "field": "createdAt"
+   }
+  ]
+ },
+ "PromotionUsage": {
+  "service": "order-service",
+  "table": "promotion_usages",
+  "fields": [
+   {
+    "name": "id",
+    "type": "bigint",
+    "pk": true,
+    "rel": null,
+    "field": "id"
+   },
+   {
+    "name": "promotion_id",
+    "type": "bigint",
+    "pk": false,
+    "rel": null,
+    "field": "promotionId"
+   },
+   {
+    "name": "user_id",
+    "type": "bigint",
+    "pk": false,
+    "rel": null,
+    "field": "userId"
+   },
+   {
+    "name": "order_id",
+    "type": "bigint",
+    "pk": false,
+    "rel": null,
+    "field": "orderId"
+   },
+   {
+    "name": "discount_applied",
+    "type": "decimal(12,2)",
+    "pk": false,
+    "rel": null,
+    "field": "discountApplied"
+   },
+   {
+    "name": "created_at",
+    "type": "timestamp",
+    "pk": false,
+    "rel": null,
+    "field": "createdAt"
+   }
+  ]
+ },
+ "PaymentRecord": {
+  "service": "payment-service",
+  "table": "payments",
+  "fields": [
+   {
+    "name": "id",
+    "type": "bigint",
+    "pk": true,
+    "rel": null,
+    "field": "id"
+   },
+   {
+    "name": "order_id",
+    "type": "bigint",
+    "pk": false,
+    "rel": null,
+    "field": "orderId"
+   },
+   {
+    "name": "user_id",
+    "type": "bigint",
+    "pk": false,
+    "rel": null,
+    "field": "userId"
+   },
+   {
+    "name": "amount",
+    "type": "decimal(12,2)",
+    "pk": false,
+    "rel": null,
+    "field": "amount"
+   },
+   {
+    "name": "method",
+    "type": "varchar(30)",
+    "pk": false,
+    "rel": null,
+    "field": "method"
+   },
+   {
+    "name": "status",
+    "type": "varchar(30)",
+    "pk": false,
+    "rel": null,
+    "field": "status"
+   },
+   {
+    "name": "reference_id",
+    "type": "varchar(255)",
+    "pk": false,
+    "rel": null,
+    "field": "referenceId"
+   },
+   {
+    "name": "reference_transaction_id",
+    "type": "varchar(255)",
+    "pk": false,
+    "rel": null,
+    "field": "referenceTransactionId"
+   },
+   {
+    "name": "content",
+    "type": "varchar(500)",
+    "pk": false,
+    "rel": null,
+    "field": "content"
+   },
+   {
+    "name": "qr",
+    "type": "varchar(1000)",
+    "pk": false,
+    "rel": null,
+    "field": "qr"
+   },
+   {
+    "name": "url",
+    "type": "varchar(1000)",
+    "pk": false,
+    "rel": null,
+    "field": "url"
+   },
+   {
+    "name": "deeplink",
+    "type": "varchar(1000)",
+    "pk": false,
+    "rel": null,
+    "field": "deeplink"
+   },
+   {
+    "name": "description",
+    "type": "varchar(1000)",
+    "pk": false,
+    "rel": null,
+    "field": "description"
+   },
+   {
+    "name": "created_at",
+    "type": "timestamp",
+    "pk": false,
+    "rel": null,
+    "field": "createdAt"
+   },
+   {
+    "name": "updated_at",
+    "type": "timestamp",
+    "pk": false,
+    "rel": null,
+    "field": "updatedAt"
+   }
+  ]
+ },
+ "RefundRecord": {
+  "service": "payment-service",
+  "table": "refunds",
+  "fields": [
+   {
+    "name": "id",
+    "type": "bigint",
+    "pk": true,
+    "rel": null,
+    "field": "id"
+   },
+   {
+    "name": "payment_id",
+    "type": "bigint",
+    "pk": false,
+    "rel": null,
+    "field": "paymentId"
+   },
+   {
+    "name": "order_id",
+    "type": "bigint",
+    "pk": false,
+    "rel": null,
+    "field": "orderId"
+   },
+   {
+    "name": "user_id",
+    "type": "bigint",
+    "pk": false,
+    "rel": null,
+    "field": "userId"
+   },
+   {
+    "name": "amount",
+    "type": "decimal(12,2)",
+    "pk": false,
+    "rel": null,
+    "field": "amount"
+   },
+   {
+    "name": "status",
+    "type": "varchar(30)",
+    "pk": false,
+    "rel": null,
+    "field": "status"
+   },
+   {
+    "name": "reason",
+    "type": "varchar(2000)",
+    "pk": false,
+    "rel": null,
+    "field": "reason"
+   },
+   {
+    "name": "transaction_id",
+    "type": "varchar(100)",
+    "pk": false,
+    "rel": null,
+    "field": "transactionId"
+   },
+   {
+    "name": "bank_name",
+    "type": "varchar(100)",
+    "pk": false,
+    "rel": null,
+    "field": "bankName"
+   },
+   {
+    "name": "bank_code",
+    "type": "varchar(20)",
+    "pk": false,
+    "rel": null,
+    "field": "bankCode"
+   },
+   {
+    "name": "account_number",
+    "type": "varchar(50)",
+    "pk": false,
+    "rel": null,
+    "field": "accountNumber"
+   },
+   {
+    "name": "account_holder_name",
+    "type": "varchar(100)",
+    "pk": false,
+    "rel": null,
+    "field": "accountHolderName"
+   },
+   {
+    "name": "rejection_reason",
+    "type": "varchar(500)",
+    "pk": false,
+    "rel": null,
+    "field": "rejectionReason"
+   },
+   {
+    "name": "bank_transfer_ref",
+    "type": "varchar(100)",
+    "pk": false,
+    "rel": null,
+    "field": "bankTransferRef"
+   },
+   {
+    "name": "proof_image_url",
+    "type": "text",
+    "pk": false,
+    "rel": null,
+    "field": "proofImageUrl"
+   },
+   {
+    "name": "customer_attachment_url",
+    "type": "text",
+    "pk": false,
+    "rel": null,
+    "field": "customerAttachmentUrl"
+   },
+   {
+    "name": "processed_by_user_id",
+    "type": "bigint",
+    "pk": false,
+    "rel": null,
+    "field": "processedByUserId"
+   },
+   {
+    "name": "requested_at",
+    "type": "timestamp",
+    "pk": false,
+    "rel": null,
+    "field": "requestedAt"
+   },
+   {
+    "name": "processed_at",
+    "type": "timestamp",
+    "pk": false,
+    "rel": null,
+    "field": "processedAt"
+   }
+  ]
+ },
+ "UserBankAccount": {
+  "service": "payment-service",
+  "table": "user_bank_accounts",
+  "fields": [
+   {
+    "name": "id",
+    "type": "bigint",
+    "pk": true,
+    "rel": null,
+    "field": "id"
+   },
+   {
+    "name": "user_id",
+    "type": "bigint",
+    "pk": false,
+    "rel": null,
+    "field": "userId"
+   },
+   {
+    "name": "bank_name",
+    "type": "varchar(100)",
+    "pk": false,
+    "rel": null,
+    "field": "bankName"
+   },
+   {
+    "name": "bank_code",
+    "type": "varchar(20)",
+    "pk": false,
+    "rel": null,
+    "field": "bankCode"
+   },
+   {
+    "name": "account_number",
+    "type": "varchar(50)",
+    "pk": false,
+    "rel": null,
+    "field": "accountNumber"
+   },
+   {
+    "name": "account_holder_name",
+    "type": "varchar(100)",
+    "pk": false,
+    "rel": null,
+    "field": "accountHolderName"
+   },
+   {
+    "name": "created_at",
+    "type": "timestamp",
+    "pk": false,
+    "rel": null,
+    "field": "createdAt"
+   },
+   {
+    "name": "updated_at",
+    "type": "timestamp",
+    "pk": false,
+    "rel": null,
+    "field": "updatedAt"
+   }
+  ]
+ },
+ "Wallet": {
+  "service": "payment-service",
+  "table": "wallets",
+  "fields": [
+   {
+    "name": "id",
+    "type": "bigint",
+    "pk": true,
+    "rel": null,
+    "field": "id"
+   },
+   {
+    "name": "user_id",
+    "type": "bigint",
+    "pk": false,
+    "rel": null,
+    "field": "userId"
+   },
+   {
+    "name": "balance",
+    "type": "decimal(14,2)",
+    "pk": false,
+    "rel": null,
+    "field": "balance"
+   },
+   {
+    "name": "currency",
+    "type": "varchar(10)",
+    "pk": false,
+    "rel": null,
+    "field": "currency"
+   },
+   {
+    "name": "version",
+    "type": "bigint",
+    "pk": false,
+    "rel": null,
+    "field": "version"
+   },
+   {
+    "name": "created_at",
+    "type": "timestamp",
+    "pk": false,
+    "rel": null,
+    "field": "createdAt"
+   },
+   {
+    "name": "updated_at",
+    "type": "timestamp",
+    "pk": false,
+    "rel": null,
+    "field": "updatedAt"
+   }
+  ]
+ },
+ "WalletTransaction": {
+  "service": "payment-service",
+  "table": "wallet_transactions",
+  "fields": [
+   {
+    "name": "id",
+    "type": "bigint",
+    "pk": true,
+    "rel": null,
+    "field": "id"
+   },
+   {
+    "name": "wallet_id",
+    "type": "bigint",
+    "pk": false,
+    "rel": null,
+    "field": "walletId"
+   },
+   {
+    "name": "user_id",
+    "type": "bigint",
+    "pk": false,
+    "rel": null,
+    "field": "userId"
+   },
+   {
+    "name": "type",
+    "type": "varchar(10)",
+    "pk": false,
+    "rel": null,
+    "field": "type"
+   },
+   {
+    "name": "amount",
+    "type": "decimal(14,2)",
+    "pk": false,
+    "rel": null,
+    "field": "amount"
+   },
+   {
+    "name": "balance_after",
+    "type": "decimal(14,2)",
+    "pk": false,
+    "rel": null,
+    "field": "balanceAfter"
+   },
+   {
+    "name": "source",
+    "type": "varchar(30)",
+    "pk": false,
+    "rel": null,
+    "field": "source"
+   },
+   {
+    "name": "reference_id",
+    "type": "varchar(255)",
+    "pk": false,
+    "rel": null,
+    "field": "referenceId"
+   },
+   {
+    "name": "description",
+    "type": "varchar(500)",
+    "pk": false,
+    "rel": null,
+    "field": "description"
+   },
+   {
+    "name": "created_at",
+    "type": "timestamp",
+    "pk": false,
+    "rel": null,
+    "field": "createdAt"
+   }
+  ]
+ },
+ "WithdrawalRecord": {
+  "service": "payment-service",
+  "table": "withdrawal_requests",
+  "fields": [
+   {
+    "name": "id",
+    "type": "bigint",
+    "pk": true,
+    "rel": null,
+    "field": "id"
+   },
+   {
+    "name": "user_id",
+    "type": "bigint",
+    "pk": false,
+    "rel": null,
+    "field": "userId"
+   },
+   {
+    "name": "amount",
+    "type": "decimal(14,2)",
+    "pk": false,
+    "rel": null,
+    "field": "amount"
+   },
+   {
+    "name": "bank_name",
+    "type": "varchar(100)",
+    "pk": false,
+    "rel": null,
+    "field": "bankName"
+   },
+   {
+    "name": "bank_code",
+    "type": "varchar(20)",
+    "pk": false,
+    "rel": null,
+    "field": "bankCode"
+   },
+   {
+    "name": "account_number",
+    "type": "varchar(50)",
+    "pk": false,
+    "rel": null,
+    "field": "accountNumber"
+   },
+   {
+    "name": "account_holder_name",
+    "type": "varchar(100)",
+    "pk": false,
+    "rel": null,
+    "field": "accountHolderName"
+   },
+   {
+    "name": "status",
+    "type": "varchar(20)",
+    "pk": false,
+    "rel": null,
+    "field": "status"
+   },
+   {
+    "name": "reference_id",
+    "type": "varchar(100)",
+    "pk": false,
+    "rel": null,
+    "field": "referenceId"
+   },
+   {
+    "name": "transaction_id",
+    "type": "bigint",
+    "pk": false,
+    "rel": null,
+    "field": "transactionId"
+   },
+   {
+    "name": "rejection_reason",
+    "type": "varchar(500)",
+    "pk": false,
+    "rel": null,
+    "field": "rejectionReason"
+   },
+   {
+    "name": "processed_by_user_id",
+    "type": "bigint",
+    "pk": false,
+    "rel": null,
+    "field": "processedByUserId"
+   },
+   {
+    "name": "created_at",
+    "type": "timestamp",
+    "pk": false,
+    "rel": null,
+    "field": "createdAt"
+   },
+   {
+    "name": "processed_at",
+    "type": "timestamp",
+    "pk": false,
+    "rel": null,
+    "field": "processedAt"
+   }
+  ]
+ },
+ "StoreLocation": {
+  "service": "store-service",
+  "table": "stores",
+  "fields": [
+   {
+    "name": "id",
+    "type": "bigint",
+    "pk": true,
+    "rel": null,
+    "field": "id"
+   },
+   {
+    "name": "name",
+    "type": "varchar(255)",
+    "pk": false,
+    "rel": null,
+    "field": "name"
+   },
+   {
+    "name": "contact_phone",
+    "type": "varchar(255)",
+    "pk": false,
+    "rel": null,
+    "field": "contactPhone"
+   },
+   {
+    "name": "address",
+    "type": "varchar(255)",
+    "pk": false,
+    "rel": null,
+    "field": "address"
+   },
+   {
+    "name": "latitude",
+    "type": "double",
+    "pk": false,
+    "rel": null,
+    "field": "latitude"
+   },
+   {
+    "name": "longitude",
+    "type": "double",
+    "pk": false,
+    "rel": null,
+    "field": "longitude"
+   },
+   {
+    "name": "image",
+    "type": "varchar(255)",
+    "pk": false,
+    "rel": null,
+    "field": "image"
+   },
+   {
+    "name": "description",
+    "type": "varchar(2000)",
+    "pk": false,
+    "rel": null,
+    "field": "description"
+   },
+   {
+    "name": "is_active",
+    "type": "boolean",
+    "pk": false,
+    "rel": null,
+    "field": "active"
+   },
+   {
+    "name": "status",
+    "type": "varchar(30)",
+    "pk": false,
+    "rel": null,
+    "field": "status"
+   },
+   {
+    "name": "created_at",
+    "type": "timestamp",
+    "pk": false,
+    "rel": null,
+    "field": "createdAt"
+   },
+   {
+    "name": "updated_at",
+    "type": "timestamp",
+    "pk": false,
+    "rel": null,
+    "field": "updatedAt"
+   }
+  ]
+ },
+ "UserProfile": {
+  "service": "user-service",
+  "table": "user_profiles",
+  "fields": [
+   {
+    "name": "id",
+    "type": "bigint",
+    "pk": true,
+    "rel": null,
+    "field": "id"
+   },
+   {
+    "name": "email",
+    "type": "varchar(255)",
+    "pk": false,
+    "rel": null,
+    "field": "email"
+   },
+   {
+    "name": "phone_number",
+    "type": "varchar(255)",
+    "pk": false,
+    "rel": null,
+    "field": "phoneNumber"
+   },
+   {
+    "name": "first_name",
+    "type": "varchar(255)",
+    "pk": false,
+    "rel": null,
+    "field": "firstName"
+   },
+   {
+    "name": "last_name",
+    "type": "varchar(255)",
+    "pk": false,
+    "rel": null,
+    "field": "lastName"
+   },
+   {
+    "name": "birthday",
+    "type": "date",
+    "pk": false,
+    "rel": null,
+    "field": "birthday"
+   },
+   {
+    "name": "image_url",
+    "type": "varchar(1000)",
+    "pk": false,
+    "rel": null,
+    "field": "imageUrl"
+   },
+   {
+    "name": "status",
+    "type": "varchar(30)",
+    "pk": false,
+    "rel": null,
+    "field": "status"
+   },
+   {
+    "name": "roles",
+    "type": "varchar(500)",
+    "pk": false,
+    "rel": null,
+    "field": "roles"
+   },
+   {
+    "name": "created_at",
+    "type": "timestamp",
+    "pk": false,
+    "rel": null,
+    "field": "createdAt"
+   },
+   {
+    "name": "updated_at",
+    "type": "timestamp",
+    "pk": false,
+    "rel": null,
+    "field": "updatedAt"
+   }
+  ]
+ }
+}

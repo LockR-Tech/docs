@@ -1,1 +1,212 @@
-<mxfile host="app.diagrams.net"><diagram name="State Machine Diagram — Drone Delivery Order" id="06-2-state-machine-drone-delivery-order"><mxGraphModel dx="1600" dy="1000" grid="0" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="0" pageScale="1" pageWidth="1600" pageHeight="1200" math="0" shadow="0"><root><mxCell id="0"/><mxCell id="1" parent="0"/><mxCell id="t1" value="State Machine Diagram — Drone Delivery Order" style="text;html=1;align=left;verticalAlign=middle;fontSize=22;fontStyle=1;fontColor=#000000;" vertex="1" parent="1"><mxGeometry x="-2.5" y="90.0" width="1000" height="34" as="geometry"/></mxCell><mxCell id="t2" value="orders.delivery_stage (type DRONE_DELIVERY) · Ready For Pickup = status Storing, Failed / Drop Reported = status Canceled · grey frame = composite state" style="text;html=1;align=left;verticalAlign=middle;fontSize=13;fontColor=#555555;whiteSpace=wrap;" vertex="1" parent="1"><mxGeometry x="-2.5" y="124.0" width="1000" height="24" as="geometry"/></mxCell><mxCell id="lg_pending" value="" style="rounded=1;arcSize=30;html=1;fillColor=#FFF2CC;strokeColor=#D6B656;" vertex="1" parent="1"><mxGeometry x="-2.5" y="158.0" width="26" height="16" as="geometry"/></mxCell><mxCell id="lt_pending" value="Waiting / pending" style="text;html=1;align=left;verticalAlign=middle;fontSize=12;fontColor=#333333;" vertex="1" parent="1"><mxGeometry x="29.5" y="156.0" width="170" height="20" as="geometry"/></mxCell><mxCell id="lg_active" value="" style="rounded=1;arcSize=30;html=1;fillColor=#DAE8FC;strokeColor=#6C8EBF;" vertex="1" parent="1"><mxGeometry x="177.9" y="158.0" width="26" height="16" as="geometry"/></mxCell><mxCell id="lt_active" value="In progress / operational" style="text;html=1;align=left;verticalAlign=middle;fontSize=12;fontColor=#333333;" vertex="1" parent="1"><mxGeometry x="209.9" y="156.0" width="170" height="20" as="geometry"/></mxCell><mxCell id="lg_success" value="" style="rounded=1;arcSize=30;html=1;fillColor=#D5E8D4;strokeColor=#82B366;" vertex="1" parent="1"><mxGeometry x="415.9" y="158.0" width="26" height="16" as="geometry"/></mxCell><mxCell id="lt_success" value="Completed" style="text;html=1;align=left;verticalAlign=middle;fontSize=12;fontColor=#333333;" vertex="1" parent="1"><mxGeometry x="447.9" y="156.0" width="170" height="20" as="geometry"/></mxCell><mxCell id="lg_warning" value="" style="rounded=1;arcSize=30;html=1;fillColor=#FFE6CC;strokeColor=#D79B00;" vertex="1" parent="1"><mxGeometry x="538.7" y="158.0" width="26" height="16" as="geometry"/></mxCell><mxCell id="lt_warning" value="Needs attention" style="text;html=1;align=left;verticalAlign=middle;fontSize=12;fontColor=#333333;" vertex="1" parent="1"><mxGeometry x="570.7" y="156.0" width="170" height="20" as="geometry"/></mxCell><mxCell id="lg_failure" value="" style="rounded=1;arcSize=30;html=1;fillColor=#F8CECC;strokeColor=#B85450;" vertex="1" parent="1"><mxGeometry x="704.7" y="158.0" width="26" height="16" as="geometry"/></mxCell><mxCell id="lt_failure" value="Canceled / failed" style="text;html=1;align=left;verticalAlign=middle;fontSize=12;fontColor=#333333;" vertex="1" parent="1"><mxGeometry x="736.7" y="156.0" width="170" height="20" as="geometry"/></mxCell><mxCell id="g_G" value="Delivery In Progress" style="rounded=1;arcSize=3;absoluteArcSize=1;whiteSpace=wrap;html=1;fillColor=none;strokeColor=#8C8C8C;dashed=1;dashPattern=6 4;verticalAlign=top;align=left;spacingLeft=10;spacingTop=2;fontSize=13;fontStyle=3;fontColor=#555555;" vertex="1" parent="1"><mxGeometry x="135.0" y="256.0" width="1650.0" height="361.0" as="geometry"/></mxCell><mxCell id="g_FL" value="Flight" style="rounded=1;arcSize=3;absoluteArcSize=1;whiteSpace=wrap;html=1;fillColor=none;strokeColor=#8C8C8C;dashed=1;dashPattern=6 4;verticalAlign=top;align=left;spacingLeft=10;spacingTop=2;fontSize=13;fontStyle=3;fontColor=#555555;" vertex="1" parent="1"><mxGeometry x="160.0" y="507.0" width="1600.0" height="96.0" as="geometry"/></mxCell><mxCell id="n_S" value="" style="ellipse;html=1;shape=startState;fillColor=#000000;strokeColor=#000000;" vertex="1" parent="1"><mxGeometry x="37.5" y="303.0" width="30.0" height="30.0" as="geometry"/></mxCell><mxCell id="n_AWD" value="Awaiting Dispatch" style="rounded=1;whiteSpace=wrap;html=1;arcSize=40;fillColor=#FFF2CC;strokeColor=#D6B656;fontColor=#000000;fontSize=15;fontStyle=1;" vertex="1" parent="1"><mxGeometry x="195.0" y="290.0" width="210.0" height="56.0" as="geometry"/></mxCell><mxCell id="n_PAS" value="Pickup Assigned" style="rounded=1;whiteSpace=wrap;html=1;arcSize=40;fillColor=#DAE8FC;strokeColor=#6C8EBF;fontColor=#000000;fontSize=15;fontStyle=1;" vertex="1" parent="1"><mxGeometry x="525.0" y="290.0" width="210.0" height="56.0" as="geometry"/></mxCell><mxCell id="n_PUP" value="Picked Up" style="rounded=1;whiteSpace=wrap;html=1;arcSize=40;fillColor=#DAE8FC;strokeColor=#6C8EBF;fontColor=#000000;fontSize=15;fontStyle=1;" vertex="1" parent="1"><mxGeometry x="855.0" y="290.0" width="210.0" height="56.0" as="geometry"/></mxCell><mxCell id="n_ACC" value="Accepted" style="rounded=1;whiteSpace=wrap;html=1;arcSize=40;fillColor=#DAE8FC;strokeColor=#6C8EBF;fontColor=#000000;fontSize=15;fontStyle=1;" vertex="1" parent="1"><mxGeometry x="1185.0" y="290.0" width="210.0" height="56.0" as="geometry"/></mxCell><mxCell id="n_LAU" value="Launching" style="rounded=1;whiteSpace=wrap;html=1;arcSize=40;fillColor=#DAE8FC;strokeColor=#6C8EBF;fontColor=#000000;fontSize=15;fontStyle=1;" vertex="1" parent="1"><mxGeometry x="195.0" y="537.0" width="210.0" height="56.0" as="geometry"/></mxCell><mxCell id="n_DEP" value="Departed" style="rounded=1;whiteSpace=wrap;html=1;arcSize=40;fillColor=#DAE8FC;strokeColor=#6C8EBF;fontColor=#000000;fontSize=15;fontStyle=1;" vertex="1" parent="1"><mxGeometry x="525.0" y="537.0" width="210.0" height="56.0" as="geometry"/></mxCell><mxCell id="n_ENR" value="En Route" style="rounded=1;whiteSpace=wrap;html=1;arcSize=40;fillColor=#DAE8FC;strokeColor=#6C8EBF;fontColor=#000000;fontSize=15;fontStyle=1;" vertex="1" parent="1"><mxGeometry x="855.0" y="537.0" width="210.0" height="56.0" as="geometry"/></mxCell><mxCell id="n_APP" value="Approaching" style="rounded=1;whiteSpace=wrap;html=1;arcSize=40;fillColor=#DAE8FC;strokeColor=#6C8EBF;fontColor=#000000;fontSize=15;fontStyle=1;" vertex="1" parent="1"><mxGeometry x="1185.0" y="537.0" width="210.0" height="56.0" as="geometry"/></mxCell><mxCell id="n_ARR" value="Arrived" style="rounded=1;whiteSpace=wrap;html=1;arcSize=40;fillColor=#DAE8FC;strokeColor=#6C8EBF;fontColor=#000000;fontSize=15;fontStyle=1;" vertex="1" parent="1"><mxGeometry x="1515.0" y="537.0" width="210.0" height="56.0" as="geometry"/></mxCell><mxCell id="n_RFP" value="Ready For Pickup" style="rounded=1;whiteSpace=wrap;html=1;arcSize=40;fillColor=#FFF2CC;strokeColor=#D6B656;fontColor=#000000;fontSize=15;fontStyle=1;" vertex="1" parent="1"><mxGeometry x="1515.0" y="784.0" width="210.0" height="56.0" as="geometry"/></mxCell><mxCell id="n_EXP" value="Expired" style="rounded=1;whiteSpace=wrap;html=1;arcSize=40;fillColor=#FFE6CC;strokeColor=#D79B00;fontColor=#000000;fontSize=15;fontStyle=1;" vertex="1" parent="1"><mxGeometry x="1185.0" y="784.0" width="210.0" height="56.0" as="geometry"/></mxCell><mxCell id="n_COM" value="Completed" style="rounded=1;whiteSpace=wrap;html=1;arcSize=40;fillColor=#D5E8D4;strokeColor=#82B366;fontColor=#000000;fontSize=15;fontStyle=1;" vertex="1" parent="1"><mxGeometry x="1350.0" y="1012.0" width="210.0" height="56.0" as="geometry"/></mxCell><mxCell id="n_E" value="" style="ellipse;html=1;shape=endState;fillColor=#000000;strokeColor=#000000;" vertex="1" parent="1"><mxGeometry x="1440.0" y="1234.0" width="30.0" height="30.0" as="geometry"/></mxCell><mxCell id="n_CAN" value="Canceled" style="rounded=1;whiteSpace=wrap;html=1;arcSize=40;fillColor=#F8CECC;strokeColor=#B85450;fontColor=#000000;fontSize=15;fontStyle=1;" vertex="1" parent="1"><mxGeometry x="1944.0" y="290.0" width="210.0" height="56.0" as="geometry"/></mxCell><mxCell id="n_DRP" value="Drop Reported" style="rounded=1;whiteSpace=wrap;html=1;arcSize=40;fillColor=#F8CECC;strokeColor=#B85450;fontColor=#000000;fontSize=15;fontStyle=1;" vertex="1" parent="1"><mxGeometry x="1944.0" y="537.0" width="210.0" height="56.0" as="geometry"/></mxCell><mxCell id="n_FAI" value="Failed" style="rounded=1;whiteSpace=wrap;html=1;arcSize=40;fillColor=#F8CECC;strokeColor=#B85450;fontColor=#000000;fontSize=15;fontStyle=1;" vertex="1" parent="1"><mxGeometry x="1944.0" y="784.0" width="210.0" height="56.0" as="geometry"/></mxCell><mxCell id="e0" value="Create&lt;br&gt;order" style="edgeStyle=none;rounded=0;html=1;strokeColor=#333333;strokeWidth=1.4;endArrow=block;endFill=1;endSize=8;fontSize=12;fontColor=#000000;labelBackgroundColor=#FFFFFF;" edge="1" parent="1" source="n_S" target="n_AWD"><mxGeometry x="0" relative="1" as="geometry"></mxGeometry></mxCell><mxCell id="e1" value="Technician takes&lt;br&gt;pickup job" style="edgeStyle=none;rounded=0;html=1;strokeColor=#333333;strokeWidth=1.4;endArrow=block;endFill=1;endSize=8;fontSize=12;fontColor=#000000;labelBackgroundColor=#FFFFFF;" edge="1" parent="1" source="n_AWD" target="n_PAS"><mxGeometry x="0" relative="1" as="geometry"></mxGeometry></mxCell><mxCell id="e2" value="Collect parcel&lt;br&gt;(pickup code)" style="edgeStyle=none;rounded=0;html=1;strokeColor=#333333;strokeWidth=1.4;endArrow=block;endFill=1;endSize=8;fontSize=12;fontColor=#000000;labelBackgroundColor=#FFFFFF;" edge="1" parent="1" source="n_PAS" target="n_PUP"><mxGeometry x="0" relative="1" as="geometry"></mxGeometry></mxCell><mxCell id="e3" value="Assign&lt;br&gt;drone" style="edgeStyle=none;rounded=0;html=1;strokeColor=#333333;strokeWidth=1.4;endArrow=block;endFill=1;endSize=8;fontSize=12;fontColor=#000000;labelBackgroundColor=#FFFFFF;" edge="1" parent="1" source="n_PUP" target="n_ACC"><mxGeometry x="0" relative="1" as="geometry"></mxGeometry></mxCell><mxCell id="e4" value="Load &amp; launch" style="edgeStyle=none;rounded=0;html=1;strokeColor=#333333;strokeWidth=1.4;endArrow=block;endFill=1;endSize=8;fontSize=12;fontColor=#000000;labelBackgroundColor=#FFFFFF;" edge="1" parent="1" source="n_ACC" target="n_LAU"><mxGeometry x="-0.0254" relative="1" as="geometry"><Array as="points"><mxPoint x="1290.0" y="426.5"/><mxPoint x="300.0" y="426.5"/></Array></mxGeometry></mxCell><mxCell id="e5" value="Take off" style="edgeStyle=none;rounded=0;html=1;strokeColor=#333333;strokeWidth=1.4;endArrow=block;endFill=1;endSize=8;fontSize=12;fontColor=#000000;labelBackgroundColor=#FFFFFF;" edge="1" parent="1" source="n_LAU" target="n_DEP"><mxGeometry x="0" relative="1" as="geometry"></mxGeometry></mxCell><mxCell id="e6" value="Leave&lt;br&gt;source locker" style="edgeStyle=none;rounded=0;html=1;strokeColor=#333333;strokeWidth=1.4;endArrow=block;endFill=1;endSize=8;fontSize=12;fontColor=#000000;labelBackgroundColor=#FFFFFF;" edge="1" parent="1" source="n_DEP" target="n_ENR"><mxGeometry x="0" relative="1" as="geometry"></mxGeometry></mxCell><mxCell id="e7" value="Near&lt;br&gt;destination" style="edgeStyle=none;rounded=0;html=1;strokeColor=#333333;strokeWidth=1.4;endArrow=block;endFill=1;endSize=8;fontSize=12;fontColor=#000000;labelBackgroundColor=#FFFFFF;" edge="1" parent="1" source="n_ENR" target="n_APP"><mxGeometry x="0" relative="1" as="geometry"></mxGeometry></mxCell><mxCell id="e8" value="Land at&lt;br&gt;destination" style="edgeStyle=none;rounded=0;html=1;strokeColor=#333333;strokeWidth=1.4;endArrow=block;endFill=1;endSize=8;fontSize=12;fontColor=#000000;labelBackgroundColor=#FFFFFF;" edge="1" parent="1" source="n_APP" target="n_ARR"><mxGeometry x="0" relative="1" as="geometry"></mxGeometry></mxCell><mxCell id="e9" value="Parcel in cell,&lt;br&gt;PIN sent" style="edgeStyle=none;rounded=0;html=1;strokeColor=#333333;strokeWidth=1.4;endArrow=block;endFill=1;endSize=8;fontSize=12;fontColor=#000000;labelBackgroundColor=#FFFFFF;" edge="1" parent="1" source="n_ARR" target="n_RFP"><mxGeometry x="0" relative="1" as="geometry"></mxGeometry></mxCell><mxCell id="e10" value="Overdue →&lt;br&gt;storage" style="edgeStyle=none;rounded=0;html=1;strokeColor=#333333;strokeWidth=1.4;endArrow=block;endFill=1;endSize=8;fontSize=12;fontColor=#000000;labelBackgroundColor=#FFFFFF;" edge="1" parent="1" source="n_RFP" target="n_EXP"><mxGeometry x="0" relative="1" as="geometry"></mxGeometry></mxCell><mxCell id="e11" value="Receiver picks up" style="edgeStyle=none;rounded=0;html=1;strokeColor=#333333;strokeWidth=1.4;endArrow=block;endFill=1;endSize=8;fontSize=12;fontColor=#000000;labelBackgroundColor=#FFFFFF;" edge="1" parent="1" source="n_RFP" target="n_COM"><mxGeometry x="-0.2308" relative="1" as="geometry"><Array as="points"><mxPoint x="1620.0" y="1040.0"/></Array></mxGeometry></mxCell><mxCell id="e12" value="Pay fee&lt;br&gt;&amp; collect" style="edgeStyle=none;rounded=0;html=1;strokeColor=#333333;strokeWidth=1.4;endArrow=block;endFill=1;endSize=8;fontSize=12;fontColor=#000000;labelBackgroundColor=#FFFFFF;" edge="1" parent="1" source="n_EXP" target="n_COM"><mxGeometry x="-0.2308" relative="1" as="geometry"><Array as="points"><mxPoint x="1290.0" y="1040.0"/></Array></mxGeometry></mxCell><mxCell id="e13" value="" style="edgeStyle=none;rounded=0;html=1;strokeColor=#333333;strokeWidth=1.4;endArrow=block;endFill=1;endSize=8;fontSize=12;fontColor=#000000;labelBackgroundColor=#FFFFFF;" edge="1" parent="1" source="n_COM" target="n_E"><mxGeometry x="0" relative="1" as="geometry"></mxGeometry></mxCell><mxCell id="e14" value="Customer cancels / unpaid" style="edgeStyle=none;rounded=0;html=1;strokeColor=#333333;strokeWidth=1.4;endArrow=block;endFill=1;endSize=8;fontSize=12;fontColor=#000000;labelBackgroundColor=#FFFFFF;entryX=0.7000;entryY=0.0000;entryDx=0;entryDy=0;entryPerimeter=0;" edge="1" parent="1" source="n_AWD" target="n_CAN"><mxGeometry x="0.0" relative="1" as="geometry"><Array as="points"><mxPoint x="300.0" y="206.0"/><mxPoint x="2091.0" y="206.0"/></Array></mxGeometry></mxCell><mxCell id="e15" value="Customer cancels" style="edgeStyle=none;rounded=0;html=1;strokeColor=#333333;strokeWidth=1.4;endArrow=block;endFill=1;endSize=8;fontSize=12;fontColor=#000000;labelBackgroundColor=#FFFFFF;entryX=0.3000;entryY=0.0000;entryDx=0;entryDy=0;entryPerimeter=0;" edge="1" parent="1" source="n_PAS" target="n_CAN"><mxGeometry x="0.0" relative="1" as="geometry"><Array as="points"><mxPoint x="630.0" y="231.0"/><mxPoint x="2007.0" y="231.0"/></Array></mxGeometry></mxCell><mxCell id="e16" value="Cancel before launch" style="edgeStyle=none;rounded=0;html=1;strokeColor=#333333;strokeWidth=1.4;endArrow=block;endFill=1;endSize=8;fontSize=12;fontColor=#000000;labelBackgroundColor=#FFFFFF;" edge="1" parent="1" source="n_ACC" target="n_CAN"><mxGeometry x="0" relative="1" as="geometry"></mxGeometry></mxCell><mxCell id="e17" value="Parcel&lt;br&gt;dropped" style="edgeStyle=none;rounded=0;html=1;strokeColor=#333333;strokeWidth=1.4;endArrow=block;endFill=1;endSize=8;fontSize=12;fontColor=#000000;labelBackgroundColor=#FFFFFF;exitX=1.0000;exitY=0.6042;exitDx=0;exitDy=0;exitPerimeter=0;" edge="1" parent="1" source="g_FL" target="n_DRP"><mxGeometry x="0" relative="1" as="geometry"></mxGeometry></mxCell><mxCell id="e18" value="Delivery failed /&lt;br&gt;timeout" style="edgeStyle=none;rounded=0;html=1;strokeColor=#333333;strokeWidth=1.4;endArrow=block;endFill=1;endSize=8;fontSize=12;fontColor=#000000;labelBackgroundColor=#FFFFFF;exitX=0.9924;exitY=1.0000;exitDx=0;exitDy=0;exitPerimeter=0;" edge="1" parent="1" source="g_G" target="n_FAI"><mxGeometry x="0.5321" relative="1" as="geometry"><Array as="points"><mxPoint x="1772.5" y="812.0"/></Array></mxGeometry></mxCell><mxCell id="e19" value="" style="edgeStyle=none;rounded=0;html=1;strokeColor=#333333;strokeWidth=1.4;endArrow=block;endFill=1;endSize=8;fontSize=12;fontColor=#000000;labelBackgroundColor=#FFFFFF;" edge="1" parent="1" source="n_FAI" target="n_E"><mxGeometry x="0" relative="1" as="geometry"><Array as="points"><mxPoint x="2049.0" y="1249.0"/></Array></mxGeometry></mxCell><mxCell id="e20" value="" style="edgeStyle=none;rounded=0;html=1;strokeColor=#333333;strokeWidth=1.4;endArrow=block;endFill=1;endSize=8;fontSize=12;fontColor=#000000;labelBackgroundColor=#FFFFFF;exitX=1.0000;exitY=0.5000;exitDx=0;exitDy=0;exitPerimeter=0;" edge="1" parent="1" source="n_DRP" target="n_E"><mxGeometry x="0" relative="1" as="geometry"><Array as="points"><mxPoint x="2199.0" y="565.0"/><mxPoint x="2199.0" y="1249.0"/></Array></mxGeometry></mxCell><mxCell id="e21" value="" style="edgeStyle=none;rounded=0;html=1;strokeColor=#333333;strokeWidth=1.4;endArrow=block;endFill=1;endSize=8;fontSize=12;fontColor=#000000;labelBackgroundColor=#FFFFFF;exitX=1.0000;exitY=0.5000;exitDx=0;exitDy=0;exitPerimeter=0;" edge="1" parent="1" source="n_CAN" target="n_E"><mxGeometry x="0" relative="1" as="geometry"><Array as="points"><mxPoint x="2239.0" y="318.0"/><mxPoint x="2239.0" y="1249.0"/></Array></mxGeometry></mxCell></root></mxGraphModel></diagram></mxfile>
+<mxfile host="Electron" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/29.0.3 Chrome/140.0.7339.249 Electron/38.7.0 Safari/537.36" version="29.0.3">
+  <diagram name="State Machine Diagram — Drone Delivery Order" id="06-2-state-machine-drone-delivery-order">
+    <mxGraphModel dx="1905" dy="922" grid="0" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="0" pageScale="1" pageWidth="1600" pageHeight="1200" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="t1" value="State Machine Diagram — Drone Delivery Order" style="text;html=1;align=left;verticalAlign=middle;fontSize=22;fontStyle=1;fontColor=#000000;" parent="1" vertex="1">
+          <mxGeometry x="-2.5" y="90" width="1000" height="34" as="geometry" />
+        </mxCell>
+        <mxCell id="t2" value="orders.delivery_stage (type DRONE_DELIVERY) · Ready For Pickup = status Storing, Failed / Drop Reported = status Canceled · grey frame = composite state" style="text;html=1;align=left;verticalAlign=middle;fontSize=13;fontColor=#555555;whiteSpace=wrap;" parent="1" vertex="1">
+          <mxGeometry x="-2.5" y="124" width="1000" height="24" as="geometry" />
+        </mxCell>
+        <mxCell id="lg_pending" value="" style="rounded=1;arcSize=30;html=1;fillColor=#FFF2CC;strokeColor=#D6B656;" parent="1" vertex="1">
+          <mxGeometry x="-2.5" y="158" width="26" height="16" as="geometry" />
+        </mxCell>
+        <mxCell id="lt_pending" value="Waiting / pending" style="text;html=1;align=left;verticalAlign=middle;fontSize=12;fontColor=#333333;" parent="1" vertex="1">
+          <mxGeometry x="29.5" y="156" width="170" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="lg_active" value="" style="rounded=1;arcSize=30;html=1;fillColor=#DAE8FC;strokeColor=#6C8EBF;" parent="1" vertex="1">
+          <mxGeometry x="177.9" y="158" width="26" height="16" as="geometry" />
+        </mxCell>
+        <mxCell id="lt_active" value="In progress / operational" style="text;html=1;align=left;verticalAlign=middle;fontSize=12;fontColor=#333333;" parent="1" vertex="1">
+          <mxGeometry x="209.9" y="156" width="170" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="lg_success" value="" style="rounded=1;arcSize=30;html=1;fillColor=#D5E8D4;strokeColor=#82B366;" parent="1" vertex="1">
+          <mxGeometry x="415.9" y="158" width="26" height="16" as="geometry" />
+        </mxCell>
+        <mxCell id="lt_success" value="Completed" style="text;html=1;align=left;verticalAlign=middle;fontSize=12;fontColor=#333333;" parent="1" vertex="1">
+          <mxGeometry x="447.9" y="156" width="170" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="lg_warning" value="" style="rounded=1;arcSize=30;html=1;fillColor=#FFE6CC;strokeColor=#D79B00;" parent="1" vertex="1">
+          <mxGeometry x="538.7" y="158" width="26" height="16" as="geometry" />
+        </mxCell>
+        <mxCell id="lt_warning" value="Needs attention" style="text;html=1;align=left;verticalAlign=middle;fontSize=12;fontColor=#333333;" parent="1" vertex="1">
+          <mxGeometry x="570.7" y="156" width="170" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="lg_failure" value="" style="rounded=1;arcSize=30;html=1;fillColor=#F8CECC;strokeColor=#B85450;" parent="1" vertex="1">
+          <mxGeometry x="704.7" y="158" width="26" height="16" as="geometry" />
+        </mxCell>
+        <mxCell id="lt_failure" value="Canceled / failed" style="text;html=1;align=left;verticalAlign=middle;fontSize=12;fontColor=#333333;" parent="1" vertex="1">
+          <mxGeometry x="736.7" y="156" width="170" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="g_FL" value="Flight" style="rounded=1;arcSize=3;absoluteArcSize=1;whiteSpace=wrap;html=1;fillColor=none;strokeColor=#8C8C8C;dashed=1;dashPattern=6 4;verticalAlign=top;align=left;spacingLeft=10;spacingTop=2;fontSize=13;fontStyle=3;fontColor=#555555;glass=0;shadow=0;points=[[0,0,0,0,0],[0,0.11,0,0,0],[0,0.22,0,0,0],[0,0.25,0,0,0],[0,0.33,0,0,0],[0,0.44,0,0,0],[0,0.5,0,0,0],[0,0.56,0,0,0],[0,0.67,0,0,0],[0,0.75,0,0,0],[0,0.78,0,0,0],[0,0.89,0,0,0],[0,1,0,0,0],[0.25,0,0,0,0],[0.25,1,0,0,0],[0.5,0,0,0,0],[0.5,1,0,0,0],[0.75,0,0,0,0],[0.75,1,0,0,0],[1,0,0,0,0],[1,0.09,0,0,0],[1,0.18,0,0,0],[1,0.25,0,0,0],[1,0.27,0,0,0],[1,0.36,0,0,0],[1,0.45,0,0,0],[1,0.5,0,0,0],[1,0.55,0,0,0],[1,0.64,0,0,0],[1,0.73,0,0,0],[1,0.75,0,0,0],[1,0.82,0,0,0],[1,0.91,0,0,0],[1,1,0,0,0]];" parent="1" vertex="1">
+          <mxGeometry x="499" y="414" width="928" height="235" as="geometry" />
+        </mxCell>
+        <mxCell id="n_S" value="" style="ellipse;html=1;shape=startState;fillColor=#000000;strokeColor=#000000;" parent="1" vertex="1">
+          <mxGeometry x="89" y="303" width="30" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="n_AWD" value="Awaiting Dispatch" style="rounded=1;whiteSpace=wrap;html=1;arcSize=40;fillColor=#FFF2CC;strokeColor=#D6B656;fontColor=#000000;fontSize=15;fontStyle=1;" parent="1" vertex="1">
+          <mxGeometry x="195" y="290" width="210" height="56" as="geometry" />
+        </mxCell>
+        <mxCell id="n_PAS" value="Pickup Assigned" style="rounded=1;whiteSpace=wrap;html=1;arcSize=40;fillColor=#DAE8FC;strokeColor=#6C8EBF;fontColor=#000000;fontSize=15;fontStyle=1;" parent="1" vertex="1">
+          <mxGeometry x="525" y="290" width="210" height="56" as="geometry" />
+        </mxCell>
+        <mxCell id="n_PUP" value="Picked Up" style="rounded=1;whiteSpace=wrap;html=1;arcSize=40;fillColor=#DAE8FC;strokeColor=#6C8EBF;fontColor=#000000;fontSize=15;fontStyle=1;" parent="1" vertex="1">
+          <mxGeometry x="855" y="290" width="210" height="56" as="geometry" />
+        </mxCell>
+        <mxCell id="n_ACC" value="Accepted" style="rounded=1;whiteSpace=wrap;html=1;arcSize=40;fillColor=#DAE8FC;strokeColor=#6C8EBF;fontColor=#000000;fontSize=15;fontStyle=1;" parent="1" vertex="1">
+          <mxGeometry x="1185" y="290" width="210" height="56" as="geometry" />
+        </mxCell>
+        <mxCell id="n_LAU" value="Launching" style="rounded=1;whiteSpace=wrap;html=1;arcSize=40;fillColor=#DAE8FC;strokeColor=#6C8EBF;fontColor=#000000;fontSize=15;fontStyle=1;" parent="1" vertex="1">
+          <mxGeometry x="195" y="444" width="210" height="56" as="geometry" />
+        </mxCell>
+        <mxCell id="n_DEP" value="Departed" style="rounded=1;whiteSpace=wrap;html=1;arcSize=40;fillColor=#DAE8FC;strokeColor=#6C8EBF;fontColor=#000000;fontSize=15;fontStyle=1;" parent="1" vertex="1">
+          <mxGeometry x="525" y="444" width="210" height="56" as="geometry" />
+        </mxCell>
+        <mxCell id="n_ENR" value="En Route" style="rounded=1;whiteSpace=wrap;html=1;arcSize=40;fillColor=#DAE8FC;strokeColor=#6C8EBF;fontColor=#000000;fontSize=15;fontStyle=1;" parent="1" vertex="1">
+          <mxGeometry x="855" y="444" width="210" height="56" as="geometry" />
+        </mxCell>
+        <mxCell id="n_APP" value="Approaching" style="rounded=1;whiteSpace=wrap;html=1;arcSize=40;fillColor=#DAE8FC;strokeColor=#6C8EBF;fontColor=#000000;fontSize=15;fontStyle=1;" parent="1" vertex="1">
+          <mxGeometry x="1185" y="444" width="210" height="56" as="geometry" />
+        </mxCell>
+        <mxCell id="n_ARR" value="Arrived" style="rounded=1;whiteSpace=wrap;html=1;arcSize=40;fillColor=#DAE8FC;strokeColor=#6C8EBF;fontColor=#000000;fontSize=15;fontStyle=1;" parent="1" vertex="1">
+          <mxGeometry x="1185" y="572" width="210" height="56" as="geometry" />
+        </mxCell>
+        <mxCell id="n_RFP" value="Ready For Pickup" style="rounded=1;whiteSpace=wrap;html=1;arcSize=40;fillColor=#FFF2CC;strokeColor=#D6B656;fontColor=#000000;fontSize=15;fontStyle=1;" parent="1" vertex="1">
+          <mxGeometry x="1185" y="704" width="210" height="56" as="geometry" />
+        </mxCell>
+        <mxCell id="n_EXP" value="Expired" style="rounded=1;whiteSpace=wrap;html=1;arcSize=40;fillColor=#FFE6CC;strokeColor=#D79B00;fontColor=#000000;fontSize=15;fontStyle=1;" parent="1" vertex="1">
+          <mxGeometry x="855" y="704" width="210" height="56" as="geometry" />
+        </mxCell>
+        <mxCell id="n_COM" value="Completed" style="rounded=1;whiteSpace=wrap;html=1;arcSize=40;fillColor=#D5E8D4;strokeColor=#82B366;fontColor=#000000;fontSize=15;fontStyle=1;" parent="1" vertex="1">
+          <mxGeometry x="1011" y="834" width="210" height="56" as="geometry" />
+        </mxCell>
+        <mxCell id="n_E" value="" style="ellipse;html=1;shape=endState;fillColor=#000000;strokeColor=#000000;" parent="1" vertex="1">
+          <mxGeometry x="1101" y="954" width="30" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="n_CAN" value="Canceled" style="rounded=1;whiteSpace=wrap;html=1;arcSize=40;fillColor=#F8CECC;strokeColor=#B85450;fontColor=#000000;fontSize=15;fontStyle=1;" parent="1" vertex="1">
+          <mxGeometry x="1561" y="290" width="210" height="56" as="geometry" />
+        </mxCell>
+        <mxCell id="n_DRP" value="Drop Reported" style="rounded=1;whiteSpace=wrap;html=1;arcSize=40;fillColor=#F8CECC;strokeColor=#B85450;fontColor=#000000;fontSize=15;fontStyle=1;" parent="1" vertex="1">
+          <mxGeometry x="1561" y="444" width="210" height="56" as="geometry" />
+        </mxCell>
+        <mxCell id="n_FAI" value="Failed" style="rounded=1;whiteSpace=wrap;html=1;arcSize=40;fillColor=#F8CECC;strokeColor=#B85450;fontColor=#000000;fontSize=15;fontStyle=1;" parent="1" vertex="1">
+          <mxGeometry x="1561" y="572" width="210" height="56" as="geometry" />
+        </mxCell>
+        <mxCell id="e0" value="Create&lt;br&gt;order" style="edgeStyle=none;rounded=0;html=1;strokeColor=#333333;strokeWidth=1.4;endArrow=block;endFill=1;endSize=8;fontSize=12;fontColor=#000000;labelBackgroundColor=#FFFFFF;" parent="1" source="n_S" target="n_AWD" edge="1">
+          <mxGeometry x="-0.0263" relative="1" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e1" value="Technician takes&lt;br&gt;pickup job" style="edgeStyle=none;rounded=0;html=1;strokeColor=#333333;strokeWidth=1.4;endArrow=block;endFill=1;endSize=8;fontSize=12;fontColor=#000000;labelBackgroundColor=#FFFFFF;" parent="1" source="n_AWD" target="n_PAS" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e2" value="Collect parcel&lt;br&gt;(pickup code)" style="edgeStyle=none;rounded=0;html=1;strokeColor=#333333;strokeWidth=1.4;endArrow=block;endFill=1;endSize=8;fontSize=12;fontColor=#000000;labelBackgroundColor=#FFFFFF;" parent="1" source="n_PAS" target="n_PUP" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e3" value="Assign&lt;br&gt;drone" style="edgeStyle=none;rounded=0;html=1;strokeColor=#333333;strokeWidth=1.4;endArrow=block;endFill=1;endSize=8;fontSize=12;fontColor=#000000;labelBackgroundColor=#FFFFFF;" parent="1" source="n_PUP" target="n_ACC" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e4" value="Load &amp; launch" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#333333;strokeWidth=1.4;endArrow=block;endFill=1;endSize=8;fontSize=12;fontColor=#000000;labelBackgroundColor=#FFFFFF;" parent="1" source="n_ACC" target="n_LAU" edge="1">
+          <mxGeometry x="-0.0254" relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1290" y="379" />
+              <mxPoint x="300" y="379" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e5" value="Take off" style="edgeStyle=none;rounded=0;html=1;strokeColor=#333333;strokeWidth=1.4;endArrow=block;endFill=1;endSize=8;fontSize=12;fontColor=#000000;labelBackgroundColor=#FFFFFF;" parent="1" source="n_LAU" target="n_DEP" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e6" value="Leave&lt;br&gt;source locker" style="edgeStyle=none;rounded=0;html=1;strokeColor=#333333;strokeWidth=1.4;endArrow=block;endFill=1;endSize=8;fontSize=12;fontColor=#000000;labelBackgroundColor=#FFFFFF;" parent="1" source="n_DEP" target="n_ENR" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e7" value="Near&lt;br&gt;destination" style="edgeStyle=none;rounded=0;html=1;strokeColor=#333333;strokeWidth=1.4;endArrow=block;endFill=1;endSize=8;fontSize=12;fontColor=#000000;labelBackgroundColor=#FFFFFF;" parent="1" source="n_ENR" target="n_APP" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e8" value="Land at&lt;br&gt;destination" style="edgeStyle=none;rounded=0;html=1;strokeColor=#333333;strokeWidth=1.4;endArrow=block;endFill=1;endSize=8;fontSize=12;fontColor=#000000;labelBackgroundColor=#FFFFFF;" parent="1" source="n_APP" target="n_ARR" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e9" value="Parcel in cell,&lt;br&gt;PIN sent" style="edgeStyle=none;rounded=0;html=1;strokeColor=#333333;strokeWidth=1.4;endArrow=block;endFill=1;endSize=8;fontSize=12;fontColor=#000000;labelBackgroundColor=#FFFFFF;" parent="1" source="n_ARR" target="n_RFP" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e10" value="Overdue" style="edgeStyle=none;rounded=0;html=1;strokeColor=#333333;strokeWidth=1.4;endArrow=block;endFill=1;endSize=8;fontSize=12;fontColor=#000000;labelBackgroundColor=#FFFFFF;" parent="1" source="n_RFP" target="n_EXP" edge="1">
+          <mxGeometry x="-0.0167" relative="1" as="geometry">
+            <mxPoint x="-1" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e11" value="Receiver picks up" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#333333;strokeWidth=1.4;endArrow=block;endFill=1;endSize=8;fontSize=12;fontColor=#000000;labelBackgroundColor=#FFFFFF;" parent="1" source="n_RFP" target="n_COM" edge="1">
+          <mxGeometry x="-0.2308" relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1290" y="862" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e12" value="Pay fee&lt;br&gt;&amp; collect" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#333333;strokeWidth=1.4;endArrow=block;endFill=1;endSize=8;fontSize=12;fontColor=#000000;labelBackgroundColor=#FFFFFF;" parent="1" source="n_EXP" target="n_COM" edge="1">
+          <mxGeometry x="-0.2308" relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="960" y="862" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e13" value="" style="edgeStyle=none;rounded=0;html=1;strokeColor=#333333;strokeWidth=1.4;endArrow=block;endFill=1;endSize=8;fontSize=12;fontColor=#000000;labelBackgroundColor=#FFFFFF;" parent="1" source="n_COM" target="n_E" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e14" value="Customer cancels / unpaid" style="rounded=0;html=1;strokeColor=#333333;strokeWidth=1.4;endArrow=block;endFill=1;endSize=8;fontSize=12;fontColor=#000000;labelBackgroundColor=#FFFFFF;entryX=0.7000;entryY=0.0000;entryDx=0;entryDy=0;entryPerimeter=0;edgeStyle=orthogonalEdgeStyle;" parent="1" source="n_AWD" target="n_CAN" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="300" y="243" />
+              <mxPoint x="1708" y="243" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e15" value="Customer cancels" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#333333;strokeWidth=1.4;endArrow=block;endFill=1;endSize=8;fontSize=12;fontColor=#000000;labelBackgroundColor=#FFFFFF;entryX=0.3000;entryY=0.0000;entryDx=0;entryDy=0;entryPerimeter=0;" parent="1" source="n_PAS" target="n_CAN" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="630" y="264" />
+              <mxPoint x="1624" y="264" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e16" value="Cancel before launch" style="edgeStyle=none;rounded=0;html=1;strokeColor=#333333;strokeWidth=1.4;endArrow=block;endFill=1;endSize=8;fontSize=12;fontColor=#000000;labelBackgroundColor=#FFFFFF;" parent="1" source="n_ACC" target="n_CAN" edge="1">
+          <mxGeometry x="-0.0482" relative="1" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e17" value="Parcel&lt;br&gt;dropped" style="rounded=0;html=1;strokeColor=#333333;strokeWidth=1.4;endArrow=block;endFill=1;endSize=8;fontSize=12;fontColor=#000000;labelBackgroundColor=#FFFFFF;exitX=1;exitY=0.25;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;exitPerimeter=0;" parent="1" source="g_FL" target="n_DRP" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e18" value="Delivery failed /&lt;br&gt;locker failed" style="rounded=0;html=1;strokeColor=#333333;strokeWidth=1.4;endArrow=block;endFill=1;endSize=8;fontSize=12;fontColor=#000000;labelBackgroundColor=#FFFFFF;exitX=1;exitY=0.793;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" parent="1" source="g_FL" target="n_FAI" edge="1">
+          <mxGeometry x="-0.034" relative="1" as="geometry">
+            <mxPoint x="1772.4600000000005" y="524.0000000000002" as="sourcePoint" />
+            <mxPoint x="1" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e19" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#333333;strokeWidth=1.4;endArrow=block;endFill=1;endSize=8;fontSize=12;fontColor=#000000;labelBackgroundColor=#FFFFFF;exitX=0.5;exitY=1;exitDx=0;exitDy=0;" parent="1" source="n_FAI" target="n_E" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1666" y="969" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e20" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#333333;strokeWidth=1.4;endArrow=block;endFill=1;endSize=8;fontSize=12;fontColor=#000000;labelBackgroundColor=#FFFFFF;exitX=1.0000;exitY=0.5000;exitDx=0;exitDy=0;exitPerimeter=0;" parent="1" source="n_DRP" target="n_E" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1787" y="472" />
+              <mxPoint x="1787" y="969" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e21" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#333333;strokeWidth=1.4;endArrow=block;endFill=1;endSize=8;fontSize=12;fontColor=#000000;labelBackgroundColor=#FFFFFF;exitX=1.0000;exitY=0.5000;exitDx=0;exitDy=0;exitPerimeter=0;" parent="1" source="n_CAN" target="n_E" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1814" y="318" />
+              <mxPoint x="1814" y="969" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
