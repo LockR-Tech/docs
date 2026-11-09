@@ -11,6 +11,8 @@ from docx.enum.text import WD_COLOR_INDEX
 from docx.oxml.ns import qn
 from docx.shared import Cm, RGBColor
 
+from formfill import FULL_NAME, MEMBER_ORDER, TEAM_LINE
+
 OUT_DIR = os.path.dirname(os.path.abspath(__file__))
 SRC = os.path.join(OUT_DIR, 'bieu-mau', 'SWP490_R2_BM01_Design_Brief_1.docx')
 OUT = os.path.join(OUT_DIR, 'SEP490_FA26SE002_R2_DesignBrief.docx')
@@ -22,8 +24,7 @@ BODY = RGBColor(0x1F, 0x29, 0x37)
 HEADER = [
     'FA26SE002 (group GFA26SE32)',
     'Drone Delivery and Smart Locker Management System (DDSLMS) – product name Lock.R',
-    'Lê Thị Yến Vi (SE182544, leader) · Trương Nguyễn Thái Bình (SE182370) · '
-    'Nguyễn Quốc Bảo Huy (SE180211) · Trần Kim Nhã (SE182290)',
+    TEAM_LINE,
     'Đặng Ngọc Minh Đức (DucDNM) · Đỗ Hữu Tiến (TienDH)',
     'https://github.com/LockR-Tech (backend, frontend, mobile, iot, docs) – tag review-2',
     '1.0',
@@ -279,13 +280,13 @@ TEST_TARGET = [
 ]
 
 # column widths (cm), page text width = 17 cm
-WIDTHS = {
-    3: [0.9, 2.3, 2.8, 7.6, 1.2, 2.2],      # decisions
-    4: [0.9, 4.0, 3.4, 7.3, 1.4],            # risks
-    5: [0.9, 5.6, 3.4, 3.5, 1.3, 2.3],      # gaps
+WIDTHS = {  # owner / presenter columns hold a member full name on two lines
+    3: [0.9, 2.2, 2.6, 7.6, 2.0, 1.7],      # decisions
+    4: [0.9, 4.0, 3.3, 6.8, 2.0],            # risks
+    5: [0.9, 5.5, 3.3, 3.3, 2.2, 1.8],      # gaps
     6: [1.0, 2.6, 2.2, 7.4, 2.3, 1.5],      # features
-    9: [1.2, 2.4, 2.4, 2.0, 2.4, 1.9, 3.6, 1.1],  # workflows
-    10: [1.5, 1.4, 1.6, 3.2, 3.6, 3.2, 2.5],  # demos
+    9: [1.2, 2.1, 2.2, 1.8, 2.1, 1.7, 3.2, 2.7],  # workflows
+    10: [1.5, 1.4, 1.6, 3.1, 3.5, 3.2, 2.7],  # demos
     7: [0.9, 2.5, 4.0, 4.9, 4.7],            # NFRs
     8: [2.7, 3.0, 6.9, 1.6, 2.8],            # ownership
 }
@@ -367,14 +368,19 @@ for row, value in zip(t[0].rows, HEADER):
 
 fill_table(t[1], REG_CHANGES)
 fill_table(t[2], OUT_OF_SCOPE)
-fill_table(t[3], DECISIONS)
-fill_table(t[4], RISKS)
-fill_table(t[5], GAPS)
+def by_name(rows, col):
+    """Copy of rows with the member name in column col written as the member's full name."""
+    return [r[:col] + [FULL_NAME[r[col]]] + r[col + 1:] for r in rows]
+
+
+fill_table(t[3], by_name(DECISIONS, 4))
+fill_table(t[4], by_name(RISKS, 4))
+fill_table(t[5], by_name(GAPS, 4))
 fill_table(t[6], [[f[0], f[1], f[2], f[3], f'TC-F{f[0][2:]}-01..03', f[4]] for f in FEATURES])
 fill_table(t[7], NFRS)
-fill_table(t[8], OWNERS)
-fill_table(t[9], WORKFLOWS)
-fill_table(t[10], DEMOS)
+fill_table(t[8], sorted(by_name(OWNERS, 0), key=lambda r: MEMBER_ORDER.index(r[0])))
+fill_table(t[9], by_name(WORKFLOWS, 7))
+fill_table(t[10], by_name(DEMOS, 6))
 fill_table(t[11], TEST_TARGET, first_col=1)
 for idx, w in WIDTHS.items():
     set_widths(t[idx], w)

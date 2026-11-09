@@ -4,6 +4,7 @@ A value is a str, or a list of str parts in which the marker TODO makes the next
 the team must still check or fill.
 """
 import copy
+import re
 
 from docx.enum.text import WD_COLOR_INDEX
 from docx.oxml.ns import qn
@@ -12,6 +13,23 @@ from docx.shared import Cm, RGBColor
 TODO = object()  # marker: the next text part is a placeholder (yellow)
 BODY = RGBColor(0x1F, 0x29, 0x37)
 GREY = RGBColor(0x66, 0x66, 0x66)
+
+# Members are written in every form by full name, in this order. The content lists of the build scripts keep
+# short names as keys; member_names() converts them when a cell is written.
+MEMBER_ORDER = ['Lê Thị Yến Vi', 'Trương Nguyễn Thái Bình', 'Nguyễn Quốc Bảo Huy', 'Trần Kim Nhã']
+LEADER = 'Lê Thị Yến Vi'
+FULL_NAME = {'Vi': 'Lê Thị Yến Vi', 'Bình': 'Trương Nguyễn Thái Bình', 'Huy': 'Nguyễn Quốc Bảo Huy',
+             'Nhã': 'Trần Kim Nhã'}
+FULL_NAME.update({n: n for n in MEMBER_ORDER})
+STUDENT_ID = {'Lê Thị Yến Vi': 'SE182544', 'Trương Nguyễn Thái Bình': 'SE182370',
+              'Nguyễn Quốc Bảo Huy': 'SE180211', 'Trần Kim Nhã': 'SE182290'}
+TEAM_LINE = ' · '.join(n + (' (leader)' if n == LEADER else '') for n in MEMBER_ORDER)
+_NAMES = re.compile(r'(?<!\w)(' + '|'.join(sorted(map(re.escape, FULL_NAME), key=len, reverse=True)) + r')(?!\w)')
+
+
+def member_names(text):
+    """Replace member short names in text by full names: 'Bình, Huy' -> 'Trương Nguyễn Thái Bình, Nguyễn Quốc Bảo Huy'."""
+    return _NAMES.sub(lambda m: FULL_NAME[m.group(1)], text)
 
 
 def write_runs(paragraph, value, template_run):

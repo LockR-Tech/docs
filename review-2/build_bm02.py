@@ -9,7 +9,8 @@ import os
 
 import docx
 
-from formfill import fill_column, fill_table, keep_rows_together, rebrand_sep490, remove_grey_guidance, set_widths
+from formfill import (TEAM_LINE, member_names, fill_column, fill_table, keep_rows_together, rebrand_sep490,
+                      remove_grey_guidance, set_widths)
 
 OUT_DIR = os.path.dirname(os.path.abspath(__file__))
 SRC = os.path.join(OUT_DIR, 'bieu-mau', 'SWP490_R2_BM02_Self_Review_Report_1.docx')
@@ -18,8 +19,7 @@ OUT = os.path.join(OUT_DIR, 'SEP490_FA26SE002_R2_SelfReview.docx')
 RUN_INFO = [
     'FA26SE002 (group GFA26SE32)',
     'Drone Delivery and Smart Locker Management System (DDSLMS) – product name Lock.R',
-    'Lê Thị Yến Vi (SE182544, leader) · Trương Nguyễn Thái Bình (SE182370) · '
-    'Nguyễn Quốc Bảo Huy (SE180211) · Trần Kim Nhã (SE182290)',
+    TEAM_LINE,
     'Đặng Ngọc Minh Đức · Đỗ Hữu Tiến',
     'Claude Code (Anthropic) – model Claude Opus 5.5 (claude-opus-5-5)',
     '09/11/2026',
@@ -245,7 +245,7 @@ d = docx.Document(SRC)
 rebrand_sep490(d)
 t = d.tables
 fill_column(t[0], RUN_INFO)
-fill_table(t[2], [f + [RESPONSE[f[0]]] for f in FINDINGS])
+fill_table(t[2], [f + [member_names(RESPONSE[f[0]])] for f in FINDINGS])  # owner written as full name
 set_widths(t[2], [1.3, 1.7, 2.0, 4.3, 1.6, 3.2, 2.9])
 fill_table(t[3], TOP5)
 fill_table(t[4], summary_rows(), first_col=1)

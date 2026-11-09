@@ -10,6 +10,7 @@
 | `SEP490_FA26SE002_R2_Commitment.docx` / `.pdf` | BM04 – bản nháp trước buổi review (0.1); hoàn thiện trong 3 ngày làm việc sau Review 2 |
 | `build_registration.py`, `build_brief.py`, `build_bm02.py`, `build_bm03.py`, `build_bm04.py` | Dựng từng biểu mẫu từ `bieu-mau/` — nội dung nằm ở các danh sách đầu file |
 | `merge_registration.py` | Ghép phiếu 2.0 và BM03 thành `SEP490_FA26SE002_R2_Registration.pdf` (file nộp) |
+| `ci_test_map.py` | Đối chiếu 127 test case cam kết (BM04 §6) với test tự động đang chạy trong CI ở tag `review-2` (`Lớp#phương thức`, `None` = chưa tự động); BM04 đếm cột "Automated in CI" từ file này |
 | `formfill.py` | Hàm dùng chung: điền bảng, đổi nhãn `SWP490` → `SEP490`, tô vàng chỗ chờ nhóm, xoá hướng dẫn xám |
 | `to_pdf.ps1` | Xuất PDF bằng Word, in trang bắt đầu của từng mục (BM01 mục 0–8 tối đa 4 trang) |
 
@@ -32,7 +33,8 @@ Chỉ nhóm điền / sửa `RESPONSE` (Fixed kèm link commit, Kept kèm lý do
 
 ## Còn phải điền tại / sau buổi Review 2 (tô vàng trong BM04)
 
-- BM04: số test tự động trong CI (`[n]`), ngày Review 2, tên 2 giảng viên phản biện, ngày Defense 1.1, các mục ghi nhận trong biên bản Review 2; phần kết quả xác minh và chữ ký do giảng viên điền.
+- BM04: các mục ghi nhận trong biên bản Review 2 — điền vào `MINUTES` trong `build_bm04.py` (mỗi mục: việc, người, hạn), sẽ thành RF-25…; ngày Defense 1.1 cụ thể khi có lịch (hiện ghi "Before Defense 1.1"); phần kết quả xác minh và chữ ký do giảng viên điền.
+- Số test tự động trong CI (107/127) lấy từ `ci_test_map.py`; khi thêm test mới vào CI thì sửa mục `None` tương ứng rồi dựng lại BM04.
 
 ## Cách chia việc (cân bằng đều cho 4 thành viên)
 
