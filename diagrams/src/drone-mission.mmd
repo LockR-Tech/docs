@@ -1,21 +1,21 @@
 %% @title Vòng đời giao hàng Drone — deliveryStage & DroneMission
-%% @subtitle Nguồn: <code>order-service/…/DroneOrderBookingService.java</code> · <code>DronePickupService.java</code> · <code>DroneOrderMaintenanceService.java</code> · <code>DroneMissionProgressService.java</code> · <code>DroneLockerCommunicationService.java</code> — Luồng 1 — rà soát code 2026-11-10 (lấy hàng tận nhà, thả hàng bằng nắp trượt)
+%% @subtitle Nguồn: <code>order-service/…/Drone*Service.java</code> — Luồng 1 — rà soát code 2026-11-10
 %% @orientation portrait
 %% @legend <span class="sw ok"></span>Đã code (STANDARD)
 %% @legend <span class="sw demo"></span>Đã code, chưa chạy trọn với drone bay thật
 %% @legend <span class="sw end"></span>Kết thúc
-%% @row D1 | ∅ → AWAITING_DISPATCH | <code>POST /api/orders/drone-deliveries</code> | CUSTOMER | điểm lấy hàng + tủ nhận; hệ thống chọn tủ gửi; giữ ô DRONE ở tủ nhận; UNPAID
-%% @row D2 | AWAITING_DISPATCH → PICKUP_ASSIGNED | trả tiền ⇒ mời · <code>…/pickup/accept</code> · admin <code>…/pickup/assign</code> | hệ thống · KTV · ADMIN | mời KTV rảnh gần nhất; quá hạn lấy ⇒ thu hồi
+%% @row D1 | ∅ → AWAITING_DISPATCH | <code>POST /api/orders/drone-deliveries</code> | CUSTOMER | hệ thống chọn tủ gửi; giữ ô ở tủ nhận
+%% @row D2 | AWAITING_DISPATCH → PICKUP_ASSIGNED | <code>…/pickup/accept</code> · <code>…/pickup/assign</code> | KTV · ADMIN | mời KTV rảnh gần nhất
 %% @row D3 | PICKUP_ASSIGNED → PICKED_UP | <code>…/pickup/confirm</code> | KTV đã nhận | đúng mã lấy hàng, đúng kiện, ≤ 300 m
-%% @row D4 | PICKED_UP → ACCEPTED | <code>…/drone-orders/{id}/accept</code> | KTV đã lấy kiện | drone IDLE ở tủ gửi ⇒ RESERVED; mission AWAITING_LOADING
-%% @row D5 | AWAITING_LOADING → READY_TO_LAUNCH | <code>…/loading-confirmation</code> | KTV phụ trách | cân, niêm phong, 3 mục kiểm tra; lệch > 50 g ⇒ phụ thu
-%% @row D6 | ACCEPTED → LAUNCHING | <code>…/launch</code> | KTV phụ trách | đã trả đủ, giờ bay, trạm mở, thời tiết, pin ⇒ IN_FLIGHT
-%% @row D7 | LAUNCHING → … → ARRIVED | telemetry · giả lập DEMO · <code>…/advance</code> | hệ thống · KTV | chỉ đi tới; thấy đúng ArUco ⇒ ARRIVED
-%% @row D8 | ARRIVED → READY_FOR_PICKUP | tủ đóng nắp sau khi servo nhả hàng · <code>…/advance</code> | tủ + drone · KTV | order STORING, ô OCCUPIED, PIN 24 giờ, drone IDLE
-%% @row D9 | READY_FOR_PICKUP → COMPLETED | PIN ở kiosk · Bluetooth · <code>…/complete</code> | người nhận | kiosk tự hoàn tất đơn
-%% @row D10 | AWAITING_DISPATCH · PICKUP_ASSIGNED → CANCELED | <code>PUT …/cancel</code> · quét 5 phút | CUSTOMER · hệ thống | trước khi KTV cầm kiện; chưa trả 30 phút
-%% @row D11 | ACCEPTED → CANCELED | <code>…/cancel</code> · <code>…/decline-surcharge</code> | KTV · CUSTOMER | trước khi phóng; "Drone lỗi" ⇒ drone FAULT
-%% @row D12 | → FAILED | <code>…/pickup/fail</code> · <code>…/fail</code> · quét đơn bị chặn | KTV · ADMIN · hệ thống | giao không hoàn tất, hoàn tiền
+%% @row D4 | PICKED_UP → ACCEPTED | <code>…/drone-orders/{id}/accept</code> | KTV đã lấy kiện | drone IDLE ⇒ RESERVED
+%% @row D5 | nạp hàng | <code>…/loading-confirmation</code> | KTV phụ trách | cân lệch > 50 g ⇒ phụ thu
+%% @row D6 | ACCEPTED → LAUNCHING | <code>…/launch</code> | KTV phụ trách | drone ⇒ IN_FLIGHT
+%% @row D7 | LAUNCHING → … → ARRIVED | telemetry · DEMO · <code>…/advance</code> | hệ thống · KTV | chỉ đi tới
+%% @row D8 | ARRIVED → READY_FOR_PICKUP | ArUco → nắp → servo → đóng nắp | tủ + drone | order STORING, cấp PIN
+%% @row D9 | READY_FOR_PICKUP → COMPLETED | PIN ở kiosk · Bluetooth | người nhận | tự hoàn tất
+%% @row D10 | … → CANCELED | <code>PUT …/cancel</code> · quét | khách · hệ thống | trước khi KTV cầm kiện
+%% @row D11 | ACCEPTED → CANCELED | <code>…/cancel</code> · <code>…/decline-surcharge</code> | KTV · khách | trước khi phóng
+%% @row D12 | → FAILED | <code>…/pickup/fail</code> · <code>…/fail</code> · quét | KTV · ADMIN · hệ thống | giao không hoàn tất
 %% @row D13 | chặng bay → DROP_REPORTED | <code>…/{id}/drop-incident</code> | KTV · ADMIN | rơi kiện — sơ đồ riêng
 %% @note Mission: AWAITING_LOADING → READY_TO_LAUNCH → chặng bay → DEPOSITED; giữ lại ở CANCELED / FAILED. Lượt lấy hàng: SEARCHING → OFFERED → ACCEPTED → PICKED_UP. Chi tiết: <code>02-flows/flow-1-drone-delivery.md</code> § 3.
 %%{init: {"flowchart": {"nodeSpacing": 22, "rankSpacing": 26, "padding": 8, "curve": "basis"}}}%%
