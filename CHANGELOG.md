@@ -4,6 +4,7 @@ Mỗi thay đổi ở repo docs thêm **một dòng** vào ngày tương ứng (
 
 ## 2026-11-10
 
+- diagrams: rút gọn chú thích `order-status` và `drone-mission` — CI (Linux) render `order-status` ở scale 0,35 < 0,40 sau PR #127; local nay ~0,60 cả hai.
 - flow-1, tóm tắt nghiệp vụ § 6–7, product, architecture, sơ đồ `drone-mission` + `order-status`, STATUS: tài liệu luồng drone khớp code trên `main` — **lấy hàng tận nhà** (khách chọn điểm lấy hàng, hệ thống tự chọn tủ gửi, mời KTV drone rảnh gần nhất, mã lấy hàng 6 số, chỉ KTV đã cầm kiện mới gán drone), thả hàng bằng ArUco → nắp trượt → servo, kiosk mở bằng PIN tự hoàn tất đơn, đơn bị chặn khi tài sản có sự cố. Chấm lại checklist L1 70 % → 90 % (không thêm/bớt hạng mục): F1.02 → DONE (chỉ SePay, tự huỷ đơn chưa trả, `nextAction` khớp guard), F1.07 → DONE (PIN cấp ở mọi nguồn, không còn chỉ DEMO; gửi app/email/SMS), F1.08 → DONE (`IotService.completeIfPickup`, mở Bluetooth theo đơn), F1.09 → DONE (huỷ, giao không hoàn tất, chặn đơn, thất bại sau phóng, hoàn tiền, rơi kiện); F1.05, F1.06 giữ PARTIAL vì chưa bay thật có telemetry trên production. Tổng dự án 71,3 % → 76,3 %. Gap mới F1-G14 (phí theo quãng đường, tải theo model drone); STATUS § 3 chuyển 9 dòng drone đã có code trên `main` sang § 5. Sơ đồ `order-status` sửa ghi chú `paymentStatus` (có `REFUND_PENDING` → `REFUNDED`).
 
 ## 2026-11-09
