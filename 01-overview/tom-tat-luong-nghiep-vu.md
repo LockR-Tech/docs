@@ -1,7 +1,7 @@
 # Các luồng nghiệp vụ của LockR
 
 Mô tả ngắn từng luồng theo bước: **ai** (vai trò, thiết bị) **làm gì** → **hệ thống / người kế tiếp nhận gì**.
-Cập nhật 2026-10-13. Phần ghi *(mới)* (backend #61, mobile #56, iot #15) đã merge và chạy trên production; thanh toán chỉ còn chuyển khoản VietQR (SePay).
+Cập nhật 2026-10-13; mục 6–7 (giao drone, huỷ / hoàn tiền) rà soát lại theo code ngày 2026-11-10. Phần ghi *(mới)* (backend #61, mobile #56, iot #15) đã merge và chạy trên production; thanh toán chỉ còn chuyển khoản VietQR (SePay).
 
 ## Vai trò và thiết bị
 
@@ -10,7 +10,7 @@ Cập nhật 2026-10-13. Phần ghi *(mới)* (backend #61, mobile #56, iot #15)
 | **Khách** (CUSTOMER) | App mobile, kiosk tại tủ | Gửi hàng, thuê ô, đặt drone, ví, báo sự cố, hỏi trợ lý |
 | **Người nhận** | Kiosk (không cần tài khoản), app nếu có tài khoản | Lấy hàng bằng mã PIN/QR |
 | **KTV tủ** (LOCKER_TECHNICIAN) | App mobile | Xử lý sự cố ô/tủ, kiểm tra định kỳ, thiết bị IoT, thu hồi kiện drone rơi |
-| **KTV drone** (DRONE_TECHNICIAN) | App mobile | Điều phối đơn drone, nạp hàng, phóng, đội bay, sự cố drone |
+| **KTV drone** (DRONE_TECHNICIAN) | App mobile | Lấy hàng tận nhà người gửi, gán drone, nạp hàng, phóng, đội bay, sự cố drone |
 | **Admin** (ADMIN) | Web quản trị | Cấu hình, tài khoản, tủ/drone, duyệt hoàn tiền/rút tiền, theo dõi, kho tri thức |
 | **Hệ thống** | Backend + Pi điều khiển tủ (MQTT) | Giữ ô, mở khoá, gửi thông báo, job định kỳ |
 
@@ -83,24 +83,37 @@ Ngoại lệ:
 
 ---
 
-## 6. Giao hàng bằng drone
+## 6. Giao hàng bằng drone (lấy hàng tận nhà)
 
-1. **Khách** (app) — chạm ô DRONE ở tủ gửi → "Gửi hàng bằng Drone": chọn tủ nhận (có bãi đáp, còn ô drone, cách ≤ 5 km), loại hàng, mức khối lượng, giá trị khai báo, hàng dễ vỡ, người nhận, cam kết không hàng cấm → "Tạo đơn và thanh toán".
-2. **Khách** — thanh toán → đơn `PAID`, chờ điều phối (`AWAITING_DISPATCH`). Chưa trả 30 phút → tự huỷ.
-3. **Khách** — bỏ kiện vào ô drone ở tủ gửi → "Tôi đã bỏ kiện vào ô". Quá hạn chưa bỏ → tự huỷ + hoàn tiền.
-4. **KTV drone** (app, tab Điều phối) — "Tiếp nhận": chọn drone rảnh, đủ pin ở tủ gửi → nhiệm vụ được tạo. Quá hạn không ai nhận → tự huỷ + hoàn tiền.
-5. **KTV drone** — "Xác nhận nạp": cân kiện thực tế, mã niêm phong do hệ thống cấp, tick 3 mục kiểm tra.
-   - Cân lệch quá 50 g so với khai báo → hệ thống tính lại phí → **khách** "Trả thêm phí chênh" hoặc "Không đồng ý" (huỷ, hoàn tiền, trả kiện).
-6. **KTV drone** — "Phóng" (trong khung giờ bay, thời tiết dưới ngưỡng, không bị admin tạm dừng bay toàn hệ thống hay ở trạm cất cánh / tủ nhận).
-7. **Hệ thống** — chặng bay: Đang cất cánh → Đã rời trạm → Đang bay → Sắp tới → Đã đến. Đơn **DEMO** tự chạy chặng; đơn **thật** đi theo telemetry của drone hoặc KTV xác nhận từng chặng. **Khách** theo dõi timeline + bản đồ.
-8. **Hệ thống** — kiện vào ô drone ở tủ nhận → `READY_FOR_PICKUP`, gửi PIN cho người nhận (email / app) kèm số giờ lưu trữ và hạn lấy; app hiện cùng nội dung cho người gửi, người nhận và điều phối viên *(chờ merge)*.
-9. **Người nhận** — mở ô bằng PIN tại kiosk → lấy hàng → **khách** xác nhận "Tôi đã lấy đồ — hoàn tất" trên app → đơn `COMPLETED`.
+Chi tiết + mặc định cấu hình: [flow-1 § 3](../02-flows/flow-1-drone-delivery.md#3-luồng-đang-chạy-hôm-nay).
+
+1. **Khách** (app, "Gửi bằng drone" ở trang chủ hoặc từ chi tiết tủ) — chọn **điểm lấy hàng** (vị trí hiện tại hoặc ghim bản đồ, địa chỉ, ghi chú), **tủ nhận** (có bãi đáp, còn ô drone), loại hàng, mức khối lượng, kích thước / giá trị khai báo / dễ vỡ (tuỳ chọn), tên + SĐT + email của người gửi và người nhận, cam kết không hàng cấm.
+2. **Hệ thống** — tự chọn **tủ gửi** = tủ có bãi đáp gần điểm lấy hàng nhất còn drone dùng được (điểm lấy hàng cách tủ ≤ 5 km, tủ gửi → tủ nhận 200 m – 5 km), báo phí + thời tiết tuyến bay. Chặn khi tạm dừng bay, trạm dừng, thời tiết xấu, khách đã có 3 đơn đang mở, tủ nhận hết ô. Tạo đơn ⇒ giữ một ô DRONE ở **tủ nhận**, đơn `AWAITING_DISPATCH`, `UNPAID`.
+3. **Khách** — thanh toán VietQR/SePay ngay sau khi tạo → đơn `PAID`, app hiện **mã lấy hàng 6 số**. Chưa trả 30 phút → tự huỷ, nhả ô.
+4. **Hệ thống** — mời **KTV drone rảnh gần điểm lấy hàng nhất** (đang vào ca, bật nhận việc lấy hàng, GPS mới trong 10 phút, trong bán kính 5 km). **KTV** có 3 phút để "Nhận" hoặc "Từ chối"; bỏ qua thì mời người kế tiếp, sau 2 lượt báo **admin** gán tay. Không ai nhận sau 120 phút → đơn đóng "giao không hoàn tất" + hoàn tiền.
+5. **KTV drone** — nhận việc → **khách** được báo "kỹ thuật viên đang tới". KTV tới nhà người gửi (trong 60 phút, quá hạn thì việc chuyển người khác) → **người gửi đọc mã lấy hàng** → KTV nhập mã, xác nhận kiện đúng khai báo, chụp ảnh (tuỳ chọn); phải đứng cách điểm lấy hàng ≤ 300 m theo GPS → đơn "Đã lấy hàng". Không lấy được (khách vắng, kiện sai khai báo, không tìm thấy địa chỉ, khác) → đơn đóng "giao không hoàn tất" + hoàn tiền.
+6. **KTV drone** (đúng người đã lấy kiện) — mang kiện về tủ gửi → "Tiếp nhận": chọn drone rảnh, đủ pin ở tủ gửi → nhiệm vụ được tạo (drone `RESERVED`). Drone hỏng trước khi phóng → "Đổi drone".
+7. **KTV drone** — "Xác nhận nạp": cân kiện thực tế, mã niêm phong do hệ thống cấp, tick 3 mục kiểm tra; kiện nạp **thẳng lên drone**, không bỏ vào ô tủ gửi.
+   - Cân lệch quá 50 g so với khai báo → hệ thống tính lại phí → **khách** "Trả thêm phí chênh" hoặc "Không đồng ý" (huỷ, hoàn tiền, trả kiện). Không trả sau 60 phút → tự huỷ.
+8. **KTV drone** — "Phóng" (đã trả đủ tiền, trong khung giờ bay, thời tiết dưới ngưỡng, không bị tạm dừng bay toàn hệ thống hay ở hai trạm) → **người gửi và người nhận** nhận email "đơn đã phóng". Lấy hàng xong quá 120 phút chưa phóng → đơn bị đánh dấu gặp sự cố.
+9. **Hệ thống** — chặng bay: Đang cất cánh → Đã rời trạm → Đang bay → Sắp tới → Đã đến. Đơn **DEMO** tự chạy chặng; đơn **thật** đi theo telemetry của drone hoặc KTV xác nhận từng chặng. **Khách** theo dõi timeline (giờ + toạ độ từng mốc) và bản đồ trực tiếp.
+10. **Drone + tủ nhận** — camera drone nhận đúng mã ArUco của ô → **tủ** trượt mở nắp → **drone** quay servo nhả kiện → **tủ** đóng nắp. Servo không nhả được → tủ đóng nắp, kiện còn trên drone, KTV xử lý.
+11. **Hệ thống** — kiện vào ô → `READY_FOR_PICKUP` (đơn `STORING`), cấp PIN, gửi cho người nhận qua app / email / SMS kèm số giờ lưu trữ (24 giờ) và hạn lấy.
+12. **Người nhận** — nhập PIN tại kiosk (hoặc "Mở ô" qua Bluetooth trên app) → ô mở, lấy hàng → đơn **tự** `COMPLETED`. Vẫn còn nút "Tôi đã lấy đồ — hoàn tất" trên app.
+
+Ngoại lệ:
+- **Khách huỷ** được tới khi KTV chưa cầm kiện (đang chờ KTV hoặc KTV đang tới).
+- **Đơn gặp sự cố** (drone / tủ / bãi đáp có phiếu, tạm dừng bay, trạm dừng, quá hạn phóng): khách, KTV, admin được báo; hệ thống thử đổi tủ gửi khác; quá 30 phút chưa hết → đóng "giao không hoàn tất" + hoàn tiền.
+- **Quá hạn lấy** → job chuyển đồ ra kho (`EXPIRED`), trao trả tại quầy.
+- Đơn tạo trước khi có lấy hàng tận nhà vẫn theo cách cũ: người gửi bỏ kiện vào ô drone ở tủ gửi → "Tôi đã bỏ kiện vào ô" → KTV tiếp nhận.
 
 ## 7. Huỷ / thất bại → hoàn tiền
 
 1. Một trong các trường hợp:
-   - **Khách** huỷ đơn drone khi còn chờ đội bay tiếp nhận.
-   - **KTV drone** huỷ trước khi bay.
+   - **Khách** huỷ đơn drone khi KTV chưa cầm kiện.
+   - **KTV drone** tới nơi nhưng không lấy được kiện.
+   - **Hệ thống** đóng đơn "giao không hoàn tất": không KTV nào nhận lấy hàng, đơn bị chặn vì sự cố quá hạn.
+   - **KTV drone** huỷ trước khi bay (lý do "Drone lỗi" ⇒ drone chuyển `FAULT`).
    - **KTV drone** báo chuyến bay thất bại sau khi phóng ⇒ drone chuyển `FAULT` + mở phiếu sự cố drone.
    - **Hệ thống** tự huỷ do quá hạn.
 2. **Hệ thống** — đơn `REFUND_PENDING`, tạo yêu cầu hoàn tiền (về tài khoản ngân hàng khách đã lưu); kiện đã vào hệ thống thì chờ trả lại cho người gửi.
