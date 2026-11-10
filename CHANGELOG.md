@@ -2,6 +2,10 @@
 
 Mỗi thay đổi ở repo docs thêm **một dòng** vào ngày tương ứng (mới nhất ở trên). Ghi mã gap/SEC/ADR nếu có.
 
+## 2026-11-10
+
+- flow-1, tóm tắt nghiệp vụ § 6–7, product, architecture, sơ đồ `drone-mission` + `order-status`, STATUS: tài liệu luồng drone khớp code trên `main` — **lấy hàng tận nhà** (khách chọn điểm lấy hàng, hệ thống tự chọn tủ gửi, mời KTV drone rảnh gần nhất, mã lấy hàng 6 số, chỉ KTV đã cầm kiện mới gán drone), thả hàng bằng ArUco → nắp trượt → servo, kiosk mở bằng PIN tự hoàn tất đơn, đơn bị chặn khi tài sản có sự cố. Chấm lại checklist L1 70 % → 90 % (không thêm/bớt hạng mục): F1.02 → DONE (chỉ SePay, tự huỷ đơn chưa trả, `nextAction` khớp guard), F1.07 → DONE (PIN cấp ở mọi nguồn, không còn chỉ DEMO; gửi app/email/SMS), F1.08 → DONE (`IotService.completeIfPickup`, mở Bluetooth theo đơn), F1.09 → DONE (huỷ, giao không hoàn tất, chặn đơn, thất bại sau phóng, hoàn tiền, rơi kiện); F1.05, F1.06 giữ PARTIAL vì chưa bay thật có telemetry trên production. Tổng dự án 71,3 % → 76,3 %. Gap mới F1-G14 (phí theo quãng đường, tải theo model drone); STATUS § 3 chuyển 9 dòng drone đã có code trên `main` sang § 5. Sơ đồ `order-status` sửa ghi chú `paymentStatus` (có `REFUND_PENDING` → `REFUNDED`).
+
 ## 2026-11-09
 
 - review-2: BM01, BM02, BM04 ghi thành viên bằng họ tên đầy đủ (Lê Thị Yến Vi – leader, Trương Nguyễn Thái Bình, Nguyễn Quốc Bảo Huy, Trần Kim Nhã; nguồn chung `formfill.py`), BM01 giữ mục 0–8 trong 4 trang; BM04 điền cột "Automated in CI" (107/127 test cam kết đã chạy trong CI backend ở tag `review-2`, đối chiếu từng test trong `ci_test_map.py` mới), hạn giao "Before Defense 1.1", mục 11 đủ 4 thành viên ký, bỏ dòng RF-25 chờ biên bản (điền vào `MINUTES` khi có).
