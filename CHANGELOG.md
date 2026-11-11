@@ -2,6 +2,10 @@
 
 Mỗi thay đổi ở repo docs thêm **một dòng** vào ngày tương ứng (mới nhất ở trên). Ghi mã gap/SEC/ADR nếu có.
 
+## 2026-11-11
+
+- flow-3 § 8, STATUS § 3 (F3-G12): cập nhật kết quả chạy thử E2E luồng lắp đặt & nghiệm thu tủ trên production (`HN-001`, 8 ô, Pi giả + máy ảo Android) và 3 PR sửa 7 lỗi + làm gọn UI thẻ checklist ([backend #142](https://github.com/LockR-Tech/backend/pull/142), [mobile #136](https://github.com/LockR-Tech/mobile/pull/136), [iot #49](https://github.com/LockR-Tech/iot/pull/49)).
+
 ## 2026-11-10
 
 - diagrams: rút gọn chú thích `order-status` và `drone-mission` — CI (Linux) render `order-status` ở scale 0,35 < 0,40 sau PR #127; local nay ~0,60 cả hai.
