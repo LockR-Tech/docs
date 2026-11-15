@@ -1,0 +1,350 @@
+{
+ "id": "WF-02",
+ "title": "Rent a Box or Send a Parcel via Locker",
+ "purpose": "This workflow lets a customer rent a smart-locker box for a chosen time or send a parcel to another person through a locker. The customer books and pays in the mobile app, or directly at the kiosk, by VietQR bank transfer that SePay confirms automatically, then opens the box with a PIN at the kiosk or with the app over Bluetooth. The order ends when the items are collected and the box is released, or it expires after the overdue period. The admin follows the orders and the revenue on the admin web.",
+ "actors": [
+  "Customer (mobile app, kiosk)",
+  "Receiver or delegate (kiosk; mobile app if registered)",
+  "Locker Controller (cabinet controller and kiosk screen)",
+  "System Scheduler (backend jobs for payment timeout and overdue orders)",
+  "Admin (admin web, monitoring)"
+ ],
+ "diagrams": [
+  {
+   "path": "rp3/srs-assets/drawio/06b-activity-rent-locker.png",
+   "caption": "Activity diagram of renting a locker box"
+  },
+  {
+   "path": "rp3/srs-assets/drawio/06a-activity-send-parcel.png",
+   "caption": "Activity diagram of sending a parcel via locker"
+  }
+ ],
+ "parts": [
+  {
+   "heading": "A. Rent a box in the mobile app",
+   "steps": [
+    {
+     "text": "The customer opens a locker from \"Thuê tủ\" (Rent a box) on the home page, where \"Danh sách địa điểm\" (Locations) can be searched, or from a store in \"Điểm gửi\" (Drop-off points) with \"Xem tủ\" (View lockers); the \"Tủ locker\" page shows the address, the kiosk point and the box map, where free boxes are marked \"Sẵn sàng\" (Ready) next to boxes that are \"Đang dùng\" (In use), \"Hỏng\" (Faulty) or reserved for drones (\"Nhận Drone\"). Tapping a free box opens the \"Ô tủ trống\" (Free box) sheet with its size, number and status, where the customer taps \"Thuê tủ\" (Rent a box).",
+     "images": [
+      "png/wf2/s01-locker-box-map.png",
+      "png/wf2/s02-free-box-sheet.png"
+     ],
+     "caption": "Locker Box Map and Free Box Sheet (mobile app)"
+    },
+    {
+     "text": "The \"Thuê tủ giữ đồ\" (Rent a storage box) form is pre-filled with the location, the locker and the box type with its hourly and daily price and the number of free boxes. The customer chooses \"Theo giờ\" (By hour) with the 2h–12h chips or the slider, or \"Theo ngày\" (By day) with 1–7 days, can add a \"Ghi chú\" (Note) and a \"Mã giảm giá\" (Voucher), checks \"Tạm tính\" (Estimated price) and taps \"Thuê ngay\" (Rent now).",
+     "images": [
+      "png/wf2/s03-rent-form-2h.png",
+      "png/wf2/s04-rent-form-by-day.png"
+     ],
+     "caption": "Rent Storage Box Form by Hour and by Day (mobile app)"
+    },
+    {
+     "text": "The system creates the order in INITIALIZED state, marks the box RESERVED and shows \"Quét mã VietQR để thanh toán\" (Scan VietQR to pay) with the amount, the transfer content and \"Sao chép\" (Copy); the customer scans the code with any banking app (the Android app also offers \"Thanh toán bằng app ngân hàng\", Pay with banking app) and SePay confirms the transfer automatically while the screen shows \"Đang chờ xác nhận thanh toán…\" (Waiting for payment confirmation). An unpaid order can be paid later from its detail with \"Thanh toán 2.000đ\" (Pay), which opens this sheet again, and if nothing is paid within 15 minutes the System Scheduler cancels the order and releases the box.",
+     "images": [
+      "png/wf2/s05-rent-vietqr.png"
+     ],
+     "caption": "VietQR Payment Sheet (mobile app)"
+    },
+    {
+     "text": "When the admin has enabled payment simulation for testing, \"Giả lập thanh toán (test)\" (Simulate payment) opens \"Giả lập đã chuyển khoản\" (Simulate transfer received) with the amount, and \"Giả lập\" (Simulate) marks it as received without moving any real money. The app then shows \"Thanh toán thành công!\" (Payment successful) with the amount, and \"Hoàn tất\" (Done) closes it.",
+     "images": [
+      "png/wf2/s06-simulate-payment.png",
+      "png/wf2/s07-payment-success.png"
+     ],
+     "caption": "Simulate Payment Dialog and Payment Successful (mobile app)"
+    },
+    {
+     "text": "The paid order shows \"Đã thanh toán\" (Paid), \"Chuyển khoản (SePay)\" (Bank transfer via SePay), the transaction code, the loyalty points to be added and a 6-digit PIN with \"Chạm để sao chép\" (Tap to copy) that can be used many times during the rental. While the order is \"Chờ bỏ đồ\" (Awaiting drop-off), the customer enters the PIN at the kiosk or taps \"Mở Ô số 4 để bỏ đồ\" (Open box 4 to drop items), and \"Tôi đã bỏ đồ vào ô\" (I have put my items in) confirms the drop-off from the app.",
+     "images": [
+      "png/wf2/s08-rent-paid-pin.png"
+     ],
+     "caption": "Paid Rental Order with PIN (mobile app)"
+    }
+   ]
+  },
+  {
+   "heading": "B. Drop items, reopen, extend and end the rental (kiosk, mobile app)",
+   "steps": [
+    {
+     "text": "At the cabinet, the kiosk home screen shows the locker name and address, the number of free boxes, \"Kiosk sẵn sàng phục vụ\" (Kiosk ready) and two tiles, \"Mở Tủ / Nhận Đồ\" (Open locker / Collect items) and \"Gửi Đồ / Thuê Tủ\" (Drop off / Rent a locker), plus \"Báo sự cố\" (Report a problem). The customer taps \"Mở Tủ / Nhận Đồ\".",
+     "images": [
+      "png/wf2/s09-kiosk-home.png"
+     ],
+     "caption": "Kiosk Home Screen (kiosk)"
+    },
+    {
+     "text": "On \"Mở Tủ (OTP / QR)\" (Open locker) the kiosk shows the current locker and its code; the customer types the 6-digit PIN from the app, which the kiosk submits as soon as the sixth digit is entered (\"Mở khóa\", Unlock, is also available), or holds the order QR code under the scanner. The system checks the code and the Locker Controller unlocks the box.",
+     "images": [
+      "png/wf2/s10-kiosk-pin-entry.png"
+     ],
+     "caption": "PIN Entry Screen (kiosk)"
+    },
+    {
+     "text": "The kiosk shows the opened box, for example \"Ô Tủ #4\", with \"Ô đã mở. Đặt đồ vào ô, đóng cửa rồi bấm xác nhận.\" (The box is open. Put your items in, close the door and confirm). The customer taps \"Đã bỏ hàng xong\" (Finished dropping off), or \"Để sau — xác nhận trên ứng dụng\" (Later — confirm in the app).",
+     "images": [
+      "png/wf2/s11-kiosk-box-opened.png"
+     ],
+     "caption": "Box Opened for Drop-off (kiosk)"
+    },
+    {
+     "text": "The kiosk confirms \"Đã bỏ hàng!\" (Items dropped) with the box number and returns to the home screen after a short countdown or with \"Về trang chủ\" (Back to home). The box becomes OCCUPIED, the order moves to STORING and the rental time starts from the drop-off.",
+     "images": [
+      "png/wf2/s12-kiosk-dropped.png"
+     ],
+     "caption": "Drop-off Confirmed Screen (kiosk)"
+    },
+    {
+     "text": "In the app, \"Đơn tủ\" (Locker orders) > \"Đơn của tôi\" (My orders) lists the rental as \"Đang trong tủ\" (In locker) with its \"Hạn lấy\" (Pickup deadline), and \"Chi tiết\" (Details) opens the order. Below the PIN it offers \"Mở Ô số 4 để trả tủ & lấy đồ\" (Open box 4 to return & take items), \"Gia hạn thuê\" (Extend rental), \"Kết thúc thuê & lấy đồ\" (End rental & take items), \"Ủy quyền lấy hộ\" (Authorize pickup), \"Đổi mã PIN\" (Change PIN), \"Báo ô lỗi\" (Report faulty box), \"Chỉ đường tới tủ\" (Directions) and \"Yêu cầu hoàn tiền\" (Request refund), followed by \"Mốc thời gian\" (Timeline) and \"Lịch sử trạng thái\" (Status history).",
+     "images": [
+      "png/wf2/s13-orders-storing.png",
+      "png/wf2/s14-rental-actions.png"
+     ],
+     "caption": "Locker Orders List and Rental Order Actions (mobile app)"
+    },
+    {
+     "text": "To reopen the box during the rental, the customer taps \"Mở Ô số 4 để trả tủ & lấy đồ\"; in the Android and iOS app the \"Mở ô số 4\" (Open box 4) sheet opens the box over Bluetooth when the phone is near the cabinet, and opening alone does not end the rental. When Bluetooth cannot be used, as in the figure taken on the web build (\"Chưa mở được bằng Bluetooth\", Could not open via Bluetooth), the sheet offers \"Thử lại Bluetooth\" (Retry Bluetooth), \"Quét mã QR\" (Scan the QR sticker on the cabinet; the box opens over the Internet) or \"Dùng mã OTP\" (Use OTP code), which shows the order QR code and the PIN to scan or type at the kiosk.",
+     "images": [
+      "png/wf2/s15-open-box-ble-fallback.png",
+      "png/wf2/s16-use-otp.png"
+     ],
+     "caption": "Open Box Sheet with Bluetooth Fallback and OTP Code (mobile app)"
+    },
+    {
+     "text": "The customer can also reopen the box by entering the same PIN at the kiosk, which reminds that only \"kết thúc thuê\" (end rental) completes the order and offers \"Lấy hết đồ & kết thúc thuê\" (Take everything & end rental) or \"Chỉ lấy/cất đồ — tiếp tục thuê\" (Only take or store items — keep renting).",
+     "images": [
+      "png/wf2/s17-kiosk-reopen-options.png"
+     ],
+     "caption": "Reopened Rental Box Options (kiosk)"
+    },
+    {
+     "text": "Choosing to keep renting shows \"Vẫn đang thuê ô\" (Still renting the box): the customer closes the door, the PIN keeps working until the deadline and the order stays in STORING.",
+     "images": [
+      "png/wf2/s18-kiosk-still-renting.png"
+     ],
+     "caption": "Rental Continues after Reopening (kiosk)"
+    },
+    {
+     "text": "If more time is needed, \"Gia hạn thuê\" (Extend rental) opens a dialog where the customer adds hours with a slider, up to 24 hours per extension, and taps \"Gia hạn\" (Extend). The new deadline and total appear at once with \"Còn phải trả\" (Still to pay), and \"Thanh toán 2.000đ\" (Pay) settles the extra amount by VietQR exactly as in part A; afterwards the order lists both payments (\"Lần 1\", \"Lần 2\").",
+     "images": [
+      "png/wf2/s19-extend-dialog.png",
+      "png/wf2/s20-extended-balance.png"
+     ],
+     "caption": "Extend Rental Dialog and Amount Still to Pay (mobile app)"
+    },
+    {
+     "text": "To finish from the app, \"Kết thúc thuê & lấy đồ\" opens \"Lấy đồ tại kiosk\" (Collect at the kiosk) with the PIN and \"Mở ô số 4 trên điện thoại (GPS/QR)\" (Open box 4 on the phone); after emptying the box and closing the door the customer taps \"Đã lấy đồ và đóng tủ\" (I took my items and closed the box).",
+     "images": [
+      "png/wf2/s21-end-rental-sheet.png"
+     ],
+     "caption": "End Rental Sheet (mobile app)"
+    },
+    {
+     "text": "To finish at the kiosk, the customer enters the PIN, takes all items, closes the door, taps \"Lấy hết đồ & kết thúc thuê\" and confirms \"Kết thúc thuê\" (End rental) in the \"Kết thúc thuê?\" (End rental?) dialog, or taps \"Chưa\" (Not yet) to go back.",
+     "images": [
+      "png/wf2/s22-kiosk-end-confirm.png"
+     ],
+     "caption": "End Rental Confirmation Dialog (kiosk)"
+    },
+    {
+     "text": "The kiosk shows \"Đã kết thúc thuê!\" (Rental ended) with the released box number. The PIN stops working and the box becomes AVAILABLE again.",
+     "images": [
+      "png/wf2/s23-kiosk-rental-ended.png"
+     ],
+     "caption": "Rental Ended Screen (kiosk)"
+    },
+    {
+     "text": "In the app the order becomes \"Hoàn tất\" (COMPLETED) with the total, \"Điểm được cộng\" (Points earned) and every payment of the order, and \"Đặt lại đơn\" (Reorder) starts a new rental at the same locker.",
+     "images": [
+      "png/wf2/s24-rental-completed.png"
+     ],
+     "caption": "Completed Rental Order (mobile app)"
+    }
+   ]
+  },
+  {
+   "heading": "C. Send a parcel to a receiver",
+   "steps": [
+    {
+     "text": "From the free box sheet the sender taps \"Gửi hàng\" (Send parcel); \"Gửi hàng qua tủ\" (Send via locker) shows the two stages \"Bỏ hàng\" (Drop off) and \"Người nhận lấy\" (Receiver collects) and the pre-filled locker and box with its price per parcel. The sender enters the receiver's phone number, optional name and email (Lock.R emails the receiver when the order is paid and sends the pickup code after the drop-off), an optional \"Lời nhắn cho người nhận\" (Message to the receiver) and the \"Thời gian giữ hàng\" (Storage time), where 48 hours are included and 72, 96 or 168 hours cost extra as \"Tạm tính\" (Estimated price) shows, then taps \"Tạo đơn & lấy PIN bỏ hàng\" (Create order & get drop-off PIN).",
+     "images": [
+      "png/wf2/s30-send-form.png",
+      "png/wf2/s31-send-form-filled.png"
+     ],
+     "caption": "Send Parcel Form with Storage Time (mobile app)"
+    },
+    {
+     "text": "The order is created and the sender pays on the \"Quét mã VietQR để thanh toán\" screen exactly as in part A; the note under it says that the drop-off code appears automatically after payment.",
+     "images": [
+      "png/wf2/s32-send-vietqr.png"
+     ],
+     "caption": "VietQR Payment Screen for a Send Order (mobile app)"
+    },
+    {
+     "text": "After payment the screen shows \"Bước 1 — Bỏ hàng vào ô\" (Step 1 — Put the parcel in the box) with \"Đã thanh toán\" (Paid) and the drop-off PIN, and the \"Người nhận\" (Receiver) card lists the name, phone, email, message and whether the receiver has a Lock.R account (\"Đã có — PIN gửi thẳng vào app\", Has an account — the PIN goes straight to the app). \"Mở ô để bỏ hàng\" (Open box to drop parcel) opens the box over Bluetooth with the same fallback sheet as in part B, and \"Tôi đã bỏ hàng vào ô\" (I have put the parcel in) confirms the drop-off from the app.",
+     "images": [
+      "png/wf2/s33-send-paid-pin.png",
+      "png/wf2/s34-send-receiver-info.png"
+     ],
+     "caption": "Paid Send Order with Drop-off PIN and Receiver (mobile app)"
+    },
+    {
+     "text": "At the cabinet the sender can instead enter the drop-off PIN under \"Mở Tủ / Nhận Đồ\"; the box opens, and the sender puts the parcel in, closes the door and taps \"Đã bỏ hàng xong\", after which the kiosk shows \"Đã bỏ hàng!\" as in part B.",
+     "images": [
+      "png/wf2/s35-kiosk-send-drop-open.png"
+     ],
+     "caption": "Send Drop-off Box Opened (kiosk)"
+    },
+    {
+     "text": "After the drop-off the box is OCCUPIED, the order is STORING (\"Đang trong tủ\") with a pickup deadline that matches the chosen storage time, and the detail shows a new pickup code under \"Gửi mã cho người nhận\" (Send code to receiver). \"Chia sẻ mã cho người nhận\" (Share code with receiver) opens the phone's share sheet with a ready-made message for Zalo, Messenger or SMS (not available on the web build), and \"Sao chép tin nhắn\" (Copy message) copies it with the notice \"Đã sao chép tin nhắn…\" (Message copied); the receiver also gets the code by email.",
+     "images": [
+      "png/wf2/s36-send-pickup-code.png",
+      "png/wf2/s37-share-copied.png"
+     ],
+     "caption": "Pickup Code and Share Message (mobile app)"
+    }
+   ]
+  },
+  {
+   "heading": "D. Receiver picks up the parcel",
+   "steps": [
+    {
+     "text": "A receiver whose Lock.R account has the same phone number sees the parcel under \"Đơn tủ\" > \"Hàng chờ nhận\" (Incoming parcels), marked with a badge, with the sender, the deadline, the box, the pickup code and \"Mở ô số 7 lấy hàng\" (Open box 7 to collect), which opens the box over Bluetooth in the Android and iOS app.",
+     "images": [
+      "png/wf2/s40-incoming-parcels.png"
+     ],
+     "caption": "Incoming Parcels Tab (mobile app)"
+    },
+    {
+     "text": "The receiver, who does not need an account, taps \"Mở Tủ / Nhận Đồ\" on the kiosk and types the pickup code, which is submitted automatically at the sixth digit, or scans its QR code.",
+     "images": [
+      "png/wf2/s41-kiosk-pickup-code.png"
+     ],
+     "caption": "Pickup Code Entry Screen (kiosk)"
+    },
+    {
+     "text": "The kiosk shows \"Đã mở khóa!\" (Unlocked) with the order and the box number, and the receiver takes the parcel and closes the door. The order becomes COMPLETED automatically, the box returns to AVAILABLE and the sender receives loyalty points.",
+     "images": [
+      "png/wf2/s42-kiosk-pickup-opened.png"
+     ],
+     "caption": "Box Unlocked for Pickup (kiosk)"
+    },
+    {
+     "text": "In the receiver's app the parcel moves to \"Hoàn tất\" (Completed) with \"Đã nhận hàng\" (Received), and the sender's order is completed as well.",
+     "images": [
+      "png/wf2/s43-receiver-completed.png"
+     ],
+     "caption": "Received Parcel in Incoming Parcels (mobile app)"
+    },
+    {
+     "text": "If a wrong code is entered, the kiosk shows an error and counts the attempt; after too many wrong attempts (5 by default) the box is locked against code entry for a while (15 minutes by default), and the owner can issue a new PIN in the app.",
+     "images": [],
+     "caption": ""
+    },
+    {
+     "text": "While the order is STORING, the owner can tap \"Ủy quyền lấy hộ\" (Authorize pickup), enter another person's phone number, optional name and message and tap \"Ủy quyền\" (Authorize); the current PIN is replaced and the delegate finds the order and its new code in \"Đơn ủy quyền\" (Delegated orders) in the app. If a code has leaked, \"Đổi mã PIN\" followed by \"Đổi mã\" (Change code) in the \"Đổi mã PIN?\" dialog invalidates the old PIN at once and shows a new one.",
+     "images": [
+      "png/wf2/s45-delegate-dialog.png",
+      "png/wf2/s46-change-pin-dialog.png"
+     ],
+     "caption": "Authorize Pickup and Change PIN Dialogs (mobile app)"
+    }
+   ]
+  },
+  {
+   "heading": "E. Overdue rental and overtime fee",
+   "steps": [
+    {
+     "text": "When the rental deadline has passed, the kiosk refuses the PIN with \"Đã hết thời gian thuê. Vui lòng thanh toán phí quá giờ trên ứng dụng để mở ô.\" (The rental time is over. Please pay the overtime fee in the app to open the box.)",
+     "images": [
+      "png/demo/c51_rental_expired.png"
+     ],
+     "caption": "Expired Rental PIN Refused (kiosk)"
+    },
+    {
+     "text": "In the app the overdue order offers \"Thanh toán phí quá giờ (…) & Mở ô\" (Pay overtime fee & open box) and \"Thanh toán (…) & Lấy đồ hoàn tất\" (Pay & finish pickup), with the fee in brackets. The \"Thanh toán phí quá giờ\" sheet lists the original deadline, overdue time, hourly overtime rate and fee, and its pay button leads to the same VietQR transfer confirmed automatically by SePay.",
+     "images": [
+      "png/demo/a41_overdue_actions.png",
+      "png/demo/a42_overtime_pay.png"
+     ],
+     "caption": "Overdue Order Actions and Overtime Fee Sheet (mobile app)"
+    },
+    {
+     "text": "Once the fee is paid, the open sheet states that the overtime fee has been recorded and invites the customer to open the box, take the items and close it. If Bluetooth is not available, \"Dùng mã OTP\" (Use OTP code) shows a QR code and the PIN to scan or type at the kiosk.",
+     "images": [
+      "png/demo/a44_overtime_paid.png",
+      "png/demo/a45_use_otp.png"
+     ],
+     "caption": "Open Box after Overtime Payment (mobile app)"
+    },
+    {
+     "text": "The kiosk now accepts the PIN and opens the box; the customer takes everything, taps \"Lấy hết đồ & kết thúc thuê\" and sees \"Đã kết thúc thuê!\" with the released box number. The order is COMPLETED and the box becomes AVAILABLE.",
+     "images": [
+      "png/demo/c53_overdue_done.png"
+     ],
+     "caption": "Rental Ended after Overdue Payment (kiosk)"
+    },
+    {
+     "text": "If the items are still not collected long after the deadline (the grace periods are set by the admin), the System Scheduler moves them to storage, sets the order to EXPIRED and releases the box. Uncollected sent parcels follow the same rule and are listed as \"Quá hạn\" (Overdue) with \"Thanh toán phí lưu kho\" (Pay storage fee) in the app.",
+     "images": [],
+     "caption": ""
+    }
+   ]
+  },
+  {
+   "heading": "F. Rent a box directly at the kiosk",
+   "steps": [
+    {
+     "text": "A walk-in customer taps \"Gửi Đồ / Thuê Tủ\" on the kiosk home; \"Nhập thông tin\" (Enter your details) asks for a sign-in with a one-time code sent to a \"Số điện thoại\" (Phone number) or, on the \"Email\" tab, to an email address, and \"Gửi mã OTP\" (Send OTP) sends it.",
+     "images": [
+      "png/wf2/s60-kiosk-walkin-signin.png"
+     ],
+     "caption": "Walk-in Sign-in Screen (kiosk)"
+    },
+    {
+     "text": "On \"Xác thực OTP\" (Verify OTP) the customer types the 6-digit code and taps \"Xác nhận\" (Confirm); \"Gửi lại mã\" (Resend code) becomes available after a countdown, and a phone number or email that has no account yet continues to \"Đăng ký nhanh\" (Quick sign-up).",
+     "images": [
+      "png/wf2/s61-kiosk-walkin-otp.png"
+     ],
+     "caption": "OTP Verification Screen (kiosk)"
+    },
+    {
+     "text": "On \"Chọn ô tủ\" (Choose a box) the kiosk shows the locker, the number of free boxes and the legend \"Trống\" (Free), \"Đang chọn\" (Selected), \"Đang dùng\" (In use), \"Drone\" and \"Lỗi / bảo trì\" (Fault / maintenance); the customer taps a free box and \"Tiếp tục đặt tủ\" (Continue booking). On \"Thông tin đặt tủ\" (Booking details) the customer chooses \"Theo giờ\" or \"Theo ngày\" and the duration, adds an optional \"Ghi chú\" and \"Mã giảm giá\", checks \"Tóm tắt đơn thuê\" (Rental summary) and taps \"Đặt tủ ngay\" (Book now).",
+     "images": [],
+     "caption": ""
+    },
+    {
+     "text": "The kiosk then shows \"Chuyển khoản VietQR\" (VietQR transfer) with the QR code, \"Số tiền\" (Amount), \"Nội dung chuyển khoản\" (Transfer content), a payment countdown and \"Huỷ & Trả lại ô tủ\" (Cancel & release box); \"Giả lập thanh toán (test)\" appears only when payment simulation is enabled. When SePay confirms the transfer, the kiosk shows \"Đã nhận thanh toán cho đơn …\" (Payment received) with the PIN and opens the box by itself (\"Mở ô tủ #…\" retries if needed), and the drop-off continues as in part B.",
+     "images": [],
+     "caption": ""
+    }
+   ]
+  },
+  {
+   "heading": "G. Admin checks orders and revenue (admin web)",
+   "steps": [
+    {
+     "text": "The admin opens \"Đơn hàng\" (Orders) and searches by order code, phone number or receiver name, optionally filtering by \"Trạng thái\" (Status), \"Loại đơn\" (Order type), \"Thanh toán\" (Payment) and date. Each row shows the order type, sender and receiver, status, payment method, locker and box, and total.",
+     "images": [
+      "png/admin/wf2-a01-orders.png"
+     ],
+     "caption": "Order Management List (admin web)"
+    },
+    {
+     "text": "Opening an order shows its status, type and payment badges, the order information, the timeline the customer sees (\"Mốc thời gian khách thấy\"), the sender and receiver (\"Khách hàng\") and the locker and box (\"Tủ & ô\"). \"Cập nhật trạng thái\" (Update status) lets the admin correct the status when needed.",
+     "images": [
+      "png/admin/wf2-a02-order-detail.png"
+     ],
+     "caption": "Order Detail Page (admin web)"
+    },
+    {
+     "text": "Under \"Doanh thu\" (Revenue), \"Quản lý doanh thu\" (Revenue management) shows a chosen date range or quick ranges such as \"Hôm nay\" (Today) and \"Tháng này\" (This month), with cards for revenue, net revenue after refunds, refunds, average order value, new orders and paid orders. The \"Doanh thu theo ngày\" (Daily revenue) chart and \"Đối soát giao dịch\" (Reconcile transactions) help the admin check the money received from rentals and parcels.",
+     "images": [
+      "png/admin/a02b-revenue.png"
+     ],
+     "caption": "Revenue Management Page (admin web)"
+    }
+   ]
+  }
+ ]
+}

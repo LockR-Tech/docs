@@ -1,0 +1,329 @@
+{
+ "id": "WF-04",
+ "title": "Maintenance of Lockers and Drones",
+ "purpose": "This workflow keeps lockers and drones safe to use. The admin defines periodic inspection schedules with a checklist and assigns a technician, who is notified, inspects the asset on site and records every checklist item as Pass, Fail or Not applicable. A fully passed inspection keeps the asset in service and moves the next due date forward by the interval; a failed item on a cabinet opens a repair ticket for the same technician (and puts the chosen box into FAULT) and the due date moves only when that ticket is resolved, while a failed drone item puts the drone into FAULT and opens a drone ticket.",
+ "actors": [
+  "Admin (admin web)",
+  "Locker Technician (mobile app)",
+  "Drone Technician (mobile app)"
+ ],
+ "diagrams": [
+  {
+   "path": "rp3/srs-assets/drawio/06g-activity-periodic-maintenance.png",
+   "caption": "Activity diagram of periodic maintenance for lockers and drones"
+  }
+ ],
+ "parts": [
+  {
+   "heading": "A. Admin creates an inspection schedule and assigns technicians (admin web)",
+   "steps": [
+    {
+     "text": "The admin opens \"Bảo trì, sự cố thiết bị\" (Maintenance & device incidents) in the side menu; the section \"Kế hoạch bảo trì định kỳ Kiosk & Drone\" (Periodic maintenance plans for lockers and drones) lists every schedule and can be searched and filtered by \"Tất cả KTV phụ trách\" (All technicians) and \"Tất cả trạng thái\" (All statuses). Each card shows the plan name, priority, tags such as \"Đến hạn\" (Due), \"Quá hạn 5 ngày\" (5 days overdue) or \"Còn 1 ngày nữa\" (1 day left), the cabinet, address, \"Hạn kiểm tra\" (Due), \"Ca\" (Time slot), \"Chu kỳ\" (Interval) and \"KTV phụ trách\" (Assigned technician), with the buttons \"Đổi KTV\" (Change technician), \"Chi tiết & Lịch sử\" (Details & history), \"Ghi nhận kiểm tra\" (Record inspection), edit and delete.",
+     "images": [
+      "png/admin/wf4-a02-schedule-list.png"
+     ],
+     "caption": "Inspection Schedule List (admin web)"
+    },
+    {
+     "text": "At the top the admin switches between \"Phần Kiosk\" (Locker part) and \"Phần Drone\" (Drone part) and reads the cards \"Tổng Kiosk có lịch\" (Cabinets with a schedule), \"Đến hạn hôm nay\" (Due today), \"Quá hạn kiểm định\" (Overdue) and \"Tỷ lệ đúng hạn\" (On-time rate). In \"Thiết lập Kế hoạch Kiểm tra định kỳ Kiosk mới\" (Set up a new locker inspection plan) the admin selects \"Thiết bị Kiosk\" (Cabinet), whose address is attached to the technician's job, enters \"Tên kế hoạch kiểm tra\" (Plan name), \"Kỹ thuật viên phụ trách\" (Assigned technician), \"Chu kỳ lặp lại (ngày)\" (Repeat interval, days), \"Mức độ ưu tiên\" (Priority), the location inside the building, \"Ngày kiểm tra đầu tiên\" (First inspection date), \"Giờ hẹn bắt đầu cụ thể\" (Start time), \"Khung giờ / Ca kiểm tra\" (Time slot) and the checklist with one item per line or by tapping the sample chips, then clicks \"Thiết lập Kế hoạch Kiosk\" (Create locker plan); the technician is notified with \"Lịch kiểm tra mới\" (New inspection schedule).",
+     "images": [
+      "png/admin/wf4-a01-schedule-form.png"
+     ],
+     "caption": "Locker Inspection Plan Form (admin web)"
+    },
+    {
+     "text": "In \"Phần Drone\" the form \"Thiết lập Kế hoạch Kiểm tra định kỳ Drone mới\" (Set up a new drone inspection plan) works the same way with \"Thiết bị Drone\" (Drone), \"Vị trí chi tiết / bãi đáp\" (Location / landing pad), \"Bộ tiêu chí an toàn Drone\" (Drone safety checklist) and the button \"Thiết lập Kế hoạch Drone\" (Create drone plan). The yellow notice explains that creating the schedule puts the drone into \"Đang bảo dưỡng\" (Under maintenance), so it takes no flights until its first inspection is recorded as PASSED, and that a drone with an active mission (reserved or flying) cannot get a schedule.",
+     "images": [
+      "png/admin/wf4-a03-drone-schedule-form.png"
+     ],
+     "caption": "Drone Inspection Plan Form (admin web)"
+    },
+    {
+     "text": "On the cabinet detail page, tab \"Phụ trách & vị trí\" (Technician & location), the admin picks the technician under \"KTV phụ trách\" (Assigned technician) and clicks \"Lưu\" (Save), so that \"Phiếu sự cố mới của tủ gửi riêng cho Gia Bảo Phạm\" (new tickets of this cabinet go only to Gia Bảo Phạm); \"Vị trí & Tọa độ GPS tủ\" (Cabinet location & GPS) shows the address and coordinates. The cards \"Tổng số ô vật lý\" (Physical boxes), \"Ô trống\" (Empty), \"Đang dùng\" (In use) and \"Ô hỏng\" (Faulty) count the boxes by state.",
+     "images": [
+      "png/admin/wf4-a04-locker-detail.png"
+     ],
+     "caption": "Cabinet Detail – Technician and Location (admin web)"
+    },
+    {
+     "text": "On \"Chi tiết LR-DRN-08\" (Drone detail) the badge \"Đang bảo trì\" (Under maintenance) and \"Trạng thái nhiệm vụ: Đang bảo trì\" (Mission state) show that the drone waits for its first inspection; the admin sets the drone technician in \"KTV phụ trách\" and the station in \"Trạm/Kiosk của Drone\" (Drone station), each with \"Lưu\". The block \"Thao tác quản trị\" (Admin actions) offers \"Đổi mã\" (Change code), \"Cập nhật pin\" (Update battery) and \"Xoá Drone\" (Delete drone), and \"Bộ điều khiển & Thiết bị phần cứng\" (Controller & hardware) links a Raspberry Pi with \"Gán bộ điều khiển Pi\" (Assign Pi controller).",
+     "images": [
+      "png/admin/wf4-a05-drone-detail.png"
+     ],
+     "caption": "Drone Detail Screen (admin web)"
+    }
+   ]
+  },
+  {
+   "heading": "B. Technician starts the shift and receives the task (mobile app)",
+   "steps": [
+    {
+     "text": "On the first sign-in of a technician account the app shows \"Quyền truy cập vị trí\" (Location access), explaining that the position is used to route tickets, periodic inspections and drone rescues nearby and is read only while the technician is on shift. The technician taps \"Cho phép truy cập vị trí\" (Allow location access) or \"Để sau\" (Later).",
+     "images": [
+      "png/wf4/s01-location-permission.png"
+     ],
+     "caption": "Location Access Notice (technician)"
+    },
+    {
+     "text": "The header card shows \"NGOÀI CA\" (Off shift) with \"GPS đã tắt · Vào ca để kích hoạt vị trí\" (GPS off – start the shift to enable location) and the button \"Vào ca\" (Start shift). After \"Vào ca\" the card shows \"ĐANG TRONG CA\" (On shift) with \"GPS: Hoạt động (±10m) · Vừa xong\" (GPS active, just now), the target icon \"Cập nhật lại GPS\" (Refresh GPS) and the button \"Hết ca\" (End shift).",
+     "images": [
+      "png/wf4/s02-ktv-off-shift.png",
+      "png/wf4/s03-ktv-on-shift.png"
+     ],
+     "caption": "Off Shift and On Shift (locker technician)"
+    },
+    {
+     "text": "The drone technician's home has the tabs \"Điều phối\" (Dispatch), \"Đội bay\" (Fleet), \"Sự cố\" (Incidents), \"Việc của tôi\" (My jobs), \"Định kỳ\" (Periodic) and \"Công cụ bay\" (Flight tools). The round GPS icon of the shift card opens \"Đang trong ca làm việc\" (On shift) with the coordinates, accuracy and last update under \"THÔNG TIN GPS THIẾT BỊ\" (Device GPS info) and the buttons \"Mở Google Maps\" (Open Google Maps) and \"Cập nhật GPS\" (Update GPS).",
+     "images": [
+      "png/wf4/s04-drone-shift-gps.png"
+     ],
+     "caption": "Shift GPS Information (drone technician)"
+    },
+    {
+     "text": "The locker technician is notified when work is assigned and when a schedule falls due (checked every morning at 07:00): the bell opens \"Thông báo\" (Notifications) with items such as \"Lịch kiểm tra mới\" (New inspection schedule), \"Phân công phụ trách tủ\" (Cabinet assigned to you) and \"Lịch kiểm tra định kỳ tới hạn\" (Periodic inspection due), unread items marked with a dot and the buttons \"Đọc tất cả\" (Read all), delete and refresh. The drone technician's header has no bell, so a new drone schedule is found in the \"Định kỳ\" tab (Part E).",
+     "images": [
+      "png/wf4/s05-notifications.png"
+     ],
+     "caption": "Notifications Screen (locker technician)"
+    },
+    {
+     "text": "At the end of the day the technician taps \"Hết ca\" (End shift); the dialog \"Kết thúc ca trực?\" (End the shift?) warns that the system stops routing new incidents and turns off location access, and \"Kết thúc ca\" (End shift) returns the card to \"NGOÀI CA\". For a drone technician, ending the shift also switches off accepting home-pickup jobs.",
+     "images": [
+      "png/wf4/s06-end-shift-confirm.png"
+     ],
+     "caption": "End Shift Dialog (locker technician)"
+    }
+   ]
+  },
+  {
+   "heading": "C. Locker technician performs a periodic inspection (mobile app)",
+   "steps": [
+    {
+     "text": "The locker technician opens the tab \"Định kỳ\" (Periodic) and filters \"Của tôi\" (Mine) or \"Tất cả\" (All) and \"Mọi hạn\" (Any date), \"Đến hạn\" (Due) or \"Sắp tới\" (Upcoming); card #20 shows \"Đến hạn hôm nay\" (Due today), cabinet HCM-Q7-01, \"Hạn: 09:00:00 15/11/2026\" (Due), \"Chu kỳ: Mỗi 7 ngày\" (Every 7 days) and \"Phụ trách\" (Assigned to you). \"Chi tiết\" (Details) opens the plan with priority, time slot, \"KTV phụ trách: Bạn\" (Assigned technician: you), the location in the building, \"Chỉ đường tới tủ\" (Directions to cabinet), \"Lần kiểm tra trước\" (Last inspection) and the button \"Kiểm tra ngay\" (Inspect now).",
+     "images": [
+      "png/wf4/s07-periodic-list.png",
+      "png/wf4/s08-schedule-detail.png"
+     ],
+     "caption": "Periodic List and Schedule Detail (locker technician)"
+    },
+    {
+     "text": "\"Kiểm tra\" (Inspect) or \"Kiểm tra ngay\" opens \"Xác nhận kiểm tra định kỳ\" (Confirm periodic inspection) with the cabinet, \"Chu kỳ: 7 ngày\" (Interval: 7 days), the address and location note, and \"Hạng mục kiểm tra (0/6)\" (Check items) defined by the admin. For each item the technician selects \"Đạt\" (Pass), \"Không đạt\" (Fail) or \"Không áp dụng\" (Not applicable) and may open \"Ghi chú\" (Note).",
+     "images": [
+      "png/wf4/s09-checklist.png"
+     ],
+     "caption": "Inspection Checklist (locker technician)"
+    },
+    {
+     "text": "When a check fails, for example the electronic lock of box 3 does not release, the technician taps \"Không đạt\"; the item turns red and the field \"Mô tả lỗi phát hiện (tuỳ chọn)\" (Describe the defect, optional) appears. The counter \"Hạng mục kiểm tra (4/6)\" shows how many items have been rated so far.",
+     "images": [
+      "png/wf4/s10-item-failed.png"
+     ],
+     "caption": "Checklist Item Marked as Failed (locker technician)"
+    },
+    {
+     "text": "With every item rated the sheet shows \"Kết quả: KHÔNG ĐẠT — hệ thống sẽ mở phiếu sự cố giao cho bạn. Hạn kiểm tra kế tiếp chỉ dời khi phiếu được hoàn tất.\" (Result: FAILED – a ticket will be opened for you; the next due date moves only when the ticket is completed). Under \"Ô bị hỏng (tuỳ chọn)\" (Faulty box, optional) the technician selects the box (\"Ô #3 · Trống\"), which becomes FAULT and is linked to the ticket, or keeps \"Không gắn ô — sự cố cấp tủ\" (No box – cabinet-level incident), adds \"Mô tả sự cố\" (Incident description), an optional \"Ghi chú biên bản kiểm tra\" (Inspection note) and photos with \"Chụp ảnh\" (camera or \"Chọn ảnh từ thư viện\", up to 10), and taps \"Xác nhận hoàn thành\" (Confirm completion).",
+     "images": [
+      "png/wf4/s11-faulty-box-submit.png"
+     ],
+     "caption": "Failed Result, Faulty Box and Submit (locker technician)"
+    },
+    {
+     "text": "The app confirms \"Kiểm tra KHÔNG ĐẠT — đã mở phiếu RPT-55 giao cho bạn. Hạn kế tiếp chỉ dời khi phiếu được hoàn tất.\" (Inspection FAILED – ticket RPT-55 opened and assigned to you) with the shortcut \"Xem việc\" (View job). The schedule keeps its due date 09:00 15/11/2026, and its card shows \"Lần trước KHÔNG ĐẠT · Chờ hoàn tất phiếu RPT-55 trước…\" (Last result FAILED – complete ticket RPT-55 first) and the button \"Xử lý phiếu RPT-55\" (Handle ticket RPT-55) instead of \"Kiểm tra\", so no new inspection can be submitted until the ticket is resolved.",
+     "images": [
+      "png/wf4/s12-fail-submitted.png",
+      "png/wf4/s13-schedule-waiting-ticket.png"
+     ],
+     "caption": "Ticket Opened and Schedule Waiting (locker technician)"
+    }
+   ]
+  },
+  {
+   "heading": "D. Repair ticket handled to resolution and re-inspection (locker technician)",
+   "steps": [
+    {
+     "text": "The ticket of the failed inspection is already IN_PROGRESS for the inspecting technician and appears in \"Việc của tôi\" (My jobs) under \"Sự cố đang xử lý\" (Incidents in progress), below the shift overview, rating and SLA warning. The card shows RPT-55, the countdown \"Còn 03:59:07\" (time left), \"Đang xử lý\" (In progress), \"Tủ Crescent Mall – Tầng trệt · Ô 3\", the tag \"Từ kiểm tra định kỳ #20\" (From periodic inspection #20) and the buttons \"Chỉ đường\" (Directions), \"Gia hạn\" (Extend), \"Nghiệm thu\" (Acceptance photos) and \"Hoàn tất\" (Complete).",
+     "images": [
+      "png/wf4/s14-my-jobs.png"
+     ],
+     "caption": "My Jobs with the Repair Ticket (locker technician)"
+    },
+    {
+     "text": "Tapping the card, or \"Xử lý phiếu RPT-55\" on the schedule, opens \"Hồ sơ chi tiết phiếu sự cố kỹ thuật\" (Technical incident record) with \"Tạo lúc\" (Created), \"Hạn SLA\" (SLA due, 4 hours later), the cabinet and box and the description written during the inspection. The bottom bar offers \"Kiểm tra ô & Khóa sự cố tại Kiosk\" (Check box & lock incident at the kiosk), \"Nghiệm thu & Hoàn tất xử lý\" (Accept & complete), \"Không đúng mô tả — đóng phiếu & phản hồi\" (Not as described – close & reply), \"Trả lại phiếu về hàng chờ\" (Return to queue), \"Chỉ đường tới tủ\" (Directions) and \"Gia hạn SLA\" (Extend SLA).",
+     "images": [
+      "png/wf4/s15-ticket-detail.png"
+     ],
+     "caption": "Repair Ticket Detail (locker technician)"
+    },
+    {
+     "text": "During the repair the technician taps \"Thêm bước xử lý / ghi chú nhanh...\" (Add step / quick note), picks a quick chip such as \"🔧 Thay thế linh kiện\" (Replace part) and completes the note, can attach a photo with the camera icon, and taps send. The entry appears in \"Nhật ký & Lịch sử xử lý của KTV\" (Technician log & history) with the technician's name and time.",
+     "images": [
+      "png/wf4/s16-progress-note.png",
+      "png/wf4/s17-progress-logged.png"
+     ],
+     "caption": "Progress Note and Technician Log (locker technician)"
+    },
+    {
+     "text": "\"Nghiệm thu & Hoàn tất xử lý\" opens \"Nghiệm thu hoàn tất sửa chữa\" (Repair acceptance) with the photo groups \"Trước khi sửa\" (Before repair), \"Trong quá trình sửa\" (During repair) and \"Sau khi xong\" (After repair), \"Ghi chú kỹ thuật & linh kiện\" (Technical note & parts) with quick phrases such as \"Đã thay thế linh kiện khóa điện tử\" (Replaced the electronic lock part) and the switch \"Mở thử ô sau sửa\" (Test-open the box after repair). The business rules require an after-repair photo, so the technician adds at least one under \"Sau khi xong\" (the screen marks it optional) and taps \"Xác nhận & Hoàn tất sửa chữa\" (Confirm & complete repair).",
+     "images": [
+      "png/wf4/s18-resolve-sheet.png"
+     ],
+     "caption": "Repair Acceptance Sheet (locker technician)"
+    },
+    {
+     "text": "The app shows \"Đã nghiệm thu và hoàn tất sự cố! Ô tủ đã hoạt động lại.\" (Incident accepted and completed – the box works again): the ticket becomes RESOLVED and moves to \"Lịch sử đã hoàn thành\" (Completed history), and box 3 returns to its previous state. Closing the ticket also moves the schedule: card #20 now shows \"Còn 7 ngày nữa đến hạn\" (Due in 7 days) with \"Hạn: 00:47:28 22/11/2026\", 7 days after the ticket was closed, and \"Kiểm tra\" is available again.",
+     "images": [
+      "png/wf4/s19-ticket-resolved.png",
+      "png/wf4/s20-schedule-after-ticket.png"
+     ],
+     "caption": "Ticket Resolved and Schedule Moved (locker technician)"
+    },
+    {
+     "text": "To confirm the repair the technician inspects the same schedule again with every item \"Đạt\"; the sheet shows \"Kết quả: ĐẠT — hạn kiểm tra kế tiếp dời sang 7 ngày sau.\" (Result: PASSED – next due date moves 7 days later), and the technician adds an optional note and photos and taps \"Xác nhận hoàn thành\". The app answers \"Đã ghi nhận ĐẠT cho \"Kiểm tra định kỳ khóa, cảm biến cửa và nguồn\" — hạn kế tiếp 22/11/2026.\" (PASSED recorded – next due 22/11/2026), counting 7 days from this inspection, and the plan records it as \"Lần kiểm tra trước\" (Last inspection).",
+     "images": [
+      "png/wf4/s21-reinspect-all-pass.png",
+      "png/wf4/s22-pass-recorded.png"
+     ],
+     "caption": "Re-inspection Passed (locker technician)"
+    },
+    {
+     "text": "Only the assigned technician can submit a schedule: when another locker technician opens schedule #20 from \"Tất cả\" (All), its \"Kiểm tra\" button is greyed out and the detail shows \"KTV phụ trách: Gia Bảo Phạm\" with the disabled button \"Lịch do KTV khác phụ trách\" (Schedule handled by another technician). The server also rejects a result sent by anyone else (\"Chỉ KTV phụ trách lịch mới hoàn tất được lần kiểm tra\", only the assigned technician can complete the inspection), so the schedule stays unchanged.",
+     "images": [
+      "png/wf4/s23-other-tech-blocked.png"
+     ],
+     "caption": "Schedule of Another Technician (locker technician)"
+    }
+   ]
+  },
+  {
+   "heading": "E. Drone technician inspects and maintains a drone (mobile app)",
+   "steps": [
+    {
+     "text": "The drone technician opens \"Định kỳ\" (Periodic), which can be searched (\"Tìm lịch, mã Drone, KTV phụ trách...\") and filtered by \"Tất cả\" (All), \"Đến hạn\" (Due), \"Sắp tới\" (Upcoming) and priority; the card \"Kiểm tra định kỳ cánh quạt, pin và cảm biến\" shows \"Drone LR-DRN-08\", \"Mỗi 14 ngày\" (Every 14 days), \"Hạn: 15/11/2026\" and the technician. \"Chi tiết\" opens plan #21 (\"Định kỳ Drone\", \"Đến hạn hôm nay\", \"KTV phụ trách: Bạn\", the landing pad and \"Chỉ đường tới trạm Drone\" (Directions to the drone station)) with the button \"Kiểm tra ngay\" (Inspect now).",
+     "images": [
+      "png/wf4/s24-drone-periodic-list.png",
+      "png/wf4/s25-drone-schedule-detail.png"
+     ],
+     "caption": "Drone Periodic List and Schedule Detail (drone technician)"
+    },
+    {
+     "text": "The drone checklist \"Hạng mục kiểm tra (5/5)\" covers the airframe, landing gear and propellers, battery and connectors, IMU and compass calibration, GPS and Return-to-Home, and a no-load motor test. The technician marks each item \"Đạt\" (Pass) and may type a note, for example \"Pin 82%, đầu nối sạch, không phồng\" (Battery 82 %, connectors clean, no swelling).",
+     "images": [
+      "png/wf4/s26-drone-checklist.png"
+     ],
+     "caption": "Drone Inspection Checklist (drone technician)"
+    },
+    {
+     "text": "The sheet shows \"Kết quả: ĐẠT — hạn kiểm tra kế tiếp dời sang 14 ngày sau.\" (Result: PASSED – next due date moves 14 days later); the technician adds a note and a photo under \"Ảnh minh chứng hiện trường\" (Site evidence photos) and taps \"Xác nhận hoàn thành\" (Confirm completion). The app shows \"Đã ghi nhận bảo trì ĐẠT và cập nhật chu kỳ tiếp theo.\" (Maintenance recorded as PASSED and next cycle updated), the card shows \"Hạn: 29/11/2026\" and \"Lần trước: 15/11/2026\" (Last done), and LR-DRN-08 leaves MAINTENANCE and returns to IDLE (\"Sẵn sàng\", Ready).",
+     "images": [
+      "png/wf4/s27-drone-pass-result.png",
+      "png/wf4/s28-drone-pass-recorded.png"
+     ],
+     "caption": "Drone Inspection Passed (drone technician)"
+    },
+    {
+     "text": "If any drone item is marked \"Không đạt\" (Fail), the system sets the drone to FAULT (\"Lỗi\"), opens a drone ticket that is handled as in Part F, and still moves the next due date forward. The drone takes no deliveries until that ticket is resolved.",
+     "images": [],
+     "caption": ""
+    },
+    {
+     "text": "In \"Đội bay\" (Fleet) the technician sees the drones in their charge with status, station, battery and technician (an open drop incident is shown in red), followed by \"Drone chưa có KTV phụ trách\" (Drones without a technician) marked \"Chưa nhận\" (Not taken), which must be taken over first. Tapping LR-DRN-08 (\"Pin 82% · bạn đang phụ trách\", you are in charge) opens \"Nhả phụ trách\" (Release), \"Đổi trạng thái\" (Change status), \"Cập nhật pin %\" (Update battery %) and \"Nhật ký bảo trì\" (Maintenance log).",
+     "images": [
+      "png/wf4/s29-fleet-list.png",
+      "png/wf4/s30-drone-actions.png"
+     ],
+     "caption": "Fleet and Drone Actions (drone technician)"
+    },
+    {
+     "text": "\"Cập nhật pin %\" asks for \"Pin còn lại (0-100)\" (Remaining battery) and saves with \"Lưu\" (Save). \"Nhật ký bảo trì · LR-DRN-08\" lists manual entries and automatic ones such as \"Đồng bộ trạng thái IDLE → MAINTENANCE\" (schedule created), \"Đồng bộ trạng thái MAINTENANCE → IDLE\" (inspection passed) and \"Cập nhật pin 95%\", and the technician adds an entry in \"Thêm bước xử lý / ghi chú...\" (Add a step / note) and taps send.",
+     "images": [
+      "png/wf4/s31-battery-update.png",
+      "png/wf4/s32-maintenance-log.png"
+     ],
+     "caption": "Battery Update and Maintenance Log (drone technician)"
+    },
+    {
+     "text": "\"Đổi trạng thái\" opens \"Đổi trạng thái drone\" (Change drone status) with \"Sẵn sàng\" (Ready), \"Đang sạc\" (Charging), \"Đang bảo trì\" (Under maintenance) and \"Lỗi\" (Fault); the technician selects one, for example \"Đang sạc\" while charging and \"Sẵn sàng\" afterwards, taps \"Xác nhận\" (Confirm) and sees \"Đã đổi trạng thái drone\" (Drone status changed). Choosing \"Lỗi\" requires a reason and opens a drone ticket, \"Sẵn sàng\" is refused while a ticket for the drone is still open, and a flying drone cannot be set to \"Lỗi\" directly.",
+     "images": [
+      "png/wf4/s33-change-status.png"
+     ],
+     "caption": "Change Drone Status Dialog (drone technician)"
+    }
+   ]
+  },
+  {
+   "heading": "F. Drone ticket handled to resolution (drone technician)",
+   "steps": [
+    {
+     "text": "Drone tickets appear in \"Sự cố\" (Incidents) with the banner \"Có 1 sự cố Drone đang chờ tiếp nhận xử lý.\" (1 drone incident waiting), the filters \"Tất cả\" (All), \"Chờ nhận\" (Waiting), \"Đang xử lý\" (In progress) and \"Hoàn tất\" (Completed), and the groups \"Gửi trực tiếp cho bạn\" (Sent directly to you) and \"Hàng đợi kỹ thuật chung\" (Shared queue); a ticket from a failed drone inspection appears in the same way. The technician taps \"Nhận xử lý\" (Accept) on RPT-800056 \"Cánh quạt nứt\" (Cracked propeller, LR-DRN-09) and confirms \"Xác nhận nhận việc\" (Confirm taking the job), and the ticket moves from \"Mới\" (New, OPEN) to \"Đang xử lý\" (IN_PROGRESS).",
+     "images": [
+      "png/wf4/s34-drone-incidents.png",
+      "png/wf4/s35-accept-confirm.png"
+     ],
+     "caption": "Drone Incident List and Accept Dialog (drone technician)"
+    },
+    {
+     "text": "\"Cập nhật xử lý\" (Update handling) opens \"Hồ sơ chi tiết phiếu sự cố kỹ thuật Drone\" (Drone incident record) with \"Mô tả hiện trường\" (Site description), \"Ảnh hồ sơ theo giai đoạn\" (Photos by stage) and \"Nhật ký & lịch sử xử lý của KTV\" (Technician log). \"Thêm bước xử lý / ảnh tiến độ\" (Add step / progress photo) opens a form where the technician adds photos with \"Thêm ảnh\" (Add photo), types what was checked or repaired and taps \"Lưu nhật ký\" (Save log).",
+     "images": [
+      "png/wf4/s36-drone-ticket-detail.png",
+      "png/wf4/s37-drone-add-step.png"
+     ],
+     "caption": "Drone Ticket Detail and Progress Step (drone technician)"
+    },
+    {
+     "text": "If more time is needed, \"Gia hạn SLA (0/2)\" (Extend SLA) opens \"Gia hạn SLA · RPT-800056\", where the technician chooses 2 to 24 hours and must enter \"Lý do gia hạn\" (Extension reason) before tapping \"Gia hạn\" (Extend); a ticket can be extended at most twice and each extension is written to the ticket log. \"Trả lại phiếu\" (Return ticket) sends the ticket back to the queue with a reason, and a technician holding several tickets past their SLA sees \"SLA: Hạn chế nhận việc\" (Restricted from taking jobs) and cannot accept new ones.",
+     "images": [
+      "png/wf4/s38-sla-extend.png"
+     ],
+     "caption": "SLA Extension Dialog (drone technician)"
+    },
+    {
+     "text": "\"Nghiệm thu & hoàn tất sự cố\" (Accept and close incident) opens \"Nghiệm thu sự cố Drone\" (Drone incident acceptance), where the technician writes \"Kết quả khắc phục\" (Repair result), adds photos under \"Ảnh trong quá trình sửa\" (During repair) and \"Ảnh sau khi sửa xong\" (After repair) and taps \"Xác nhận hoàn tất\" (Confirm completion). The ticket shows \"Đã xong\" (Done, RESOLVED) with the photos by stage and the log entry \"[NGHIỆM THU THÀNH CÔNG]\" (Acceptance successful), and the drone returns to IDLE unless another ticket or its first inspection is still pending.",
+     "images": [
+      "png/wf4/s39-drone-resolve.png",
+      "png/wf4/s40-drone-resolved-log.png"
+     ],
+     "caption": "Drone Incident Acceptance and Resolved Ticket (drone technician)"
+    }
+   ]
+  },
+  {
+   "heading": "G. Admin monitors maintenance (admin web)",
+   "steps": [
+    {
+     "text": "In \"Bảo trì, sự cố thiết bị\" (Maintenance & device incidents) the tab \"Sự cố Kiosk\" (Locker incidents) shows the ticket counters, a warning for tickets past their SLA and the ticket list, filtered by keyword, technician, cabinet, time and status. Searching \"Crescent\" shows RPT-55 with the tag \"Từ kiểm tra định kỳ\" (From periodic inspection), the status \"Đã hoàn tất\" (Completed), the technician Gia Bảo Phạm and the photos he attached; \"Nhật ký\" (Log) opens the handling record.",
+     "images": [
+      "png/admin/wf4-a08-tickets-kiosk.png"
+     ],
+     "caption": "Locker Incident Tickets from Inspections (admin web)"
+    },
+    {
+     "text": "The tab \"Sự cố Drone\" (Drone incidents) works the same way for drones and also offers \"Tạo báo cáo sự cố Drone\" (Create drone incident report). Filtering on LR-DRN-09 shows RPT-800056 \"Cánh quạt nứt\" (Cracked propeller) completed by Quốc Huy Đặng with the reporter's photo, the progress photo and the after-repair photo.",
+     "images": [
+      "png/admin/wf4-a09-tickets-drone.png"
+     ],
+     "caption": "Drone Incident Tickets (admin web)"
+    },
+    {
+     "text": "The page \"Quản lý Drone\" (Drone management) counts drones by status and filters them with chips such as \"Sẵn sàng\" (Ready), \"Đang bay\" (Flying), \"Bảo trì\" (Maintenance) and \"Lỗi\" (Fault). After the passed inspection LR-DRN-08 is back under \"Sẵn sàng\" with 95 % battery and its responsible technician Quốc Huy Đặng; each card offers \"Chi tiết\" (Details), \"Bảo trì\" (Maintenance) and \"Xóa\" (Delete).",
+     "images": [
+      "png/admin/wf4-a07-drones.png"
+     ],
+     "caption": "Drone Management – Ready Drones (admin web)"
+    }
+   ]
+  },
+  {
+   "heading": "H. Locker technician checks the cabinet's IoT controller (mobile app)",
+   "steps": [
+    {
+     "text": "In \"Thiết bị IoT\" (IoT devices) the locker technician sees the controllers of the cabinets in their charge by MAC address, with the cabinet, \"Tín hiệu cuối\" (Last signal) and \"Online\" or \"Offline\". Tapping the controller of HCM-Q7-01 shows \"Mã thiết bị\" (Device ID), \"Kết nối: Trực tuyến\" (Connection: online), the buttons \"Khởi động lại bộ điều khiển\" (Restart controller), \"Đánh dấu mất kết nối\" (Mark disconnected) and \"Đánh dấu lỗi\" (Mark faulty), and \"Nhật ký hoạt động\" (Activity log) with reconnect events, board model and firmware.",
+     "images": [
+      "png/wf4/s41-iot-devices.png",
+      "png/wf4/s42-iot-device-detail.png"
+     ],
+     "caption": "IoT Devices and Device Detail (locker technician)"
+    }
+   ]
+  }
+ ]
+}

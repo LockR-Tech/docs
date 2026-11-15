@@ -2,6 +2,10 @@
 
 Mỗi thay đổi ở repo docs thêm **một dòng** vào ngày tương ứng (mới nhất ở trên). Ghi mã gap/SEC/ADR nếu có.
 
+## 2026-11-15
+
+- rp6/ (mới): Report 6 – Software User Guides theo form chương "Software User Guides" của report mẫu: tài liệu Word + PDF (114 trang, 147 hình) gồm Installation Guides (yêu cầu phần cứng/phần mềm, cài app, admin web, back-end, kiosk/Pi) và 4 luồng WF-01 giao drone, WF-02 thuê ô/gửi hàng, WF-03 xử lý sự cố ô, WF-04 bảo trì; toàn bộ ảnh mobile, kiosk, admin chụp lại ngày 15/11 trên production bằng tài khoản và tủ demo, đã che số tài khoản VietQR và quét OCR không còn dữ liệu cá nhân thật; script dựng lại trong `rp6/guide-assets/_generator`.
+
 ## 2026-11-10
 
 - diagrams: rút gọn chú thích `order-status` và `drone-mission` — CI (Linux) render `order-status` ở scale 0,35 < 0,40 sau PR #127; local nay ~0,60 cả hai.

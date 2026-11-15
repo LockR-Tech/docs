@@ -10,3 +10,5 @@ rp3/Copy of *.docx
 ~*.tmp
 __pycache__/
 
+# Kết quả quét OCR thông tin cá nhân của Report 6 (chỉ để rà soát trên máy)
+rp6/guide-assets/_generator/pii_boxes.json

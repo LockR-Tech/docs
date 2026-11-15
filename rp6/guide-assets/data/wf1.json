@@ -1,0 +1,294 @@
+{
+ "id": "WF-01",
+ "title": "Drone Delivery with Home Pickup",
+ "purpose": "This workflow lets a customer send a parcel from a home or office address to a Lock.R smart locker by drone. The customer books and pays in the mobile app; the nearest free drone technician collects the parcel at the pickup address, loads it directly onto a drone at the launch locker chosen by the system and launches it. At the receiving locker the Locker Controller opens the lid when the drone camera reads the box marker, the receiver collects the parcel with a PIN at the kiosk (or from the mobile app), and the admin follows the order and the revenue on the admin web.",
+ "actors": [
+  "Customer / sender (mobile app)",
+  "Drone Technician (mobile app)",
+  "Locker Controller (cabinet controller, automatic)",
+  "Receiver (kiosk; mobile app if registered)",
+  "Admin (admin web)"
+ ],
+ "parts": [
+  {
+   "heading": "Customer books and pays (mobile app)",
+   "steps": [
+    {
+     "text": "On the home screen the customer taps the drone delivery banner \"Giao hàng bằng drone\" (Drone delivery). The sheet \"Gửi hàng bằng drone\" (Send by drone) lists the lockers that can receive drones, nearest first, with the distance and the free boxes, e.g. \"Còn 3 ô drone nhận trống\" (3 free receiving drone boxes), greys out a locker marked \"Tạm không gửi drone: đang bảo trì\" (Drone sending paused: under maintenance), and the customer taps the receiving locker.",
+     "images": [
+      "png/wf1/s01-home.png",
+      "png/wf1/s02-locker-picker.png"
+     ],
+     "caption": "Home Screen and Receiving Locker Picker (mobile app)"
+    },
+    {
+     "text": "The form \"Gửi hàng bằng drone\" opens with a note that, once the order is paid, the nearest drone technician collects the parcel and loads it straight onto the drone. Under \"Lấy hàng tại\" (Pick up at) the customer taps \"Chọn điểm lấy hàng\" (Choose pickup point), types an address, taps \"Vị trí hiện tại\" (Current location) or moves the pin and taps \"Lấy hàng tại đây\" (Pick up here), may add \"Chỉ dẫn cho kỹ thuật viên\" (Instructions for the technician), checks the \"Người gửi\" (Sender) details filled from the profile and enters the receiver's full name, phone number and email under \"Người nhận\" (Receiver).",
+     "images": [
+      "png/wf1/s03-pickup-point.png",
+      "png/wf1/s04-form-pickup-receiver.png"
+     ],
+     "caption": "Pickup Point Picker and Booking Form (mobile app)"
+    },
+    {
+     "text": "The customer chooses \"Tủ nhận\" (Receiving locker) and \"Ô drone nhận\" (Receiving drone box), with the number of free drone boxes shown below. Under \"Kiện hàng\" (Parcel) the customer picks a weight level from 500 g to 5 kg (\"tối đa 5 kg một đơn\", at most 5 kg per order) and a goods type such as \"Quần áo\" (Clothes), and may add a description, the dimensions (drone bay at most 30 × 25 × 20 cm), a declared value (at most 2,000,000 đ) and the \"Hàng dễ vỡ\" (Fragile) switch; the hint warns that the technician weighs the parcel again and a parcel more than 50 g over the chosen level pays the difference before the flight.",
+     "images": [
+      "png/wf1/s05-form-locker-parcel.png",
+      "png/wf1/s06-form-size-route.png"
+     ],
+     "caption": "Receiving Locker and Parcel Sections (mobile app)"
+    },
+    {
+     "text": "\"Lộ trình và phí\" (Route and fee) shows the launch locker picked by the system (\"Tủ bay do hệ thống chọn: Tủ Vincom Đồng Khởi – Sảnh B1\"), the 156 m the technician carries the parcel, the 2.9 km flight, \"Phí giao drone: 8.000đ\" (Drone delivery fee), the route weather card (\"Dự báo: Bay được\", Forecast: flyable; on the test system the card also notes that the weather check is switched off), the 24-hour storage rule and the 30-minute payment limit. Under \"Ưu đãi\" (Offers) the customer may tap \"Chọn mã giảm giá\" (Choose a discount code) or turn on \"Dùng điểm thưởng\" (Use reward points), then ticks the commitment that the parcel holds no items banned from flight and taps \"Tạo đơn và thanh toán 8.000đ\" (Create order and pay 8,000 đ).",
+     "images": [
+      "png/wf1/s07-offers-commitment.png"
+     ],
+     "caption": "Route, Fee, Weather and Offers (mobile app)"
+    },
+    {
+     "text": "The order is created with status AWAITING_DISPATCH, a drone box is held at the receiving locker, and the sheet \"Thanh toán chuyển khoản · 8.000đ\" (Bank transfer payment) opens with a VietQR code, the amount and the transfer content, which \"Sao chép\" (Copy) copies. The customer pays with any banking app; the sheet shows \"Đang chờ xác nhận thanh toán…\" (Waiting for payment confirmation) and closes by itself when SePay confirms the transfer (the \"Giả lập thanh toán (test)\" button is a testing aid only, and the account holder details are blurred in the figure).",
+     "images": [
+      "png/wf1/s08-vietqr-payment.png"
+     ],
+     "caption": "VietQR Payment Sheet (mobile app)"
+    },
+    {
+     "text": "After payment the app opens \"Theo dõi giao drone\" (Drone delivery tracking), which refreshes live: the status card reads \"Chờ kỹ thuật viên nhận lấy hàng\" (Waiting for a technician to accept the pickup) with the order code, and the \"Lấy hàng tận nhà\" (Home pickup) card shows the 6-digit \"Mã lấy hàng\" (Pickup code) that the sender reads to the technician, the pickup address, the instructions and the distance to the launch locker. Until the technician has taken the parcel, \"Huỷ đơn\" (Cancel order) stays at the bottom of the screen.",
+     "images": [
+      "png/wf1/s09-tracking-pickup-code.png"
+     ],
+     "caption": "Tracking Screen with the Pickup Code (mobile app)"
+    }
+   ]
+  },
+  {
+   "heading": "Drone technician accepts and collects the parcel (mobile app)",
+   "steps": [
+    {
+     "text": "The drone technician taps \"Vào ca\" (Start shift), so the shift card reads \"ĐANG TRONG CA\" (On shift) with the GPS status, and on the \"Điều phối\" (Dispatch) tab turns on the switch \"Chưa bật nhận việc lấy hàng\" (Not taking pickup jobs). Only technicians who are on shift, have this switch on, sent a GPS position in the last 10 minutes, are within 5 km of the pickup point and are not busy with another job are invited, nearest first.",
+     "images": [
+      "png/wf1/s10-tech-on-shift.png"
+     ],
+     "caption": "Dispatch Tab on Shift with the Pickup Switch Off (mobile app)"
+    },
+    {
+     "text": "With the switch on (\"Đang nhận việc lấy hàng\", Taking pickup jobs) the paid order appears under \"Lời mời lấy hàng (1)\" (Pickup invitations) with the pickup address, the distance, the declared parcel and the countdown \"Trả lời còn 2:51\" (Time left to answer, 3 minutes in total). The technician taps \"Nhận lấy hàng\" (Accept pickup), or \"Từ chối\" (Decline), which passes the job to the next nearest technician.",
+     "images": [
+      "png/wf1/s11-pickup-offer.png"
+     ],
+     "caption": "Pickup Invitation (mobile app)"
+    },
+    {
+     "text": "After accepting, the card moves to \"Đang đi lấy hàng\" (On the way to pick up) with the sender's name and phone, the instructions, the declared parcel and the buttons \"Chỉ đường\" (Directions), \"Đã lấy hàng\" (Picked up) and \"Không lấy được\" (Could not pick up). The customer's tracking screen changes to \"Kỹ thuật viên đang tới lấy hàng\" (Technician on the way) and names the technician.",
+     "images": [
+      "png/wf1/s12-pickup-accepted.png",
+      "png/wf1/s13-cus-tech-coming.png"
+     ],
+     "caption": "Accepted Pickup (technician) and Tracking Screen (customer) (mobile app)"
+    },
+    {
+     "text": "At the pickup address the sender reads the pickup code; the technician taps \"Đã lấy hàng\", types it in \"Mã lấy hàng (6 số)\" (Pickup code, 6 digits), ticks \"Kiện đúng khai báo…\" (The parcel matches the declaration and has no items banned from flight), adds the parcel photo with \"Chụp ảnh kiện\" (Take parcel photo; \"Ảnh kiện tại điểm lấy là bắt buộc\", required) and an optional note, and taps \"Đã lấy hàng\" again. The system accepts the confirmation only with the right code and a technician position within 300 m of the pickup point, and moves the stage to PICKED_UP.",
+     "images": [
+      "png/wf1/s14-pickup-confirm.png"
+     ],
+     "caption": "Pickup Confirmation Dialog (mobile app)"
+    },
+    {
+     "text": "The card moves to \"Đã lấy hàng · chờ nạp trực tiếp lên drone\" (Picked up, waiting to be loaded onto the drone) with \"Mang kiện tới drone tại: Tủ Vincom Đồng Khởi – Sảnh B1\" (Bring the parcel to the drone at …) and the buttons \"Chỉ đường tới drone\" (Directions to the drone), \"Gán drone\" (Assign drone) and \"Giao không hoàn tất\" (Delivery not completed); the parcel goes straight onto the drone and is not put into a locker box. Tapping the card opens \"Chi tiết nhiệm vụ drone\" (Drone mission detail), whose \"Lấy hàng tận nhà\" section records the pickup time, the technician, the note and the parcel photo.",
+     "images": [
+      "png/wf1/s15-picked-up.png",
+      "png/wf1/s16-pickup-record.png"
+     ],
+     "caption": "Picked-Up Card and Pickup Record (mobile app)"
+    }
+   ]
+  },
+  {
+   "heading": "Drone technician loads and launches the drone (mobile app)",
+   "steps": [
+    {
+     "text": "At the launch locker the technician taps \"Gán drone\"; the dialog \"Gán drone cho đơn\" (Assign a drone to the order) shows the route and the receiving box and lists the drones at this locker, greying out those that are inactive, not ready, or have unknown or ≤ 20 % battery (here \"LR-DRN-02 · đang bảo trì\", under maintenance). The technician selects \"LR-DRN-01 · 100%\" and taps \"Gán drone\"; the drone becomes RESERVED and the card moves to \"Chờ nạp hàng\" (Waiting for loading) with \"Xác nhận nạp\" (Confirm loading) and \"Hủy trước khi bay\" (Cancel before flight).",
+     "images": [
+      "png/wf1/s17-assign-drone.png",
+      "png/wf1/s18-awaiting-loading.png"
+     ],
+     "caption": "Assign Drone Dialog and Waiting-for-Loading Card (mobile app)"
+    },
+    {
+     "text": "The technician weighs the parcel, taps \"Xác nhận nạp\", enters \"Khối lượng cân thực tế (gram)\" (Actual weight in grams), ticks \"Đúng kiện hàng và đúng đơn\" (Right parcel, right order), \"Kiện hàng đã được cố định\" (Parcel secured) and \"Khoang hàng đã khóa\" (Cargo bay locked), and taps \"Xác nhận đã nạp\" (Confirm loaded). The system then issues a seal code that the technician writes on the parcel seal; it is kept in the mission detail under \"Nhiệm vụ bay & hồ sơ nạp hàng\" (Flight mission and loading record), e.g. \"Mã niêm phong NP-261114-WZB5WQ\", together with the weight and the three checks.",
+     "images": [
+      "png/wf1/s19-loading-confirm.png",
+      "png/wf1/s20-loading-record.png"
+     ],
+     "caption": "Loading Confirmation Dialog and Loading Record (mobile app)"
+    },
+    {
+     "text": "The card moves to \"Sẵn sàng phóng\" (Ready to launch) and the technician taps \"Phóng\" (Launch); the system checks the payment, the flight time window, the route weather and any flight suspension before it releases the drone. The message \"Đã phát lệnh phóng nhiệm vụ\" (Launch command sent) appears, the card moves to \"Đang bay\" (In flight) with \"Theo dõi\" (Track) and \"Báo chuyến bay thất bại\" (Report flight failure), the drone becomes IN_FLIGHT, and the sender and the receiver receive a \"launched\" email.",
+     "images": [
+      "png/wf1/s21-ready-to-launch.png",
+      "png/wf1/s22-launched.png"
+     ],
+     "caption": "Ready-to-Launch and In-Flight Cards (mobile app)"
+    },
+    {
+     "text": "Once the drone has launched the technician is free for new invitations. At the end of work the technician taps \"Hết ca\" (End shift) and confirms \"Kết thúc ca\" in \"Kết thúc ca trực?\" (End your shift?); the card then reads \"NGOÀI CA\" (Off shift) with \"Vào ca\", location sharing stops and the pickup switch turns off, so no more invitations arrive.",
+     "images": [
+      "png/wf1/s38-end-shift-dialog.png",
+      "png/wf1/s39-shift-ended.png"
+     ],
+     "caption": "End Shift Dialog and Off-Shift Dispatch Tab (mobile app)"
+    }
+   ]
+  },
+  {
+   "heading": "Flight, drop-off and receiver pickup (apps, locker and kiosk)",
+   "steps": [
+    {
+     "text": "\"Theo dõi\" opens the mission detail, which updates in real time: \"Tiến trình giao hàng\" (Delivery progress) records every stage with its time and coordinates — \"Drone đang khởi phóng\" (Launching), \"Drone đã rời trạm\" (Departed), \"Drone đang trên đường\" (En route), \"Drone sắp đến\" (Approaching), \"Drone đã đến tủ\" (Arrived) and \"Sẵn sàng nhận hàng\" (Ready for pickup) — and \"Bản đồ hành trình\" (Journey map) shows the route from A (launch locker) to B (receiving locker) with the drone position. The customer follows the same stages and map on \"Theo dõi giao drone\"; the simulated demo flight in the figures took about 30 seconds.",
+     "images": [
+      "png/wf1/s23-flight-timeline.png",
+      "png/wf1/s24-mission-map.png"
+     ],
+     "caption": "Delivery Progress Timeline and Journey Map (mobile app)"
+    },
+    {
+     "text": "At the receiving locker nobody has to act: the drone camera reads the ArUco marker of the receiving box, the Locker Controller slides the lid open, the drone releases the parcel into the box and the lid closes. The order becomes STORING (stage READY_FOR_PICKUP), the drone returns to IDLE and the system issues a 6-digit PIN with a 24-hour pickup deadline; \"Nhật ký hành trình\" (Journey log) records \"Gửi mã nhận hàng cho người nhận\" (Pickup code sent to the receiver) with the channels used, here an in-app notification and email.",
+     "images": [
+      "png/wf1/s25-code-sent-log.png"
+     ],
+     "caption": "Journey Log with the Code Sent to the Receiver (mobile app)"
+    },
+    {
+     "text": "The customer's tracking screen now reads \"Sẵn sàng nhận hàng\" (Ready for pickup) with the drone code, keeps the home-pickup record with the parcel photo and the technician's phone, and shows \"Kiện đã vào tủ nhận…\" (The parcel is in the receiving locker) with \"Xem chi tiết đơn\" (View order details) above the journey map.",
+     "images": [
+      "png/wf1/s26-cus-tracking-ready.png",
+      "png/wf1/s27-cus-tracking-map.png"
+     ],
+     "caption": "Tracking Screen After Arrival (mobile app)"
+    },
+    {
+     "text": "In \"Đơn tủ\" > \"Đơn của tôi\" (Locker orders > My orders) the order shows \"Giao bằng drone\" (Drone delivery), \"Chờ nhận hàng\" (Awaiting pickup) and the pickup deadline, and \"Chi tiết\" (Details) lists the receiving locker and box, the receiver, \"Gửi từ tủ\" (Launch locker), the flight distance and the payment. The sender also sees the PIN and can pass it on with \"Chia sẻ mã cho người nhận\" (Share the code with the receiver) or \"Sao chép tin nhắn\" (Copy message) via Zalo, Messenger or SMS.",
+     "images": [
+      "png/wf1/s28-cus-order-list.png",
+      "png/wf1/s29-cus-order-detail.png",
+      "png/wf1/s30-cus-pin-share.png"
+     ],
+     "caption": "Order List, Order Detail and PIN Sharing (mobile app)"
+    },
+    {
+     "text": "A receiver whose Lock.R account matches the receiver's email or phone gets an in-app notification for each stage and \"Mã nhận hàng giao bằng drone\" (Drone delivery pickup code) with the PIN. In \"Đơn tủ\" > \"Hàng chờ nhận\" (Incoming) the order shows the sender, the deadline, the box and the PIN, with \"Mở ô số 2 lấy hàng\" (Open box 2 to collect) to open the box over Bluetooth from the app.",
+     "images": [
+      "png/wf1/s31-rcv-notifications.png",
+      "png/wf1/s32-rcv-incoming.png"
+     ],
+     "caption": "Receiver Notifications and Incoming Orders (mobile app)"
+    },
+    {
+     "text": "At the kiosk of the receiving locker the receiver, who does not need an account, taps \"Mở Tủ / Nhận Đồ\" (Open locker / Collect items).",
+     "images": [
+      "png/wf1/s33-kiosk-home.png"
+     ],
+     "caption": "Kiosk Home Screen (kiosk)"
+    },
+    {
+     "text": "On \"Mở Tủ (OTP / QR)\" (Open locker) the receiver types the 6-digit PIN on the on-screen keypad (or scans the QR code); the kiosk checks the code as soon as six digits are entered and shows \"Đang xử lý…\" (Processing).",
+     "images": [
+      "png/wf1/s34-kiosk-pin.png"
+     ],
+     "caption": "Open Locker with PIN Screen (kiosk)"
+    },
+    {
+     "text": "The kiosk shows \"Đã mở khóa!\" (Unlocked!) with the order number and \"Ô #2\" (Box 2) and returns to the home screen by itself after a few seconds. The receiver takes the parcel and closes the door; the order is completed automatically (COMPLETED) and the box is released.",
+     "images": [
+      "png/wf1/s35-kiosk-opened.png"
+     ],
+     "caption": "Box Unlocked Screen (kiosk)"
+    },
+    {
+     "text": "In the receiver's \"Hàng chờ nhận\" the order now reads \"Hoàn tất\" (Completed) and \"Đã nhận hàng\" (Collected), and \"Chi tiết đơn nhận\" (Incoming order detail) shows \"Đơn đã hoàn tất — hàng đã được lấy lúc …\" (Order completed — collected at …) with \"Xem lại hành trình drone\" (Review the drone journey). A receiver who uses the app can instead open the box over Bluetooth or confirm with \"Tôi đã lấy đồ — hoàn tất\" (I have collected it — complete).",
+     "images": [
+      "png/wf1/s36-rcv-completed.png",
+      "png/wf1/s37-rcv-detail-completed.png"
+     ],
+     "caption": "Completed Incoming Order (mobile app)"
+    }
+   ]
+  },
+  {
+   "heading": "Admin follows the order (admin web)",
+   "steps": [
+    {
+     "text": "The admin opens \"Hành trình drone\" (Drone journeys). The page refreshes every 5 seconds, shows the weather state of the drone stations (here \"Đang tắt kiểm tra thời tiết (thử nghiệm)\", weather check switched off for testing) and lists the journeys under \"Đang thực hiện\" (In progress) and \"Đã kết thúc\" (Finished) with route, stage, drone, technician, payment and times. ORD-20261114-VVV84P is at the top of the finished list with \"Hoàn thành\" (Completed), drone LR-DRN-01 and technician Đức Thịnh Hồ.",
+     "images": [
+      "png/admin/wf1-a01-journeys.png"
+     ],
+     "caption": "Drone Journeys List (admin web)"
+    },
+    {
+     "text": "Opening the order shows \"Hành trình đơn ORD-20261114-VVV84P\" (Order journey) with the section \"Lấy hàng tận nhà\" (Home pickup): pickup status, address and coordinates, the sender's and the technician's notes, the distance to the launch locker, the technician with the accept and pickup times and the parcel photo, followed by the tracking map from locker A to locker B.",
+     "images": [
+      "png/admin/wf1-a02-journey-detail.png"
+     ],
+     "caption": "Drone Journey Detail – Home Pickup (admin web)"
+    },
+    {
+     "text": "Further down, the cards show the current stage, the distance A → B (2,88 km) and the remaining distance, and \"Nhật ký vị trí bay\" (Flight position log) lists every recorded point with time, stage (\"Đã cất cánh\" Took off → \"Đang bay\" Flying → \"Sắp tới nơi\" Approaching → \"Đã tới nơi\" Arrived), coordinates and source; the log can be downloaded with \"Tải CSV\". For this demo order the source is \"Mô phỏng (DEMO)\" (simulated).",
+     "images": [
+      "png/admin/wf1-a03-journey-stages.png"
+     ],
+     "caption": "Drone Flight Position Log (admin web)"
+    },
+    {
+     "text": "On \"Doanh thu\" (Revenue) the admin picks a date range or a quick filter such as \"Hôm nay\" (Today) or \"Tháng này\" (This month) and reads the cards \"Doanh thu trong kỳ\" (Revenue in period), \"Thực thu sau hoàn\" (Net after refunds), \"Tiền hoàn\" (Refunds) and \"Đơn có thu tiền\" (Paid orders). The chart \"Doanh thu theo ngày\" (Revenue by day) includes the drone delivery fees collected through SePay.",
+     "images": [
+      "png/admin/a02b-revenue.png"
+     ],
+     "caption": "Revenue Management Page (admin web)"
+    }
+   ]
+  },
+  {
+   "heading": "Exceptions",
+   "steps": [
+    {
+     "text": "Booking is refused before any order is created: when no launch locker can serve the route — here the chosen receiving locker is only 156 m from the pickup point — \"Lộ trình và phí\" shows \"Hiện chưa có tủ nào gần bạn sẵn sàng phóng drone. Vui lòng thử lại sau.\" (No locker near you is ready to launch a drone; try again later) and \"Tạo đơn và thanh toán\" is disabled. Booking is also blocked when the route forecast is unsafe (\"Tạm ngưng bay\", flights suspended) while the weather check is on, for a locker under maintenance or with no free drone box, and above the 5 kg payload limit.",
+     "images": [
+      "png/wf1/s40-booking-refused.png"
+     ],
+     "caption": "Booking Refused in the Route Card (mobile app)"
+    },
+    {
+     "text": "The customer can tap \"Huỷ đơn\" (Cancel order) on the tracking screen until the technician has taken the parcel, that is while the order waits for a technician or the technician is on the way. A paid order then becomes REFUND_PENDING and the admin refunds it by bank transfer under \"Hoàn tiền\" (Refunds) on the admin web.",
+     "images": [],
+     "caption": ""
+    },
+    {
+     "text": "If the technician cannot collect the parcel, the technician taps \"Không lấy được\" and, in \"Không lấy được hàng\" (Could not pick up), picks \"Không gặp được người gửi\" (Could not meet the sender), \"Kiện không đúng khai báo\" (Parcel does not match the declaration), \"Không tìm thấy địa chỉ\" (Address not found) or \"Khác\" (Other), adds a note and taps \"Xác nhận\" (Confirm). The order ends as \"giao không hoàn tất\" (delivery not completed) and the sender is refunded; after pickup the same closing is reached with \"Giao không hoàn tất\" on the picked-up card, and the technician returns the parcel.",
+     "images": [
+      "png/wf1/s41-pickup-fail-dialog.png"
+     ],
+     "caption": "Could-Not-Pick-Up Dialog (mobile app)"
+    },
+    {
+     "text": "If the weighed parcel is more than 50 g heavier than declared, the loading dialog warns \"Nặng hơn khai báo: khách phải trả thêm 3.000đ. Drone chỉ phóng được sau khi khách thanh toán.\" (Heavier than declared: the customer must pay 3,000 đ more; the drone can launch only after payment). When the technician confirms, the order returns to UNPAID and the customer taps \"Trả thêm phí chênh\" (Pay the difference) or \"Không đồng ý\" (Decline), which cancels and refunds the order and returns the parcel; with no answer within 60 minutes the order is cancelled automatically.",
+     "images": [
+      "png/wf1/s42-weight-mismatch.png"
+     ],
+     "caption": "Weight Mismatch Warning in the Loading Dialog (mobile app)"
+    },
+    {
+     "text": "Before launch the technician can tap \"Hủy trước khi bay\" and pick a reason in \"Hủy nhiệm vụ trước khi bay\" (Cancel mission before flight) — \"Thời tiết xấu\" (Bad weather), \"Drone lỗi\" (Drone fault), \"Bãi đáp không sẵn sàng\" (Landing pad not ready), \"Lý do vận hành\" (Operational reason) or \"Khác\" (Other) — then tap \"Xác nhận hủy\" (Confirm cancellation); \"Drone lỗi\" also marks the drone as faulty. The order closes, the sender is refunded, and the technician returns the parcel and taps \"Xác nhận đã trả kiện\" (Confirm parcel returned) on the card \"Chờ trả kiện cho người gửi\" (Waiting to return the parcel to the sender).",
+     "images": [
+      "png/wf1/s43-cancel-before-flight.png"
+     ],
+     "caption": "Cancel Before Flight Dialog (mobile app)"
+    }
+   ]
+  }
+ ],
+ "diagrams": [
+  {
+   "path": "png/wf1-workflow.png",
+   "caption": "Workflow diagram of drone delivery with home pickup"
+  }
+ ]
+}
