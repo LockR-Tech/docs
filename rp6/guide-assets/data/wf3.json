@@ -1,0 +1,279 @@
+{
+ "id": "WF-03",
+ "title": "Box Incident to Resolution",
+ "purpose": "This workflow covers a faulty box from the customer's report to the closed ticket. The customer reports the problem with photos in the mobile app (or at the kiosk); the system opens an incident ticket with an SLA deadline, holds the box in PENDING_CHECK and notifies the locker technician in charge. The technician claims the ticket, inspects the box on site, logs notes and photos, and either resolves it with an after-repair photo, which puts the box back in service, or rejects it with feedback to the reporter (or returns it to the queue). The customer follows the progress and rates the technician, while the admin monitors tickets, SLA deadlines and technician performance on the web.",
+ "actors": [
+  "Customer (mobile app)",
+  "Locker Technician (mobile app)",
+  "Admin (admin web)"
+ ],
+ "diagrams": [
+  {
+   "path": "rp3/srs-assets/drawio/06f-activity-report-incident.png",
+   "caption": "Activity diagram of reporting a box incident"
+  },
+  {
+   "path": "rp3/srs-assets/drawio/06f-activity-handle-incident-ticket.png",
+   "caption": "Activity diagram of handling an incident ticket"
+  }
+ ],
+ "parts": [
+  {
+   "heading": "A. Customer reports a faulty box (mobile app)",
+   "steps": [
+    {
+     "text": "On the home screen the customer taps \"Tiện ích\" (Utilities) and, in the \"Tiện ích & Dịch vụ\" (Utilities & Services) sheet, taps \"Báo cáo\" (Reports) to open \"Báo cáo của tôi\" (My reports), which lists earlier tickets with filters such as \"Tất cả\" (All), \"Chờ tiếp nhận\" (Awaiting acceptance) and \"Đã xong\" (Done). The \"Báo sự cố mới\" (New report) tab holds the form with \"Tiêu đề\" (Title), \"Mô tả chi tiết\" (Detailed description), \"Tủ đồ bị lỗi\" (Faulty locker), \"Chọn ô gặp sự cố (Tuỳ chọn)\" (Faulty box, optional) and \"Ảnh hiện trường sự cố\" (Incident photos); the \"Báo sự cố\" (Report incident) shortcut in the same sheet opens this form directly on a \"Báo cáo sự cố\" page.",
+     "images": [
+      "png/wf3/s01-utilities.png",
+      "png/wf3/s02-my-reports-before.png",
+      "png/wf3/s03-report-new.png"
+     ],
+     "caption": "Utilities Sheet, My Reports and New Report Form (mobile app)"
+    },
+    {
+     "text": "The customer types the title and the description, taps the card \"Chạm để chọn tủ gặp sự cố\" (Tap to choose the affected locker) and picks the cabinet, here \"Tủ Nhà Văn hóa Thanh Niên\", from the list. The title is mandatory; submitting without it shows \"Vui lòng nhập tiêu đề\" (Please enter a title).",
+     "images": [
+      "png/wf3/s04-pick-locker.png"
+     ],
+     "caption": "Choose Locker List (mobile app)"
+    },
+    {
+     "text": "Under \"Chọn ô gặp sự cố (Tuỳ chọn)\" the customer taps the faulty box on the \"Sơ đồ\" (Layout) or \"Thẻ\" (Cards) view; the legend explains \"Trống\" (Empty), \"Drone\", \"Vali (XL)\" (Suitcase), \"Đang dùng\" (In use), \"Hỏng\" (Faulty) and \"Cửa mở\" (Door open), and the kiosk-screen tile marked \"Chạm báo lỗi\" (Tap to report a fault) reports a fault of the kiosk screen itself. The green bar \"Đang chọn: Ô #5 • Tiêu chuẩn • Sẵn sàng\" (Selected: Box #5 • Standard • Ready) confirms the choice and \"Bỏ chọn\" (Deselect) clears it; with no box selected the report is filed against the whole locker.",
+     "images": [
+      "png/wf3/s06-box-selected.png",
+      "png/wf3/s38-box-cards-view.png"
+     ],
+     "caption": "Faulty Box Selection in the Layout and Cards Views (mobile app)"
+    },
+    {
+     "text": "In \"Ảnh hiện trường sự cố\" (Incident photos) the customer taps \"Chụp ảnh\" (Take photo) or \"Chọn nhiều ảnh\" (Choose multiple photos) to attach up to 5 photos, which appear as numbered tiles (\"Ảnh 1\", \"Ảnh 2\") with a remove (×) button and a counter such as \"2 ảnh\" (2 photos). At least one photo is required; otherwise the app shows \"Vui lòng đính kèm ít nhất 1 ảnh sự cố\" (Please attach at least one incident photo).",
+     "images": [
+      "png/wf3/s07-photos-attached.png"
+     ],
+     "caption": "Incident Photos Attached to the Report (mobile app)"
+    },
+    {
+     "text": "The customer taps \"Gửi báo cáo\" (Submit report) and the new ticket, e.g. \"Phiếu sự cố #53\" (Incident ticket #53), appears at the top of \"Báo cáo của tôi\" with the status \"Chờ tiếp nhận\" (Awaiting acceptance); \"Xem chi tiết\" (View details) opens record \"RPT-53\" marked \"Mới\" (New) with \"Đang điều phối KTV\" (Dispatching a technician), \"Hạn xử lý\" (Handling deadline) and the attached photos. The system opens the ticket as OPEN with an SLA deadline (4 hours by default), holds the box in PENDING_CHECK so it takes no new bookings while the owner can still open it and the order fees pause, and notifies the technician in charge of the locker (or every locker technician when none is assigned).",
+     "images": [
+      "png/wf3/s08-my-reports-new.png",
+      "png/wf3/s09-report-detail-new.png"
+     ],
+     "caption": "New Ticket in My Reports and Its Detail (mobile app)"
+    },
+    {
+     "text": "From an order in \"Đơn tủ\" (Locker orders) that still uses a box, the customer can also tap \"Báo ô lỗi\" (Report faulty box) in the order detail. The \"Báo cáo sự cố\" (Incident report) screen opens with \"Đơn hàng cần báo cáo\" (Order to report), a pre-filled title, and the locker and box locked to the order (\"Cố định theo đơn\", Fixed by order); the customer types \"Mô tả chi tiết\" (Detailed description), may add up to 5 photos with \"Chụp ảnh\" (Take photo) or \"Chọn nhiều ảnh\" (Choose multiple photos) and taps \"Gửi báo cáo\" (Submit report). The action is not offered for completed, cancelled or expired orders.",
+     "images": [
+      "png/wf3/s43-report-from-order.png"
+     ],
+     "caption": "Incident Report from an Order (mobile app)"
+    },
+    {
+     "text": "At the kiosk, the round \"Báo sự cố\" (Report incident) button on the home screen opens \"Đăng nhập để báo ô tủ hư\" (Sign in to report a faulty box), where the customer verifies a \"Số điện thoại\" (Phone number) or \"Email\" with \"Gửi mã OTP\" (Send OTP code). On \"Báo ô tủ hư\" (Report faulty box) the customer then taps the box on the map or \"Sự cố cả tủ\" (Whole-locker incident), picks the problem, e.g. \"Cửa ô không mở\" (Box door does not open), optionally types \"Mô tả thêm\" (More details; no photo at the kiosk) and taps \"Gửi báo cáo\", and the kiosk shows \"Đã gửi báo cáo!\" (Report sent) with the ticket code RPT-….",
+     "images": [
+      "png/wf3/k02-kiosk-report-login.png"
+     ],
+     "caption": "Report Incident Sign-in (kiosk)"
+    }
+   ]
+  },
+  {
+   "heading": "B. Locker technician claims the ticket (mobile app)",
+   "steps": [
+    {
+     "text": "The technician on shift receives the notification \"Phiếu sự cố mới cần xử lý\" (New incident ticket to handle), e.g. \"Phiếu RPT-53 — Cửa ô không khóa được tại tủ Tủ Nhà Văn hóa Thanh Niên đang chờ KTV nhận\" (ticket RPT-53 at this locker is waiting for a technician). The home header shows \"Chờ xử lý\" (Pending), \"Đang làm\" (In progress), \"Định kỳ\" (Periodic) and \"Trạm tủ\" (Locker stations) above the shift card \"ĐANG TRONG CA\" (On shift), and the \"Sự cố\" (Incidents) tab filters tickets by \"Tất cả\" (All) or \"Tủ tôi phụ trách\" (Lockers I manage) and by \"Chờ nhận\" (Awaiting claim), \"Đang xử lý\" (In progress) or \"Hoàn tất\" (Done), listing physically faulty boxes first under \"Ô đang lỗi vật lý tại trạm\" (Boxes physically faulty at the station).",
+     "images": [
+      "png/wf3/s10-tech-notifications.png",
+      "png/wf3/s11-incidents-mine.png"
+     ],
+     "caption": "Technician Notifications and Incidents Tab (locker technician)"
+    },
+    {
+     "text": "Under \"Phiếu chờ bạn nhận\" (Tickets waiting for you; \"Sự cố chờ tiếp nhận\" in the \"Tất cả\" view) each card shows the ticket code with a \"MỚI\" (New) tag, an SLA countdown such as \"Còn 03:50:25\" (Time left) or a red \"Quá hạn\" (Overdue) badge, the locker and box, the photo count and \"Tủ bạn phụ trách\" (Locker you manage), with the buttons \"Chỉ đường\" (Directions) and \"Nhận việc\" (Accept job). Tapping the card opens \"Hồ sơ chi tiết phiếu sự cố kỹ thuật\" (Incident ticket details) with \"Hạn SLA\" (SLA deadline), the reporter's name and phone, \"Nội dung khách phản ánh\" (Customer's description) with the photos, and the buttons \"Nhận việc ngay\" (Accept now) and \"Chỉ đường tới tủ\" (Directions to locker).",
+     "images": [
+      "png/wf3/s12-pending-card.png",
+      "png/wf3/s13-ticket-detail-pending.png"
+     ],
+     "caption": "Pending Incident Card and Ticket Detail (locker technician)"
+    },
+    {
+     "text": "The technician taps \"Nhận việc\" (Accept job); the app confirms \"Đã nhận việc thành công\" (Job accepted successfully) and opens \"Việc của tôi\" (My jobs), where the ticket is listed under \"Sự cố đang xử lý\" (Incidents in progress) with the status \"Đang xử lý\" and the buttons \"Gia hạn\" (Extend), \"Nghiệm thu\" (Inspect) and \"Hoàn tất\" (Complete). The ticket becomes IN_PROGRESS and the reporter receives \"Báo cáo đang được xử lý\" (Your report is being handled).",
+     "images": [
+      "png/wf3/s14-claim-toast.png",
+      "png/wf3/s15-my-jobs-card.png"
+     ],
+     "caption": "Job Accepted and Listed in My Jobs (locker technician)"
+    },
+    {
+     "text": "The \"Tổng quan ca trực\" (Shift overview) at the top of \"Việc của tôi\" counts \"Phiếu đã nhận\" (Tickets taken), \"Đang xử lý\", \"Đã hoàn tất\" (Completed) and \"Trễ hạn SLA\" (SLA overdue), shows \"Điểm đánh giá của bạn\" (Your rating score) and, when tickets are late, the banner \"Cảnh báo vi phạm thời gian SLA\" (SLA time violation warning), as in the previous screenshot. A technician who holds 3 or more overdue in-progress tickets (threshold set by the admin) cannot claim new ones: the app shows the dialog \"Hạn chế nhận việc mới\" (Restricted from new jobs) with the button \"Xem việc của tôi\" (View my jobs).",
+     "images": [],
+     "caption": ""
+    }
+   ]
+  },
+  {
+   "heading": "C. Technician inspects and fixes the box on site (mobile app)",
+   "steps": [
+    {
+     "text": "The arrow on the job card opens the in-progress ticket, which shows the countdown, \"KTV Minh Khoa Trương (bạn)\" (assigned technician, you) and the actions \"Kiểm tra ô & Khóa sự cố tại Kiosk\" (Check box & lock incident at kiosk), \"Nghiệm thu & Hoàn tất xử lý\" (Accept & complete), \"Không đúng mô tả — đóng phiếu & phản hồi\" (Not as described — close ticket & reply), \"Trả lại phiếu về hàng chờ\" (Return ticket to queue), \"Chỉ đường tới tủ\" (Directions to locker) and \"Gia hạn SLA\" (Extend SLA). \"Chỉ đường\" and \"Chỉ đường tới tủ\" open Google Maps with the route to the cabinet (not shown here).",
+     "images": [
+      "png/wf3/s16-detail-inprogress.png"
+     ],
+     "caption": "In-Progress Ticket Detail (locker technician)"
+    },
+    {
+     "text": "If more time is needed, the technician taps \"Gia hạn SLA\" (or \"Gia hạn\" on the card): the sheet \"Gia hạn SLA phiếu RPT-53\" shows \"Đã gia hạn 0/2\" (Extended 0/2), \"Hạn hiện tại\" (Current deadline) and \"Hạn mới (dự kiến)\" (Expected new deadline), offers +2, +4, +8, +12 or +24 giờ (\"tối đa 24 giờ/lần\", at most 24 hours each time) and requires \"Lý do gia hạn (bắt buộc)\" (Extension reason), which a quick chip such as \"Chờ linh kiện thay thế\" (Waiting for spare parts) fills in. After \"Xác nhận gia hạn SLA\" (Confirm SLA extension) the app shows the new deadline with \"(Đã gia hạn 1/2)\" and the card carries \"(+4h)\" and \"+4 h SLA · 1/2\"; only the technician holding the ticket can extend it, at most twice, and each extension is written to the ticket log.",
+     "images": [
+      "png/wf3/s17-extend-sla.png",
+      "png/wf3/s18-extend-done.png"
+     ],
+     "caption": "Extend SLA Sheet and Confirmation (locker technician)"
+    },
+    {
+     "text": "On arrival the technician taps \"Nghiệm thu\" (Inspect) on the job card to open \"Xác nhận hiện trường\" (Site confirmation), adds photos of the box as found with \"Chụp ảnh\" (Take photo → \"Chụp ảnh từ máy ảnh\" camera or \"Chọn ảnh từ thư viện (tối đa 10)\" library), types an optional note and taps \"Lưu ảnh hiện trường\" (Save site photos). The app confirms \"Đã lưu ảnh xác nhận hiện trường\" (Site confirmation photos saved), the photos stay on the ticket as before-repair evidence and the card button changes to \"Ảnh (+)\" (Add photos).",
+     "images": [
+      "png/wf3/s19-site-confirm.png",
+      "png/wf3/s20-site-saved.png"
+     ],
+     "caption": "Site Confirmation Photos (locker technician)"
+    },
+    {
+     "text": "The technician taps \"Kiểm tra ô & Khóa sự cố tại Kiosk\" to open \"Kiểm tra ô & Xử lý sự cố\" (Check box & handle incident): under \"1. Chọn ô gặp sự cố tại Kiosk\" (Choose the faulty box) the reported box is preselected and the app shows whether it holds an item, e.g. \"Ô hiện tại đang trống (Không có đồ bên trong)\" (The box is currently empty). Under \"2. Chọn phương án xử lý\" (Choose a handling option), \"Kiểm tra & Xử lý tại chỗ (Khuyến nghị)\" (Inspect & fix on site, recommended) keeps the box in service with \"Giữ ô tủ hoạt động bình thường (AVAILABLE)\" (Keep the box working normally), while \"Xác nhận lỗi phần cứng & Khóa ô bảo trì (FAULT)\" (Confirm hardware fault & lock box for maintenance) always locks it (\"Khóa ô tủ để bảo trì (Trạng thái: FAULT)\").",
+     "images": [
+      "png/wf3/s21-check-box.png",
+      "png/wf3/s21b-check-box-fault.png"
+     ],
+     "caption": "Check Box and Handling Options (locker technician)"
+    },
+    {
+     "text": "\"Mở khẩn cấp\" (Emergency open) opens the dialog \"Mở khẩn cấp Ô #5\", which sends a Master open command only after a \"Lý do can thiệp (bắt buộc)\" (Intervention reason) is chosen, e.g. \"Khách quên mã PIN / không liên lạc được\" (Customer forgot the PIN / cannot be reached), with an optional \"Ghi chú\" (Note) and up to 10 photos, and writes the opening to the access log and the ticket log. When the box still holds a customer's item, the technician also chooses how to protect it: move it to a new empty box (the customer receives a new PIN), hand it over in person after entering the customer's PIN/QR, or seal it and take it to the hub with a seal code.",
+     "images": [
+      "png/wf3/s22-emergency-open.png"
+     ],
+     "caption": "Emergency Open Dialog (locker technician)"
+    },
+    {
+     "text": "The technician writes the \"Ghi chú hiện trường của KTV (Ghi riêng)\" (Technician's site note), reviews \"4. Ảnh hiện trường / Đối chứng\" (Site / reference photos), adds \"5. Ảnh trong quá trình sửa\" (Photos during repair) with \"Thêm ảnh\" (Add photo) and taps \"Xác nhận & Cập nhật hệ thống\" (Confirm & update system). The app shows \"Đã cập nhật trạng thái ô tủ và xử lý sự cố thành công!\" (Box status updated and incident handled successfully); with the FAULT option the box stays locked for maintenance until the ticket is closed.",
+     "images": [
+      "png/wf3/s23-check-box-bottom.png",
+      "png/wf3/s24-check-done.png"
+     ],
+     "caption": "Site Note, Repair Photos and Confirmation (locker technician)"
+    },
+    {
+     "text": "At any time the technician can add a progress step at the end of \"Nhật ký & Lịch sử xử lý của KTV\" (Technician's handling log): \"Thêm bước xử lý / ghi chú nhanh...\" (Add a step / quick note) opens a field with quick chips such as \"Kiểm tra hiện trường\" (Site check), \"Thay thế linh kiện\" (Replace parts) and \"Kiểm tra bo mạch nguồn\" (Check power board), a camera button and a send button. The note joins the log with the technician's name and time, next to entries such as \"[GIA HẠN SLA]\" (SLA extension) and \"[GHI CHÚ HIỆN TRƯỜNG]\" (Site note), and the customer sees it in the ticket progress.",
+     "images": [
+      "png/wf3/s25-progress-note.png",
+      "png/wf3/s26-note-sent.png"
+     ],
+     "caption": "Quick Progress Note in the Handling Log (locker technician)"
+    }
+   ]
+  },
+  {
+   "heading": "D. Technician resolves, rejects or returns the ticket (mobile app)",
+   "steps": [
+    {
+     "text": "After the repair the technician taps \"Hoàn tất\" (Complete) on the job card, or \"Nghiệm thu & Hoàn tất xử lý\" in the ticket, to open \"Nghiệm thu hoàn tất sửa chữa\" (Repair completion acceptance) with the photo sections \"Trước khi sửa\" (Before repair), \"Trong quá trình sửa\" (During repair) and \"Sau khi xong\" (After repair), where \"Chụp ảnh\" adds the after-repair photo. The technician fills \"Ghi chú kỹ thuật & linh kiện\" (Technical & parts notes), e.g. with the quick note \"Đã cân chỉnh then & bản lề cửa ô tủ\" (Latch and hinge adjusted), may turn on \"Mở thử ô sau sửa\" (Test-open the box after repair) and taps \"Xác nhận & Hoàn tất sửa chữa\" (Confirm & complete repair); the after-repair photo is \"(tuỳ chọn)\" (optional) unless the admin requires it, in which case the app refuses to finish without it (\"Vui lòng chụp ít nhất 1 ảnh sau khi sửa xong để nghiệm thu.\").",
+     "images": [
+      "png/wf3/s30-resolve-sheet.png",
+      "png/wf3/s31-resolve-bottom.png"
+     ],
+     "caption": "Repair Completion Acceptance Sheet (locker technician)"
+    },
+    {
+     "text": "The app confirms \"Đã nghiệm thu và hoàn tất sự cố! Ô tủ đã hoạt động lại.\" (Accepted and completed; the box is working again): the ticket becomes RESOLVED and moves to \"Lịch sử đã hoàn thành\" (Completed history) with the badge \"Đã xong\" (Done), the box returns to the state it had before the fault and the reporter receives \"Báo cáo đã được xử lý xong\" (Your report has been handled). The ticket log lists every action, e.g. \"[GIA HẠN SLA]\", \"[GHI CHÚ HIỆN TRƯỜNG]\", the progress notes and \"[NGHIỆM THU THÀNH CÔNG]\" (Acceptance passed) with the after-repair photo.",
+     "images": [
+      "png/wf3/s32-resolved-toast.png",
+      "png/wf3/s33-history-done.png",
+      "png/wf3/s34-done-log.png"
+     ],
+     "caption": "Completed Ticket and Its Handling Log (locker technician)"
+    },
+    {
+     "text": "If the box works normally and the report does not match — here a second report, RPT-54 \"Ô không mở được\" (Box does not open) on box #8 — the technician claims it, taps \"Không đúng mô tả — đóng phiếu & phản hồi\" (Not as described — close ticket & reply), fills the mandatory \"Phản hồi cho người báo (bắt buộc)\" (Feedback to the reporter) in the dialog \"Không xác nhận sự cố RPT-54\" (Incident not confirmed) and taps \"Đóng phiếu & phản hồi\" (Close ticket & reply). The app shows \"Đã đóng phiếu RPT-54 và gửi phản hồi cho người báo.\" (Ticket closed and feedback sent): the ticket becomes REJECTED, the box returns to its previous state so an owner can still collect the item, and the reporter receives the feedback.",
+     "images": [
+      "png/wf3/s41-reject-dialog.png",
+      "png/wf3/s42-rejected-toast.png"
+     ],
+     "caption": "Incident Not Confirmed Dialog and Result (locker technician)"
+    },
+    {
+     "text": "A technician who cannot finish the job taps \"Trả lại phiếu về hàng chờ\" (Return ticket to queue); the dialog \"Trả lại phiếu RPT-53\" explains that the ticket goes back to the queue for another technician and requires \"Lý do trả phiếu (bắt buộc)\" (Reason for returning) before \"Trả lại phiếu\" (Return ticket), while \"Hủy\" (Cancel) keeps the ticket. The reason is written to the ticket log.",
+     "images": [
+      "png/wf3/s27-return-queue.png"
+     ],
+     "caption": "Return Ticket to Queue Dialog (locker technician)"
+    }
+   ]
+  },
+  {
+   "heading": "E. Customer follows progress and rates the technician (mobile app)",
+   "steps": [
+    {
+     "text": "The reporter is notified at each stage, e.g. \"Báo cáo đang được xử lý\" (Report being handled) when a technician claims the ticket and \"Báo cáo đã được xử lý xong\" (Report handled) when it is closed. In \"Báo cáo của tôi\", \"Xem chi tiết\" (View details) shows the status badge (\"Mới\" New, \"Đang xử lý\" In progress, \"Đã xong\" Done), \"KTV phụ trách\" (Assigned technician), \"Hạn xử lý\" (Handling deadline), \"Chỉ đường tới Kiosk\" (Directions to kiosk) and \"Bổ sung ảnh\" (Add photos), then the timeline \"Tiến trình xử lý sự cố\" (Incident progress: \"Gửi báo cáo thành công\", \"Kỹ thuật viên tiếp nhận\", \"Kiểm tra & Xử lý tại Kiosk\", \"Nghiệm thu & Đóng phiếu\") and \"Tiến độ xử lý của KTV\" (Technician's progress) with the technician's notes and photos.",
+     "images": [
+      "png/wf3/s45-cus-notifications.png",
+      "png/wf3/s28-cus-detail-progress.png"
+     ],
+     "caption": "Report Notifications and Ticket Detail (mobile app)"
+    },
+    {
+     "text": "Once the ticket is closed, the end of the detail shows \"Đánh giá chất lượng phục vụ của KTV\" (Rate the technician's service) with \"Phiếu sự cố đã được xử lý xong. Hãy đánh giá sự hài lòng của bạn:\" (The ticket has been handled; please rate your satisfaction); the customer selects the stars (five by default), optionally adds a comment and taps \"Gửi đánh giá\" (Send rating). The app answers \"Cảm ơn bạn đã gửi đánh giá!\" (Thank you for your rating) and shows \"Đánh giá của bạn về KTV\" (Your rating of the technician) with \"5/5 sao\" (5/5 stars); ratings feed the technician's \"Điểm đánh giá của bạn\" score and the admin's CSAT index.",
+     "images": [
+      "png/wf3/s36-rate-tech.png",
+      "png/wf3/s37-rated.png"
+     ],
+     "caption": "Rating the Technician (mobile app)"
+    },
+    {
+     "text": "A rejected ticket is listed with the badge \"Không xác nhận\" (Not confirmed); its timeline ends with \"KTV không xác nhận sự cố\" (Technician did not confirm the incident) and \"Phản hồi:\" (Feedback) quoting the technician's explanation, which also appears as \"[KHÔNG XÁC NHẬN SỰ CỐ]\" under \"Tiến độ xử lý của KTV\". The customer can rate this ticket as well.",
+     "images": [
+      "png/wf3/s43-cus-list-rejected.png",
+      "png/wf3/s44-cus-rejected-detail.png"
+     ],
+     "caption": "Rejected Ticket with Technician Feedback (mobile app)"
+    }
+   ]
+  },
+  {
+   "heading": "F. Admin monitors tickets, SLA and technicians (admin web)",
+   "steps": [
+    {
+     "text": "The admin opens \"Bảo trì, sự cố thiết bị\" (Maintenance & device incidents); the \"Sự cố Kiosk\" (Kiosk incidents) tab shows the cards \"Sự cố đang mở\" (Open incidents), \"Phiếu mới mở\" (Newly opened tickets), \"Đang xử lý\" (In progress) and \"Đã hoàn tất\" (Completed), and an SLA warning with \"Xem phiếu quá hạn SLA\" (View SLA-overdue tickets). The \"Phiếu xử lý sự cố\" (Incident tickets) list can be searched, filtered by technician, kiosk and time, and narrowed to \"Mới mở\" (New), \"Đang làm\" (In progress), \"Quá hạn SLA\" (SLA overdue) or \"Đã xong\" (Done).",
+     "images": [
+      "png/admin/wf3-a01-tickets.png"
+     ],
+     "caption": "Maintenance and Device Incidents Page (admin web)"
+    },
+    {
+     "text": "Opening a ticket shows \"Hồ sơ xử lý\" (Handling record) with the tabs \"Chi tiết phiếu\" (Ticket details) and \"Nhật ký KTV\" (Technician log): the locker and box, the reported content, \"Ảnh hiện trường User gửi\" (Site photos sent by the user), the creation and assignment times, and \"KTV phụ trách\" (Assigned technician), e.g. \"Chưa phân công · đã báo mọi KTV tủ\" (Not assigned · all locker technicians notified). \"Hạn xử lý SLA\" (SLA deadline) is flagged \"Quá hạn\" (Overdue) once the deadline has passed.",
+     "images": [
+      "png/admin/wf3-a02-ticket-record.png"
+     ],
+     "caption": "Ticket Handling Record (admin web)"
+    },
+    {
+     "text": "The \"Nhật ký KTV\" (Technician log) tab lists every action of the technician in time order: the approved SLA extension with its reason, site notes and the photos taken during the repair, each with the time and the technician's name.",
+     "images": [
+      "png/admin/wf3-a03-ticket-log.png"
+     ],
+     "caption": "Technician Log of a Ticket (admin web)"
+    },
+    {
+     "text": "The \"Đội ngũ KTV\" (Technician team) page summarises \"Đang xử lý sự cố\" (Handling incidents), \"Cảnh báo vi phạm SLA\" (SLA violation warnings) and \"Chỉ số chất lượng CSAT\" (CSAT quality index) from customer ratings, and each technician card shows the workload, shift status and \"Trễ SLA\" (SLA late) count. The panel \"Chế tài Quản lý Chất lượng Kỹ thuật viên (3 Cấp độ SLA)\" (Technician quality sanctions, 3 SLA levels) explains the automatic levels \"Cấp 1: Nhắc nhở\" (Level 1: Reminder), \"Cấp 2: Tạm ngưng việc\" (Level 2: Work paused) and \"Cấp 3: Đình chỉ\" (Level 3: Suspended), whose overdue thresholds the admin sets in Settings.",
+     "images": [
+      "png/admin/wf3-a04-technicians.png"
+     ],
+     "caption": "Technician Team Page (admin web)"
+    },
+    {
+     "text": "On a technician's detail page the admin can \"Giao việc sự cố\" (Assign incident), \"Gửi cảnh cáo SLA\" (Send SLA warning) or \"Đình chỉ KTV\" (Suspend technician), and for each ticket under \"Phiếu sự cố\" (Incident tickets) open \"Nhật ký\" (Log), \"Gia hạn SLA\" (Extend SLA) or \"Thu hồi việc\" (Revoke job). Admin extensions do not count towards the technician's two-extension limit, and a revoked ticket returns to the queue as OPEN.",
+     "images": [
+      "png/admin/wf3-a05-technician-detail.png"
+     ],
+     "caption": "Technician Detail with Ticket Actions (admin web)"
+    }
+   ]
+  }
+ ]
+}
