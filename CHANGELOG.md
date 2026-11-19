@@ -2,6 +2,10 @@
 
 Mỗi thay đổi ở repo docs thêm **một dòng** vào ngày tương ứng (mới nhất ở trên). Ghi mã gap/SEC/ADR nếu có.
 
+## 2026-11-19
+
+- Hạ tầng: production chuyển sang VM Azure `85.211.194.202` (Malaysia West, `Standard_B2as_v2`) ở một subscription Azure for Students khác, vì subscription trước bị vô hiệu từ 16/11 (`SpendingLimitReached`, gói tín dụng gia hạn bị thu hồi) làm API ngừng 3 ngày. Chép nguyên đĩa OS (9 DB, `assistant-db`, RabbitMQ, `.env`, nginx/Let's Encrypt) qua link đọc tạm của đĩa và bản chép trong storage account, nên không mất dữ liệu; NSG giữ 22/80/443; secret `AZURE_VM_HOST` trỏ IP mới; DNS `api.locker-drone.tech` đổi trên Cloudflare.
+
 ## 2026-11-15
 
 - rp6/ (mới): Report 6 – Software User Guides theo form chương "Software User Guides" của report mẫu: tài liệu Word + PDF (114 trang, 147 hình) gồm Installation Guides (yêu cầu phần cứng/phần mềm, cài app, admin web, back-end, kiosk/Pi) và 4 luồng WF-01 giao drone, WF-02 thuê ô/gửi hàng, WF-03 xử lý sự cố ô, WF-04 bảo trì; toàn bộ ảnh mobile, kiosk, admin chụp lại ngày 15/11 trên production bằng tài khoản và tủ demo, đã che số tài khoản VietQR và quét OCR không còn dữ liệu cá nhân thật; script dựng lại trong `rp6/guide-assets/_generator`.
