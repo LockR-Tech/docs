@@ -50,7 +50,7 @@ Lắp đặt & nghiệm thu tủ (F3-G12, [flow-3 § 8](../02-flows/flow-3-roles
 
 | | Local | Production |
 |---|---|---|
-| Máy | Docker Desktop | Azure VM `85.211.182.170` (Malaysia West, từ 2026-10-04), Ubuntu 24.04, `Standard_B2as_v2` 8 GB, swap 4 GB |
+| Máy | Docker Desktop | Azure VM `85.211.194.202` (Malaysia West, từ 2026-11-19), Ubuntu 24.04, `Standard_B2as_v2` 8 GB, swap 4 GB |
 | Lối vào | Gateway `http://localhost:18080` | Nginx :443 (Let's Encrypt) → `127.0.0.1:8080`; NSG chỉ mở 22/80/443 |
 | Postgres | `postgres:16-alpine` `127.0.0.1:15432` | cùng image, không mở ra ngoài |
 | Postgres vector (trợ lý) | `pgvector/pgvector:pg16` (`assistant-db`) `127.0.0.1:15433`, volume `assistant_db_data` | cùng image, `shared_buffers=64MB`; mật khẩu `ASSISTANT_DB_PASSWORD` (chỉ có tác dụng lần đầu tạo volume) |
