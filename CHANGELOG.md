@@ -4,6 +4,7 @@ Mỗi thay đổi ở repo docs thêm **một dòng** vào ngày tương ứng (
 
 ## 2026-11-21
 
+- flow-3 F3-G13, STATUS § 3, architecture, ADR-0011: hướng dẫn lần đầu trên màn hình đủ đợt 2–5 — web admin (frontend #107), app (mobile #137), trang HDSD web `/admin/huong-dan` + màn hình HDSD trong app, script chụp ảnh `npm run hdsd:capture` (web dữ liệu giả, app tài khoản demo), 15 nhóm cho 4 vai trò. Chưa merge.
 - flow-3 F3-G13 (mới), ADR-0011, architecture, STATUS § 3: hướng dẫn lần đầu trên màn hình cho web + mobile — đợt 1 backend: bảng `user_onboarding_state` (user-service V9) và `GET /api/user/onboarding`, `PUT …/auto-show`, `POST …/seen`. Tính năng mới nên không thêm hạng mục checklist, % giữ nguyên.
 
 ## 2026-11-19

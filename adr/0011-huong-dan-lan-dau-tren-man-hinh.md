@@ -2,10 +2,10 @@
 
 | | |
 |---|---|
-| **Trạng thái** | Proposed — đang làm theo đợt (F3-G13) |
+| **Trạng thái** | Proposed — đủ 5 đợt, PR mở chờ merge (F3-G13) |
 | **Ngày** | 2026-11-21 |
 | **Người quyết định** | HuyNQB |
-| **Liên quan** | [flow-3 F3-G13](../02-flows/flow-3-roles-maintenance.md#6-gap-để-đạt-100-) · backend `feat/f3-g13-onboarding-backend` |
+| **Liên quan** | [flow-3 F3-G13](../02-flows/flow-3-roles-maintenance.md#6-gap-để-đạt-100-) · backend [#143](https://github.com/LockR-Tech/backend/pull/143) · mobile [#137](https://github.com/LockR-Tech/mobile/pull/137) · frontend [#107](https://github.com/LockR-Tech/frontend/pull/107) |
 
 ## Bối cảnh
 
@@ -31,9 +31,10 @@ Ràng buộc trong repo:
 ## Quyết định
 
 1. **Trạng thái** ở user-service, bảng `user_onboarding_state` (Flyway V9): `auto_show`, `seen_groups` (JSONB mã nhóm → phiên bản đã xem), `updated_at`. Ba endpoint `GET /api/user/onboarding`, `PUT /api/user/onboarding/auto-show`, `POST /api/user/onboarding/seen`, chỉ thao tác trên người đăng nhập (`X-User-Id`). "Bỏ qua" một lần lưu ở phía máy khách theo phiên, không lưu server.
-2. **Nội dung** ở `frontend/fe/public/onboarding/`: `tours.json` (nhóm: mã, phiên bản, vai trò, bước; bước: id, neo, trang cần mở, phía đặt ô chú thích, cờ "có thể không xuất hiện", nền tảng) và `locales/{vi,en,ja}.json` (chữ). App mobile tải từ `https://admin.locker-drone.tech/onboarding/…`, dùng bản kèm `assets/onboarding/` khi lỗi mạng và để chạy test.
-3. **Lớp khoanh tự viết**: web dùng React portal + `@floating-ui/react-dom` để đặt ô chú thích; neo là thuộc tính `data-tour`. Mobile dùng `OverlayEntry` + `CustomPainter`; neo là widget `TourAnchor`, gắn thêm `Semantics(identifier: 'tour:<id>')` để script chụp ảnh tìm được trên bản Flutter web.
+2. **Nội dung** ở `frontend/fe/public/onboarding/`: `tours.json` (nhóm: mã, phiên bản, vai trò, bước; bước: id, neo, trang cần mở, phía đặt ô chú thích, cờ "có thể không xuất hiện", nền tảng) và `locales/{vi,en}.json` (chữ; web admin chỉ bật vi/en nên ja chưa bắt buộc). App mobile tải từ `https://admin.locker-drone.tech/onboarding/…`, dùng bản kèm `assets/onboarding/` khi lỗi mạng và để chạy test.
+3. **Lớp khoanh tự viết**: web dùng React portal + `@floating-ui/dom` để đặt ô chú thích; neo là thuộc tính `data-tour`. Mobile dùng `OverlayEntry` + `CustomPainter`; neo là widget `TourAnchor`, gắn thêm `Semantics(identifier: 'tour:<id>', explicitChildNodes: true)` để script chụp ảnh tìm được trên bản Flutter web (không có `explicitChildNodes` thì phần tử bấm được có chữ bị gộp và mất identifier).
 4. **Tăng phiên bản nhóm** mỗi khi sửa nội dung nhóm. Người đã xem chỉ được hỏi lại các nhóm mới hoặc vừa tăng phiên bản.
+5. **Ảnh HDSD** `hdsd/<nhóm>.png` + `.json` (toạ độ ô khoanh, số ↔ bước) chụp bằng `npm run hdsd:capture`, chỉ trên dev/demo: nhóm web chạy dev server với mọi `/api/**` bị chặn và trả dữ liệu giả; nhóm app chạy bản Flutter web cục bộ, đăng nhập tài khoản demo `@demo.lockr.test`, ảnh cắt ngay dưới ô khoanh cuối để không lộ dữ liệu khác. Test đỏ khi ảnh thiếu hoặc không khớp bước hiện tại.
 
 ## Hệ quả
 
