@@ -14,6 +14,6 @@ Ghi lại **vì sao** dự án làm theo một cách, để người sau không 
 | [0008](0008-hop-dong-mqtt-backend-tu.md) | Hợp đồng MQTT backend ↔ tủ — topic theo `lockerId`, ô theo `slotIndex`, gán thiết bị bằng MAC, broker riêng | Accepted | 2026-09-27 |
 | [0009](0009-xoa-mem-co-ly-do-o-trang-admin.md) | Xoá ở trang admin là xoá mềm, bắt buộc có lý do | Accepted | 2026-11-01 |
 | [0010](0010-dich-chu-server-o-tang-response.md) | Chữ server tự soạn được dịch sang tiếng Anh ở tầng response, theo bảng câu Việt → Anh | Accepted | 2026-11-02 |
-| [0011](0011-huong-dan-lan-dau-tren-man-hinh.md) | Hướng dẫn lần đầu trên màn hình — nội dung tĩnh ở frontend, trạng thái ở user-service, lớp khoanh tự viết | Proposed | 2026-11-21 |
+| [0011](0011-huong-dan-lan-dau-tren-man-hinh.md) | Hướng dẫn lần đầu trên màn hình — nội dung tĩnh ở frontend, trạng thái ở user-service, lớp khoanh tự viết | Accepted | 2026-11-21 |
 
 Tạo ADR mới: chép [0000-template.md](0000-template.md) thành `NNNN-ten-ngan.md` (số kế tiếp), thêm dòng vào bảng trên.

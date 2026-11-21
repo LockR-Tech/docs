@@ -2,10 +2,10 @@
 
 | | |
 |---|---|
-| **Trạng thái** | Proposed — đủ 5 đợt, PR mở chờ merge (F3-G13) |
+| **Trạng thái** | Accepted — đã lên production 2026-11-21 (F3-G13) |
 | **Ngày** | 2026-11-21 |
 | **Người quyết định** | HuyNQB |
-| **Liên quan** | [flow-3 F3-G13](../02-flows/flow-3-roles-maintenance.md#6-gap-để-đạt-100-) · backend [#143](https://github.com/LockR-Tech/backend/pull/143) · mobile [#137](https://github.com/LockR-Tech/mobile/pull/137) · frontend [#107](https://github.com/LockR-Tech/frontend/pull/107) |
+| **Liên quan** | [flow-3 F3-G13](../02-flows/flow-3-roles-maintenance.md#6-gap-để-đạt-100-) · backend [#143](https://github.com/LockR-Tech/backend/pull/143) · mobile [#137](https://github.com/LockR-Tech/mobile/pull/137) [#138](https://github.com/LockR-Tech/mobile/pull/138) [#139](https://github.com/LockR-Tech/mobile/pull/139) · frontend [#107](https://github.com/LockR-Tech/frontend/pull/107) |
 
 ## Bối cảnh
 
@@ -35,8 +35,16 @@ Ràng buộc trong repo:
 3. **Lớp khoanh tự viết**: web dùng React portal + `@floating-ui/dom` để đặt ô chú thích; neo là thuộc tính `data-tour`. Mobile dùng `OverlayEntry` + `CustomPainter`; neo là widget `TourAnchor`, gắn thêm `Semantics(identifier: 'tour:<id>', explicitChildNodes: true)` để script chụp ảnh tìm được trên bản Flutter web (không có `explicitChildNodes` thì phần tử bấm được có chữ bị gộp và mất identifier).
 4. **Tăng phiên bản nhóm** mỗi khi sửa nội dung nhóm. Người đã xem chỉ được hỏi lại các nhóm mới hoặc vừa tăng phiên bản.
 5. **Ảnh HDSD** `hdsd/<nhóm>.png` + `.json` (toạ độ ô khoanh, số ↔ bước) chụp bằng `npm run hdsd:capture`, chỉ trên dev/demo: nhóm web chạy dev server với mọi `/api/**` bị chặn và trả dữ liệu giả; nhóm app chạy bản Flutter web cục bộ, đăng nhập tài khoản demo `@demo.lockr.test`, ảnh cắt ngay dưới ô khoanh cuối để không lộ dữ liệu khác. Test đỏ khi ảnh thiếu hoặc không khớp bước hiện tại.
+6. **Phủ đủ mọi màn hình và tính năng** (bổ sung 2026-11-21): mỗi nhóm là một trạng thái màn hình (trang, tab, trang chi tiết, hộp thoại, menu), mọi bước của nhóm thấy được cùng lúc. Thêm vào nội dung:
+   - `via` ở bước: neo cần bấm trước khi tìm phần tử (dòng đầu danh sách, tab, nút mở hộp thoại, mục menu). Trang chi tiết có tham số không dùng làm route; bước trỏ trang danh sách và nối `via` qua từng bước (menu "⋯" → "Xem chi tiết" → tab). Chỉ dùng cho thao tác mở/xem, không cho nút đổi dữ liệu. Lớp khoanh web bấm `via` bằng đủ chuỗi sự kiện chuột (menu, tab, Select của Radix mở bằng pointerdown/mousedown), và chặn cú bấm trong lớp hướng dẫn lọt tới Radix để menu, hộp thoại đang dẫn không tự đóng.
+   - `manualOnly` ở nhóm: chỉ có ở trang HDSD (màn hình trước đăng nhập kèm `signedOut`, luồng cần đơn thật ở đúng trạng thái như thanh toán VietQR, bỏ hàng vào ô, drone đang bay). Nền tảng `kiosk` (màn hình cảm ứng tại tủ, repo iot) chỉ dùng trong nhóm `manualOnly`; neo kiosk không gắn vào mã iot mà khai ở `scripts/hdsd/kiosk-anchors.json` (neo → CSS selector), ảnh chụp bằng dev server `iot/ui` với mọi request bị chặn.
+   - `intro` ở nhóm: chỉ các nhóm tổng quan (15 nhóm đầu) tự chạy khi đăng nhập lần đầu và báo "Có hướng dẫn mới"; nhóm chi tiết mở từ nút "Hướng dẫn" hoặc trang HDSD — tránh tour vài trăm bước.
+   - Test bắt buộc "route nào cũng có hướng dẫn": mọi trang admin trong `routes-config.tsx` và mọi route trong `AppRouter` phải có bước trỏ tới (trang chi tiết: nhóm mở bằng `via` từ trang danh sách), hoặc nằm trong bảng ngoại lệ có lý do (màn chờ khởi động, tính năng đang tắt, route không còn chỗ mở tới, đích mã QR mở ô thật).
 
 ## Hệ quả
 
 - Sửa màn hình hay nút phải sửa hướng dẫn cùng lúc: gắn/sửa neo, khai nhóm, đủ chữ mọi ngôn ngữ, tăng phiên bản, chụp lại ảnh HDSD. Ghi trong `AGENTS.md` của frontend và mobile. Test quét neo và chữ sẽ đỏ nếu quên.
 - Một nhóm của nền tảng khác (ví dụ nhóm KTV khi admin đang ở web) chỉ xem được ở trang HDSD, không khoanh được vì phần tử không có trên nền tảng đó.
+- Thêm trang hoặc route mới mà chưa có hướng dẫn ⇒ test đỏ; muốn bỏ qua phải ghi lý do vào bảng ngoại lệ trong `fe/tests/onboarding-content.test.mjs`.
+- Nhóm `manualOnly` cần dữ liệu thật mà script chụp không tạo được (thanh toán VietQR, bỏ hàng vào ô, chuyển mã cho người nhận, kết quả thuê tủ, bản đồ drone đang bay) mang cờ `noImage`: trang HDSD chỉ có chữ kèm câu giải thích, script chụp bỏ qua và xoá ảnh cũ; test đỏ nếu nhóm `noImage` còn ảnh.
+- Số nhóm tăng lên 288 (admin 153, khách 91, KTV tủ 29, KTV drone 15, tính cả nhóm chỉ có ở HDSD); mỗi người tối đa 142 nhóm chạy được, dưới giới hạn 300 nhóm "đã xem" của user-service.
