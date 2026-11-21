@@ -2,6 +2,10 @@
 
 Mỗi thay đổi ở repo docs thêm **một dòng** vào ngày tương ứng (mới nhất ở trên). Ghi mã gap/SEC/ADR nếu có.
 
+## 2026-11-21
+
+- flow-3 F3-G13 (mới), ADR-0011, architecture, STATUS § 3: hướng dẫn lần đầu trên màn hình cho web + mobile — đợt 1 backend: bảng `user_onboarding_state` (user-service V9) và `GET /api/user/onboarding`, `PUT …/auto-show`, `POST …/seen`. Tính năng mới nên không thêm hạng mục checklist, % giữ nguyên.
+
 ## 2026-11-19
 
 - Hạ tầng: production chuyển sang VM Azure `85.211.194.202` (Malaysia West, `Standard_B2as_v2`) ở một subscription Azure for Students khác, vì subscription trước bị vô hiệu từ 16/11 (`SpendingLimitReached`, gói tín dụng gia hạn bị thu hồi) làm API ngừng 3 ngày. Chép nguyên đĩa OS (9 DB, `assistant-db`, RabbitMQ, `.env`, nginx/Let's Encrypt) qua link đọc tạm của đĩa và bản chép trong storage account, nên không mất dữ liệu; NSG giữ 22/80/443; secret `AZURE_VM_HOST` trỏ IP mới; DNS `api.locker-drone.tech` đổi trên Cloudflare.
