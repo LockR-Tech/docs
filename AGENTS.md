@@ -28,6 +28,7 @@ G:\Lock.R\            (hoặc thư mục cha bất kỳ — giữ các repo cạ
 | Nối dây tủ vật lý, chuẩn bị Pi/Jetson và màn cảm ứng | [03-hardware/](03-hardware/controller-wiring-guide.md) · tủ thật `CAB-TU01`: [sơ đồ tổng quan](03-hardware/tu01-so-do-tong-quan.md) · [cấu hình ô & nắp trượt](03-hardware/tu01-cau-hinh-o-va-nap-truot.md) |
 | Nạp khoá dịch vụ ngoài (Cloudinary, Twilio, Azure, Cloudflare…) | [04-engineering/cau-hinh-dich-vu-ngoai.md](04-engineering/cau-hinh-dich-vu-ngoai.md) |
 | Khi nào phải sửa tài liệu | [04-engineering/documentation-rules.md](04-engineering/documentation-rules.md) |
+| **Đổi giao diện ⇒ cập nhật hướng dẫn trên màn hình + HDSD** | [04-engineering/huong-dan-giao-dien.md](04-engineering/huong-dan-giao-dien.md) |
 | Vì sao làm thế | [adr/](adr/README.md) |
 
 ## 1. Bắt đầu phiên
@@ -40,7 +41,8 @@ G:\Lock.R\            (hoặc thư mục cha bất kỳ — giữ các repo cạ
    ```
    Có commit code chưa được phản ánh trong STATUS ⇒ **đừng tin mù quáng**: đọc diff phần liên quan tới việc của bạn trước, và ghi nhận khác biệt khi cập nhật STATUS cuối phiên.
 4. **Đọc file luồng** chứa gap bạn sắp làm (`02-flows/flow-N-*.md`) và sơ đồ trạng thái liên quan.
-5. **Nhận việc**: thêm một dòng vào STATUS § 3 (việc, ID gap, tên, nhánh). Việc đã có người nhận thì chọn việc khác hoặc hỏi.
+5. **Sắp đổi giao diện** (web admin, app, kiosk)? Đọc [luật hướng dẫn](04-engineering/huong-dan-giao-dien.md): phải cập nhật hướng dẫn trên màn hình + HDSD trong cùng PR. Repo frontend / mobile nhắc bằng hook Claude Code, git hook và check CI "Hướng dẫn trên màn hình" (chặn merge).
+6. **Nhận việc**: thêm một dòng vào STATUS § 3 (việc, ID gap, tên, nhánh). Việc đã có người nhận thì chọn việc khác hoặc hỏi.
 
 ## 2. Trong khi làm
 
@@ -62,6 +64,7 @@ Một việc **chưa xong** cho tới khi tài liệu phản ánh nó. PR code p
 | Thêm service, endpoint công khai, queue, topic, biến môi trường, secret | **01-overview/architecture.md** (+ `architecture.mmd` nếu đổi thành phần) |
 | Vá hoặc phát hiện lỗ hổng | **STATUS § 2** (thêm/xoá dòng SEC-xx) |
 | Ra quyết định kiến trúc / quy trình khó đảo ngược | **ADR mới** trong `adr/` |
+| Thêm / xoá / sửa màn hình, nút, tab, hộp thoại, menu, bộ lọc, nhãn (web admin, app, kiosk) | **Hướng dẫn trên màn hình + HDSD** — neo, `tours.json`, chữ vi/en, **tăng `version`**, chụp lại ảnh; hoặc ghi lý do không ảnh hưởng trong PR ([luật](04-engineering/huong-dan-giao-dien.md)) |
 | Mọi thay đổi ở repo docs | **CHANGELOG.md** — 1 dòng |
 
 Sau cùng: cập nhật dòng **Cập nhật lần cuối** và **Mốc code đã rà soát** (STATUS § 0) nếu bạn đã kiểm lại phần code tương ứng.
