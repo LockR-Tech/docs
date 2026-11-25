@@ -2,6 +2,21 @@
 
 Mỗi thay đổi ở repo docs thêm **một dòng** vào ngày tương ứng (mới nhất ở trên). Ghi mã gap/SEC/ADR nếu có.
 
+## 2026-11-21
+
+- 04-engineering/huong-dan-giao-dien.md (mới), AGENTS.md, documentation-rules: luật "đổi giao diện ⇒ cập nhật hướng dẫn trên màn hình + HDSD" cho mọi người và AI agent — nhắc bằng hook Claude Code (mở phiên, sửa file giao diện, cuối lượt), git hook pre-commit, mẫu PR; check CI "Hướng dẫn trên màn hình" chặn merge ở frontend và mobile.
+- flow-3 F3-G13, STATUS § 3, architecture, ADR-0011: hướng dẫn trên màn hình phủ đủ mọi màn hình và tính năng — 288 nhóm (web admin 152, app 110, kiosk 26); thêm `via`, `manualOnly`/`signedOut`, nền tảng kiosk, cờ `intro` (chỉ 15 nhóm tổng quan tự chạy lần đầu), cờ `noImage` (5 nhóm cần đơn thật: HDSD chỉ có chữ), test bắt buộc "route nào cũng có hướng dẫn"; mobile #138 sửa hộp chào KTV hiện "Chào !" khi chưa có tên. Không đổi checklist.
+- flow-3 F3-G13, STATUS § 3, architecture, ADR-0011: hướng dẫn lần đầu trên màn hình đủ đợt 2–5 — web admin (frontend #107), app (mobile #137), trang HDSD web `/admin/huong-dan` + màn hình HDSD trong app, script chụp ảnh `npm run hdsd:capture` (web dữ liệu giả, app tài khoản demo), 15 nhóm cho 4 vai trò. Chưa merge.
+- flow-3 F3-G13 (mới), ADR-0011, architecture, STATUS § 3: hướng dẫn lần đầu trên màn hình cho web + mobile — đợt 1 backend: bảng `user_onboarding_state` (user-service V9) và `GET /api/user/onboarding`, `PUT …/auto-show`, `POST …/seen`. Tính năng mới nên không thêm hạng mục checklist, % giữ nguyên.
+
+## 2026-11-19
+
+- Hạ tầng: production chuyển sang VM Azure `85.211.194.202` (Malaysia West, `Standard_B2as_v2`) ở một subscription Azure for Students khác, vì subscription trước bị vô hiệu từ 16/11 (`SpendingLimitReached`, gói tín dụng gia hạn bị thu hồi) làm API ngừng 3 ngày. Chép nguyên đĩa OS (9 DB, `assistant-db`, RabbitMQ, `.env`, nginx/Let's Encrypt) qua link đọc tạm của đĩa và bản chép trong storage account, nên không mất dữ liệu; NSG giữ 22/80/443; secret `AZURE_VM_HOST` trỏ IP mới; DNS `api.locker-drone.tech` đổi trên Cloudflare.
+
+## 2026-11-15
+
+- rp6/ (mới): Report 6 – Software User Guides theo form chương "Software User Guides" của report mẫu: tài liệu Word + PDF (114 trang, 147 hình) gồm Installation Guides (yêu cầu phần cứng/phần mềm, cài app, admin web, back-end, kiosk/Pi) và 4 luồng WF-01 giao drone, WF-02 thuê ô/gửi hàng, WF-03 xử lý sự cố ô, WF-04 bảo trì; toàn bộ ảnh mobile, kiosk, admin chụp lại ngày 15/11 trên production bằng tài khoản và tủ demo, đã che số tài khoản VietQR và quét OCR không còn dữ liệu cá nhân thật; script dựng lại trong `rp6/guide-assets/_generator`.
+
 ## 2026-11-11
 
 - flow-3 § 8, STATUS § 3 (F3-G12): cập nhật kết quả chạy thử E2E luồng lắp đặt & nghiệm thu tủ trên production (`HN-001`, 8 ô, Pi giả + máy ảo Android) và 3 PR sửa 7 lỗi + làm gọn UI thẻ checklist ([backend #142](https://github.com/LockR-Tech/backend/pull/142), [mobile #136](https://github.com/LockR-Tech/mobile/pull/136), [iot #49](https://github.com/LockR-Tech/iot/pull/49)).

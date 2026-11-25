@@ -32,6 +32,7 @@ Quyết định: [ADR-0002](../adr/0002-docs-as-code-repo-trung-tam.md). Tóm t�
 | Phát hiện / vá lỗ hổng | ✅ § 2 | ✅ | | | | | ✅ |
 | Đổi quy trình Git/deploy/review | | | | | ✅ | ✅ | ✅ |
 | Chọn công nghệ / nhà cung cấp mới | ✅ § 6 | | | ✅ | | ✅ | ✅ |
+| Thêm / xoá / sửa màn hình, nút, tab, hộp thoại, nhãn | ngoài bảng này: cập nhật **hướng dẫn trên màn hình + HDSD** trong repo frontend — [luật](huong-dan-giao-dien.md) | | | | | | |
 | Sửa lỗi nhỏ không đổi hành vi được mô tả | — ghi "không ảnh hưởng tài liệu" trong PR | | | | | | |
 
 ## 3. PR code và PR docs
