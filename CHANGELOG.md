@@ -2,6 +2,10 @@
 
 Mỗi thay đổi ở repo docs thêm **một dòng** vào ngày tương ứng (mới nhất ở trên). Ghi mã gap/SEC/ADR nếu có.
 
+## 2026-11-26
+
+- flow-3 F3-G14 (mới), STATUS § 5, business-settings, architecture, release-deploy: cụm "Giả lập & demo" tắt/bật hàng loạt cho vận hành chính thức (cờ mới ẩn tủ/điểm gửi demo, tắt thử Bluetooth), web admin gửi `X-App-Language`, bảng dịch server phủ nhãn quy tắc nghiệp vụ, test khoá chữ web.
+
 ## 2026-11-21
 
 - 04-engineering/huong-dan-giao-dien.md (mới), AGENTS.md, documentation-rules: luật "đổi giao diện ⇒ cập nhật hướng dẫn trên màn hình + HDSD" cho mọi người và AI agent — nhắc bằng hook Claude Code (mở phiên, sửa file giao diện, cuối lượt), git hook pre-commit, mẫu PR; check CI "Hướng dẫn trên màn hình" chặn merge ở frontend và mobile.

@@ -71,6 +71,25 @@ Mọi phản hồi bọc `ApiResponse { success, code, message, data, errors }`.
 | loyalty | Hạng & phần thưởng | Điểm lên Silver/Gold/Platinum (so với **tổng điểm đã tích** `lifetime_points`, tiêu điểm hay đổi voucher không tụt hạng; mặc định 50.000 / 200.000 / 500.000), số tem đổi thưởng, điểm đổi thưởng, số tem mỗi lần; số đồng cho 1 điểm khi tích (`app.loyalty.vnd-per-point`, mặc định **10 đ** = tích 10 % số tiền, tích khi đơn hoàn tất trên tiền khách thật sự trả) |
 | loyalty | Dùng điểm thanh toán | Bật/tắt (`app.loyalty.redeem-enabled`), giá trị 1 điểm khi dùng (`app.loyalty.redeem-vnd-per-point`, mặc định **1 đ**), % tối đa của đơn sau mã giảm giá (`app.loyalty.redeem-max-percent`, mặc định 50), số điểm tối thiểu mỗi lần (`app.loyalty.redeem-min-points`, mặc định 1.000). Điểm trả lại khi đơn huỷ/hoàn tiền. Từ loyalty V5 (2026-10-24) **1 điểm = 1 đ**: migration nhân mọi số điểm cũ và mốc hạng với 100 (giá trị tiền khách đang có giữ nguyên); app hiện điểm được cộng ở chi tiết đơn dạng `+700đ (10%)` |
 | store | Tìm cửa hàng | Bán kính tìm mặc định |
+| locker | Giả lập & demo | `app.locker.demo.visible` (mặc định bật), `app.locker.demo.locker-ids` (800001–800013), `app.locker.demo.allowed-user-ids` (9 tài khoản `*@demo.lockr.test` đăng nhập được): tắt ⇒ tủ demo ẩn khỏi `/api/lockers` và `/api/iot/lockers` với khách thường / chưa đăng nhập; order-service hỏi `/internal/lockers/{id}/customer-visible` và từ chối đơn gửi/thuê mới (`LOCKER_NOT_AVAILABLE`). Admin luôn thấy |
+| store | Giả lập & demo | `app.store.demo.visible`, `app.store.demo.store-ids` (800001–800007), `app.store.demo.allowed-user-ids`: ẩn điểm gửi demo khỏi `/api/stores` và `/api/stores/nearby` theo cùng quy tắc |
+| iot | Thử tủ | `app.iot.test-open.enabled` (+ tài khoản, tủ được mở thử) và `app.iot.ble-test.enabled` (mặc định bật): tắt ⇒ `/api/iot/ble-test/lockers` trả rỗng (app ẩn mục thử Bluetooth), xin mã ⇒ `BLE_TEST_DISABLED`; quyền đã cấp vẫn giữ |
+
+### Cụm "Giả lập & demo" (F3-G14)
+
+Thẻ ở đầu trang Cấu hình nghiệp vụ (`SimulationClusterCard`) gom các cờ giả lập rải ở nhiều scope, đọc/ghi qua cùng API trên, có lịch sử thay đổi như mọi quy tắc:
+
+| Mục | Cờ | Thuộc "Bật chế độ demo" |
+|---|---|---|
+| Nút giả lập thanh toán (app + kiosk) | `payment` `app.payment.simulation-enabled` | có |
+| Drone DEMO (bay giả lập) | `order` `app.drone.demo.enabled` | có |
+| Tủ demo hiện cho khách | `locker` `app.locker.demo.visible` | có |
+| Điểm gửi demo hiện cho khách | `store` `app.store.demo.visible` | có |
+| Thử mở ô qua Bluetooth | `iot` `app.iot.ble-test.enabled` | có |
+| Mở thử ô bằng QR | `iot` `app.iot.test-open.enabled` | không — bật riêng |
+| Thử nắp trượt theo ArUco | `order` `app.drone.lid-test.enabled` | không — bật riêng |
+
+**Vận hành chính thức = "Tắt toàn bộ"** (trạng thái "Đã tắt hết"). "Bật chế độ demo" chỉ bật lại 5 mục demo; 2 công cụ thử tủ điều khiển phần cứng thật (CAB-TU01) nên phải bật từng cái bằng công tắc riêng và tắt ngay sau khi thử.
 
 Không cấu hình trên admin: tập trạng thái cho phép hành động, bí mật/TTL JWT, cron và timeout kỹ thuật, giới hạn nhà cung cấp — xem ADR-0005.
 

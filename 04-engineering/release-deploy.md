@@ -111,6 +111,10 @@ Workflow này phải có trên `main` mới chạy được. Khi chưa có: **De
 
 Sau đó thử tay luồng bị ảnh hưởng (đăng nhập, tạo đơn, mở tủ bằng giả lập).
 
+### Trước khi mở cho khách thật
+
+Web admin › Cấu hình nghiệp vụ › thẻ **Giả lập & demo** phải ở trạng thái **"Đã tắt hết — vận hành chính thức"**: không còn nút giả lập thanh toán, tủ và điểm gửi demo không hiện với khách, đơn drone bay thật. Cần demo thì bấm "Bật chế độ demo", xong tắt lại ([business-settings § Cụm Giả lập & demo](../01-overview/business-settings.md)).
+
 ## 7. Secret
 
 | Nơi lưu | Secret (chỉ ghi tên) |
