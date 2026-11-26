@@ -54,6 +54,12 @@ App còn dò một số câu server bằng chữ tiếng Việt: tag `[ĐIỀU C
 - Chữ khách tự gõ (lời nhắn người gửi, mô tả kiện, tên, địa chỉ) giữ nguyên.
 - Mã OTP đăng nhập qua email vốn đã viết bằng tiếng Anh nên không đổi.
 
+### Bổ sung 2026-11-26: web admin và trang Cài đặt (F3-G14)
+
+- Web admin cũng gửi `X-App-Language: en` khi đang ở tiếng Anh (`frontend/fe/src/utils/server-language.ts`), trừ các màn admin tự soạn nội dung (khuyến mãi, cửa hàng, mẫu thông báo, tài liệu trợ lý) để form sửa luôn thấy đúng chữ đã gõ.
+- Trang Cài đặt nay được dịch: `BusinessSettingsController` gắn `@KeepServerText` nên `EnglishResponseAdvice` bỏ qua, controller tự dịch nhóm, tên, mô tả, đơn vị của từng quy tắc; giá trị, mặc định, giới hạn và `/api/settings/{scope}/public` giữ nguyên chữ. Lỗi ném ra vẫn được dịch. Lỗi nhập sai viết tiếng Việt dạng `«Tên quy tắc» phải ≥ 0`.
+- `server_text_missing.py` kiểm cả `*SettingsCatalog` (bỏ qua giá trị mặc định dạng danh sách "a,b,c").
+
 ## Hệ quả
 
 - **Tích cực:**
