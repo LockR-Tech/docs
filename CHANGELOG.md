@@ -2,6 +2,10 @@
 
 Mỗi thay đổi ở repo docs thêm **một dòng** vào ngày tương ứng (mới nhất ở trên). Ghi mã gap/SEC/ADR nếu có.
 
+## 2026-11-26
+
+- flow-3 F3-G14 (mới), STATUS § 3, ADR-0010, architecture: dọn sạch web admin — gỡ ví khỏi giao diện và backend (DB giữ nguyên), trang Cài đặt dịch tiếng Anh phần nhãn/mô tả (`@KeepServerText`), API thông báo admin phân trang + thống kê + xoá hàng loạt, xoá mềm phiếu sự cố / lịch kiểm tra / tài liệu trợ lý. Không đổi checklist.
+
 ## 2026-11-21
 
 - 04-engineering/huong-dan-giao-dien.md (mới), AGENTS.md, documentation-rules: luật "đổi giao diện ⇒ cập nhật hướng dẫn trên màn hình + HDSD" cho mọi người và AI agent — nhắc bằng hook Claude Code (mở phiên, sửa file giao diện, cuối lượt), git hook pre-commit, mẫu PR; check CI "Hướng dẫn trên màn hình" chặn merge ở frontend và mobile.
