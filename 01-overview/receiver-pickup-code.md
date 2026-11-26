@@ -144,12 +144,12 @@ Người nhận / người lấy hộ có tài khoản tự gửi lại cho mìn
 | Endpoint | Ai gọi | Việc |
 |---|---|---|
 | `POST /api/orders/{id}/receiver-email` `{email?}` | Người gửi (chủ đơn SEND, chưa uỷ quyền), đơn `INITIALIZED`/`STORING`/`RETURNED` | Có `email` ⇒ lưu làm email người nhận. Hàng đã trong ô ⇒ gửi lại mã mở tủ (`RECEIVER_EMAIL_SENT`); đã thanh toán, chưa bỏ hàng ⇒ gửi lại thư báo có đơn, không mã (`RECEIVER_EMAIL_SENT`); chưa thanh toán ⇒ chỉ lưu (`RECEIVER_EMAIL_SAVED`, `sentAt` null) — người nhận được báo khi đơn được thanh toán (§ 7a) |
-| `POST /api/orders/incoming/{id}/email`, `/api/orders/delegated-to-me/{id}/email` | Người nhận / người lấy hộ có tài khoản | Gửi thông tin đơn tới **email tài khoản** người gọi; kèm mã mở tủ khi hàng đã trong ô. Trả email đã che (`mi***@…`) |
+| `POST /api/orders/incoming/{id}/email` (đường `/delegated-to-me/…` đã gỡ — F3-G15) | Người nhận / người lấy hộ có tài khoản | Gửi thông tin đơn tới **email tài khoản** người gọi; kèm mã mở tủ khi hàng đã trong ô. Trả email đã che (`mi***@…`) |
 
 Mỗi đơn tối đa **1 lần/phút** cho mỗi đường. Mỗi lần gửi ghi một dòng lịch sử đơn.
 
 ## 10. Việc chưa làm
 
-- Uỷ quyền lấy hộ (`delegate`) hiện vẫn chỉ báo chủ đơn, chưa dùng kênh này.
+- Uỷ quyền lấy hộ (`delegate`) đã gỡ 27/11/2026 (F3-G15).
 - Đổi nhà cung cấp SMS: thêm một bản cài `SmsSender` và một nhánh trong `SmsChannelConfig`,
   không phải sửa nghiệp vụ.

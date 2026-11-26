@@ -2,6 +2,10 @@
 
 Mỗi thay đổi ở repo docs thêm **một dòng** vào ngày tương ứng (mới nhất ở trên). Ghi mã gap/SEC/ADR nếu có.
 
+## 2026-11-27
+
+- flow-3 F3-G15 (mới), STATUS § 5, tóm tắt luồng § 5, product, receiver-pickup-code, architecture: đổi vai trò, ngôn ngữ theo tài khoản, kiosk song ngữ, trợ lý tiếng Anh, mở app ngân hàng tự điền, gỡ ủy quyền lấy hộ, sửa lỗi ô / hết phiên / nút VI-EN.
+
 ## 2026-11-26
 
 - flow-3 F3-G14 (mới), STATUS § 3, ADR-0010, architecture: dọn sạch web admin — gỡ ví khỏi giao diện và backend (DB giữ nguyên), trang Cài đặt dịch tiếng Anh phần nhãn/mô tả (`@KeepServerText`), API thông báo admin phân trang + thống kê + xoá hàng loạt, xoá mềm phiếu sự cố / lịch kiểm tra / tài liệu trợ lý. Không đổi checklist.

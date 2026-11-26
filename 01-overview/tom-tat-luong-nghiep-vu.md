@@ -75,11 +75,11 @@ Ngoại lệ:
    - Thuê bằng **SĐT** (tài khoản thường không có email ⇒ không có thư): kiosk nhắc ghi lại / chụp mã, mã xem lại ở mục Đơn tủ trên app.
 4. **Khách** — lần sau nhập mã thuê ở kiosk → "Đóng cửa, tiếp tục thuê" hoặc "Lấy hết đồ & kết thúc thuê".
 
-## 5. Ủy quyền lấy hộ *(mới)*
+## 5. Ủy quyền lấy hộ *(đã gỡ 27/11/2026 — F3-G15)*
 
-1. **Chủ đơn** (app) — đơn đang `STORING`: "Ủy quyền lấy hộ" → nhập SĐT, tên, ghi chú người lấy hộ.
-2. **Hệ thống** — đổi mã PIN, gửi thông báo cho người được ủy quyền (nếu SĐT có tài khoản); người nhận gốc không còn dùng mã cũ.
-3. **Người được ủy quyền** — xem đơn ở "Đơn ủy quyền" (có PIN khi sẵn sàng) → mở ô bằng mã tại kiosk hoặc "Mở tủ ủy quyền" trên app → lấy hàng → đơn hoàn tất.
+Không còn trên app, kiosk và API. Người gửi chia sẻ mã nhận hàng cho người lấy thay ("Chia sẻ mã cho người nhận") nếu cần. Đơn đã
+ủy quyền trước ngày gỡ: người lấy hộ thấy đơn ở "Hàng chờ nhận" (kèm mã), người nhận gốc không thấy mã mới; admin vẫn xem được thông
+tin ủy quyền ở chi tiết đơn.
 
 ---
 

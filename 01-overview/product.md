@@ -36,7 +36,7 @@ Tiến độ hiện tại của từng luồng: [STATUS.md](../STATUS.md).
 | **Bãi đáp** (landing pad) | Vị trí drone hạ cánh tại tủ, có mã ArUco; trạng thái OK / FAULT / MAINTENANCE |
 | **Đơn** (order) | Loại `SEND` (gửi cho người khác), `RENTAL` (thuê ô theo giờ), `STORAGE`, `DRONE_DELIVERY` |
 | **PIN / QR** | Mã 6 số / token `LLQR.*` để mở ô; PIN gửi hàng và PIN nhận hàng là hai mã khác nhau |
-| **Uỷ quyền** (delegate) | Chủ đơn cấp PIN mới cho người khác lấy hàng |
+| ~~**Uỷ quyền** (delegate)~~ | Đã gỡ 27/11/2026 (F3-G15) — đơn cũ vẫn đọc được |
 | **Mission** | Một chuyến bay của drone gắn với một đơn drone |
 | **deliveryStage** | Chặng giao hàng drone mà khách nhìn thấy: `AWAITING_DISPATCH` → `PICKUP_ASSIGNED` (KTV đang tới lấy) → `PICKED_UP` (KTV đã cầm kiện) → `ACCEPTED` (đã gán drone) → `LAUNCHING` → `DEPARTED` → `EN_ROUTE` → `APPROACHING` → `ARRIVED` → `READY_FOR_PICKUP`; nhánh `CANCELED`, `FAILED`, `DROP_REPORTED` |
 | **Điểm lấy hàng** | Nơi KTV drone tới lấy kiện của người gửi (toạ độ + địa chỉ khách chọn lúc đặt đơn) |
