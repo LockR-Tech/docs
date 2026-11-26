@@ -5,6 +5,7 @@ Mỗi thay đổi ở repo docs thêm **một dòng** vào ngày tương ứng (
 ## 2026-11-26
 
 - flow-3 F3-G14 (mới), STATUS § 3, ADR-0010, architecture: dọn sạch web admin — gỡ ví khỏi giao diện và backend (DB giữ nguyên), trang Cài đặt dịch tiếng Anh phần nhãn/mô tả (`@KeepServerText`), API thông báo admin phân trang + thống kê + xoá hàng loạt, xoá mềm phiếu sự cố / lịch kiểm tra / tài liệu trợ lý. Không đổi checklist.
+- flow-3 F3-G14 (mới), STATUS § 5, business-settings, architecture, release-deploy: cụm "Giả lập & demo" tắt/bật hàng loạt cho vận hành chính thức (cờ mới ẩn tủ/điểm gửi demo, tắt thử Bluetooth), web admin gửi `X-App-Language`, bảng dịch server phủ nhãn quy tắc nghiệp vụ, test khoá chữ web.
 
 ## 2026-11-21
 
