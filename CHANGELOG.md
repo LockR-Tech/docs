@@ -2,6 +2,10 @@
 
 Mỗi thay đổi ở repo docs thêm **một dòng** vào ngày tương ứng (mới nhất ở trên). Ghi mã gap/SEC/ADR nếu có.
 
+## 2026-11-27
+
+- flow-3 F3-G16 (mới), STATUS § 3, architecture: tủ phải có KTV phụ trách mới nhận đơn mới (`acceptingOrders`/`orderPauseReason`, lỗi `LOCKER_NO_TECHNICIAN`), nhật ký thao tác (`admin.action.logged` → user-service `action_logs` V10, `/api/admin/audit-logs`), bản đồ app/web cùng nền Esri giữ 30 ngày, KTV drone vào ca = nhận việc lấy hàng, chỉ đường drone trong app, thông báo người nhận có tài khoản
+
 ## 2026-11-26
 
 - flow-3 F3-G14 (mới), STATUS § 3, ADR-0010, architecture: dọn sạch web admin — gỡ ví khỏi giao diện và backend (DB giữ nguyên), trang Cài đặt dịch tiếng Anh phần nhãn/mô tả (`@KeepServerText`), API thông báo admin phân trang + thống kê + xoá hàng loạt, xoá mềm phiếu sự cố / lịch kiểm tra / tài liệu trợ lý. Không đổi checklist.
