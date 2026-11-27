@@ -4,6 +4,7 @@ Mỗi thay đổi ở repo docs thêm **một dòng** vào ngày tương ứng (
 
 ## 2026-11-27
 
+- flow-3 F3-G15 (mới), STATUS § 5, tóm tắt luồng § 5, product, receiver-pickup-code, architecture: đổi vai trò, ngôn ngữ theo tài khoản, kiosk song ngữ, trợ lý tiếng Anh, mở app ngân hàng tự điền, gỡ ủy quyền lấy hộ, sửa lỗi ô / hết phiên / nút VI-EN.
 - flow-3 F3-G16 (mới), STATUS § 3, architecture: tủ phải có KTV phụ trách mới nhận đơn mới (`acceptingOrders`/`orderPauseReason`, lỗi `LOCKER_NO_TECHNICIAN`), nhật ký thao tác (`admin.action.logged` → user-service `action_logs` V10, `/api/admin/audit-logs`), bản đồ app/web cùng nền Esri giữ 30 ngày, KTV drone vào ca = nhận việc lấy hàng, chỉ đường drone trong app, thông báo người nhận có tài khoản
 
 ## 2026-11-26

@@ -307,7 +307,7 @@ giao dịch không được ghi nhận).
 Lấy ở SePay Dashboard → Ngân hàng → Tài khoản liên kết. Có đủ BIN + số tài khoản thì giao dịch SePay
 có ảnh VietQR và response trả thêm `bankTransfer {bankBin, accountNo, accountName, amount, transferContent}`:
 `amount` làm tròn tới đồng, `transferContent` = `referenceId` (trùng `addInfo` của ảnh QR, để webhook
-khớp đúng giao dịch). App dùng `bankTransfer` để mở app ngân hàng điền sẵn STK, số tiền, nội dung.
+khớp đúng giao dịch). App dùng `bankTransfer` để mở app ngân hàng điền sẵn STK, số tiền, nội dung qua `https://dl.vietqr.io/pay?app=<appId>&am=<số tiền>&tn=<nội dung>&ba=<STK>@<mã NH viết thường>&bn=<tên TK>&url=<trang trả về>` (danh sách app: `api.vietqr.io/v2/{android|ios}-app-deeplinks`). Thiếu `url` thì VietQR chuyển thẳng sang app với intent trống (app mở ra không có gì); app có `autofill = 1` mới tự điền, app khác dùng cách quét mã VietQR đã lưu (F3-G15).
 **Cấu hình nghiệp vụ:** `app.payment.enabled-methods` mặc định `SEPAY`, chỉ nhận `CASH`, `WALLET`,
 `SEPAY` (lưu giá trị khác ⇒ 400 `SETTING_INVALID`); giá trị cũ còn `VNPAY`/`MOMO` thì khi đọc bỏ hai mục
 đó. Giá trị admin đã lưu trước đây **không tự đổi** ⇒ sau deploy vào web admin → Cấu hình nghiệp vụ →
