@@ -2,6 +2,10 @@
 
 Mỗi thay đổi ở repo docs thêm **một dòng** vào ngày tương ứng (mới nhất ở trên). Ghi mã gap/SEC/ADR nếu có.
 
+## 2026-11-28
+
+- handoff (WF-04): báo cáo kết quả test lần 1 luồng bảo trì drone và tủ trên thiết bị thật OPPO CPH2473 + production (41/44 Passed, 3 Failed: `WF04-026`, `WF04-027`, `WF04-041`; 8 lỗi `BUG-WF04-01`..`08` gồm 2 blocker nhánh Drone FAIL & phân quyền chéo `locker-technician/reports`).
+
 ## 2026-11-27
 
 - flow-3 F3-G15 (bổ sung), bảng vai trò: tài khoản admin kiêm vai trò khác đăng nhập app / kiosk được — phiên một lớp bỏ `ADMIN`, giữ các vai trò còn lại; làm mới phiên giữ mức quyền lúc đăng nhập; tài khoản chỉ `ADMIN` vẫn chỉ đăng nhập web + OTP.
